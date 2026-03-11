@@ -1,0 +1,340 @@
+import { ArrowUpRight, Users, Trophy, Cpu } from "lucide-react";
+import { Link } from "react-router";
+import { committees, type Committee } from "../../data/committees";
+
+function CommitteeCard({ c }: { c: Committee }) {
+  return (
+    <Link
+      to={`/committee/${c.id}`}
+      style={{ textDecoration: "none", color: "inherit" }}
+    >
+      <div
+        className="glass-card"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+          cursor: "pointer",
+          height: "100%",
+        }}
+      >
+        {/* Image */}
+        <div
+          style={{
+            position: "relative",
+            height: "180px",
+            overflow: "hidden",
+          }}
+        >
+          <img
+            src={c.image}
+            alt={c.name}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              filter: "brightness(0.65) saturate(0.8)",
+              transition: "transform 0.5s ease, filter 0.4s ease",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLImageElement).style.transform = "scale(1.06)";
+              (e.currentTarget as HTMLImageElement).style.filter = "brightness(0.8) saturate(0.9)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLImageElement).style.transform = "scale(1)";
+              (e.currentTarget as HTMLImageElement).style.filter = "brightness(0.65) saturate(0.8)";
+            }}
+          />
+
+          {/* Blue tint overlay */}
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background:
+                "linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.8) 100%)",
+            }}
+          />
+
+          {/* Status Badge */}
+          <div
+            className="status-badge"
+            style={{
+              position: "absolute",
+              top: "12px",
+              right: "0",
+              background: c.statusBg,
+              color: c.statusColor,
+              backdropFilter: "blur(6px)",
+            }}
+          >
+            <span className="dot" />
+            {c.status}
+          </div>
+        </div>
+
+        {/* Body */}
+        <div
+          style={{
+            padding: "24px",
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          {/* Committee Name */}
+          <h3
+            style={{
+              fontFamily: "'Space Grotesk', sans-serif",
+              fontSize: "17px",
+              fontWeight: 700,
+              color: "#F8F9FA",
+              marginBottom: "4px",
+              lineHeight: 1.3,
+            }}
+          >
+            {c.shortName}
+          </h3>
+          <p
+            style={{
+              fontFamily: "'IBM Plex Mono', monospace",
+              fontSize: "0.65rem",
+              color: "rgba(235,211,169,0.55)",
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              marginBottom: "14px",
+            }}
+          >
+            {c.tagline}
+          </p>
+
+          {/* Description */}
+          <p
+            style={{
+              fontFamily: "'IBM Plex Sans', sans-serif",
+              fontSize: "13px",
+              color: "rgba(248,249,250,0.5)",
+              lineHeight: 1.65,
+              marginBottom: "20px",
+              flex: 1,
+            }}
+          >
+            {c.description}
+          </p>
+
+          {/* Technical Metrics */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(3, 1fr)",
+              gap: "0",
+              borderTop: "1px solid rgba(235,211,169,0.08)",
+              borderBottom: "1px solid rgba(235,211,169,0.08)",
+              marginBottom: "20px",
+              padding: "12px 0",
+            }}
+          >
+            {[
+              { label: "Members", value: `${c.members}`, icon: Users },
+              { label: "Founded", value: c.founded, icon: Cpu },
+              { label: "Awards", value: `${c.awards}`, icon: Trophy },
+            ].map((m, i) => (
+              <div
+                key={m.label}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: "3px",
+                  borderRight: i < 2 ? "1px solid rgba(235,211,169,0.08)" : "none",
+                  padding: "0 8px",
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily: "'IBM Plex Mono', monospace",
+                    fontSize: "15px",
+                    fontWeight: 600,
+                    color: "#00629B",
+                    lineHeight: 1,
+                  }}
+                >
+                  {m.value}
+                </span>
+                <span
+                  style={{
+                    fontFamily: "'IBM Plex Mono', monospace",
+                    fontSize: "0.58rem",
+                    color: "rgba(248,249,250,0.3)",
+                    letterSpacing: "0.12em",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  {m.label}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* Tags Row */}
+          <div
+            style={{
+              display: "flex",
+              gap: "6px",
+              flexWrap: "wrap",
+              marginBottom: "20px",
+            }}
+          >
+            {c.tags.slice(0, 3).map((tag) => (
+              <span key={tag} className="tech-tag">
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          {/* Footer Link */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <span
+              style={{
+                fontFamily: "'IBM Plex Sans', sans-serif",
+                fontSize: "0.8rem",
+                fontWeight: 500,
+                color: "#00629B",
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+              }}
+            >
+              Learn More
+              <ArrowUpRight size={14} />
+            </span>
+
+            {/* Gold accent dot */}
+            <div
+              style={{
+                width: "4px",
+                height: "4px",
+                borderRadius: "50%",
+                background: "rgba(235,211,169,0.3)",
+              }}
+            />
+          </div>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+export function Committees() {
+  return (
+    <section
+      id="committees"
+      style={{
+        background: "#000000",
+        padding: "96px 0",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      {/* Faint glow */}
+      <div
+        className="electric-glow-orb"
+        style={{
+          width: "600px",
+          height: "600px",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          opacity: 0.5,
+        }}
+      />
+
+      <div
+        style={{
+          position: "relative",
+          zIndex: 5,
+          maxWidth: "1280px",
+          margin: "0 auto",
+          padding: "0 32px",
+        }}
+      >
+        {/* Section Header */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-end",
+            marginBottom: "48px",
+            flexWrap: "wrap",
+            gap: "24px",
+          }}
+        >
+          <div>
+            <p className="section-eyebrow" style={{ marginBottom: "12px" }}>
+              // Project Committees
+            </p>
+            <h2
+              style={{
+                fontFamily: "'Space Grotesk', sans-serif",
+                fontSize: "clamp(28px, 4vw, 44px)",
+                fontWeight: 700,
+                color: "#F8F9FA",
+                lineHeight: 1.15,
+                letterSpacing: "-0.02em",
+              }}
+            >
+              Active{" "}
+              <span style={{ color: "#EBD3A9" }}>Engineering</span>{" "}
+              Teams
+            </h2>
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+            }}
+          >
+            <div
+              style={{
+                fontFamily: "'IBM Plex Mono', monospace",
+                fontSize: "0.65rem",
+                letterSpacing: "0.15em",
+                color: "rgba(248,249,250,0.35)",
+                textTransform: "uppercase",
+              }}
+            >
+              sys.committees.count
+            </div>
+            <div
+              style={{
+                fontFamily: "'IBM Plex Mono', monospace",
+                fontSize: "0.65rem",
+                color: "#00629B",
+                letterSpacing: "0.1em",
+              }}
+            >
+              = {committees.length}
+            </div>
+          </div>
+        </div>
+
+        {/* Cards Grid */}
+        <div className="ieee-grid-3">
+          {committees.map((c) => (
+            <CommitteeCard key={c.id} c={c} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
