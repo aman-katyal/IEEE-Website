@@ -82,8 +82,8 @@ export function OfficersPage() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-            gap: "32px",
+            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+            gap: "24px",
           }}
         >
           {leaders.map((officer) => (
@@ -95,7 +95,7 @@ export function OfficersPage() {
                 WebkitBackdropFilter: "blur(12px)",
                 border: "1px solid rgba(0, 98, 155, 0.2)",
                 borderRadius: "8px",
-                padding: "24px",
+                padding: "20px",
                 display: "flex",
                 flexDirection: "column",
                 height: "100%",

@@ -118,13 +118,14 @@ export function CalendarPage() {
             padding: "8px", 
             background: "rgba(0, 30, 60, 0.2)",
             borderColor: "rgba(0, 98, 155, 0.2)",
-            marginBottom: "64px"
+            marginBottom: "64px",
+            overflowX: "auto" // Allow scroll on very small screens
           }}
         >
-          <div style={{ borderRadius: "4px", overflow: "hidden", background: "#fff" }}>
+          <div style={{ borderRadius: "4px", overflow: "hidden", background: "#fff", minWidth: "600px" }}>
             <iframe
               src={`${calendarBaseUrl}&mode=MONTH&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=1&showCalendars=0&showTz=0`}
-              style={{ border: 0, width: "100%", height: "800px" }}
+              style={{ border: 0, width: "100%", height: "clamp(500px, 70vh, 800px)" }}
               frameBorder="0"
               scrolling="no"
             ></iframe>
@@ -144,7 +145,7 @@ export function CalendarPage() {
            </p>
         </div>
 
-        {/* Agenda View (Acts as a multi-month summary) */}
+        {/* Agenda View */}
         <div 
           className="glass-card" 
           style={{ 

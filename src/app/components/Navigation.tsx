@@ -22,7 +22,7 @@ export function Navigation() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [activeLink, setActiveLink] = useState("");
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const dropdownTimeoutRef = useRef<number | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
   const isHome = location.pathname === "/";
@@ -33,16 +33,16 @@ export function Navigation() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  const handleMouseEnter = () => {
+    if (dropdownTimeoutRef.current) window.clearTimeout(dropdownTimeoutRef.current);
+    setDropdownOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    dropdownTimeoutRef.current = window.setTimeout(() => {
+      setDropdownOpen(false);
+    }, 150);
+  };
 
   // Handle hash scrolling after navigation
   useEffect(() => {
@@ -174,10 +174,9 @@ export function Navigation() {
             link.dropdown ? (
               <div 
                 key={link.label} 
-                ref={dropdownRef}
                 style={{ position: "relative" }}
-                onMouseEnter={() => setDropdownOpen(true)}
-                onMouseLeave={() => setDropdownOpen(false)}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
               >
                 <button
                   className="nav-link"
@@ -188,6 +187,7 @@ export function Navigation() {
                     background: "none",
                     border: "none",
                     cursor: "pointer",
+                    padding: "24px 0",
                     color: location.pathname.startsWith(link.href) || location.pathname === "/constitution"
                       ? "var(--stellar-white)"
                       : "rgba(248, 249, 250, 0.6)",
@@ -208,11 +208,15 @@ export function Navigation() {
                       border: "1px solid rgba(235, 211, 169, 0.12)",
                       borderRadius: "4px",
                       padding: "8px 0",
-                      marginTop: "10px",
+                      marginTop: "-8px",
                       boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
-                      backdropFilter: "blur(10px)"
+                      backdropFilter: "blur(10px)",
+                      zIndex: 110
                     }}
                   >
+                    {/* Transparent bridge to prevent closing when moving to menu */}
+                    <div style={{ position: "absolute", top: "-20px", left: 0, right: 0, height: "20px" }} />
+                    
                     {link.dropdown.map((subItem) => (
                       <a
                         key={subItem.href}

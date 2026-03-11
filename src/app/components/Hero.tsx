@@ -60,35 +60,13 @@ export function Hero() {
       <div
         className="electric-glow-orb"
         style={{
-          width: "700px",
-          height: "700px",
+          width: "min(700px, 90vw)",
+          height: "min(700px, 90vw)",
           top: "-100px",
           left: "50%",
           transform: "translateX(-50%)",
           background:
             "radial-gradient(circle, rgba(0,98,155,0.22) 0%, transparent 65%)",
-        }}
-      />
-      <div
-        className="electric-glow-orb"
-        style={{
-          width: "400px",
-          height: "400px",
-          bottom: "80px",
-          right: "-60px",
-          background:
-            "radial-gradient(circle, rgba(0,98,155,0.14) 0%, transparent 70%)",
-        }}
-      />
-      <div
-        className="electric-glow-orb"
-        style={{
-          width: "300px",
-          height: "300px",
-          top: "30%",
-          left: "-40px",
-          background:
-            "radial-gradient(circle, rgba(235,211,169,0.05) 0%, transparent 70%)",
         }}
       />
 
@@ -100,7 +78,7 @@ export function Hero() {
           maxWidth: "1280px",
           margin: "0 auto",
           padding: "0 32px",
-          paddingTop: "120px",
+          paddingTop: "max(120px, 15vh)",
           paddingBottom: "80px",
           width: "100%",
         }}
@@ -108,9 +86,10 @@ export function Hero() {
         {/* Eyebrow Tag */}
         <div
           style={{
-            display: "inline-flex",
+            display: "flex",
+            flexWrap: "wrap",
             alignItems: "center",
-            gap: "10px",
+            gap: "16px",
             marginBottom: "32px",
           }}
         >
@@ -131,9 +110,9 @@ export function Hero() {
             />
             <span
               style={{
-                fontFamily: "'IBM Plex Mono', monospace",
-                fontSize: "0.65rem",
-                letterSpacing: "0.22em",
+                fontFamily: "var(--font-mono)",
+                fontSize: "clamp(0.55rem, 1.5vw, 0.65rem)",
+                letterSpacing: "0.15em",
                 textTransform: "uppercase",
                 color: "#00629B",
               }}
@@ -162,8 +141,8 @@ export function Hero() {
             />
             <span
               style={{
-                fontFamily: "'IBM Plex Mono', monospace",
-                fontSize: "0.62rem",
+                fontFamily: "var(--font-mono)",
+                fontSize: "clamp(0.55rem, 1.5vw, 0.62rem)",
                 letterSpacing: "0.15em",
                 color: "rgba(248,249,250,0.45)",
                 textTransform: "uppercase",
@@ -177,21 +156,21 @@ export function Hero() {
         {/* Main Headline */}
         <h1
           style={{
-            fontFamily: "'Space Grotesk', sans-serif",
-            fontSize: "clamp(42px, 7vw, 88px)",
+            fontFamily: "var(--font-headline)",
+            fontSize: "clamp(38px, 8vw, 88px)",
             fontWeight: 700,
             lineHeight: 1.04,
-            color: "#F8F9FA",
+            color: "var(--stellar-white)",
             maxWidth: "820px",
-            marginBottom: "16px",
+            marginBottom: "24px",
             letterSpacing: "-0.02em",
           }}
         >
           Engineering{" "}
           <span
             style={{
-              color: "#00629B",
-              textShadow: "0 0 40px rgba(0,98,155,0.5)",
+              color: "var(--electric-blue)",
+              textShadow: "0 0 40px rgba(0,98,155,0.3)",
             }}
           >
             Tomorrow's
@@ -200,7 +179,7 @@ export function Hero() {
           Technology,{" "}
           <span
             style={{
-              color: "#EBD3A9",
+              color: "var(--cyber-gold)",
             }}
           >
             Today.
@@ -210,8 +189,8 @@ export function Hero() {
         {/* Subtitle */}
         <p
           style={{
-            fontFamily: "'IBM Plex Sans', sans-serif",
-            fontSize: "clamp(16px, 2vw, 19px)",
+            fontFamily: "var(--font-body)",
+            fontSize: "clamp(15px, 2.2vw, 19px)",
             color: "rgba(248,249,250,0.55)",
             maxWidth: "640px",
             marginBottom: "48px",
@@ -236,30 +215,25 @@ export function Hero() {
           <button
             className="btn-primary"
             onClick={() => navigate("/committees")}
+            style={{ width: "auto", minWidth: "180px" }}
           >
             Explore Committees
           </button>
           <button
             className="btn-ghost"
             onClick={() => navigate("/about")}
+            style={{ width: "auto", minWidth: "180px" }}
           >
             Learn More
           </button>
 
-          {/* Divider */}
+          {/* Inline Stats (visible on medium+ screens) */}
           <div
-            style={{
-              width: "1px",
-              height: "32px",
-              background: "rgba(235,211,169,0.2)",
-              margin: "0 8px",
+            style={{ 
+              display: "flex", 
+              gap: "24px",
+              marginLeft: "8px"
             }}
-            className="hidden sm:block"
-          />
-
-          {/* Small stat inline */}
-          <div
-            style={{ display: "flex", gap: "24px" }}
             className="hidden sm:flex"
           >
             {[
@@ -269,10 +243,10 @@ export function Hero() {
               <div key={s.label} style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
                 <span
                   style={{
-                    fontFamily: "'Space Grotesk', sans-serif",
+                    fontFamily: "var(--font-headline)",
                     fontSize: "22px",
                     fontWeight: 700,
-                    color: "#00629B",
+                    color: "var(--electric-blue)",
                     lineHeight: 1,
                   }}
                 >
@@ -280,7 +254,7 @@ export function Hero() {
                 </span>
                 <span
                   style={{
-                    fontFamily: "'IBM Plex Mono', monospace",
+                    fontFamily: "var(--font-mono)",
                     fontSize: "0.6rem",
                     letterSpacing: "0.15em",
                     color: "rgba(248,249,250,0.35)",
@@ -294,12 +268,12 @@ export function Hero() {
           </div>
         </div>
 
-        {/* Bottom Meta Bar */}
+        {/* Bottom Meta Bar (Technical Committee Tags) */}
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "24px",
+            gap: "12px 24px",
             flexWrap: "wrap",
           }}
         >
@@ -308,14 +282,11 @@ export function Hero() {
               key={c.id}
               to={`/committee/${c.id}`}
               className="tech-tag"
-              style={{ textDecoration: "none", cursor: "pointer", transition: "border-color 0.2s ease, color 0.2s ease" }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "rgba(0,98,155,0.6)";
-                e.currentTarget.style.color = "#00629B";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "rgba(235,211,169,0.2)";
-                e.currentTarget.style.color = "rgba(235,211,169,0.6)";
+              style={{ 
+                textDecoration: "none", 
+                cursor: "pointer", 
+                transition: "all 0.2s ease",
+                padding: "4px 10px"
               }}
             >
               {c.shortName}
@@ -341,10 +312,11 @@ export function Hero() {
           gap: "6px",
           zIndex: 10,
         }}
+        className="hidden md:flex"
       >
         <span
           style={{
-            fontFamily: "'IBM Plex Mono', monospace",
+            fontFamily: "var(--font-mono)",
             fontSize: "0.58rem",
             letterSpacing: "0.2em",
             color: "rgba(248,249,250,0.3)",
