@@ -94,7 +94,7 @@ export function Navigation() {
         style={{
           maxWidth: "1280px",
           margin: "0 auto",
-          padding: "0 clamp(16px, 4vw, 32px)",
+          padding: "0 24px",
           height: "72px",
           display: "flex",
           alignItems: "center",
@@ -109,19 +109,17 @@ export function Navigation() {
             alignItems: "center",
             gap: "0",
             textDecoration: "none",
-            flexShrink: 1, // Allow logo to shrink if needed
-            minWidth: 0
+            flexShrink: 0,
           }}
         >
           <span
             style={{
               fontFamily: "var(--font-headline)",
               fontWeight: 700,
-              fontSize: "clamp(14px, 4vw, 18px)",
+              fontSize: "18px",
               color: "var(--stellar-white)",
               letterSpacing: "0.12em",
               textTransform: "uppercase",
-              whiteSpace: "nowrap"
             }}
           >
             PURDUE
@@ -132,12 +130,12 @@ export function Navigation() {
               width: "1px",
               height: "24px",
               background: "rgba(248,249,250,0.2)",
-              margin: "0 clamp(8px, 2vw, 14px)",
+              margin: "0 12px",
               flexShrink: 0,
             }}
           />
 
-          <div style={{ display: "flex", alignItems: "center", gap: "6px", minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
             <div
               style={{
                 width: "5px",
@@ -145,18 +143,16 @@ export function Navigation() {
                 background: "var(--electric-blue)",
                 borderRadius: "50%",
                 boxShadow: "0 0 8px rgba(0,98,155,0.9)",
-                flexShrink: 0
               }}
             />
             <span
               style={{
                 fontFamily: "var(--font-headline)",
                 fontWeight: 700,
-                fontSize: "clamp(14px, 4vw, 18px)",
+                fontSize: "18px",
                 color: "var(--stellar-white)",
                 letterSpacing: "0.15em",
                 textTransform: "uppercase",
-                whiteSpace: "nowrap"
               }}
             >
               IEEE
@@ -164,14 +160,14 @@ export function Navigation() {
           </div>
         </Link>
 
-        {/* Desktop Nav */}
+        {/* Desktop Nav - Hidden on mobile/small tablets */}
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "clamp(16px, 2.5vw, 32px)",
+            gap: "24px",
           }}
-          className="hidden md:flex"
+          className="hidden lg:flex" // Only show on large screens
         >
           {navLinks.slice(0, -1).map((link) => (
             link.dropdown ? (
@@ -277,18 +273,21 @@ export function Navigation() {
           </button>
         </div>
 
-        {/* Mobile Hamburger */}
+        {/* Hamburger Menu - Visible on mobile & tablet */}
         <button
-          className="md:hidden"
+          className="lg:hidden"
           onClick={() => setMenuOpen(!menuOpen)}
           style={{
-            background: "none",
-            border: "none",
+            background: "rgba(255, 255, 255, 0.05)",
+            border: "1px solid rgba(255, 255, 255, 0.1)",
+            borderRadius: "4px",
             color: "var(--stellar-white)",
             cursor: "pointer",
-            padding: "8px",
-            marginLeft: "12px",
-            flexShrink: 0
+            padding: "10px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            transition: "all 0.2s ease"
           }}
         >
           {menuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -301,7 +300,7 @@ export function Navigation() {
           style={{
             background: "rgba(0,0,0,0.98)",
             borderTop: "1px solid rgba(235, 211, 169, 0.1)",
-            padding: "16px clamp(16px, 6vw, 32px) 48px",
+            padding: "16px 24px 48px",
             maxHeight: "calc(100vh - 72px)",
             overflowY: "auto",
             position: "absolute",
@@ -310,13 +309,15 @@ export function Navigation() {
             right: 0,
             display: "flex",
             flexDirection: "column",
-            gap: "8px"
+            gap: "8px",
+            boxShadow: "0 20px 40px rgba(0,0,0,0.8)",
+            backdropFilter: "blur(20px)"
           }}
         >
           {navLinks.map((link) => (
             <div key={link.label}>
               {link.dropdown ? (
-                <>
+                <div style={{ marginBottom: "12px" }}>
                   <div style={{ 
                     fontFamily: "var(--font-body)", 
                     fontSize: "0.8rem", 
@@ -336,13 +337,13 @@ export function Navigation() {
                         style={{
                           display: "block",
                           fontFamily: "var(--font-body)",
-                          fontSize: "1rem",
+                          fontSize: "1.1rem",
                           color: location.pathname === subItem.href ? "var(--stellar-white)" : "rgba(248,249,250,0.6)",
                           textDecoration: "none",
-                          padding: "12px 16px",
-                          background: location.pathname === subItem.href ? "rgba(0, 98, 155, 0.1)" : "transparent",
-                          borderRadius: "4px",
-                          borderLeft: location.pathname === subItem.href ? "2px solid var(--electric-blue)" : "2px solid transparent"
+                          padding: "14px 16px",
+                          background: location.pathname === subItem.href ? "rgba(0, 98, 155, 0.15)" : "rgba(255,255,255,0.03)",
+                          borderRadius: "6px",
+                          borderLeft: location.pathname === subItem.href ? "3px solid var(--electric-blue)" : "3px solid transparent"
                         }}
                         onClick={(e) => { e.preventDefault(); handleNav(subItem.href); }}
                       >
@@ -350,7 +351,7 @@ export function Navigation() {
                       </a>
                     ))}
                   </div>
-                </>
+                </div>
               ) : (
                 <a
                   key={link.href}
@@ -358,13 +359,15 @@ export function Navigation() {
                   style={{
                     display: "block",
                     fontFamily: "var(--font-body)",
-                    fontSize: "1.1rem",
+                    fontSize: "1.2rem",
                     fontWeight: 500,
                     color: location.pathname === link.href ? "var(--stellar-white)" : "rgba(248,249,250,0.8)",
                     letterSpacing: "0.05em",
                     textDecoration: "none",
-                    padding: "16px 0",
-                    borderBottom: "1px solid rgba(235,211,169,0.05)",
+                    padding: "18px 16px",
+                    background: location.pathname === link.href ? "rgba(0, 98, 155, 0.15)" : "rgba(255,255,255,0.03)",
+                    borderRadius: "6px",
+                    marginBottom: "8px",
                     textTransform: "uppercase",
                   }}
                   onClick={(e) => { e.preventDefault(); handleNav(link.href); }}
@@ -377,7 +380,7 @@ export function Navigation() {
           
           <button
             className="btn-primary"
-            style={{ width: "100%", marginTop: "32px", padding: "16px" }}
+            style={{ width: "100%", marginTop: "32px", padding: "20px", fontSize: "1rem" }}
             onClick={() => handleNav("/join")}
           >
             Join IEEE
