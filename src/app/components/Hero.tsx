@@ -153,53 +153,50 @@ export function Hero() {
           </div>
         </div>
 
-        {/* Main Headline */}
+        {/* Main Headline (Mission Statement) */}
         <h1
           style={{
             fontFamily: "var(--font-headline)",
-            fontSize: "clamp(38px, 8vw, 88px)",
+            fontSize: "clamp(34px, 6vw, 72px)",
             fontWeight: 700,
-            lineHeight: 1.04,
+            lineHeight: 1.1,
             color: "var(--stellar-white)",
-            maxWidth: "820px",
-            marginBottom: "24px",
+            maxWidth: "1000px",
+            marginBottom: "48px",
             letterSpacing: "-0.02em",
           }}
         >
-          Engineering{" "}
+          “Fostering technological{" "}
           <span
             style={{
               color: "var(--electric-blue)",
               textShadow: "0 0 40px rgba(0,98,155,0.3)",
             }}
           >
-            Tomorrow's
-          </span>
-          <br />
-          Technology,{" "}
+            innovation
+          </span>{" "}
+          and excellence for the benefit of{" "}
           <span
             style={{
               color: "var(--cyber-gold)",
             }}
           >
-            Today.
-          </span>
+            humanity.
+          </span>”
         </h1>
 
-        {/* Subtitle */}
         <p
           style={{
-            fontFamily: "var(--font-body)",
-            fontSize: "clamp(15px, 2.2vw, 19px)",
-            color: "rgba(248,249,250,0.55)",
-            maxWidth: "640px",
+            fontFamily: "var(--font-mono)",
+            fontSize: "clamp(0.7rem, 1.5vw, 0.85rem)",
+            color: "rgba(248,249,250,0.4)",
+            letterSpacing: "0.2em",
+            textTransform: "uppercase",
             marginBottom: "48px",
-            lineHeight: 1.7,
-            fontWeight: 400,
-            fontStyle: "italic"
+            marginTop: "-24px"
           }}
         >
-          “Fostering technological innovation and excellence for the benefit of humanity.” — IEEE Mission Statement
+          — IEEE Mission Statement
         </p>
 
         {/* CTA Buttons */}
