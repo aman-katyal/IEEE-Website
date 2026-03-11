@@ -666,43 +666,23 @@ export function CommitteePage() {
                 )}
 
                 {/* CTA */}
-                {committee.socialLinks?.some(sl => sl.platform.toLowerCase() === 'discord') ? (
-                  <a
-                    href={committee.socialLinks.find(sl => sl.platform.toLowerCase() === 'discord')?.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn-primary"
-                    style={{
-                      width: "100%",
-                      textAlign: "center",
-                      padding: "16px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: "10px",
-                      textDecoration: "none",
-                      background: "#5865F2",
-                      borderColor: "#5865F2"
-                    }}
-                  >
-                    <MessageCircle size={18} />
-                    Join Discord
-                  </a>
-                ) : (
-                  <Link
-                    to="/#join"
-                    className="btn-primary"
-                    style={{
-                      width: "100%",
-                      textAlign: "center",
-                      padding: "12px",
-                      display: "block",
-                      textDecoration: "none",
-                    }}
-                  >
-                    Join This Committee
-                  </Link>
-                )}
+                <button
+                  onClick={() => navigate("/join")}
+                  className="btn-primary"
+                  style={{
+                    width: "100%",
+                    textAlign: "center",
+                    padding: "16px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "10px",
+                    textDecoration: "none",
+                  }}
+                >
+                  Join This Committee
+                  <ChevronRight size={18} />
+                </button>
               </div>
             </div>
           </div>

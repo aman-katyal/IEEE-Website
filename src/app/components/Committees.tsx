@@ -85,10 +85,10 @@ function CommitteeCard({ c }: { c: Committee }) {
           {/* Committee Name */}
           <h3
             style={{
-              fontFamily: "'Space Grotesk', sans-serif",
+              fontFamily: "var(--font-headline)",
               fontSize: "17px",
               fontWeight: 700,
-              color: "#F8F9FA",
+              color: "var(--stellar-white)",
               marginBottom: "4px",
               lineHeight: 1.3,
             }}
@@ -97,7 +97,7 @@ function CommitteeCard({ c }: { c: Committee }) {
           </h3>
           <p
             style={{
-              fontFamily: "'IBM Plex Mono', monospace",
+              fontFamily: "var(--font-mono)",
               fontSize: "0.65rem",
               color: "rgba(235,211,169,0.55)",
               letterSpacing: "0.1em",
@@ -111,7 +111,7 @@ function CommitteeCard({ c }: { c: Committee }) {
           {/* Description */}
           <p
             style={{
-              fontFamily: "'IBM Plex Sans', sans-serif",
+              fontFamily: "var(--font-body)",
               fontSize: "13px",
               color: "rgba(248,249,250,0.5)",
               lineHeight: 1.65,
@@ -152,10 +152,10 @@ function CommitteeCard({ c }: { c: Committee }) {
               >
                 <span
                   style={{
-                    fontFamily: "'IBM Plex Mono', monospace",
+                    fontFamily: "var(--font-mono)",
                     fontSize: "15px",
                     fontWeight: 600,
-                    color: "#00629B",
+                    color: "var(--electric-blue)",
                     lineHeight: 1,
                   }}
                 >
@@ -163,7 +163,7 @@ function CommitteeCard({ c }: { c: Committee }) {
                 </span>
                 <span
                   style={{
-                    fontFamily: "'IBM Plex Mono', monospace",
+                    fontFamily: "var(--font-mono)",
                     fontSize: "0.58rem",
                     color: "rgba(248,249,250,0.3)",
                     letterSpacing: "0.12em",
@@ -202,10 +202,10 @@ function CommitteeCard({ c }: { c: Committee }) {
           >
             <span
               style={{
-                fontFamily: "'IBM Plex Sans', sans-serif",
+                fontFamily: "var(--font-body)",
                 fontSize: "0.8rem",
                 fontWeight: 500,
-                color: "#00629B",
+                color: "var(--electric-blue)",
                 letterSpacing: "0.08em",
                 textTransform: "uppercase",
                 display: "flex",
@@ -238,8 +238,8 @@ export function Committees() {
     <section
       id="committees"
       style={{
-        background: "#000000",
-        padding: "96px 0",
+        background: "var(--boiler-black)",
+        padding: "48px 0 96px",
         position: "relative",
         overflow: "hidden",
       }}
@@ -283,16 +283,16 @@ export function Committees() {
             </p>
             <h2
               style={{
-                fontFamily: "'Space Grotesk', sans-serif",
+                fontFamily: "var(--font-headline)",
                 fontSize: "clamp(28px, 4vw, 44px)",
                 fontWeight: 700,
-                color: "#F8F9FA",
+                color: "var(--stellar-white)",
                 lineHeight: 1.15,
                 letterSpacing: "-0.02em",
               }}
             >
               Active{" "}
-              <span style={{ color: "#EBD3A9" }}>Engineering</span>{" "}
+              <span style={{ color: "var(--cyber-gold)" }}>Engineering</span>{" "}
               Teams
             </h2>
           </div>
@@ -306,7 +306,7 @@ export function Committees() {
           >
             <div
               style={{
-                fontFamily: "'IBM Plex Mono', monospace",
+                fontFamily: "var(--font-mono)",
                 fontSize: "0.65rem",
                 letterSpacing: "0.15em",
                 color: "rgba(248,249,250,0.35)",
@@ -317,9 +317,9 @@ export function Committees() {
             </div>
             <div
               style={{
-                fontFamily: "'IBM Plex Mono', monospace",
+                fontFamily: "var(--font-mono)",
                 fontSize: "0.65rem",
-                color: "#00629B",
+                color: "var(--electric-blue)",
                 letterSpacing: "0.1em",
               }}
             >

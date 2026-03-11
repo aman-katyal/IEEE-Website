@@ -3,7 +3,7 @@ export function About() {
     <section
       id="about"
       style={{
-        background: "#001E3C",
+        background: "var(--deep-space-blue)",
         padding: "96px 0",
         position: "relative",
         overflow: "hidden",
@@ -62,20 +62,20 @@ export function About() {
             </p>
             <h2
               style={{
-                fontFamily: "'Space Grotesk', sans-serif",
+                fontFamily: "var(--font-headline)",
                 fontSize: "clamp(32px, 4vw, 48px)",
                 fontWeight: 700,
-                color: "#F8F9FA",
+                color: "var(--stellar-white)",
                 lineHeight: 1.15,
                 letterSpacing: "-0.02em",
                 marginBottom: "24px",
               }}
             >
-              At Purdue, we strive to be the <span style={{ color: "#00629B" }}>best</span>
+              At Purdue, we strive to be the <span style={{ color: "var(--electric-blue)" }}>best</span>
             </h2>
             <p
               style={{
-                fontFamily: "'IBM Plex Sans', sans-serif",
+                fontFamily: "var(--font-body)",
                 fontSize: "16px",
                 color: "rgba(248,249,250,0.6)",
                 lineHeight: 1.75,
@@ -87,8 +87,8 @@ export function About() {
             </p>
           </div>
           <div className="glass-card" style={{ padding: "40px", textAlign: "center", background: "rgba(0, 98, 155, 0.1)" }}>
-             <h3 style={{ color: "#EBD3A9", fontSize: "24px", marginBottom: "16px", fontFamily: "var(--font-headline)" }}>Established 1903</h3>
-             <p style={{ color: "rgba(248,249,250,0.5)", fontSize: "14px" }}>Over a century of fostering innovation and engineering excellence at Purdue University.</p>
+             <h3 style={{ color: "var(--cyber-gold)", fontSize: "24px", marginBottom: "16px", fontFamily: "var(--font-headline)" }}>Established 1903</h3>
+             <p style={{ color: "rgba(248,249,250,0.5)", fontSize: "14px", fontFamily: "var(--font-body)" }}>Over a century of fostering innovation and engineering excellence at Purdue University.</p>
           </div>
         </div>
 
@@ -106,20 +106,20 @@ export function About() {
             </p>
             <h2
               style={{
-                fontFamily: "'Space Grotesk', sans-serif",
+                fontFamily: "var(--font-headline)",
                 fontSize: "clamp(32px, 4vw, 48px)",
                 fontWeight: 700,
-                color: "#F8F9FA",
+                color: "var(--stellar-white)",
                 lineHeight: 1.15,
                 letterSpacing: "-0.02em",
                 marginBottom: "24px",
               }}
             >
-              Applying academics to <span style={{ color: "#EBD3A9" }}>extracurriculars</span>
+              Applying academics to <span style={{ color: "var(--cyber-gold)" }}>extracurriculars</span>
             </h2>
             <p
               style={{
-                fontFamily: "'IBM Plex Sans', sans-serif",
+                fontFamily: "var(--font-body)",
                 fontSize: "16px",
                 color: "rgba(248,249,250,0.6)",
                 lineHeight: 1.75,
@@ -132,7 +132,7 @@ export function About() {
             </p>
             <p
               style={{
-                fontFamily: "'IBM Plex Sans', sans-serif",
+                fontFamily: "var(--font-body)",
                 fontSize: "16px",
                 color: "rgba(248,249,250,0.6)",
                 lineHeight: 1.75,
@@ -145,8 +145,8 @@ export function About() {
              <div className="glass-card" style={{ padding: "40px", background: "rgba(235, 211, 169, 0.05)" }}>
                 <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "16px" }}>
                    {["Professional Careers", "Engineering Software", "Practical Solutions", "Lasting Connections"].map(item => (
-                     <li key={item} style={{ display: "flex", alignItems: "center", gap: "12px", color: "var(--stellar-white)", fontSize: "15px" }}>
-                        <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#00629B" }} />
+                     <li key={item} style={{ display: "flex", alignItems: "center", gap: "12px", color: "var(--stellar-white)", fontSize: "15px", fontFamily: "var(--font-body)" }}>
+                        <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "var(--electric-blue)" }} />
                         {item}
                      </li>
                    ))}
@@ -168,20 +168,20 @@ export function About() {
             </p>
             <h2
               style={{
-                fontFamily: "'Space Grotesk', sans-serif",
+                fontFamily: "var(--font-headline)",
                 fontSize: "clamp(32px, 4vw, 48px)",
                 fontWeight: 700,
-                color: "#F8F9FA",
+                color: "var(--stellar-white)",
                 lineHeight: 1.15,
                 letterSpacing: "-0.02em",
                 marginBottom: "24px",
               }}
             >
-              Connecting industry partners to <span style={{ color: "#00629B" }}>talented</span> engineers
+              Connecting industry partners to <span style={{ color: "var(--electric-blue)" }}>talented</span> engineers
             </h2>
             <p
               style={{
-                fontFamily: "'IBM Plex Sans', sans-serif",
+                fontFamily: "var(--font-body)",
                 fontSize: "16px",
                 color: "rgba(248,249,250,0.6)",
                 lineHeight: 1.75,
@@ -192,7 +192,7 @@ export function About() {
             </p>
             <p
               style={{
-                fontFamily: "'IBM Plex Sans', sans-serif",
+                fontFamily: "var(--font-body)",
                 fontSize: "16px",
                 color: "rgba(248,249,250,0.6)",
                 lineHeight: 1.75,
@@ -203,7 +203,7 @@ export function About() {
             </p>
             <p
               style={{
-                fontFamily: "'IBM Plex Sans', sans-serif",
+                fontFamily: "var(--font-body)",
                 fontSize: "16px",
                 color: "rgba(248,249,250,0.6)",
                 lineHeight: 1.75,
@@ -213,7 +213,7 @@ export function About() {
             </p>
           </div>
           <div className="glass-card" style={{ padding: "40px", background: "rgba(0, 98, 155, 0.15)", borderLeft: "4px solid var(--cyber-gold)" }}>
-             <p style={{ fontStyle: "italic", color: "rgba(248,249,250,0.7)", lineHeight: 1.6, fontSize: "15px" }}>
+             <p style={{ fontStyle: "italic", color: "rgba(248,249,250,0.7)", lineHeight: 1.6, fontSize: "15px", fontFamily: "var(--font-body)" }}>
                "Our alumni go on to work at some of the world's largest companies... helping shape the future of technology."
              </p>
           </div>

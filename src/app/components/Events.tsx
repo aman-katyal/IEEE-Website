@@ -90,15 +90,15 @@ export function Events() {
   const events = liveEvents.length > 0 ? liveEvents : fallbackEvents;
   const isLive = liveEvents.length > 0;
   
-  // Limit to 6 events for the home page
-  const displayEvents = events.slice(0, 6);
+  // Limit to 4 events for the home page
+  const displayEvents = events.slice(0, 4);
   const nextEvent = events[0];
 
   return (
     <section
       id="events"
       style={{
-        background: "#000000",
+        background: "var(--boiler-black)",
         padding: "96px 0",
         position: "relative",
       }}
@@ -135,16 +135,16 @@ export function Events() {
             </p>
             <h2
               style={{
-                fontFamily: "'Space Grotesk', sans-serif",
+                fontFamily: "var(--font-headline)",
                 fontSize: "clamp(28px, 4vw, 44px)",
                 fontWeight: 700,
-                color: "#F8F9FA",
+                color: "var(--stellar-white)",
                 lineHeight: 1.15,
                 letterSpacing: "-0.02em",
               }}
             >
               What's Happening{" "}
-              <span style={{ color: "#00629B" }}>Next</span>
+              <span style={{ color: "var(--electric-blue)" }}>Next</span>
             </h2>
           </div>
 
@@ -162,7 +162,7 @@ export function Events() {
                   display: "flex",
                   alignItems: "center",
                   gap: "6px",
-                  fontFamily: "'IBM Plex Mono', monospace",
+                  fontFamily: "var(--font-mono)",
                   fontSize: "0.6rem",
                   letterSpacing: "0.12em",
                   color: "#00C853",
@@ -184,7 +184,7 @@ export function Events() {
             )}
             <div
               style={{
-                fontFamily: "'IBM Plex Mono', monospace",
+                fontFamily: "var(--font-mono)",
                 fontSize: "0.65rem",
                 letterSpacing: "0.15em",
                 color: "rgba(248,249,250,0.3)",
@@ -216,7 +216,7 @@ export function Events() {
               >
                 <p
                   style={{
-                    fontFamily: "'IBM Plex Sans', sans-serif",
+                    fontFamily: "var(--font-body)",
                     fontSize: "15px",
                     color: "rgba(248,249,250,0.4)",
                   }}
@@ -243,7 +243,7 @@ export function Events() {
                         gap: "24px",
                         alignItems: "flex-start",
                         cursor: "pointer",
-                        borderLeftColor: i === 0 ? "#EBD3A9" : undefined,
+                        borderLeftColor: i === 0 ? "var(--cyber-gold)" : undefined,
                       }}
                     >
                       {/* Date column */}
@@ -259,7 +259,7 @@ export function Events() {
                       >
                         <div
                           style={{
-                            fontFamily: "'IBM Plex Mono', monospace",
+                            fontFamily: "var(--font-mono)",
                             fontSize: "0.58rem",
                             letterSpacing: "0.12em",
                             color: "rgba(248,249,250,0.3)",
@@ -270,10 +270,10 @@ export function Events() {
                         </div>
                         <div
                           style={{
-                            fontFamily: "'Space Grotesk', sans-serif",
+                            fontFamily: "var(--font-headline)",
                             fontSize: "20px",
                             fontWeight: 700,
-                            color: "#00629B",
+                            color: "var(--electric-blue)",
                             lineHeight: 1,
                           }}
                         >
@@ -281,7 +281,7 @@ export function Events() {
                         </div>
                         <div
                           style={{
-                            fontFamily: "'IBM Plex Mono', monospace",
+                            fontFamily: "var(--font-mono)",
                             fontSize: "0.55rem",
                             color: "rgba(248,249,250,0.2)",
                           }}
@@ -304,10 +304,10 @@ export function Events() {
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <h3
                           style={{
-                            fontFamily: "'Space Grotesk', sans-serif",
+                            fontFamily: "var(--font-headline)",
                             fontSize: "16px",
                             fontWeight: 600,
-                            color: "#F8F9FA",
+                            color: "var(--stellar-white)",
                             marginBottom: "4px",
                             lineHeight: 1.3,
                           }}
@@ -317,7 +317,7 @@ export function Events() {
                         {event.description && (
                           <p
                             style={{
-                              fontFamily: "'IBM Plex Sans', sans-serif",
+                              fontFamily: "var(--font-body)",
                               fontSize: "13px",
                               color: "rgba(248,249,250,0.45)",
                               marginBottom: "12px",
@@ -348,7 +348,7 @@ export function Events() {
                               />
                               <span
                                 style={{
-                                  fontFamily: "'IBM Plex Mono', monospace",
+                                  fontFamily: "var(--font-mono)",
                                   fontSize: "0.62rem",
                                   color: "rgba(248,249,250,0.3)",
                                   letterSpacing: "0.06em",
@@ -366,7 +366,7 @@ export function Events() {
                               />
                               <span
                                 style={{
-                                  fontFamily: "'IBM Plex Mono', monospace",
+                                  fontFamily: "var(--font-mono)",
                                   fontSize: "0.62rem",
                                   color: "rgba(248,249,250,0.3)",
                                   letterSpacing: "0.06em",
@@ -389,20 +389,20 @@ export function Events() {
                               display: "inline-flex",
                               alignItems: "center",
                               gap: "4px",
-                              fontFamily: "'IBM Plex Mono', monospace",
+                              fontFamily: "var(--font-mono)",
                               fontSize: "0.58rem",
                               letterSpacing: "0.08em",
-                              color: "#00629B",
+                              color: "var(--electric-blue)",
                               textDecoration: "none",
                               textTransform: "uppercase",
                               marginLeft: "auto",
                               transition: "color 0.2s ease",
                             }}
                             onMouseEnter={(e) => {
-                              (e.currentTarget as HTMLAnchorElement).style.color = "#EBD3A9";
+                              (e.currentTarget as HTMLAnchorElement).style.color = "var(--cyber-gold)";
                             }}
                             onMouseLeave={(e) => {
-                              (e.currentTarget as HTMLAnchorElement).style.color = "#00629B";
+                              (e.currentTarget as HTMLAnchorElement).style.color = "var(--electric-blue)";
                             }}
                           >
                             <CalendarPlus size={11} />
@@ -423,7 +423,7 @@ export function Events() {
                 ))}
                 
                 {/* View All Events Button */}
-                {events.length > 6 && (
+                {events.length > 4 && (
                   <Link
                     to="/calendar"
                     className="btn-ghost"
@@ -454,10 +454,10 @@ export function Events() {
             >
               <div
                 style={{
-                  fontFamily: "'IBM Plex Mono', monospace",
+                  fontFamily: "var(--font-mono)",
                   fontSize: "0.6rem",
                   letterSpacing: "0.18em",
-                  color: "#00629B",
+                  color: "var(--electric-blue)",
                   textTransform: "uppercase",
                   marginBottom: "20px",
                 }}
@@ -467,10 +467,10 @@ export function Events() {
 
               <div
                 style={{
-                  fontFamily: "'Space Grotesk', sans-serif",
+                  fontFamily: "var(--font-headline)",
                   fontSize: "40px",
                   fontWeight: 700,
-                  color: "#00629B",
+                  color: "var(--electric-blue)",
                   lineHeight: 1,
                   marginBottom: "4px",
                 }}
@@ -479,7 +479,7 @@ export function Events() {
               </div>
               <div
                 style={{
-                  fontFamily: "'IBM Plex Mono', monospace",
+                  fontFamily: "var(--font-mono)",
                   fontSize: "0.65rem",
                   color: "rgba(235,211,169,0.4)",
                   letterSpacing: "0.15em",
@@ -494,10 +494,10 @@ export function Events() {
 
               <h3
                 style={{
-                  fontFamily: "'Space Grotesk', sans-serif",
+                  fontFamily: "var(--font-headline)",
                   fontSize: "18px",
                   fontWeight: 600,
-                  color: "#F8F9FA",
+                  color: "var(--stellar-white)",
                   marginBottom: "10px",
                   lineHeight: 1.3,
                 }}
@@ -507,7 +507,7 @@ export function Events() {
               {nextEvent.description && (
                 <p
                   style={{
-                    fontFamily: "'IBM Plex Sans', sans-serif",
+                    fontFamily: "var(--font-body)",
                     fontSize: "13px",
                     color: "rgba(248,249,250,0.45)",
                     lineHeight: 1.65,
@@ -523,10 +523,10 @@ export function Events() {
               >
                 {!nextEvent.isAllDay && (
                   <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <Clock size={13} style={{ color: "#00629B", flexShrink: 0 }} />
+                    <Clock size={13} style={{ color: "var(--electric-blue)", flexShrink: 0 }} />
                     <span
                       style={{
-                        fontFamily: "'IBM Plex Sans', sans-serif",
+                        fontFamily: "var(--font-body)",
                         fontSize: "12.5px",
                         color: "rgba(248,249,250,0.45)",
                       }}
@@ -537,10 +537,10 @@ export function Events() {
                 )}
                 {nextEvent.location && (
                   <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <MapPin size={13} style={{ color: "#00629B", flexShrink: 0 }} />
+                    <MapPin size={13} style={{ color: "var(--electric-blue)", flexShrink: 0 }} />
                     <span
                       style={{
-                        fontFamily: "'IBM Plex Sans', sans-serif",
+                        fontFamily: "var(--font-body)",
                         fontSize: "12.5px",
                         color: "rgba(248,249,250,0.45)",
                       }}
@@ -580,7 +580,7 @@ export function Events() {
                   justifyContent: "center",
                   gap: "6px",
                   marginTop: "12px",
-                  fontFamily: "'IBM Plex Mono', monospace",
+                  fontFamily: "var(--font-mono)",
                   fontSize: "0.62rem",
                   letterSpacing: "0.1em",
                   color: "rgba(248,249,250,0.3)",
@@ -589,7 +589,7 @@ export function Events() {
                   transition: "color 0.2s ease",
                 }}
                 onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.color = "#00629B";
+                  (e.currentTarget as HTMLAnchorElement).style.color = "var(--electric-blue)";
                 }}
                 onMouseLeave={(e) => {
                   (e.currentTarget as HTMLAnchorElement).style.color = "rgba(248,249,250,0.3)";

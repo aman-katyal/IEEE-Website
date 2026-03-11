@@ -19,9 +19,9 @@ const footerLinks = {
     { label: "Member Portal", href: "https://ieee.org", external: true },
   ],
   Connect: [
-    { label: "Contact Us", href: "#join" },
+    { label: "Contact Us", href: "/join" },
     { label: "Industry Partners", href: "#about" },
-    { label: "Join IEEE", href: "#join" },
+    { label: "Join IEEE", href: "/join" },
   ],
 };
 
@@ -54,7 +54,7 @@ export function Footer() {
   return (
     <footer
       style={{
-        background: "#000000",
+        background: "var(--boiler-black)",
         borderTop: "1px solid rgba(235,211,169,0.08)",
         paddingTop: "72px",
       }}
@@ -90,10 +90,10 @@ export function Footer() {
             >
               <span
                 style={{
-                  fontFamily: "'Space Grotesk', sans-serif",
+                  fontFamily: "var(--font-headline)",
                   fontWeight: 700,
                   fontSize: "20px",
-                  color: "#F8F9FA",
+                  color: "var(--stellar-white)",
                   letterSpacing: "0.18em",
                 }}
               >
@@ -111,7 +111,7 @@ export function Footer() {
                 style={{
                   width: "5px",
                   height: "5px",
-                  background: "#00629B",
+                  background: "var(--electric-blue)",
                   borderRadius: "50%",
                   marginRight: "8px",
                   boxShadow: "0 0 8px rgba(0,98,155,0.9)",
@@ -119,10 +119,10 @@ export function Footer() {
               />
               <span
                 style={{
-                  fontFamily: "'Space Grotesk', sans-serif",
+                  fontFamily: "var(--font-headline)",
                   fontWeight: 700,
                   fontSize: "20px",
-                  color: "#F8F9FA",
+                  color: "var(--stellar-white)",
                   letterSpacing: "0.22em",
                 }}
               >
@@ -131,7 +131,7 @@ export function Footer() {
             </Link>
             <p
               style={{
-                fontFamily: "'IBM Plex Sans', sans-serif",
+                fontFamily: "var(--font-body)",
                 fontSize: "13px",
                 color: "rgba(248,249,250,0.35)",
                 lineHeight: 1.7,
@@ -153,7 +153,7 @@ export function Footer() {
           >
             <div
               style={{
-                fontFamily: "'IBM Plex Mono', monospace",
+                fontFamily: "var(--font-mono)",
                 fontSize: "0.6rem",
                 letterSpacing: "0.15em",
                 color: "rgba(248,249,250,0.25)",
@@ -185,7 +185,7 @@ export function Footer() {
                   onMouseEnter={(e) => {
                     const el = e.currentTarget;
                     el.style.borderColor = "rgba(0,98,155,0.6)";
-                    el.style.color = "#00629B";
+                    el.style.color = "var(--electric-blue)";
                     el.style.background = "rgba(0,98,155,0.08)";
                   }}
                   onMouseLeave={(e) => {
@@ -214,10 +214,10 @@ export function Footer() {
           <div>
             <div
               style={{
-                fontFamily: "'IBM Plex Mono', monospace",
+                fontFamily: "var(--font-mono)",
                 fontSize: "0.6rem",
                 letterSpacing: "0.18em",
-                color: "#00629B",
+                color: "var(--electric-blue)",
                 textTransform: "uppercase",
                 marginBottom: "20px",
               }}
@@ -236,14 +236,14 @@ export function Footer() {
                   key={link.label}
                   to={link.to}
                   style={{
-                    fontFamily: "'IBM Plex Sans', sans-serif",
+                    fontFamily: "var(--font-body)",
                     fontSize: "13px",
                     color: "rgba(248,249,250,0.35)",
                     textDecoration: "none",
                     transition: "color 0.2s ease",
                   }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLAnchorElement).style.color = "#F8F9FA";
+                    (e.currentTarget as HTMLAnchorElement).style.color = "var(--stellar-white)";
                   }}
                   onMouseLeave={(e) => {
                     (e.currentTarget as HTMLAnchorElement).style.color = "rgba(248,249,250,0.35)";
@@ -260,10 +260,10 @@ export function Footer() {
             <div key={section}>
               <div
                 style={{
-                  fontFamily: "'IBM Plex Mono', monospace",
+                  fontFamily: "var(--font-mono)",
                   fontSize: "0.6rem",
                   letterSpacing: "0.18em",
-                  color: "#00629B",
+                  color: "var(--electric-blue)",
                   textTransform: "uppercase",
                   marginBottom: "20px",
                 }}
@@ -293,14 +293,14 @@ export function Footer() {
                       display: "flex",
                       alignItems: "center",
                       gap: "6px",
-                      fontFamily: "'IBM Plex Sans', sans-serif",
+                      fontFamily: "var(--font-body)",
                       fontSize: "13px",
                       color: "rgba(248,249,250,0.35)",
                       textDecoration: "none",
                       transition: "color 0.2s ease",
                     }}
                     onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLAnchorElement).style.color = "#F8F9FA";
+                      (e.currentTarget as HTMLAnchorElement).style.color = "var(--stellar-white)";
                     }}
                     onMouseLeave={(e) => {
                       (e.currentTarget as HTMLAnchorElement).style.color = "rgba(248,249,250,0.35)";
@@ -330,7 +330,7 @@ export function Footer() {
         >
           <span
             style={{
-              fontFamily: "'IBM Plex Mono', monospace",
+              fontFamily: "var(--font-mono)",
               fontSize: "0.6rem",
               letterSpacing: "0.1em",
               color: "rgba(248,249,250,0.2)",
@@ -347,7 +347,7 @@ export function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
-                  fontFamily: "'IBM Plex Mono', monospace",
+                  fontFamily: "var(--font-mono)",
                   fontSize: "0.58rem",
                   letterSpacing: "0.1em",
                   color: "rgba(248,249,250,0.18)",
@@ -369,7 +369,7 @@ export function Footer() {
           {/* Version tag */}
           <div
             style={{
-              fontFamily: "'IBM Plex Mono', monospace",
+              fontFamily: "var(--font-mono)",
               fontSize: "0.58rem",
               letterSpacing: "0.12em",
               color: "rgba(0,98,155,0.4)",

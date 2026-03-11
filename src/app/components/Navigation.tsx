@@ -4,10 +4,10 @@ import { Link, useLocation, useNavigate } from "react-router";
 
 const navLinks = [
   { label: "About", href: "#about" },
-  { label: "Committees", href: "#committees" },
+  { label: "Committees", href: "/committees" },
   { label: "Events", href: "/calendar" },
   { label: "Officers", href: "/officers" },
-  { label: "Join", href: "#join" },
+  { label: "Join", href: "/join" },
 ];
 
 export function Navigation() {

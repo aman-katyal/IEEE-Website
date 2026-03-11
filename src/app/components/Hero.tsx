@@ -1,13 +1,14 @@
 import { ChevronDown, Zap } from "lucide-react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { committees } from "../../data/committees";
 
 const LAB_IMAGE =
   "https://images.unsplash.com/photo-1619834043185-acbe47811e6a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlbmdpbmVlcmluZyUyMHJlc2VhcmNoJTIwbGFiJTIwZGFyayUyMGhpZ2glMjB0ZWNofGVufDF8fHx8MTc3MzE4NjE2N3ww&ixlib=rb-4.1.0&q=80&w=1080";
 
 export function Hero() {
+  const navigate = useNavigate();
   const handleScroll = () => {
-    const el = document.querySelector("#committees");
+    const el = document.querySelector("#about");
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -234,9 +235,7 @@ export function Hero() {
         >
           <button
             className="btn-primary"
-            onClick={() => {
-              document.querySelector("#committees")?.scrollIntoView({ behavior: "smooth" });
-            }}
+            onClick={() => navigate("/committees")}
           >
             Explore Committees
           </button>

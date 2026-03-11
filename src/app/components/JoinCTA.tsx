@@ -1,4 +1,5 @@
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, ChevronRight } from "lucide-react";
+import { useNavigate } from "react-router";
 import { committees } from "../../data/committees";
 
 const benefits = [
@@ -11,11 +12,13 @@ const benefits = [
 ];
 
 export function JoinCTA() {
+  const navigate = useNavigate();
+  
   return (
     <section
       id="join"
       style={{
-        background: "#001E3C",
+        background: "var(--deep-space-blue)",
         padding: "96px 0",
         position: "relative",
         overflow: "hidden",
@@ -92,10 +95,10 @@ export function JoinCTA() {
           </p>
           <h2
             style={{
-              fontFamily: "'Space Grotesk', sans-serif",
+              fontFamily: "var(--font-headline)",
               fontSize: "clamp(32px, 4.5vw, 54px)",
               fontWeight: 700,
-              color: "#F8F9FA",
+              color: "var(--stellar-white)",
               lineHeight: 1.1,
               letterSpacing: "-0.025em",
               marginBottom: "24px",
@@ -104,27 +107,41 @@ export function JoinCTA() {
             Ready to{" "}
             <span
               style={{
-                color: "#EBD3A9",
+                color: "var(--cyber-gold)",
               }}
             >
               Build
             </span>{" "}
             Something{" "}
-            <span style={{ color: "#00629B" }}>Real?</span>
+            <span style={{ color: "var(--electric-blue)" }}>Real?</span>
           </h2>
           <p
             style={{
-              fontFamily: "'IBM Plex Sans', sans-serif",
+              fontFamily: "var(--font-body)",
               fontSize: "16px",
               color: "rgba(248,249,250,0.55)",
               lineHeight: 1.75,
-              marginBottom: "36px",
+              marginBottom: "32px",
             }}
           >
             Join Purdue IEEE and gain access to world-class engineering teams, 
             cutting-edge facilities, and a community that's shaping the future 
             of technology.
           </p>
+
+          <button
+            className="btn-primary"
+            onClick={() => navigate("/join")}
+            style={{
+              marginBottom: "48px",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px"
+            }}
+          >
+            Join IEEE
+            <ChevronRight size={16} />
+          </button>
 
           {/* Benefits list */}
           <div
@@ -147,7 +164,7 @@ export function JoinCTA() {
                   style={{
                     width: "4px",
                     height: "4px",
-                    background: "#00629B",
+                    background: "var(--electric-blue)",
                     borderRadius: "50%",
                     marginTop: "6px",
                     flexShrink: 0,
@@ -156,7 +173,7 @@ export function JoinCTA() {
                 />
                 <span
                   style={{
-                    fontFamily: "'IBM Plex Sans', sans-serif",
+                    fontFamily: "var(--font-body)",
                     fontSize: "13.5px",
                     color: "rgba(248,249,250,0.55)",
                     lineHeight: 1.5,
@@ -209,10 +226,10 @@ export function JoinCTA() {
             <div style={{ marginBottom: "8px" }}>
               <h3
                 style={{
-                  fontFamily: "'Space Grotesk', sans-serif",
+                  fontFamily: "var(--font-headline)",
                   fontSize: "24px",
                   fontWeight: 600,
-                  color: "#F8F9FA",
+                  color: "var(--stellar-white)",
                   lineHeight: 1.2,
                   marginBottom: "12px"
                 }}
@@ -221,7 +238,7 @@ export function JoinCTA() {
               </h3>
               <p
                 style={{
-                  fontFamily: "'IBM Plex Sans', sans-serif",
+                  fontFamily: "var(--font-body)",
                   fontSize: "14px",
                   color: "rgba(248,249,250,0.5)",
                   lineHeight: 1.6
@@ -255,7 +272,7 @@ export function JoinCTA() {
 
             <p
               style={{
-                fontFamily: "'IBM Plex Mono', monospace",
+                fontFamily: "var(--font-mono)",
                 fontSize: "0.58rem",
                 color: "rgba(248,249,250,0.2)",
                 textAlign: "center",
