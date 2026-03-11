@@ -115,7 +115,7 @@ export function Events() {
           zIndex: 5,
           maxWidth: "1280px",
           margin: "0 auto",
-          padding: "0 32px",
+          padding: "0 clamp(16px, 5vw, 32px)",
         }}
       >
         {/* Header */}
@@ -179,7 +179,8 @@ export function Events() {
                     display: "inline-block",
                   }}
                 />
-                Live from Google Calendar
+                <span className="hidden sm:inline">Live from Google Calendar</span>
+                <span className="sm:hidden">Live</span>
               </div>
             )}
             <div
@@ -191,7 +192,7 @@ export function Events() {
                 textTransform: "uppercase",
               }}
             >
-              {loading ? "Loading..." : `${events.length} events`}
+              {loading ? "..." : `${events.length} events`}
             </div>
           </div>
         </div>
@@ -199,7 +200,7 @@ export function Events() {
         {/* Two-column layout */}
         <div className="ieee-grid-sidebar">
           {/* Events list */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             {loading ? (
               <>
                 <EventSkeleton />
@@ -235,12 +236,12 @@ export function Events() {
                     style={{ textDecoration: "none", color: "inherit" }}
                   >
                     <div
-                      className="event-card"
+                      className="event-card responsive-event-card"
                       style={{
                         borderRadius: "0 4px 4px 0",
-                        padding: "24px",
+                        padding: "clamp(16px, 4vw, 24px)",
                         display: "flex",
-                        gap: "24px",
+                        gap: "clamp(16px, 4vw, 24px)",
                         alignItems: "flex-start",
                         cursor: "pointer",
                         borderLeftColor: i === 0 ? "var(--cyber-gold)" : undefined,
@@ -290,8 +291,9 @@ export function Events() {
                         </div>
                       </div>
 
-                      {/* Vertical rule */}
+                      {/* Vertical rule (hidden on small mobile) */}
                       <div
+                        className="hidden xs:block"
                         style={{
                           width: "1px",
                           alignSelf: "stretch",
@@ -305,7 +307,7 @@ export function Events() {
                         <h3
                           style={{
                             fontFamily: "var(--font-headline)",
-                            fontSize: "16px",
+                            fontSize: "clamp(15px, 4vw, 16px)",
                             fontWeight: 600,
                             color: "var(--stellar-white)",
                             marginBottom: "4px",
@@ -335,7 +337,7 @@ export function Events() {
                         <div
                           style={{
                             display: "flex",
-                            gap: "16px",
+                            gap: "clamp(12px, 3vw, 16px)",
                             flexWrap: "wrap",
                             alignItems: "center",
                           }}
@@ -373,6 +375,7 @@ export function Events() {
                                   overflow: "hidden",
                                   whiteSpace: "nowrap",
                                   textOverflow: "ellipsis",
+                                  maxWidth: "150px"
                                 }}
                               >
                                 {event.location}
@@ -411,8 +414,8 @@ export function Events() {
                         </div>
                       </div>
 
-                      {/* Arrow */}
-                      <div style={{ flexShrink: 0, paddingTop: "4px" }}>
+                      {/* Arrow (hidden on very small screens) */}
+                      <div className="hidden xs:block" style={{ flexShrink: 0, paddingTop: "4px" }}>
                         <ChevronRight
                           size={16}
                           style={{ color: "rgba(248,249,250,0.2)" }}
@@ -449,8 +452,8 @@ export function Events() {
           {/* Sidebar — Next Event Highlight */}
           {nextEvent && !loading && (
             <div
-              className="glass-card"
-              style={{ padding: "32px", position: "sticky", top: "96px" }}
+              className="glass-card next-event-sidebar"
+              style={{ padding: "clamp(24px, 5vw, 32px)", position: "sticky", top: "96px" }}
             >
               <div
                 style={{
@@ -468,7 +471,7 @@ export function Events() {
               <div
                 style={{
                   fontFamily: "var(--font-headline)",
-                  fontSize: "40px",
+                  fontSize: "clamp(32px, 6vw, 40px)",
                   fontWeight: 700,
                   color: "var(--electric-blue)",
                   lineHeight: 1,
@@ -602,6 +605,25 @@ export function Events() {
           )}
         </div>
       </div>
+      
+      <style>{`
+        @media (max-width: 480px) {
+          .responsive-event-card {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            border-left: none !important;
+            border-top: 2px solid var(--electric-blue) !important;
+            border-radius: 0 0 4px 4px !important;
+          }
+          .responsive-event-card > div:first-child {
+            flex-direction: row !important;
+            width: 100% !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            margin-bottom: 8px !important;
+          }
+        }
+      `}</style>
     </section>
   );
 }
