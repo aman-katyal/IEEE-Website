@@ -137,7 +137,7 @@ export function JoinPage() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "48px" }} className="ieee-grid-2">
               <div>
                 <p style={{ fontFamily: "var(--font-body)", fontSize: "16px", color: "rgba(248,249,250,0.6)", lineHeight: 1.7, marginBottom: "24px" }}>
-                  Purdue IEEE Student Branch requires payment of dues for membership. Payment of annual dues gives access to IEEE resources, such as:
+                  Purdue IEEE Student Branch requires payment of dues for membership. To pay, follow the link below and <strong>search for "IEEE"</strong> in the catalog search box. Payment gives access to:
                 </p>
                 <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                   {duesBenefits.map((benefit) => (
@@ -171,7 +171,7 @@ export function JoinPage() {
                 </div>
 
                 <a 
-                  href="https://www.purdueieee.org/toocool" // Placeholder - update if specific link known
+                  href="https://www.toocoolpurdue.com/TooCOOLPurdueWL/vECItemCatalogOrganizationItems/OrganizationItemsGallery.aspx"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn-gold" 
@@ -180,6 +180,10 @@ export function JoinPage() {
                   Pay via TooCool
                   <ExternalLink size={14} />
                 </a>
+                
+                <p style={{ marginTop: "12px", fontSize: "12px", color: "var(--electric-blue)", textAlign: "center", fontFamily: "var(--font-mono)" }}>
+                  Search for "IEEE" in the search box on TooCool
+                </p>
                 
                 <p style={{ marginTop: "24px", fontSize: "13px", color: "rgba(248,249,250,0.4)", fontStyle: "italic", lineHeight: 1.5 }}>
                   * If you have an active International IEEE Membership, you are exempt from local dues! Contact an officer to complete registration.

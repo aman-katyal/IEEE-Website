@@ -1,9 +1,16 @@
-import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router";
 
 const navLinks = [
-  { label: "About", href: "#about" },
+  { 
+    label: "About", 
+    href: "/about",
+    dropdown: [
+      { label: "About Us", href: "/about" },
+      { label: "Constitution", href: "/constitution" },
+    ]
+  },
   { label: "Committees", href: "/committees" },
   { label: "Events", href: "/calendar" },
   { label: "Officers", href: "/officers" },
@@ -13,7 +20,9 @@ const navLinks = [
 export function Navigation() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [activeLink, setActiveLink] = useState("");
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const navigate = useNavigate();
   const isHome = location.pathname === "/";
@@ -22,6 +31,17 @@ export function Navigation() {
     const onScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   // Handle hash scrolling after navigation
@@ -37,6 +57,7 @@ export function Navigation() {
   const handleNav = (href: string) => {
     setActiveLink(href);
     setMenuOpen(false);
+    setDropdownOpen(false);
 
     if (href.startsWith("/")) {
       navigate(href);
@@ -44,11 +65,9 @@ export function Navigation() {
     }
 
     if (isHome) {
-      // On home page, just scroll
       const el = document.querySelector(href);
       if (el) el.scrollIntoView({ behavior: "smooth" });
     } else {
-      // On other pages, navigate to home + hash
       navigate("/" + href);
     }
   };
@@ -94,13 +113,12 @@ export function Navigation() {
             flexShrink: 0,
           }}
         >
-          {/* PURDUE text */}
           <span
             style={{
-              fontFamily: "'Space Grotesk', sans-serif",
+              fontFamily: "var(--font-headline)",
               fontWeight: 700,
               fontSize: "18px",
-              color: "#F8F9FA",
+              color: "var(--stellar-white)",
               letterSpacing: "0.18em",
               textTransform: "uppercase",
             }}
@@ -108,7 +126,6 @@ export function Navigation() {
             PURDUE
           </span>
 
-          {/* Vertical Divider */}
           <div
             style={{
               width: "1px",
@@ -119,23 +136,22 @@ export function Navigation() {
             }}
           />
 
-          {/* IEEE badge */}
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <div
               style={{
                 width: "6px",
                 height: "6px",
-                background: "#00629B",
+                background: "var(--electric-blue)",
                 borderRadius: "50%",
                 boxShadow: "0 0 8px rgba(0,98,155,0.9)",
               }}
             />
             <span
               style={{
-                fontFamily: "'Space Grotesk', sans-serif",
+                fontFamily: "var(--font-headline)",
                 fontWeight: 700,
                 fontSize: "18px",
-                color: "#F8F9FA",
+                color: "var(--stellar-white)",
                 letterSpacing: "0.22em",
                 textTransform: "uppercase",
               }}
@@ -155,19 +171,87 @@ export function Navigation() {
           className="hidden md:flex"
         >
           {navLinks.slice(0, -1).map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="nav-link"
-              style={{
-                color: activeLink === link.href
-                  ? "#F8F9FA"
-                  : "rgba(248, 249, 250, 0.6)",
-              }}
-              onClick={(e) => { e.preventDefault(); handleNav(link.href); }}
-            >
-              {link.label}
-            </a>
+            link.dropdown ? (
+              <div 
+                key={link.label} 
+                ref={dropdownRef}
+                style={{ position: "relative" }}
+                onMouseEnter={() => setDropdownOpen(true)}
+                onMouseLeave={() => setDropdownOpen(false)}
+              >
+                <button
+                  className="nav-link"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "4px",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    color: location.pathname.startsWith(link.href) || location.pathname === "/constitution"
+                      ? "var(--stellar-white)"
+                      : "rgba(248, 249, 250, 0.6)",
+                  }}
+                >
+                  {link.label}
+                  <ChevronDown size={14} style={{ transform: dropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                </button>
+                
+                {dropdownOpen && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "100%",
+                      left: "0",
+                      width: "180px",
+                      background: "rgba(0, 0, 0, 0.95)",
+                      border: "1px solid rgba(235, 211, 169, 0.12)",
+                      borderRadius: "4px",
+                      padding: "8px 0",
+                      marginTop: "10px",
+                      boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+                      backdropFilter: "blur(10px)"
+                    }}
+                  >
+                    {link.dropdown.map((subItem) => (
+                      <a
+                        key={subItem.href}
+                        href={subItem.href}
+                        style={{
+                          display: "block",
+                          padding: "10px 20px",
+                          color: location.pathname === subItem.href ? "var(--electric-blue)" : "rgba(248, 249, 250, 0.7)",
+                          textDecoration: "none",
+                          fontSize: "0.85rem",
+                          fontFamily: "var(--font-body)",
+                          transition: "all 0.2s",
+                          background: location.pathname === subItem.href ? "rgba(0, 98, 155, 0.1)" : "transparent"
+                        }}
+                        onClick={(e) => { e.preventDefault(); handleNav(subItem.href); }}
+                        onMouseEnter={(e) => (e.currentTarget.style.color = "var(--stellar-white)")}
+                        onMouseLeave={(e) => (e.currentTarget.style.color = location.pathname === subItem.href ? "var(--electric-blue)" : "rgba(248, 249, 250, 0.7)")}
+                      >
+                        {subItem.label}
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <a
+                key={link.href}
+                href={link.href}
+                className="nav-link"
+                style={{
+                  color: location.pathname === link.href
+                    ? "var(--stellar-white)"
+                    : "rgba(248, 249, 250, 0.6)",
+                }}
+                onClick={(e) => { e.preventDefault(); handleNav(link.href); }}
+              >
+                {link.label}
+              </a>
+            )
           ))}
 
           {/* Vertical divider */}
@@ -182,7 +266,7 @@ export function Navigation() {
           <button
             className="btn-primary"
             style={{ padding: "9px 22px", fontSize: "0.8rem" }}
-            onClick={() => handleNav("#join")}
+            onClick={() => handleNav("/join")}
           >
             Join IEEE
           </button>
@@ -195,7 +279,7 @@ export function Navigation() {
           style={{
             background: "none",
             border: "none",
-            color: "#F8F9FA",
+            color: "var(--stellar-white)",
             cursor: "pointer",
             padding: "8px",
           }}
@@ -209,29 +293,68 @@ export function Navigation() {
         <div
           style={{
             background: "rgba(0,0,0,0.97)",
-            borderTop: "1px solid rgba(235,211,169,0.1)",
+            borderTop: "1px solid rgba(235, 211, 169, 0.1)",
             padding: "16px 32px 24px",
+            maxHeight: "80vh",
+            overflowY: "auto"
           }}
         >
           {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              style={{
-                display: "block",
-                fontFamily: "'IBM Plex Sans', sans-serif",
-                fontSize: "0.9rem",
-                color: "rgba(248,249,250,0.7)",
-                letterSpacing: "0.1em",
-                textDecoration: "none",
-                padding: "12px 0",
-                borderBottom: "1px solid rgba(235,211,169,0.05)",
-                textTransform: "uppercase",
-              }}
-              onClick={(e) => { e.preventDefault(); handleNav(link.href); }}
-            >
-              {link.label}
-            </a>
+            <div key={link.label}>
+              {link.dropdown ? (
+                <>
+                  <div style={{ 
+                    fontFamily: "var(--font-body)", 
+                    fontSize: "0.9rem", 
+                    color: "var(--cyber-gold)", 
+                    padding: "12px 0 4px",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.1em"
+                  }}>
+                    {link.label}
+                  </div>
+                  {link.dropdown.map((subItem) => (
+                    <a
+                      key={subItem.href}
+                      href={subItem.href}
+                      style={{
+                        display: "block",
+                        fontFamily: "var(--font-body)",
+                        fontSize: "0.85rem",
+                        color: "rgba(248,249,250,0.7)",
+                        letterSpacing: "0.05em",
+                        textDecoration: "none",
+                        padding: "10px 16px",
+                        borderLeft: "1px solid rgba(0, 98, 155, 0.3)",
+                        margin: "4px 0",
+                      }}
+                      onClick={(e) => { e.preventDefault(); handleNav(subItem.href); }}
+                    >
+                      {subItem.label}
+                    </a>
+                  ))}
+                </>
+              ) : (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  style={{
+                    display: "block",
+                    fontFamily: "var(--font-body)",
+                    fontSize: "0.9rem",
+                    color: "rgba(248,249,250,0.7)",
+                    letterSpacing: "0.1em",
+                    textDecoration: "none",
+                    padding: "12px 0",
+                    borderBottom: "1px solid rgba(235,211,169,0.05)",
+                    textTransform: "uppercase",
+                  }}
+                  onClick={(e) => { e.preventDefault(); handleNav(link.href); }}
+                >
+                  {link.label}
+                </a>
+              )}
+            </div>
           ))}
         </div>
       )}

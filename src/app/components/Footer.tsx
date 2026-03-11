@@ -9,9 +9,9 @@ const footerCommitteeLinks = committees.map((c) => ({
 
 const footerLinks = {
   Organization: [
-    { label: "About IEEE", href: "#about" },
+    { label: "About IEEE", href: "/about" },
     { label: "Leadership Team", href: "/officers" },
-    { label: "Constitution", href: "https://ieee.org", external: true },
+    { label: "Constitution", href: "/constitution" },
   ],
   Resources: [
     { label: "IEEE.org", href: "https://ieee.org", external: true },

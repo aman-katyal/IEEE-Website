@@ -241,9 +241,7 @@ export function Hero() {
           </button>
           <button
             className="btn-ghost"
-            onClick={() => {
-              document.querySelector("#about")?.scrollIntoView({ behavior: "smooth" });
-            }}
+            onClick={() => navigate("/about")}
           >
             Learn More
           </button>
