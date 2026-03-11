@@ -1,5 +1,6 @@
 import { ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router";
+import { motion } from "motion/react";
 
 export function About() {
   const navigate = useNavigate();
@@ -8,7 +9,7 @@ export function About() {
     <section
       id="about"
       style={{
-        background: "var(--deep-space-blue)",
+        background: "var(--boiler-black)",
         padding: "96px 0",
         position: "relative",
         overflow: "hidden",
@@ -16,7 +17,7 @@ export function About() {
     >
       <div
         className="ieee-grid-bg"
-        style={{ position: "absolute", inset: 0, opacity: 0.4 }}
+        style={{ position: "absolute", inset: 0, opacity: 0.25 }}
       />
 
       <div
@@ -28,7 +29,14 @@ export function About() {
           padding: "0 32px",
         }}
       >
-        <div className="ieee-grid-2" style={{ alignItems: "center" }}>
+        <motion.div 
+          className="ieee-grid-2" 
+          style={{ alignItems: "center" }}
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        >
           <div>
             <p className="section-eyebrow" style={{ marginBottom: "16px" }}>
               // Overview
@@ -72,7 +80,7 @@ export function About() {
              <div style={{ fontSize: "64px", fontWeight: 700, color: "var(--electric-blue)", fontFamily: "var(--font-headline)", marginBottom: "8px" }}>1903</div>
              <p style={{ color: "var(--cyber-gold)", textTransform: "uppercase", letterSpacing: "0.2em", fontSize: "12px", fontFamily: "var(--font-mono)" }}>Established & Innovating</p>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

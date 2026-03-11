@@ -121,7 +121,7 @@ export function Stats() {
     <section
       id="research"
       style={{
-        background: "#001E3C",
+        background: "var(--boiler-black)",
         position: "relative",
         overflow: "hidden",
       }}

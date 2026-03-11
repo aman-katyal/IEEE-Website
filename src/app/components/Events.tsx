@@ -452,7 +452,7 @@ export function Events() {
           {/* Sidebar — Next Event Highlight */}
           {nextEvent && !loading && (
             <div
-              className="glass-card next-event-sidebar"
+              className="glass-card next-event-sidebar animate-float-no-x"
               style={{ padding: "clamp(24px, 5vw, 32px)", position: "sticky", top: "96px" }}
             >
               <div

@@ -1,6 +1,7 @@
 import { ChevronDown, Zap } from "lucide-react";
 import { Link, useNavigate } from "react-router";
 import { committees } from "../../data/committees";
+import { MagneticButton } from "./MagneticButton";
 
 const LAB_IMAGE =
   "https://images.unsplash.com/photo-1619834043185-acbe47811e6a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlbmdpbmVlcmluZyUyMHJlc2VhcmNoJTIwbGFiJTIwZGFyayUyMGhpZ2glMjB0ZWNofGVufDF8fHx8MTc3MzE4NjE2N3ww&ixlib=rb-4.1.0&q=80&w=1080";
@@ -58,7 +59,7 @@ export function Hero() {
 
       {/* Electric Glow Orbs */}
       <div
-        className="electric-glow-orb"
+        className="electric-glow-orb animate-glow-pulse"
         style={{
           width: "min(700px, 90vw)",
           height: "min(700px, 90vw)",
@@ -67,6 +68,30 @@ export function Hero() {
           transform: "translateX(-50%)",
           background:
             "radial-gradient(circle, rgba(0,98,155,0.22) 0%, transparent 65%)",
+        }}
+      />
+      <div
+        className="electric-glow-orb animate-glow-pulse-no-x"
+        style={{
+          width: "400px",
+          height: "400px",
+          bottom: "80px",
+          right: "-60px",
+          background:
+            "radial-gradient(circle, rgba(0,98,155,0.14) 0%, transparent 70%)",
+          animationDelay: "2s"
+        }}
+      />
+      <div
+        className="electric-glow-orb animate-glow-pulse-no-x"
+        style={{
+          width: "300px",
+          height: "300px",
+          top: "30%",
+          left: "-40px",
+          background:
+            "radial-gradient(circle, rgba(235,211,169,0.05) 0%, transparent 70%)",
+          animationDelay: "4s"
         }}
       />
 
@@ -85,6 +110,7 @@ export function Hero() {
       >
         {/* Eyebrow Tag */}
         <div
+          className="animate-fade-in-up opacity-0-init stagger-1"
           style={{
             display: "flex",
             flexWrap: "wrap",
@@ -155,14 +181,15 @@ export function Hero() {
 
         {/* Main Headline (Mission Statement) */}
         <h1
+          className="animate-fade-in-up opacity-0-init stagger-2"
           style={{
             fontFamily: "var(--font-headline)",
-            fontSize: "clamp(34px, 6vw, 72px)",
+            fontSize: "clamp(34px, 5.5vw, 72px)",
             fontWeight: 700,
             lineHeight: 1.1,
             color: "var(--stellar-white)",
             maxWidth: "1000px",
-            marginBottom: "48px",
+            marginBottom: "32px",
             letterSpacing: "-0.02em",
           }}
         >
@@ -186,6 +213,7 @@ export function Hero() {
         </h1>
 
         <p
+          className="animate-fade-in-up opacity-0-init stagger-3"
           style={{
             fontFamily: "var(--font-mono)",
             fontSize: "clamp(0.7rem, 1.5vw, 0.85rem)",
@@ -193,7 +221,6 @@ export function Hero() {
             letterSpacing: "0.2em",
             textTransform: "uppercase",
             marginBottom: "48px",
-            marginTop: "-24px"
           }}
         >
           — IEEE Mission Statement
@@ -201,6 +228,7 @@ export function Hero() {
 
         {/* CTA Buttons */}
         <div
+          className="animate-fade-in-up opacity-0-init stagger-4"
           style={{
             display: "flex",
             flexWrap: "wrap",
@@ -209,20 +237,20 @@ export function Hero() {
             marginBottom: "72px",
           }}
         >
-          <button
+          <MagneticButton
             className="btn-primary"
             onClick={() => navigate("/committees")}
-            style={{ width: "auto", minWidth: "180px" }}
+            style={{ width: "auto", minWidth: "180px", padding: "16px 32px" }}
           >
             Explore Committees
-          </button>
-          <button
+          </MagneticButton>
+          <MagneticButton
             className="btn-ghost"
             onClick={() => navigate("/about")}
-            style={{ width: "auto", minWidth: "180px" }}
+            style={{ width: "auto", minWidth: "180px", padding: "16px 32px" }}
           >
             Learn More
-          </button>
+          </MagneticButton>
 
           {/* Inline Stats (visible on medium+ screens) */}
           <div
@@ -267,6 +295,7 @@ export function Hero() {
 
         {/* Bottom Meta Bar (Technical Committee Tags) */}
         <div
+          className="animate-fade-in-up opacity-0-init stagger-5"
           style={{
             display: "flex",
             alignItems: "center",
@@ -284,6 +313,14 @@ export function Hero() {
                 cursor: "pointer", 
                 transition: "all 0.2s ease",
                 padding: "4px 10px"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = "rgba(0,98,155,0.6)";
+                e.currentTarget.style.color = "#00629B";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = "rgba(235,211,169,0.2)";
+                e.currentTarget.style.color = "rgba(235,211,169,0.6)";
               }}
             >
               {c.shortName}
@@ -309,7 +346,7 @@ export function Hero() {
           gap: "6px",
           zIndex: 10,
         }}
-        className="hidden md:flex"
+        className="hidden md:flex animate-fade-in-up opacity-0-init stagger-5"
       >
         <span
           style={{

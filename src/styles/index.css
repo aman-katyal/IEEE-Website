@@ -2,3 +2,43 @@
 @import './tailwind.css';
 @import './theme.css';
 @import './ieee.css';
+
+/* ─── Global UX Polish ──────────────────────────────────── */
+
+/* Custom Selection */
+::selection {
+  background-color: rgba(235, 211, 169, 0.4);
+  color: var(--stellar-white);
+}
+::-moz-selection {
+  background-color: rgba(235, 211, 169, 0.4);
+  color: var(--stellar-white);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--boiler-black);
+  border-left: 1px solid rgba(235, 211, 169, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(235, 211, 169, 0.2);
+  border-radius: 4px;
+  border: 1px solid var(--boiler-black);
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(235, 211, 169, 0.4);
+}
+
+/* Hide default cursor for elements with custom cursor */
+.custom-cursor-active, 
+.custom-cursor-active * {
+  cursor: none !important;
+}

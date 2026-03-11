@@ -97,16 +97,17 @@ export function CornerstoneCommittees() {
                   gap: "24px",
                 }}
               >
-                {section.leads.map((lead) => (
+                {section.leads.map((lead, index) => (
                   <div
                     key={lead.role}
-                    className="glass-card"
+                    className="glass-card animate-fade-in-up opacity-0-init"
                     style={{
                       padding: "32px",
                       display: "flex",
                       flexDirection: "column",
                       height: "100%",
                       background: "rgba(0, 30, 60, 0.2)",
+                      animationDelay: `${index * 150}ms`
                     }}
                   >
                     <div style={{ marginBottom: "20px" }}>

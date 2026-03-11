@@ -330,8 +330,14 @@ export function Committees() {
 
         {/* Cards Grid */}
         <div className="ieee-grid-3">
-          {committees.map((c) => (
-            <CommitteeCard key={c.id} c={c} />
+          {committees.map((c, index) => (
+            <div 
+              key={c.id} 
+              className={`animate-fade-in-up opacity-0-init`}
+              style={{ animationDelay: `${(index % 3) * 150}ms` }}
+            >
+              <CommitteeCard c={c} />
+            </div>
           ))}
         </div>
       </div>

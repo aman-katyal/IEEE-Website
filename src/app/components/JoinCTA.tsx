@@ -1,6 +1,7 @@
 import { ExternalLink, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router";
 import { committees } from "../../data/committees";
+import { MagneticButton } from "./MagneticButton";
 
 const benefits = [
   `Access to ${committees.length} technical committees`,
@@ -18,7 +19,7 @@ export function JoinCTA() {
     <section
       id="join"
       style={{
-        background: "var(--deep-space-blue)",
+        background: "var(--boiler-black)",
         padding: "96px 0",
         position: "relative",
         overflow: "hidden",
@@ -129,19 +130,20 @@ export function JoinCTA() {
             of technology.
           </p>
 
-          <button
+          <MagneticButton
             className="btn-primary"
             onClick={() => navigate("/join")}
             style={{
               marginBottom: "48px",
               display: "flex",
               alignItems: "center",
-              gap: "8px"
+              gap: "8px",
+              width: "fit-content"
             }}
           >
             Join IEEE
             <ChevronRight size={16} />
-          </button>
+          </MagneticButton>
 
           {/* Benefits list */}
           <div
