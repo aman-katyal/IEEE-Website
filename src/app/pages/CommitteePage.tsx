@@ -272,30 +272,54 @@ export function CommitteePage() {
                 </div>
               </div>
 
-              {/* ── Gallery (optional) ─────────────────────────── */}
+              {/* ── Gallery (auto-formatted masonry grid) ─────────────────────────── */}
               {committee.gallery && committee.gallery.length > 0 && (
-                <div style={{ marginBottom: "48px" }}>
+                <div style={{ marginBottom: "64px" }}>
                   <p className="section-eyebrow" style={{ marginBottom: "20px" }}>
-                    // Gallery
+                    // Committee Gallery
                   </p>
                   <div
                     style={{
-                      display: "grid",
-                      gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
-                      gap: "12px",
+                      columns: "2 300px",
+                      columnGap: "16px",
                     }}
                   >
                     {committee.gallery.map((img, i) => (
-                      <div key={i} style={{ position: "relative", borderRadius: "4px", overflow: "hidden" }}>
+                      <div 
+                        key={i} 
+                        style={{ 
+                          breakInside: "avoid",
+                          marginBottom: "16px",
+                          position: "relative", 
+                          borderRadius: "8px", 
+                          overflow: "hidden",
+                          border: "1px solid rgba(235, 211, 169, 0.05)",
+                          cursor: "pointer",
+                          transition: "all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)"
+                        }}
+                        className="gallery-item-container"
+                        onMouseEnter={(e) => {
+                          const imgEl = e.currentTarget.querySelector('img');
+                          if (imgEl) imgEl.style.transform = "scale(1.05)";
+                          e.currentTarget.style.borderColor = "rgba(0, 98, 155, 0.3)";
+                          e.currentTarget.style.boxShadow = "0 8px 24px rgba(0, 0, 0, 0.3)";
+                        }}
+                        onMouseLeave={(e) => {
+                          const imgEl = e.currentTarget.querySelector('img');
+                          if (imgEl) imgEl.style.transform = "scale(1)";
+                          e.currentTarget.style.borderColor = "rgba(235, 211, 169, 0.05)";
+                          e.currentTarget.style.boxShadow = "none";
+                        }}
+                      >
                         <img
                           src={img.src}
                           alt={img.caption}
                           style={{
                             width: "100%",
-                            height: "180px",
-                            objectFit: "cover",
+                            height: "auto",
                             display: "block",
-                            filter: "brightness(0.8)",
+                            transition: "transform 0.6s cubic-bezier(0.2, 0, 0.2, 1)",
+                            filter: "brightness(0.85)",
                           }}
                         />
                         {img.caption && (
@@ -305,13 +329,17 @@ export function CommitteePage() {
                               bottom: 0,
                               left: 0,
                               right: 0,
-                              background: "linear-gradient(transparent, rgba(0,0,0,0.8))",
-                              padding: "16px 12px 8px",
+                              background: "linear-gradient(transparent, rgba(0,0,0,0.9))",
+                              padding: "24px 16px 12px",
                               fontFamily: "'IBM Plex Mono', monospace",
-                              fontSize: "0.6rem",
-                              color: "rgba(248,249,250,0.6)",
+                              fontSize: "0.65rem",
+                              color: "rgba(248,249,250,0.8)",
                               letterSpacing: "0.06em",
+                              opacity: 0,
+                              transform: "translateY(10px)",
+                              transition: "all 0.3s ease",
                             }}
+                            className="caption-overlay"
                           >
                             {img.caption}
                           </div>
@@ -319,6 +347,15 @@ export function CommitteePage() {
                       </div>
                     ))}
                   </div>
+                  <style>{`
+                    .gallery-item-container:hover .caption-overlay {
+                      opacity: 1 !important;
+                      transform: translateY(0) !important;
+                    }
+                    .gallery-item-container:hover img {
+                      filter: brightness(1) !important;
+                    }
+                  `}</style>
                 </div>
               )}
 
@@ -629,19 +666,43 @@ export function CommitteePage() {
                 )}
 
                 {/* CTA */}
-                <Link
-                  to="/#join"
-                  className="btn-primary"
-                  style={{
-                    width: "100%",
-                    textAlign: "center",
-                    padding: "12px",
-                    display: "block",
-                    textDecoration: "none",
-                  }}
-                >
-                  Join This Committee
-                </Link>
+                {committee.socialLinks?.some(sl => sl.platform.toLowerCase() === 'discord') ? (
+                  <a
+                    href={committee.socialLinks.find(sl => sl.platform.toLowerCase() === 'discord')?.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-primary"
+                    style={{
+                      width: "100%",
+                      textAlign: "center",
+                      padding: "16px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "10px",
+                      textDecoration: "none",
+                      background: "#5865F2",
+                      borderColor: "#5865F2"
+                    }}
+                  >
+                    <MessageCircle size={18} />
+                    Join Discord
+                  </a>
+                ) : (
+                  <Link
+                    to="/#join"
+                    className="btn-primary"
+                    style={{
+                      width: "100%",
+                      textAlign: "center",
+                      padding: "12px",
+                      display: "block",
+                      textDecoration: "none",
+                    }}
+                  >
+                    Join This Committee
+                  </Link>
+                )}
               </div>
             </div>
           </div>

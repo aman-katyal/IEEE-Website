@@ -5,21 +5,58 @@ export const cornerstoneCommittees: CornerstoneCommittee[] = [
     id: "operations",
     name: "Operations",
     description:
-      "Manages logistics, infrastructure (servers/websites), and accounting for the organization.",
+      "The operations committee is responsible for handling background tasks which are necessary for the club to continue serving its members and the community.",
     leads: [
-      { role: "Infrastructure", name: "Jonathon Reilly", email: "infrastructure@purdueieee.org" },
-      { role: "Treasurer", name: "Tarakanath Peddi", email: "treas@purdueieee.org" },
+      {
+        role: "Industrial Relations",
+        name: "Saishri Bagde",
+        email: "industry@purdueieee.org",
+        description:
+          "The industrial relations committee seeks out sponsors and connects members with companies.",
+      },
+      {
+        role: "Infrastructure",
+        name: "Jonathon Reilly",
+        email: "infrastructure@purdueieee.org",
+        description:
+          "The infrastructure committee is responsible for maintaining the club’s websites, servers, and cloud-based resources.",
+      },
+      {
+        role: "Accounting",
+        name: "Tarakanath Peddi",
+        email: "treas@purdueieee.org",
+        description:
+          "The accounting committee oversees the finances of IEEE and the technical committees.",
+      },
     ],
   },
   {
     id: "member-involvement",
     name: "Member Involvement",
     description:
-      "Handles social media (Public Relations), organizes club-wide events, and runs technical workshops (Learning Committee).",
+      "The goal of the three member involvement committees is to attract new members and keep them motivated and active in IEEE.",
     leads: [
-      { role: "Events", name: "Su Park", email: "events@purdueieee.org" },
-      { role: "Learning", name: "Soumil Verma", email: "learning@purdueieee.org" },
-      { role: "Public Relations", name: "Shidan Wan", email: "social@purdueieee.org" },
+      {
+        role: "Events Committee",
+        name: "Su Park",
+        email: "events@purdueieee.org",
+        description:
+          "The events committee’s job is to organize, plan, and execute club-wide and campus wide events for IEEE, including general meetings and outreach events.",
+      },
+      {
+        role: "Learning Committee",
+        name: "Soumil Verma",
+        email: "learning@purdueieee.org",
+        description:
+          "The learning committee is responsible for setting up workshops for students to help them with skills they might not otherwise have opportunities to develop.",
+      },
+      {
+        role: "Public Relations",
+        name: "Shidan Wan",
+        email: "social@purdueieee.org",
+        description:
+          "The public relations committee is tasked with maintaining the club’s social media presence and engaging in campus outreach.",
+      },
     ],
   },
 ];

@@ -61,5 +61,5 @@ export interface CornerstoneCommittee {
   id: string;
   name: string;
   description: string;
-  leads: { role: string; name: string; email: string }[];
+  leads: { role: string; name: string; email: string; description?: string }[];
 }

@@ -1,32 +1,3 @@
-import { Cpu, Users, Award, Globe } from "lucide-react";
-
-const pillars = [
-  {
-    icon: Cpu,
-    title: "Technical Excellence",
-    desc: "Hands-on engineering projects spanning robotics, embedded systems, and advanced research.",
-    color: "#00629B",
-  },
-  {
-    icon: Users,
-    title: "Community",
-    desc: "Connect with 750+ driven engineers, industry leaders, and like-minded innovators.",
-    color: "#EBD3A9",
-  },
-  {
-    icon: Award,
-    title: "Competition",
-    desc: "Represent Purdue at national and international engineering competitions year-round.",
-    color: "#00629B",
-  },
-  {
-    icon: Globe,
-    title: "Industry Access",
-    desc: "Direct pathways to premier industry partners and exclusive internship pipelines.",
-    color: "#EBD3A9",
-  },
-];
-
 export function About() {
   return (
     <section
@@ -77,16 +48,17 @@ export function About() {
           padding: "0 32px",
         }}
       >
-        {/* Header */}
+        {/* Section 1: At Purdue, we strive to be the best */}
         <div
           className="ieee-grid-2"
           style={{
-            marginBottom: "72px",
+            marginBottom: "96px",
+            alignItems: "center"
           }}
         >
           <div>
             <p className="section-eyebrow" style={{ marginBottom: "16px" }}>
-              // About Purdue IEEE
+              // Excellence
             </p>
             <h2
               style={{
@@ -96,91 +68,155 @@ export function About() {
                 color: "#F8F9FA",
                 lineHeight: 1.15,
                 letterSpacing: "-0.02em",
-                marginBottom: "0",
+                marginBottom: "24px",
               }}
             >
-              The Hub of{" "}
-              <span style={{ color: "#00629B" }}>Engineering</span>{" "}
-              Innovation at Purdue
+              At Purdue, we strive to be the <span style={{ color: "#00629B" }}>best</span>
             </h2>
-          </div>
-
-          <div style={{ paddingTop: "8px" }}>
             <p
               style={{
                 fontFamily: "'IBM Plex Sans', sans-serif",
                 fontSize: "16px",
                 color: "rgba(248,249,250,0.6)",
                 lineHeight: 1.75,
-                marginBottom: "24px",
               }}
             >
-              Purdue IEEE is the largest technical student organization on campus, 
-              uniting engineers across disciplines to tackle real-world challenges. 
-              From deep-sea robotics to AI systems, our committees push the boundaries 
-              of what's possible.
+              Whether creating drones, designing radio transmitters, or pioneering next-gen biotech, Purdue engineers excel. 
+              Purdue IEEE (Eye-Triple-E) is no different. Founded in 1903, we are the largest technical organization with students 
+              of every academic background. Our members work on real-world problems and advance their engineering skills.
             </p>
-            <button
-              className="btn-gold"
-              onClick={() => document.querySelector("#committees")?.scrollIntoView({ behavior: "smooth" })}
-            >
-              View All Committees
-            </button>
+          </div>
+          <div className="glass-card" style={{ padding: "40px", textAlign: "center", background: "rgba(0, 98, 155, 0.1)" }}>
+             <h3 style={{ color: "#EBD3A9", fontSize: "24px", marginBottom: "16px", fontFamily: "var(--font-headline)" }}>Established 1903</h3>
+             <p style={{ color: "rgba(248,249,250,0.5)", fontSize: "14px" }}>Over a century of fostering innovation and engineering excellence at Purdue University.</p>
           </div>
         </div>
 
-        {/* Pillar Cards */}
-        <div className="ieee-grid-4-gap">
-          {pillars.map((p, i) => {
-            const Icon = p.icon;
-            return (
-              <div
-                key={p.title}
-                className="glass-card"
-                style={{ padding: "32px 24px" }}
-              >
-                {/* Corner accent */}
-                <div
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    borderRadius: "4px",
-                    background: `rgba(${i % 2 === 0 ? "0,98,155" : "235,211,169"}, 0.12)`,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    marginBottom: "20px",
-                    border: `1px solid ${p.color}22`,
-                  }}
-                >
-                  <Icon size={18} style={{ color: p.color }} />
-                </div>
+        {/* Section 2: Applying academics to extracurriculars */}
+        <div
+          className="ieee-grid-2"
+          style={{
+            marginBottom: "96px",
+            alignItems: "center"
+          }}
+        >
+          <div style={{ order: window.innerWidth > 640 ? 2 : 1 }}>
+            <p className="section-eyebrow" style={{ marginBottom: "16px" }}>
+              // Technical Growth
+            </p>
+            <h2
+              style={{
+                fontFamily: "'Space Grotesk', sans-serif",
+                fontSize: "clamp(32px, 4vw, 48px)",
+                fontWeight: 700,
+                color: "#F8F9FA",
+                lineHeight: 1.15,
+                letterSpacing: "-0.02em",
+                marginBottom: "24px",
+              }}
+            >
+              Applying academics to <span style={{ color: "#EBD3A9" }}>extracurriculars</span>
+            </h2>
+            <p
+              style={{
+                fontFamily: "'IBM Plex Sans', sans-serif",
+                fontSize: "16px",
+                color: "rgba(248,249,250,0.6)",
+                lineHeight: 1.75,
+                marginBottom: "24px"
+              }}
+            >
+              Purdue IEEE continually strives to further our goals of technical and professional growth. 
+              We help our members enter their professional careers, learn engineering software and skills, 
+              and socialize with others to form lasting connections inside and outside of this organization.
+            </p>
+            <p
+              style={{
+                fontFamily: "'IBM Plex Sans', sans-serif",
+                fontSize: "16px",
+                color: "rgba(248,249,250,0.6)",
+                lineHeight: 1.75,
+              }}
+            >
+              Our teams apply the knowledge and create real-world, practical solutions to complex engineering projects.
+            </p>
+          </div>
+          <div style={{ order: window.innerWidth > 640 ? 1 : 2 }}>
+             <div className="glass-card" style={{ padding: "40px", background: "rgba(235, 211, 169, 0.05)" }}>
+                <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "16px" }}>
+                   {["Professional Careers", "Engineering Software", "Practical Solutions", "Lasting Connections"].map(item => (
+                     <li key={item} style={{ display: "flex", alignItems: "center", gap: "12px", color: "var(--stellar-white)", fontSize: "15px" }}>
+                        <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#00629B" }} />
+                        {item}
+                     </li>
+                   ))}
+                </ul>
+             </div>
+          </div>
+        </div>
 
-                <h3
-                  style={{
-                    fontFamily: "'Space Grotesk', sans-serif",
-                    fontSize: "16px",
-                    fontWeight: 600,
-                    color: "#F8F9FA",
-                    marginBottom: "10px",
-                    lineHeight: 1.3,
-                  }}
-                >
-                  {p.title}
-                </h3>
-                <p
-                  style={{
-                    fontFamily: "'IBM Plex Sans', sans-serif",
-                    fontSize: "13.5px",
-                    color: "rgba(248,249,250,0.5)",
-                    lineHeight: 1.65,
-                  }}
-                >
-                  {p.desc}
-                </p>
-              </div>
-            );
-          })}
+        {/* Section 3: Connecting industry partners to talented engineers */}
+        <div
+          className="ieee-grid-2"
+          style={{
+            alignItems: "center"
+          }}
+        >
+          <div>
+            <p className="section-eyebrow" style={{ marginBottom: "16px" }}>
+              // Professional Success
+            </p>
+            <h2
+              style={{
+                fontFamily: "'Space Grotesk', sans-serif",
+                fontSize: "clamp(32px, 4vw, 48px)",
+                fontWeight: 700,
+                color: "#F8F9FA",
+                lineHeight: 1.15,
+                letterSpacing: "-0.02em",
+                marginBottom: "24px",
+              }}
+            >
+              Connecting industry partners to <span style={{ color: "#00629B" }}>talented</span> engineers
+            </h2>
+            <p
+              style={{
+                fontFamily: "'IBM Plex Sans', sans-serif",
+                fontSize: "16px",
+                color: "rgba(248,249,250,0.6)",
+                lineHeight: 1.75,
+                marginBottom: "24px"
+              }}
+            >
+              Our alumni go on to utilize the skills they learn at some of the world's largest companies. We have alumni working in every sector of every industry, helping shape the future of technology.
+            </p>
+            <p
+              style={{
+                fontFamily: "'IBM Plex Sans', sans-serif",
+                fontSize: "16px",
+                color: "rgba(248,249,250,0.6)",
+                lineHeight: 1.75,
+                marginBottom: "24px"
+              }}
+            >
+              We host regular professional networking events and company recruiting sessions - just for our members. We also host resume reviews, alumni panels, and professor talks.
+            </p>
+            <p
+              style={{
+                fontFamily: "'IBM Plex Sans', sans-serif",
+                fontSize: "16px",
+                color: "rgba(248,249,250,0.6)",
+                lineHeight: 1.75,
+              }}
+            >
+              With Purdue IEEE, you can learn what it takes to be successful after college, whether it be in industry or academia.
+            </p>
+          </div>
+          <div className="glass-card" style={{ padding: "40px", background: "rgba(0, 98, 155, 0.15)", borderLeft: "4px solid var(--cyber-gold)" }}>
+             <p style={{ fontStyle: "italic", color: "rgba(248,249,250,0.7)", lineHeight: 1.6, fontSize: "15px" }}>
+               "Our alumni go on to work at some of the world's largest companies... helping shape the future of technology."
+             </p>
+          </div>
         </div>
       </div>
     </section>

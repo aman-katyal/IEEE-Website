@@ -1,4 +1,5 @@
 import { MapPin, ChevronRight, Clock, CalendarPlus, ExternalLink, Loader2 } from "lucide-react";
+import { Link } from "react-router";
 import { useGoogleCalendarEvents, type CalendarEvent } from "../../hooks/useGoogleCalendarEvents";
 
 // ─── Fallback events (used if Google Calendar API fails) ────────
@@ -85,9 +86,12 @@ function EventSkeleton() {
 
 // ─── Component ──────────────────────────────────────────────────
 export function Events() {
-  const { events: liveEvents, loading, error } = useGoogleCalendarEvents();
+  const { events: liveEvents, loading } = useGoogleCalendarEvents();
   const events = liveEvents.length > 0 ? liveEvents : fallbackEvents;
   const isLive = liveEvents.length > 0;
+  
+  // Limit to 6 events for the home page
+  const displayEvents = events.slice(0, 6);
   const nextEvent = events[0];
 
   return (
@@ -221,201 +225,224 @@ export function Events() {
                 </p>
               </div>
             ) : (
-              events.map((event, i) => (
-                <a
-                  key={event.id}
-                  href={event.htmlLink || "#"}
-                  target={event.htmlLink ? "_blank" : undefined}
-                  rel="noopener noreferrer"
-                  style={{ textDecoration: "none", color: "inherit" }}
-                >
-                  <div
-                    className="event-card"
-                    style={{
-                      borderRadius: "0 4px 4px 0",
-                      padding: "24px",
-                      display: "flex",
-                      gap: "24px",
-                      alignItems: "flex-start",
-                      cursor: "pointer",
-                      borderLeftColor: i === 0 ? "#EBD3A9" : undefined,
-                    }}
+              <>
+                {displayEvents.map((event, i) => (
+                  <a
+                    key={event.id}
+                    href={event.htmlLink || "#"}
+                    target={event.htmlLink ? "_blank" : undefined}
+                    rel="noopener noreferrer"
+                    style={{ textDecoration: "none", color: "inherit" }}
                   >
-                    {/* Date column */}
                     <div
+                      className="event-card"
                       style={{
+                        borderRadius: "0 4px 4px 0",
+                        padding: "24px",
                         display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        gap: "2px",
-                        minWidth: "56px",
-                        flexShrink: 0,
+                        gap: "24px",
+                        alignItems: "flex-start",
+                        cursor: "pointer",
+                        borderLeftColor: i === 0 ? "#EBD3A9" : undefined,
                       }}
                     >
-                      <div
-                        style={{
-                          fontFamily: "'IBM Plex Mono', monospace",
-                          fontSize: "0.58rem",
-                          letterSpacing: "0.12em",
-                          color: "rgba(248,249,250,0.3)",
-                          textTransform: "uppercase",
-                        }}
-                      >
-                        {fmtDay(event.start)}
-                      </div>
-                      <div
-                        style={{
-                          fontFamily: "'Space Grotesk', sans-serif",
-                          fontSize: "20px",
-                          fontWeight: 700,
-                          color: "#00629B",
-                          lineHeight: 1,
-                        }}
-                      >
-                        {fmtDate(event.start)}
-                      </div>
-                      <div
-                        style={{
-                          fontFamily: "'IBM Plex Mono', monospace",
-                          fontSize: "0.55rem",
-                          color: "rgba(248,249,250,0.2)",
-                        }}
-                      >
-                        {fmtYear(event.start)}
-                      </div>
-                    </div>
-
-                    {/* Vertical rule */}
-                    <div
-                      style={{
-                        width: "1px",
-                        alignSelf: "stretch",
-                        background: "rgba(235,211,169,0.08)",
-                        flexShrink: 0,
-                      }}
-                    />
-
-                    {/* Content */}
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <h3
-                        style={{
-                          fontFamily: "'Space Grotesk', sans-serif",
-                          fontSize: "16px",
-                          fontWeight: 600,
-                          color: "#F8F9FA",
-                          marginBottom: "4px",
-                          lineHeight: 1.3,
-                        }}
-                      >
-                        {event.title}
-                      </h3>
-                      {event.description && (
-                        <p
-                          style={{
-                            fontFamily: "'IBM Plex Sans', sans-serif",
-                            fontSize: "13px",
-                            color: "rgba(248,249,250,0.45)",
-                            marginBottom: "12px",
-                            lineHeight: 1.5,
-                            overflow: "hidden",
-                            display: "-webkit-box",
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: "vertical",
-                          }}
-                        >
-                          {event.description}
-                        </p>
-                      )}
-
+                      {/* Date column */}
                       <div
                         style={{
                           display: "flex",
-                          gap: "16px",
-                          flexWrap: "wrap",
+                          flexDirection: "column",
                           alignItems: "center",
+                          gap: "2px",
+                          minWidth: "56px",
+                          flexShrink: 0,
                         }}
                       >
-                        {!event.isAllDay && (
-                          <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                            <Clock
-                              size={11}
-                              style={{ color: "rgba(248,249,250,0.3)", flexShrink: 0 }}
-                            />
-                            <span
-                              style={{
-                                fontFamily: "'IBM Plex Mono', monospace",
-                                fontSize: "0.62rem",
-                                color: "rgba(248,249,250,0.3)",
-                                letterSpacing: "0.06em",
-                              }}
-                            >
-                              {fmtTime(event.start, event.end)}
-                            </span>
-                          </div>
-                        )}
-                        {event.location && (
-                          <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                            <MapPin
-                              size={11}
-                              style={{ color: "rgba(248,249,250,0.3)", flexShrink: 0 }}
-                            />
-                            <span
-                              style={{
-                                fontFamily: "'IBM Plex Mono', monospace",
-                                fontSize: "0.62rem",
-                                color: "rgba(248,249,250,0.3)",
-                                letterSpacing: "0.06em",
-                                overflow: "hidden",
-                                whiteSpace: "nowrap",
-                                textOverflow: "ellipsis",
-                              }}
-                            >
-                              {event.location}
-                            </span>
-                          </div>
-                        )}
-                        {/* Add to Calendar mini-button */}
-                        <a
-                          href={event.addToCalendarUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(e) => e.stopPropagation()}
+                        <div
                           style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: "4px",
                             fontFamily: "'IBM Plex Mono', monospace",
                             fontSize: "0.58rem",
-                            letterSpacing: "0.08em",
-                            color: "#00629B",
-                            textDecoration: "none",
+                            letterSpacing: "0.12em",
+                            color: "rgba(248,249,250,0.3)",
                             textTransform: "uppercase",
-                            marginLeft: "auto",
-                            transition: "color 0.2s ease",
-                          }}
-                          onMouseEnter={(e) => {
-                            (e.currentTarget as HTMLAnchorElement).style.color = "#EBD3A9";
-                          }}
-                          onMouseLeave={(e) => {
-                            (e.currentTarget as HTMLAnchorElement).style.color = "#00629B";
                           }}
                         >
-                          <CalendarPlus size={11} />
-                          Add
-                        </a>
+                          {fmtDay(event.start)}
+                        </div>
+                        <div
+                          style={{
+                            fontFamily: "'Space Grotesk', sans-serif",
+                            fontSize: "20px",
+                            fontWeight: 700,
+                            color: "#00629B",
+                            lineHeight: 1,
+                          }}
+                        >
+                          {fmtDate(event.start)}
+                        </div>
+                        <div
+                          style={{
+                            fontFamily: "'IBM Plex Mono', monospace",
+                            fontSize: "0.55rem",
+                            color: "rgba(248,249,250,0.2)",
+                          }}
+                        >
+                          {fmtYear(event.start)}
+                        </div>
+                      </div>
+
+                      {/* Vertical rule */}
+                      <div
+                        style={{
+                          width: "1px",
+                          alignSelf: "stretch",
+                          background: "rgba(235,211,169,0.08)",
+                          flexShrink: 0,
+                        }}
+                      />
+
+                      {/* Content */}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <h3
+                          style={{
+                            fontFamily: "'Space Grotesk', sans-serif",
+                            fontSize: "16px",
+                            fontWeight: 600,
+                            color: "#F8F9FA",
+                            marginBottom: "4px",
+                            lineHeight: 1.3,
+                          }}
+                        >
+                          {event.title}
+                        </h3>
+                        {event.description && (
+                          <p
+                            style={{
+                              fontFamily: "'IBM Plex Sans', sans-serif",
+                              fontSize: "13px",
+                              color: "rgba(248,249,250,0.45)",
+                              marginBottom: "12px",
+                              lineHeight: 1.5,
+                              overflow: "hidden",
+                              display: "-webkit-box",
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: "vertical",
+                            }}
+                          >
+                            {event.description}
+                          </p>
+                        )}
+
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: "16px",
+                            flexWrap: "wrap",
+                            alignItems: "center",
+                          }}
+                        >
+                          {!event.isAllDay && (
+                            <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                              <Clock
+                                size={11}
+                                style={{ color: "rgba(248,249,250,0.3)", flexShrink: 0 }}
+                              />
+                              <span
+                                style={{
+                                  fontFamily: "'IBM Plex Mono', monospace",
+                                  fontSize: "0.62rem",
+                                  color: "rgba(248,249,250,0.3)",
+                                  letterSpacing: "0.06em",
+                                }}
+                              >
+                                {fmtTime(event.start, event.end)}
+                              </span>
+                            </div>
+                          )}
+                          {event.location && (
+                            <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                              <MapPin
+                                size={11}
+                                style={{ color: "rgba(248,249,250,0.3)", flexShrink: 0 }}
+                              />
+                              <span
+                                style={{
+                                  fontFamily: "'IBM Plex Mono', monospace",
+                                  fontSize: "0.62rem",
+                                  color: "rgba(248,249,250,0.3)",
+                                  letterSpacing: "0.06em",
+                                  overflow: "hidden",
+                                  whiteSpace: "nowrap",
+                                  textOverflow: "ellipsis",
+                                }}
+                              >
+                                {event.location}
+                              </span>
+                            </div>
+                          )}
+                          {/* Add to Calendar mini-button */}
+                          <a
+                            href={event.addToCalendarUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "4px",
+                              fontFamily: "'IBM Plex Mono', monospace",
+                              fontSize: "0.58rem",
+                              letterSpacing: "0.08em",
+                              color: "#00629B",
+                              textDecoration: "none",
+                              textTransform: "uppercase",
+                              marginLeft: "auto",
+                              transition: "color 0.2s ease",
+                            }}
+                            onMouseEnter={(e) => {
+                              (e.currentTarget as HTMLAnchorElement).style.color = "#EBD3A9";
+                            }}
+                            onMouseLeave={(e) => {
+                              (e.currentTarget as HTMLAnchorElement).style.color = "#00629B";
+                            }}
+                          >
+                            <CalendarPlus size={11} />
+                            Add
+                          </a>
+                        </div>
+                      </div>
+
+                      {/* Arrow */}
+                      <div style={{ flexShrink: 0, paddingTop: "4px" }}>
+                        <ChevronRight
+                          size={16}
+                          style={{ color: "rgba(248,249,250,0.2)" }}
+                        />
                       </div>
                     </div>
-
-                    {/* Arrow */}
-                    <div style={{ flexShrink: 0, paddingTop: "4px" }}>
-                      <ChevronRight
-                        size={16}
-                        style={{ color: "rgba(248,249,250,0.2)" }}
-                      />
-                    </div>
-                  </div>
-                </a>
-              ))
+                  </a>
+                ))}
+                
+                {/* View All Events Button */}
+                {events.length > 6 && (
+                  <Link
+                    to="/calendar"
+                    className="btn-ghost"
+                    style={{
+                      marginTop: "16px",
+                      textAlign: "center",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "12px",
+                      textDecoration: "none",
+                      width: "100%"
+                    }}
+                  >
+                    View All Events
+                    <ChevronRight size={16} />
+                  </Link>
+                )}
+              </>
             )}
           </div>
 
@@ -545,10 +572,8 @@ export function Events() {
               </a>
 
               {/* View full calendar link */}
-              <a
-                href="https://calendar.google.com/calendar/embed?src=7e80819a448e91ef81721772e0c6d9236076b45ad51343474265c1b7d4a363f1%40group.calendar.google.com&ctz=America%2FIndiana%2FIndianapolis"
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                to="/calendar"
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -572,7 +597,7 @@ export function Events() {
               >
                 <ExternalLink size={11} />
                 View Full Calendar
-              </a>
+              </Link>
             </div>
           )}
         </div>

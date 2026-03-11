@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 
 const stats = [
-  { value: 750, suffix: "+", label: "Active Members", sublabel: "Across all committees" },
+  { value: 11, suffix: "", label: "Committees", sublabel: "Technical & support" },
   { value: 1903, suffix: "", label: "Founded", sublabel: "Legacy of innovation" },
-  { value: 9, suffix: "", label: "Technical Committees", sublabel: "Specialized focus" },
-  { value: 98, suffix: "%", label: "Placement Rate", sublabel: "Intern & full-time" },
+  { value: 750, suffix: "+", label: "Members", sublabel: "Across all disciplines" },
+  { value: 50000, suffix: "", prefix: "$", label: "Raised Annually", sublabel: "Project funding" },
 ];
 
 function useCountUp(target: number, duration = 1800, start = false) {
@@ -25,9 +25,10 @@ function useCountUp(target: number, duration = 1800, start = false) {
   return count;
 }
 
-function StatItem({ value, suffix, label, sublabel, delay }: {
+function StatItem({ value, suffix, prefix = "", label, sublabel, delay }: {
   value: number;
   suffix: string;
+  prefix?: string;
   label: string;
   sublabel: string;
   delay: number;
@@ -80,7 +81,8 @@ function StatItem({ value, suffix, label, sublabel, delay }: {
           marginBottom: "6px",
         }}
       >
-        {count}
+        <span style={{ color: "#EBD3A9", fontSize: "0.6em" }}>{prefix}</span>
+        {label === "Founded" ? count : count.toLocaleString()}
         <span style={{ color: "#EBD3A9", fontSize: "0.6em" }}>{suffix}</span>
       </div>
 

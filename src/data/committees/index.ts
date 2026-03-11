@@ -4,7 +4,7 @@
 
 export type { Committee, CommitteeProject, GalleryItem, FAQ, SocialLink, CustomSection, CornerstoneCommittee } from "./types";
 
-import aess from "./aess";
+import aesc from "./aesc";
 import csociety from "./csociety";
 import embs from "./embs";
 import mtts from "./mtts";
@@ -16,7 +16,7 @@ import eds from "./eds";
 
 /** All technical committees */
 export const committees = [
-  aess,
+  aesc,
   csociety,
   embs,
   mtts,

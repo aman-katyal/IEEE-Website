@@ -3,6 +3,7 @@ import { Layout } from "./components/Layout";
 import { HomePage } from "./pages/HomePage";
 import { CommitteePage } from "./pages/CommitteePage";
 import { OfficersPage } from "./pages/OfficersPage";
+import { CalendarPage } from "./pages/CalendarPage";
 
 export default function App() {
   return (
@@ -11,6 +12,7 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/committee/:id" element={<CommitteePage />} />
         <Route path="/officers" element={<OfficersPage />} />
+        <Route path="/calendar" element={<CalendarPage />} />
       </Route>
     </Routes>
   );

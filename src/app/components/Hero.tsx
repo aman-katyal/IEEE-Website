@@ -212,15 +212,14 @@ export function Hero() {
             fontFamily: "'IBM Plex Sans', sans-serif",
             fontSize: "clamp(16px, 2vw, 19px)",
             color: "rgba(248,249,250,0.55)",
-            maxWidth: "560px",
+            maxWidth: "640px",
             marginBottom: "48px",
             lineHeight: 1.7,
             fontWeight: 400,
+            fontStyle: "italic"
           }}
         >
-          Purdue's premier technical organization advancing research, 
-          innovation, and collaboration across engineering disciplines. 
-          750+ members. 9 active technical committees.
+          “Fostering technological innovation and excellence for the benefit of humanity.” — IEEE Mission Statement
         </p>
 
         {/* CTA Buttons */}
@@ -268,7 +267,7 @@ export function Hero() {
           >
             {[
               { value: "750+", label: "Members" },
-              { value: "9", label: "Committees" },
+              { value: `${committees.length}`, label: "Committees" },
             ].map((s) => (
               <div key={s.label} style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
                 <span
@@ -307,7 +306,7 @@ export function Hero() {
             flexWrap: "wrap",
           }}
         >
-          {committees.slice(0, 6).map((c) => (
+          {committees.map((c) => (
             <Link
               key={c.id}
               to={`/committee/${c.id}`}

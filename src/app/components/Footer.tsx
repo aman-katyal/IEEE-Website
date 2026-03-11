@@ -15,7 +15,7 @@ const footerLinks = {
   ],
   Resources: [
     { label: "IEEE.org", href: "https://ieee.org", external: true },
-    { label: "Workshops", href: "#events" },
+    { label: "Workshops", href: "/calendar" },
     { label: "Member Portal", href: "https://ieee.org", external: true },
   ],
   Connect: [

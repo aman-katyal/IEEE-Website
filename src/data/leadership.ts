@@ -50,7 +50,7 @@ export const leaders: Leader[] = [
   {
     name: "Jonathon Reilly",
     role: "Head of Infrastructure",
-    committees: "AESS",
+    committees: "AESC",
     email: "reilly53@purdue.edu",
   },
   {
@@ -115,8 +115,8 @@ export const leaders: Leader[] = [
   },
   {
     name: "Jonah Femrite",
-    role: "AESS Chair",
-    committees: "AESS, SMC",
+    role: "AESC Chair",
+    committees: "AESC, SMC",
     email: "jfemrite@purdue.edu",
   },
   {
