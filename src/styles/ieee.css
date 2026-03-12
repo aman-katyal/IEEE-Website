@@ -8,6 +8,10 @@
   --cyber-gold: #EBD3A9;
   --stellar-white: #F8F9FA;
   
+  --semantic-error: #EF4444;
+  --semantic-success: #22C55E;
+  --semantic-warning: #F59E0B;
+  
   --text-primary: #F8F9FA;
   --text-secondary: rgba(248, 249, 250, 0.6);
   --text-muted: rgba(248, 249, 250, 0.35);
@@ -29,6 +33,10 @@
   --cyber-gold: #85754D; /* Darker Purdue Gold for text legibility on white */
   --stellar-white: #0F172A;
 
+  --semantic-error: #DC2626;
+  --semantic-success: #16A34A;
+  --semantic-warning: #D97706;
+
   --text-primary: #0F172A;
   --text-secondary: #334155;
   --text-muted: #64748B;
@@ -36,6 +44,46 @@
   --glass-bg: rgba(255, 255, 255, 0.4); /* More transparent for cleaner look */
   --glass-border: rgba(0, 0, 0, 0.08);
   --glass-shadow: rgba(0, 0, 0, 0.04);
+}
+
+/* ─── Typography Utilities ──────────────────────────────────── */
+.text-heading-1 {
+  font-family: var(--font-headline);
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.text-heading-2 {
+  font-family: var(--font-headline);
+  font-size: clamp(24px, 3vw, 36px);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.text-body-large {
+  font-family: var(--font-body);
+  font-size: 18px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.text-body-regular {
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.text-caption {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 /* ─── Background Grid ──────────────────────────────────── */
@@ -50,6 +98,13 @@
   background-image:
     linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+}
+
+/* ─── Global Focus States ──────────────────────────────────── */
+*:focus-visible {
+  outline: 2px solid var(--electric-blue);
+  outline-offset: 4px;
+  border-radius: 2px;
 }
 
 /* ─── Navigation ──────────────────────────────────── */
