@@ -27,7 +27,8 @@ export function OfficersPage() {
           right: 0,
           height: "1px",
           background:
-            "linear-gradient(90deg, transparent 0%, rgba(0,98,155,0.6) 30%, rgba(235,211,169,0.4) 50%, rgba(0,98,155,0.6) 70%, transparent 100%)",
+            "linear-gradient(90deg, transparent 0%, var(--electric-blue) 30%, var(--cyber-gold) 50%, var(--electric-blue) 70%, transparent 100%)",
+          opacity: 0.4
         }}
       />
 
@@ -55,7 +56,7 @@ export function OfficersPage() {
               fontFamily: "var(--font-headline)",
               fontSize: "clamp(32px, 5vw, 56px)",
               fontWeight: 700,
-              color: "var(--stellar-white)",
+              color: "var(--text-primary)",
               lineHeight: 1.1,
               letterSpacing: "-0.03em",
               marginBottom: "24px",
@@ -67,7 +68,7 @@ export function OfficersPage() {
             style={{
               fontFamily: "var(--font-body)",
               fontSize: "18px",
-              color: "rgba(248,249,250,0.6)",
+              color: "var(--text-secondary)",
               lineHeight: 1.6,
               maxWidth: "700px",
               margin: "0 auto",
@@ -89,12 +90,8 @@ export function OfficersPage() {
           {leaders.map((officer) => (
             <div
               key={officer.name + officer.role}
+              className="glass-card"
               style={{
-                background: "rgba(0, 30, 60, 0.4)", // Deep blue tinted background
-                backdropFilter: "blur(12px)",
-                WebkitBackdropFilter: "blur(12px)",
-                border: "1px solid rgba(0, 98, 155, 0.2)",
-                borderRadius: "8px",
                 padding: "20px",
                 display: "flex",
                 flexDirection: "column",
@@ -103,29 +100,19 @@ export function OfficersPage() {
                 position: "relative",
                 overflow: "hidden"
               }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.borderColor = "var(--electric-blue)";
-                e.currentTarget.style.transform = "translateY(-4px)";
-                e.currentTarget.style.boxShadow = "0 8px 32px rgba(0, 98, 155, 0.15)";
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.borderColor = "rgba(0, 98, 155, 0.2)";
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "none";
-              }}
             >
               {/* Image Placeholder / Container */}
               <div
                 style={{
                   width: "100%",
                   aspectRatio: "1/1",
-                  background: "rgba(0, 0, 0, 0.3)",
+                  background: "rgba(128, 128, 128, 0.05)",
                   borderRadius: "4px",
                   marginBottom: "24px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  border: "1px solid rgba(0, 98, 155, 0.1)",
+                  border: "1px solid var(--glass-border)",
                   overflow: "hidden"
                 }}
               >
@@ -136,7 +123,7 @@ export function OfficersPage() {
                     style={{ width: "100%", height: "100%", objectFit: "cover" }}
                   />
                 ) : (
-                  <User size={48} style={{ color: "rgba(0, 98, 155, 0.3)" }} />
+                  <User size={48} style={{ color: "var(--text-muted)", opacity: 0.3 }} />
                 )}
               </div>
 
@@ -146,7 +133,7 @@ export function OfficersPage() {
                     fontFamily: "var(--font-headline)",
                     fontSize: "20px",
                     fontWeight: 600,
-                    color: "var(--stellar-white)",
+                    color: "var(--text-primary)",
                     marginBottom: "6px",
                   }}
                 >
@@ -156,10 +143,10 @@ export function OfficersPage() {
                   style={{
                     display: "inline-block",
                     padding: "3px 10px",
-                    background: "rgba(0, 98, 155, 0.2)",
-                    border: "1px solid rgba(0, 98, 155, 0.4)",
+                    background: "rgba(0, 98, 155, 0.1)",
+                    border: "1px solid var(--glass-border)",
                     borderRadius: "2px",
-                    color: "var(--stellar-white)",
+                    color: "var(--electric-blue)",
                     fontSize: "11px",
                     fontWeight: 600,
                     textTransform: "uppercase",
@@ -175,10 +162,10 @@ export function OfficersPage() {
                   <div style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}>
                     <Users size={15} style={{ color: "var(--cyber-gold)", marginTop: "3px", flexShrink: 0 }} />
                     <div>
-                      <p style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "rgba(248, 249, 250, 0.3)", marginBottom: "2px", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                      <p style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--text-muted)", marginBottom: "2px", textTransform: "uppercase", letterSpacing: "0.1em" }}>
                         Committees
                       </p>
-                      <p style={{ fontFamily: "var(--font-body)", fontSize: "13px", color: "rgba(248, 249, 250, 0.7)", lineHeight: 1.5 }}>
+                      <p style={{ fontFamily: "var(--font-body)", fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.5 }}>
                         {officer.committees}
                       </p>
                     </div>
@@ -188,7 +175,7 @@ export function OfficersPage() {
                 <div style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}>
                   <Mail size={15} style={{ color: "var(--electric-blue)", marginTop: "3px", flexShrink: 0 }} />
                   <div>
-                    <p style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "rgba(248, 249, 250, 0.3)", marginBottom: "2px", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                    <p style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--text-muted)", marginBottom: "2px", textTransform: "uppercase", letterSpacing: "0.1em" }}>
                       Contact
                     </p>
                     <a
@@ -196,12 +183,12 @@ export function OfficersPage() {
                       style={{
                         fontFamily: "var(--font-body)",
                         fontSize: "13px",
-                        color: "rgba(248, 249, 250, 0.7)",
+                        color: "var(--text-secondary)",
                         textDecoration: "none",
                         transition: "color 0.2s ease",
                       }}
-                      onMouseOver={(e) => (e.currentTarget.style.color = "var(--electric-blue)")}
-                      onMouseOut={(e) => (e.currentTarget.style.color = "rgba(248, 249, 250, 0.7)")}
+                      onMouseEnter={(e) => (e.currentTarget.style.color = "var(--electric-blue)")}
+                      onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-secondary)")}
                     >
                       {officer.email}
                     </a>

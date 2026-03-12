@@ -55,7 +55,7 @@ export function ConstitutionPage() {
               fontFamily: "var(--font-headline)",
               fontSize: "clamp(32px, 5vw, 56px)",
               fontWeight: 700,
-              color: "var(--stellar-white)",
+              color: "var(--text-primary)",
               lineHeight: 1.1,
               letterSpacing: "-0.03em",
               marginBottom: "24px",
@@ -67,7 +67,7 @@ export function ConstitutionPage() {
             style={{
               fontFamily: "var(--font-body)",
               fontSize: "18px",
-              color: "rgba(248,249,250,0.6)",
+              color: "var(--text-secondary)",
               lineHeight: 1.6,
             }}
           >
@@ -80,13 +80,13 @@ export function ConstitutionPage() {
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "32px" }}>
               <Shield size={24} style={{ color: "var(--electric-blue)" }} />
-              <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "24px", fontWeight: 600, color: "var(--stellar-white)" }}>Branch Constitution</h3>
+              <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "24px", fontWeight: 600, color: "var(--text-primary)" }}>Branch Constitution</h3>
             </div>
             {coreDocs.map((doc) => (
               <div key={doc.name} className="glass-card" style={{ padding: "32px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "24px" }}>
                 <div>
-                  <h4 style={{ fontFamily: "var(--font-headline)", fontSize: "20px", fontWeight: 600, color: "var(--stellar-white)", marginBottom: "8px" }}>{doc.name}</h4>
-                  <p style={{ fontSize: "14px", color: "rgba(248,249,250,0.5)", lineHeight: 1.5 }}>{doc.description}</p>
+                  <h4 style={{ fontFamily: "var(--font-headline)", fontSize: "20px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "8px" }}>{doc.name}</h4>
+                  <p style={{ fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.5 }}>{doc.description}</p>
                 </div>
                 <a href={doc.link} className="btn-primary" style={{ display: "flex", alignItems: "center", gap: "8px", textDecoration: "none", flexShrink: 0 }}>
                   <Download size={16} />
@@ -100,7 +100,7 @@ export function ConstitutionPage() {
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "32px" }}>
               <FileText size={24} style={{ color: "var(--cyber-gold)" }} />
-              <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "24px", fontWeight: 600, color: "var(--stellar-white)" }}>Technical Committee Bylaws</h3>
+              <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "24px", fontWeight: 600, color: "var(--text-primary)" }}>Technical Committee Bylaws</h3>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "16px" }}>
               {committeeBylaws.map((doc) => (
@@ -117,7 +117,7 @@ export function ConstitutionPage() {
                     transition: "all 0.2s ease"
                   }}
                 >
-                  <span style={{ fontFamily: "var(--font-body)", color: "var(--stellar-white)", fontWeight: 500 }}>{doc.name}</span>
+                  <span style={{ fontFamily: "var(--font-body)", color: "var(--text-primary)", fontWeight: 500 }}>{doc.name}</span>
                   <ExternalLink size={14} style={{ color: "var(--electric-blue)" }} />
                 </a>
               ))}

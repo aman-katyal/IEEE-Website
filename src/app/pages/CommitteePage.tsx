@@ -1,9 +1,10 @@
-import { useParams, Link } from "react-router";
+import { useParams, Link, useNavigate } from "react-router";
 import { ArrowLeft, Mail, Users, Trophy, Cpu, ChevronRight, Calendar, Globe, MessageCircle } from "lucide-react";
 import { getCommitteeById, committees } from "../../data/committees";
 
 export function CommitteePage() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const committee = getCommitteeById(id ?? "");
 
   if (!committee) {
@@ -17,14 +18,15 @@ export function CommitteePage() {
           justifyContent: "center",
           padding: "120px 32px 80px",
           textAlign: "center",
+          background: "var(--boiler-black)"
         }}
       >
         <h1
           style={{
-            fontFamily: "'Space Grotesk', sans-serif",
+            fontFamily: "var(--font-headline)",
             fontSize: "48px",
             fontWeight: 700,
-            color: "#F8F9FA",
+            color: "var(--text-primary)",
             marginBottom: "16px",
           }}
         >
@@ -32,9 +34,9 @@ export function CommitteePage() {
         </h1>
         <p
           style={{
-            fontFamily: "'IBM Plex Sans', sans-serif",
+            fontFamily: "var(--font-body)",
             fontSize: "16px",
-            color: "rgba(248,249,250,0.5)",
+            color: "var(--text-secondary)",
             marginBottom: "32px",
           }}
         >
@@ -46,9 +48,9 @@ export function CommitteePage() {
             display: "inline-flex",
             alignItems: "center",
             gap: "8px",
-            color: "#00629B",
+            color: "var(--electric-blue)",
             textDecoration: "none",
-            fontFamily: "'IBM Plex Sans', sans-serif",
+            fontFamily: "var(--font-body)",
             fontSize: "0.9rem",
             fontWeight: 500,
             letterSpacing: "0.05em",
@@ -92,7 +94,7 @@ export function CommitteePage() {
             position: "absolute",
             inset: 0,
             background:
-              "linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0.85) 80%, #000000 100%)",
+              "linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0.85) 80%, var(--boiler-black) 100%)",
           }}
         />
         <div className="ieee-grid-bg" style={{ position: "absolute", inset: 0, opacity: 0.6 }} />
@@ -113,9 +115,9 @@ export function CommitteePage() {
               display: "inline-flex",
               alignItems: "center",
               gap: "8px",
-              color: "rgba(248,249,250,0.5)",
+              color: "var(--text-secondary)",
               textDecoration: "none",
-              fontFamily: "'IBM Plex Mono', monospace",
+              fontFamily: "var(--font-mono)",
               fontSize: "0.7rem",
               letterSpacing: "0.12em",
               textTransform: "uppercase",
@@ -123,10 +125,10 @@ export function CommitteePage() {
               transition: "color 0.2s ease",
             }}
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLAnchorElement).style.color = "#F8F9FA";
+              (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-primary)";
             }}
             onMouseLeave={(e) => {
-              (e.currentTarget as HTMLAnchorElement).style.color = "rgba(248,249,250,0.5)";
+              (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-secondary)";
             }}
           >
             <ArrowLeft size={14} />
@@ -148,10 +150,10 @@ export function CommitteePage() {
 
           <h1
             style={{
-              fontFamily: "'Space Grotesk', sans-serif",
+              fontFamily: "var(--font-headline)",
               fontSize: "clamp(32px, 5vw, 56px)",
               fontWeight: 700,
-              color: "#F8F9FA",
+              color: "var(--stellar-white)",
               lineHeight: 1.1,
               letterSpacing: "-0.02em",
               marginBottom: "8px",
@@ -163,11 +165,12 @@ export function CommitteePage() {
 
           <p
             style={{
-              fontFamily: "'IBM Plex Mono', monospace",
+              fontFamily: "var(--font-mono)",
               fontSize: "0.75rem",
-              color: "rgba(235,211,169,0.6)",
+              color: "var(--cyber-gold)",
               letterSpacing: "0.12em",
               textTransform: "uppercase",
+              opacity: 0.8
             }}
           >
             {committee.tagline}
@@ -178,7 +181,7 @@ export function CommitteePage() {
       {/* ── Main Content ─────────────────────────────────────── */}
       <section
         style={{
-          background: "#000000",
+          background: "var(--boiler-black)",
           padding: "64px 0 96px",
           position: "relative",
         }}
@@ -197,10 +200,10 @@ export function CommitteePage() {
               <div style={{ marginBottom: "48px" }}>
                 <h2
                   style={{
-                    fontFamily: "'Space Grotesk', sans-serif",
+                    fontFamily: "var(--font-headline)",
                     fontSize: "22px",
                     fontWeight: 600,
-                    color: "#F8F9FA",
+                    color: "var(--text-primary)",
                     marginBottom: "16px",
                   }}
                 >
@@ -208,9 +211,9 @@ export function CommitteePage() {
                 </h2>
                 <p
                   style={{
-                    fontFamily: "'IBM Plex Sans', sans-serif",
+                    fontFamily: "var(--font-body)",
                     fontSize: "15px",
-                    color: "rgba(248,249,250,0.6)",
+                    color: "var(--text-secondary)",
                     lineHeight: 1.8,
                   }}
                 >
@@ -248,10 +251,10 @@ export function CommitteePage() {
                     >
                       <h3
                         style={{
-                          fontFamily: "'Space Grotesk', sans-serif",
+                          fontFamily: "var(--font-headline)",
                           fontSize: "16px",
                           fontWeight: 600,
-                          color: "#F8F9FA",
+                          color: "var(--text-primary)",
                           marginBottom: "8px",
                         }}
                       >
@@ -259,9 +262,9 @@ export function CommitteePage() {
                       </h3>
                       <p
                         style={{
-                          fontFamily: "'IBM Plex Sans', sans-serif",
+                          fontFamily: "var(--font-body)",
                           fontSize: "13.5px",
-                          color: "rgba(248,249,250,0.5)",
+                          color: "var(--text-secondary)",
                           lineHeight: 1.65,
                         }}
                       >
@@ -272,7 +275,7 @@ export function CommitteePage() {
                 </div>
               </div>
 
-              {/* ── Gallery (auto-formatted masonry grid) ─────────────────────────── */}
+              {/* ── Gallery ─────────────────────────── */}
               {committee.gallery && committee.gallery.length > 0 && (
                 <div style={{ marginBottom: "64px" }}>
                   <p className="section-eyebrow" style={{ marginBottom: "20px" }}>
@@ -293,7 +296,7 @@ export function CommitteePage() {
                           position: "relative", 
                           borderRadius: "8px", 
                           overflow: "hidden",
-                          border: "1px solid rgba(235, 211, 169, 0.05)",
+                          border: "1px solid var(--glass-border)",
                           cursor: "pointer",
                           transition: "all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)"
                         }}
@@ -301,13 +304,13 @@ export function CommitteePage() {
                         onMouseEnter={(e) => {
                           const imgEl = e.currentTarget.querySelector('img');
                           if (imgEl) imgEl.style.transform = "scale(1.05)";
-                          e.currentTarget.style.borderColor = "rgba(0, 98, 155, 0.3)";
-                          e.currentTarget.style.boxShadow = "0 8px 24px rgba(0, 0, 0, 0.3)";
+                          e.currentTarget.style.borderColor = "var(--electric-blue)";
+                          e.currentTarget.style.boxShadow = "0 8px 24px rgba(0, 0, 0, 0.2)";
                         }}
                         onMouseLeave={(e) => {
                           const imgEl = e.currentTarget.querySelector('img');
                           if (imgEl) imgEl.style.transform = "scale(1)";
-                          e.currentTarget.style.borderColor = "rgba(235, 211, 169, 0.05)";
+                          e.currentTarget.style.borderColor = "var(--glass-border)";
                           e.currentTarget.style.boxShadow = "none";
                         }}
                       >
@@ -331,9 +334,9 @@ export function CommitteePage() {
                               right: 0,
                               background: "linear-gradient(transparent, rgba(0,0,0,0.9))",
                               padding: "24px 16px 12px",
-                              fontFamily: "'IBM Plex Mono', monospace",
+                              fontFamily: "var(--font-mono)",
                               fontSize: "0.65rem",
-                              color: "rgba(248,249,250,0.8)",
+                              color: "#FFFFFF",
                               letterSpacing: "0.06em",
                               opacity: 0,
                               transform: "translateY(10px)",
@@ -347,15 +350,6 @@ export function CommitteePage() {
                       </div>
                     ))}
                   </div>
-                  <style>{`
-                    .gallery-item-container:hover .caption-overlay {
-                      opacity: 1 !important;
-                      transform: translateY(0) !important;
-                    }
-                    .gallery-item-container:hover img {
-                      filter: brightness(1) !important;
-                    }
-                  `}</style>
                 </div>
               )}
 
@@ -380,13 +374,13 @@ export function CommitteePage() {
                             marginBottom: "8px",
                           }}
                         >
-                          <MessageCircle size={14} style={{ color: "#00629B", flexShrink: 0, marginTop: "2px" }} />
+                          <MessageCircle size={14} style={{ color: "var(--electric-blue)", flexShrink: 0, marginTop: "2px" }} />
                           <h4
                             style={{
-                              fontFamily: "'Space Grotesk', sans-serif",
+                              fontFamily: "var(--font-headline)",
                               fontSize: "14px",
                               fontWeight: 600,
-                              color: "#F8F9FA",
+                              color: "var(--text-primary)",
                               lineHeight: 1.4,
                             }}
                           >
@@ -395,9 +389,9 @@ export function CommitteePage() {
                         </div>
                         <p
                           style={{
-                            fontFamily: "'IBM Plex Sans', sans-serif",
+                            fontFamily: "var(--font-body)",
                             fontSize: "13px",
-                            color: "rgba(248,249,250,0.45)",
+                            color: "var(--text-secondary)",
                             lineHeight: 1.65,
                             paddingLeft: "24px",
                           }}
@@ -422,9 +416,9 @@ export function CommitteePage() {
                   >
                     <p
                       style={{
-                        fontFamily: "'IBM Plex Sans', sans-serif",
+                        fontFamily: "var(--font-body)",
                         fontSize: "14px",
-                        color: "rgba(248,249,250,0.55)",
+                        color: "var(--text-secondary)",
                         lineHeight: 1.75,
                         whiteSpace: "pre-line",
                       }}
@@ -444,10 +438,10 @@ export function CommitteePage() {
               >
                 <div
                   style={{
-                    fontFamily: "'IBM Plex Mono', monospace",
+                    fontFamily: "var(--font-mono)",
                     fontSize: "0.6rem",
                     letterSpacing: "0.18em",
-                    color: "#00629B",
+                    color: "var(--electric-blue)",
                     textTransform: "uppercase",
                     marginBottom: "20px",
                   }}
@@ -461,8 +455,8 @@ export function CommitteePage() {
                     display: "grid",
                     gridTemplateColumns: "repeat(3, 1fr)",
                     gap: "0",
-                    borderTop: "1px solid rgba(235,211,169,0.08)",
-                    borderBottom: "1px solid rgba(235,211,169,0.08)",
+                    borderTop: "1px solid var(--glass-border)",
+                    borderBottom: "1px solid var(--glass-border)",
                     padding: "16px 0",
                     marginBottom: "24px",
                   }}
@@ -479,15 +473,15 @@ export function CommitteePage() {
                         flexDirection: "column",
                         alignItems: "center",
                         gap: "4px",
-                        borderRight: i < 2 ? "1px solid rgba(235,211,169,0.08)" : "none",
+                        borderRight: i < 2 ? "1px solid var(--glass-border)" : "none",
                       }}
                     >
                       <span
                         style={{
-                          fontFamily: "'IBM Plex Mono', monospace",
+                          fontFamily: "var(--font-mono)",
                           fontSize: "18px",
                           fontWeight: 600,
-                          color: "#00629B",
+                          color: "var(--electric-blue)",
                           lineHeight: 1,
                         }}
                       >
@@ -495,9 +489,9 @@ export function CommitteePage() {
                       </span>
                       <span
                         style={{
-                          fontFamily: "'IBM Plex Mono', monospace",
+                          fontFamily: "var(--font-mono)",
                           fontSize: "0.58rem",
-                          color: "rgba(248,249,250,0.3)",
+                          color: "var(--text-muted)",
                           letterSpacing: "0.12em",
                           textTransform: "uppercase",
                         }}
@@ -518,17 +512,17 @@ export function CommitteePage() {
                         gap: "8px",
                         marginBottom: "16px",
                         padding: "12px",
-                        background: "rgba(0,98,155,0.08)",
+                        background: "rgba(0, 98, 155, 0.05)",
                         borderRadius: "4px",
-                        border: "1px solid rgba(0,98,155,0.15)",
+                        border: "1px solid var(--glass-border)",
                       }}
                     >
-                      <Calendar size={14} style={{ color: "#00629B", flexShrink: 0 }} />
+                      <Calendar size={14} style={{ color: "var(--electric-blue)", flexShrink: 0 }} />
                       <span
                         style={{
-                          fontFamily: "'IBM Plex Sans', sans-serif",
+                          fontFamily: "var(--font-body)",
                           fontSize: "12.5px",
-                          color: "rgba(248,249,250,0.6)",
+                          color: "var(--text-secondary)",
                         }}
                       >
                         {committee.meetingSchedule}
@@ -542,10 +536,10 @@ export function CommitteePage() {
                 <div style={{ marginBottom: "24px" }}>
                   <div
                     style={{
-                      fontFamily: "'IBM Plex Mono', monospace",
+                      fontFamily: "var(--font-mono)",
                       fontSize: "0.6rem",
                       letterSpacing: "0.12em",
-                      color: "rgba(248,249,250,0.3)",
+                      color: "var(--text-muted)",
                       textTransform: "uppercase",
                       marginBottom: "8px",
                     }}
@@ -554,10 +548,10 @@ export function CommitteePage() {
                   </div>
                   <div
                     style={{
-                      fontFamily: "'Space Grotesk', sans-serif",
+                      fontFamily: "var(--font-headline)",
                       fontSize: "16px",
                       fontWeight: 600,
-                      color: "#F8F9FA",
+                      color: "var(--text-primary)",
                       marginBottom: "6px",
                     }}
                   >
@@ -569,17 +563,17 @@ export function CommitteePage() {
                       display: "inline-flex",
                       alignItems: "center",
                       gap: "6px",
-                      fontFamily: "'IBM Plex Mono', monospace",
+                      fontFamily: "var(--font-mono)",
                       fontSize: "0.7rem",
-                      color: "#00629B",
+                      color: "var(--electric-blue)",
                       textDecoration: "none",
                       transition: "color 0.2s ease",
                     }}
                     onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLAnchorElement).style.color = "#EBD3A9";
+                      (e.currentTarget as HTMLAnchorElement).style.color = "var(--cyber-gold)";
                     }}
                     onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLAnchorElement).style.color = "#00629B";
+                      (e.currentTarget as HTMLAnchorElement).style.color = "var(--electric-blue)";
                     }}
                   >
                     <Mail size={12} />
@@ -600,9 +594,9 @@ export function CommitteePage() {
                   >
                     <p
                       style={{
-                        fontFamily: "'IBM Plex Sans', sans-serif",
+                        fontFamily: "var(--font-body)",
                         fontSize: "12px",
-                        color: "rgba(248,249,250,0.5)",
+                        color: "var(--text-secondary)",
                         lineHeight: 1.6,
                       }}
                     >
@@ -616,10 +610,10 @@ export function CommitteePage() {
                   <div style={{ marginBottom: "20px" }}>
                     <div
                       style={{
-                        fontFamily: "'IBM Plex Mono', monospace",
+                        fontFamily: "var(--font-mono)",
                         fontSize: "0.6rem",
                         letterSpacing: "0.12em",
-                        color: "rgba(248,249,250,0.3)",
+                        color: "var(--text-muted)",
                         textTransform: "uppercase",
                         marginBottom: "10px",
                       }}
@@ -638,23 +632,23 @@ export function CommitteePage() {
                             alignItems: "center",
                             gap: "6px",
                             padding: "6px 10px",
-                            border: "1px solid rgba(235,211,169,0.12)",
+                            border: "1px solid var(--glass-border)",
                             borderRadius: "4px",
-                            fontFamily: "'IBM Plex Mono', monospace",
+                            fontFamily: "var(--font-mono)",
                             fontSize: "0.6rem",
-                            color: "rgba(248,249,250,0.4)",
+                            color: "var(--text-secondary)",
                             textDecoration: "none",
-                            transition: "color 0.2s ease, border-color 0.2s ease",
+                            transition: "all 0.2s ease",
                           }}
                           onMouseEnter={(e) => {
                             const el = e.currentTarget;
-                            el.style.color = "#00629B";
-                            el.style.borderColor = "rgba(0,98,155,0.5)";
+                            el.style.color = "var(--electric-blue)";
+                            el.style.borderColor = "var(--electric-blue)";
                           }}
                           onMouseLeave={(e) => {
                             const el = e.currentTarget;
-                            el.style.color = "rgba(248,249,250,0.4)";
-                            el.style.borderColor = "rgba(235,211,169,0.12)";
+                            el.style.color = "var(--text-secondary)";
+                            el.style.borderColor = "var(--glass-border)";
                           }}
                         >
                           <Globe size={12} />
@@ -712,10 +706,10 @@ export function CommitteePage() {
                     <div>
                       <h3
                         style={{
-                          fontFamily: "'Space Grotesk', sans-serif",
+                          fontFamily: "var(--font-headline)",
                           fontSize: "15px",
                           fontWeight: 600,
-                          color: "#F8F9FA",
+                          color: "var(--text-primary)",
                           marginBottom: "4px",
                         }}
                       >
@@ -723,17 +717,18 @@ export function CommitteePage() {
                       </h3>
                       <p
                         style={{
-                          fontFamily: "'IBM Plex Mono', monospace",
+                          fontFamily: "var(--font-mono)",
                           fontSize: "0.62rem",
-                          color: "rgba(235,211,169,0.5)",
+                          color: "var(--cyber-gold)",
                           letterSpacing: "0.1em",
                           textTransform: "uppercase",
+                          opacity: 0.7
                         }}
                       >
                         {c.tagline}
                       </p>
                     </div>
-                    <ChevronRight size={16} style={{ color: "rgba(248,249,250,0.3)" }} />
+                    <ChevronRight size={16} style={{ color: "var(--text-muted)" }} />
                   </div>
                 </Link>
               ))}
@@ -741,6 +736,16 @@ export function CommitteePage() {
           </div>
         </div>
       </section>
+      
+      <style>{`
+        .gallery-item-container:hover .caption-overlay {
+          opacity: 1 !important;
+          transform: translateY(0) !important;
+        }
+        .gallery-item-container:hover img {
+          filter: brightness(1) !important;
+        }
+      `}</style>
     </>
   );
 }

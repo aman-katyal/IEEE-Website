@@ -39,7 +39,8 @@ export function AboutUsPage() {
             right: 0,
             height: "1px",
             background:
-              "linear-gradient(90deg, transparent 0%, rgba(0,98,155,0.6) 30%, rgba(235,211,169,0.4) 50%, rgba(0,98,155,0.6) 70%, transparent 100%)",
+              "linear-gradient(90deg, transparent 0%, var(--electric-blue) 30%, var(--cyber-gold) 50%, var(--electric-blue) 70%, transparent 100%)",
+            opacity: 0.4
           }}
         />
         <div
@@ -50,7 +51,8 @@ export function AboutUsPage() {
             right: 0,
             height: "1px",
             background:
-              "linear-gradient(90deg, transparent 0%, rgba(0,98,155,0.4) 50%, transparent 100%)",
+              "linear-gradient(90deg, transparent 0%, var(--electric-blue) 50%, transparent 100%)",
+            opacity: 0.2
           }}
         />
 
@@ -81,7 +83,7 @@ export function AboutUsPage() {
                   fontFamily: "var(--font-headline)",
                   fontSize: "clamp(32px, 4vw, 48px)",
                   fontWeight: 700,
-                  color: "var(--stellar-white)",
+                  color: "var(--text-primary)",
                   lineHeight: 1.15,
                   letterSpacing: "-0.02em",
                   marginBottom: "24px",
@@ -93,7 +95,7 @@ export function AboutUsPage() {
                 style={{
                   fontFamily: "var(--font-body)",
                   fontSize: "16px",
-                  color: "rgba(248,249,250,0.6)",
+                  color: "var(--text-secondary)",
                   lineHeight: 1.75,
                 }}
               >
@@ -102,9 +104,9 @@ export function AboutUsPage() {
                 of every academic background. Our members work on real-world problems and advance their engineering skills.
               </p>
             </div>
-            <div className="glass-card" style={{ padding: "40px", textAlign: "center", background: "rgba(0, 98, 155, 0.1)" }}>
+            <div className="glass-card" style={{ padding: "40px", textAlign: "center", background: "rgba(0, 98, 155, 0.05)" }}>
                <h3 style={{ color: "var(--cyber-gold)", fontSize: "24px", marginBottom: "16px", fontFamily: "var(--font-headline)" }}>Established 1903</h3>
-               <p style={{ color: "rgba(248,249,250,0.5)", fontSize: "14px", fontFamily: "var(--font-body)" }}>Over a century of fostering innovation and engineering excellence at Purdue University.</p>
+               <p style={{ color: "var(--text-secondary)", fontSize: "14px", fontFamily: "var(--font-body)", opacity: 0.8 }}>Over a century of fostering innovation and engineering excellence at Purdue University.</p>
             </div>
           </motion.div>
 
@@ -126,7 +128,7 @@ export function AboutUsPage() {
                   fontFamily: "var(--font-headline)",
                   fontSize: "clamp(32px, 4vw, 48px)",
                   fontWeight: 700,
-                  color: "var(--stellar-white)",
+                  color: "var(--text-primary)",
                   lineHeight: 1.15,
                   letterSpacing: "-0.02em",
                   marginBottom: "24px",
@@ -138,7 +140,7 @@ export function AboutUsPage() {
                 style={{
                   fontFamily: "var(--font-body)",
                   fontSize: "16px",
-                  color: "rgba(248,249,250,0.6)",
+                  color: "var(--text-secondary)",
                   lineHeight: 1.75,
                   marginBottom: "24px"
                 }}
@@ -151,7 +153,7 @@ export function AboutUsPage() {
                 style={{
                   fontFamily: "var(--font-body)",
                   fontSize: "16px",
-                  color: "rgba(248,249,250,0.6)",
+                  color: "var(--text-secondary)",
                   lineHeight: 1.75,
                 }}
               >
@@ -162,7 +164,7 @@ export function AboutUsPage() {
                <div className="glass-card" style={{ padding: "40px", background: "rgba(235, 211, 169, 0.05)" }}>
                   <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "16px" }}>
                      {["Professional Careers", "Engineering Software", "Practical Solutions", "Lasting Connections"].map(item => (
-                       <li key={item} style={{ display: "flex", alignItems: "center", gap: "12px", color: "var(--stellar-white)", fontSize: "15px", fontFamily: "var(--font-body)" }}>
+                       <li key={item} style={{ display: "flex", alignItems: "center", gap: "12px", color: "var(--text-primary)", fontSize: "15px", fontFamily: "var(--font-body)" }}>
                           <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "var(--electric-blue)" }} />
                           {item}
                        </li>
@@ -189,7 +191,7 @@ export function AboutUsPage() {
                   fontFamily: "var(--font-headline)",
                   fontSize: "clamp(32px, 4vw, 48px)",
                   fontWeight: 700,
-                  color: "var(--stellar-white)",
+                  color: "var(--text-primary)",
                   lineHeight: 1.15,
                   letterSpacing: "-0.02em",
                   marginBottom: "24px",
@@ -201,7 +203,7 @@ export function AboutUsPage() {
                 style={{
                   fontFamily: "var(--font-body)",
                   fontSize: "16px",
-                  color: "rgba(248,249,250,0.6)",
+                  color: "var(--text-secondary)",
                   lineHeight: 1.75,
                   marginBottom: "24px"
                 }}
@@ -212,7 +214,7 @@ export function AboutUsPage() {
                 style={{
                   fontFamily: "var(--font-body)",
                   fontSize: "16px",
-                  color: "rgba(248,249,250,0.6)",
+                  color: "var(--text-secondary)",
                   lineHeight: 1.75,
                   marginBottom: "24px"
                 }}
@@ -223,15 +225,15 @@ export function AboutUsPage() {
                 style={{
                   fontFamily: "var(--font-body)",
                   fontSize: "16px",
-                  color: "rgba(248,249,250,0.6)",
+                  color: "var(--text-secondary)",
                   lineHeight: 1.75,
                 }}
               >
                 With Purdue IEEE, you can learn what it takes to be successful after college, whether it be in industry or academia.
               </p>
             </div>
-            <div className="glass-card" style={{ padding: "40px", background: "rgba(0, 98, 155, 0.15)", borderLeft: "4px solid var(--cyber-gold)" }}>
-               <p style={{ fontStyle: "italic", color: "rgba(248,249,250,0.7)", lineHeight: 1.6, fontSize: "15px", fontFamily: "var(--font-body)" }}>
+            <div className="glass-card" style={{ padding: "40px", background: "rgba(0, 98, 155, 0.05)", borderLeft: "4px solid var(--cyber-gold)" }}>
+               <p style={{ fontStyle: "italic", color: "var(--text-secondary)", lineHeight: 1.6, fontSize: "15px", fontFamily: "var(--font-body)" }}>
                  "Our alumni go on to work at some of the world's largest companies... helping shape the future of technology."
                </p>
             </div>

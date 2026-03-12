@@ -27,7 +27,8 @@ export function CornerstoneCommittees() {
           right: 0,
           height: "1px",
           background:
-            "linear-gradient(90deg, transparent 0%, rgba(0,98,155,0.6) 30%, rgba(235,211,169,0.4) 50%, rgba(0,98,155,0.6) 70%, transparent 100%)",
+            "linear-gradient(90deg, transparent 0%, var(--electric-blue) 30%, var(--cyber-gold) 50%, var(--electric-blue) 70%, transparent 100%)",
+          opacity: 0.4
         }}
       />
 
@@ -49,7 +50,7 @@ export function CornerstoneCommittees() {
               fontFamily: "var(--font-headline)",
               fontSize: "clamp(32px, 4.5vw, 54px)",
               fontWeight: 700,
-              color: "var(--stellar-white)",
+              color: "var(--text-primary)",
               lineHeight: 1.1,
               letterSpacing: "-0.025em",
               marginBottom: "24px",
@@ -68,7 +69,7 @@ export function CornerstoneCommittees() {
                     fontFamily: "var(--font-headline)",
                     fontSize: "28px",
                     fontWeight: 600,
-                    color: "var(--stellar-white)",
+                    color: "var(--text-primary)",
                     marginBottom: "16px",
                     display: "flex",
                     alignItems: "center",
@@ -82,7 +83,7 @@ export function CornerstoneCommittees() {
                   style={{
                     fontFamily: "var(--font-body)",
                     fontSize: "17px",
-                    color: "rgba(248, 249, 250, 0.6)",
+                    color: "var(--text-secondary)",
                     lineHeight: 1.6,
                   }}
                 >
@@ -106,7 +107,7 @@ export function CornerstoneCommittees() {
                       display: "flex",
                       flexDirection: "column",
                       height: "100%",
-                      background: "rgba(0, 30, 60, 0.2)",
+                      background: "rgba(128, 128, 128, 0.05)",
                       animationDelay: `${index * 150}ms`
                     }}
                   >
@@ -115,8 +116,8 @@ export function CornerstoneCommittees() {
                         style={{
                           display: "inline-block",
                           padding: "4px 12px",
-                          background: "rgba(0, 98, 155, 0.15)",
-                          border: "1px solid rgba(0, 98, 155, 0.3)",
+                          background: "rgba(0, 98, 155, 0.1)",
+                          border: "1px solid var(--glass-border)",
                           borderRadius: "4px",
                           color: "var(--electric-blue)",
                           fontSize: "12px",
@@ -133,7 +134,7 @@ export function CornerstoneCommittees() {
                           fontFamily: "var(--font-headline)",
                           fontSize: "22px",
                           fontWeight: 600,
-                          color: "var(--stellar-white)",
+                          color: "var(--text-primary)",
                           marginBottom: "8px",
                         }}
                       >
@@ -145,7 +146,7 @@ export function CornerstoneCommittees() {
                       style={{
                         fontFamily: "var(--font-body)",
                         fontSize: "14px",
-                        color: "rgba(248, 249, 250, 0.5)",
+                        color: "var(--text-secondary)",
                         lineHeight: 1.6,
                         marginBottom: "24px",
                         flexGrow: 1,
@@ -154,19 +155,19 @@ export function CornerstoneCommittees() {
                       {lead.description}
                     </p>
 
-                    <div style={{ display: "flex", gap: "12px", alignItems: "center", borderTop: "1px solid rgba(235, 211, 169, 0.1)", paddingTop: "20px" }}>
+                    <div style={{ display: "flex", gap: "12px", alignItems: "center", borderTop: "1px solid var(--glass-border)", paddingTop: "20px" }}>
                       <Mail size={16} style={{ color: "var(--electric-blue)", flexShrink: 0 }} />
                       <a
                         href={`mailto:${lead.email}`}
                         style={{
                           fontFamily: "var(--font-mono)",
                           fontSize: "13px",
-                          color: "rgba(248, 249, 250, 0.7)",
+                          color: "var(--text-secondary)",
                           textDecoration: "none",
                           transition: "color 0.2s ease",
                         }}
-                        onMouseOver={(e) => (e.currentTarget.style.color = "var(--electric-blue)")}
-                        onMouseOut={(e) => (e.currentTarget.style.color = "rgba(248, 249, 250, 0.7)")}
+                        onMouseEnter={(e) => (e.currentTarget.style.color = "var(--electric-blue)")}
+                        onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-secondary)")}
                       >
                         {lead.email}
                       </a>

@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router";
+import { ThemeToggle } from "./ThemeToggle";
+import { IeeePurdueLogo } from "./IeeePurdueLogo";
 
 const navLinks = [
   { 
@@ -82,12 +84,12 @@ export function Navigation() {
           zIndex: 100,
           transition: "background 0.4s ease, border-color 0.4s ease",
           background: scrolled || menuOpen
-            ? "rgba(0, 0, 0, 0.95)"
-            : "rgba(0, 0, 0, 0.4)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
+            ? "var(--boiler-black)"
+            : "transparent",
+          backdropFilter: scrolled || menuOpen ? "blur(20px)" : "none",
+          WebkitBackdropFilter: scrolled || menuOpen ? "blur(20px)" : "none",
           borderBottom: scrolled || menuOpen
-            ? "1px solid rgba(235, 211, 169, 0.12)"
+            ? "1px solid var(--glass-border)"
             : "1px solid transparent",
         }}
       >
@@ -108,52 +110,36 @@ export function Navigation() {
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "0",
+              gap: "12px",
               textDecoration: "none",
               flexShrink: 0,
             }}
           >
-            <span
-              style={{
-                fontFamily: "var(--font-headline)",
-                fontWeight: 700,
-                fontSize: "clamp(16px, 4vw, 18px)",
-                color: "var(--stellar-white)",
-                letterSpacing: "0.12em",
-                textTransform: "uppercase",
-              }}
-            >
-              PURDUE
-            </span>
-
-            <div
-              style={{
-                width: "1px",
-                height: "24px",
-                background: "rgba(248,249,250,0.2)",
-                margin: "0 clamp(8px, 2vw, 12px)",
-                flexShrink: 0,
-              }}
-            />
-
-            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-              <div
-                style={{
-                  width: "5px",
-                  height: "5px",
-                  background: "var(--electric-blue)",
-                  borderRadius: "50%",
-                  boxShadow: "0 0 8px rgba(0,98,155,0.9)",
-                }}
-              />
+            <IeeePurdueLogo style={{ height: "40px", width: "auto" }} />
+            
+            <div style={{ display: "flex", flexDirection: "column", gap: "0" }}>
               <span
                 style={{
                   fontFamily: "var(--font-headline)",
                   fontWeight: 700,
-                  fontSize: "clamp(16px, 4vw, 18px)",
-                  color: "var(--stellar-white)",
+                  fontSize: "15px",
+                  color: "var(--text-primary)",
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  lineHeight: "1"
+                }}
+              >
+                PURDUE
+              </span>
+              <span
+                style={{
+                  fontFamily: "var(--font-headline)",
+                  fontWeight: 700,
+                  fontSize: "15px",
+                  color: "var(--electric-blue)",
                   letterSpacing: "0.15em",
                   textTransform: "uppercase",
+                  lineHeight: "1"
                 }}
               >
                 IEEE
@@ -161,7 +147,7 @@ export function Navigation() {
             </div>
           </Link>
 
-          {/* Desktop Nav - Correctly hidden via CSS class */}
+          {/* Desktop Nav */}
           <div
             className="nav-desktop-container"
             style={{
@@ -188,8 +174,8 @@ export function Navigation() {
                       cursor: "pointer",
                       padding: "24px 0",
                       color: location.pathname.startsWith(link.href) || location.pathname === "/constitution"
-                        ? "var(--stellar-white)"
-                        : "rgba(248, 249, 250, 0.6)",
+                        ? "var(--text-primary)"
+                        : "var(--text-secondary)",
                     }}
                   >
                     {link.label}
@@ -203,12 +189,12 @@ export function Navigation() {
                         top: "100%",
                         left: "0",
                         width: "180px",
-                        background: "rgba(0, 0, 0, 0.95)",
-                        border: "1px solid rgba(235, 211, 169, 0.12)",
+                        background: "var(--boiler-black)",
+                        border: "1px solid var(--glass-border)",
                         borderRadius: "4px",
                         padding: "8px 0",
                         marginTop: "-8px",
-                        boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+                        boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
                         backdropFilter: "blur(10px)",
                         zIndex: 110
                       }}
@@ -222,16 +208,16 @@ export function Navigation() {
                           style={{
                             display: "block",
                             padding: "10px 20px",
-                            color: location.pathname === subItem.href ? "var(--electric-blue)" : "rgba(248, 249, 250, 0.7)",
+                            color: location.pathname === subItem.href ? "var(--electric-blue)" : "var(--text-secondary)",
                             textDecoration: "none",
                             fontSize: "0.85rem",
                             fontFamily: "var(--font-body)",
                             transition: "all 0.2s",
-                            background: location.pathname === subItem.href ? "rgba(0, 98, 155, 0.1)" : "transparent"
+                            background: location.pathname === subItem.href ? "rgba(0, 98, 155, 0.05)" : "transparent"
                           }}
                           onClick={(e) => { e.preventDefault(); handleNav(subItem.href); }}
-                          onMouseEnter={(e) => (e.currentTarget.style.color = "var(--stellar-white)")}
-                          onMouseLeave={(e) => (e.currentTarget.style.color = location.pathname === subItem.href ? "var(--electric-blue)" : "rgba(248, 249, 250, 0.7)")}
+                          onMouseEnter={(e) => (e.currentTarget.style.color = "var(--text-primary)")}
+                          onMouseLeave={(e) => (e.currentTarget.style.color = location.pathname === subItem.href ? "var(--electric-blue)" : "var(--text-secondary)")}
                         >
                           {subItem.label}
                         </a>
@@ -246,8 +232,8 @@ export function Navigation() {
                   className="nav-link"
                   style={{
                     color: location.pathname === link.href
-                      ? "var(--stellar-white)"
-                      : "rgba(248, 249, 250, 0.6)",
+                      ? "var(--text-primary)"
+                      : "var(--text-secondary)",
                   }}
                   onClick={(e) => { e.preventDefault(); handleNav(link.href); }}
                 >
@@ -260,9 +246,11 @@ export function Navigation() {
               style={{
                 width: "1px",
                 height: "20px",
-                background: "rgba(235,211,169,0.2)",
+                background: "var(--glass-border)",
               }}
             />
+
+            <ThemeToggle />
 
             <button
               className="btn-primary"
@@ -273,32 +261,36 @@ export function Navigation() {
             </button>
           </div>
 
-          {/* Hamburger Menu Button - Correctly shown via CSS class */}
-          <button
-            className="nav-mobile-toggle"
-            onClick={() => setMenuOpen(!menuOpen)}
-            style={{
-              background: "rgba(255, 255, 255, 0.05)",
-              border: "1px solid rgba(255, 255, 255, 0.1)",
-              borderRadius: "4px",
-              color: "var(--stellar-white)",
-              cursor: "pointer",
-              padding: "10px",
-              alignItems: "center",
-              justifyContent: "center",
-              transition: "all 0.2s ease"
-            }}
-          >
-            {menuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          {/* Mobile Hamburger & Toggle */}
+          <div className="nav-mobile-toggle-group" style={{ alignItems: "center", gap: "12px" }}>
+            <ThemeToggle />
+            <button
+              className="nav-mobile-toggle"
+              onClick={() => setMenuOpen(!menuOpen)}
+              style={{
+                background: "rgba(128, 128, 128, 0.1)",
+                border: "1px solid var(--glass-border)",
+                borderRadius: "4px",
+                color: "var(--text-primary)",
+                cursor: "pointer",
+                padding: "10px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transition: "all 0.2s ease"
+              }}
+            >
+              {menuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Menu Drawer */}
         {menuOpen && (
           <div
             style={{
-              background: "rgba(0,0,0,0.98)",
-              borderTop: "1px solid rgba(235, 211, 169, 0.1)",
+              background: "var(--boiler-black)",
+              borderTop: "1px solid var(--glass-border)",
               padding: "16px 24px 48px",
               maxHeight: "calc(100vh - 72px)",
               overflowY: "auto",
@@ -309,7 +301,7 @@ export function Navigation() {
               display: "flex",
               flexDirection: "column",
               gap: "8px",
-              boxShadow: "0 20px 40px rgba(0,0,0,0.8)",
+              boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
               backdropFilter: "blur(20px)"
             }}
           >
@@ -337,10 +329,10 @@ export function Navigation() {
                             display: "block",
                             fontFamily: "var(--font-body)",
                             fontSize: "1.1rem",
-                            color: location.pathname === subItem.href ? "var(--stellar-white)" : "rgba(248,249,250,0.6)",
+                            color: location.pathname === subItem.href ? "var(--text-primary)" : "var(--text-secondary)",
                             textDecoration: "none",
                             padding: "14px 16px",
-                            background: location.pathname === subItem.href ? "rgba(0, 98, 155, 0.15)" : "rgba(255,255,255,0.03)",
+                            background: location.pathname === subItem.href ? "rgba(0, 98, 155, 0.1)" : "rgba(128,128,128,0.05)",
                             borderRadius: "6px",
                             borderLeft: location.pathname === subItem.href ? "3px solid var(--electric-blue)" : "3px solid transparent"
                           }}
@@ -360,11 +352,11 @@ export function Navigation() {
                       fontFamily: "var(--font-body)",
                       fontSize: "1.2rem",
                       fontWeight: 500,
-                      color: location.pathname === link.href ? "var(--stellar-white)" : "rgba(248,249,250,0.8)",
+                      color: location.pathname === link.href ? "var(--text-primary)" : "var(--text-secondary)",
                       letterSpacing: "0.05em",
                       textDecoration: "none",
                       padding: "18px 16px",
-                      background: location.pathname === link.href ? "rgba(0, 98, 155, 0.15)" : "rgba(255,255,255,0.03)",
+                      background: location.pathname === link.href ? "rgba(0, 98, 155, 0.1)" : "rgba(128,128,128,0.05)",
                       borderRadius: "6px",
                       marginBottom: "8px",
                       textTransform: "uppercase",
@@ -389,19 +381,18 @@ export function Navigation() {
       </nav>
 
       <style>{`
-        /* Desktop visibility */
         .nav-desktop-container {
           display: none;
         }
-        .nav-mobile-toggle {
+        .nav-mobile-toggle-group {
           display: flex;
         }
 
-        @media (min-width: 1024px) {
+        @media (min-width: 1280px) {
           .nav-desktop-container {
             display: flex;
           }
-          .nav-mobile-toggle {
+          .nav-mobile-toggle-group {
             display: none;
           }
         }

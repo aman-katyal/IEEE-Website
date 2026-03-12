@@ -46,7 +46,7 @@ export function About() {
                 fontFamily: "var(--font-headline)",
                 fontSize: "clamp(32px, 4vw, 48px)",
                 fontWeight: 700,
-                color: "var(--stellar-white)",
+                color: "var(--text-primary)",
                 lineHeight: 1.15,
                 letterSpacing: "-0.02em",
                 marginBottom: "24px",
@@ -58,7 +58,7 @@ export function About() {
               style={{
                 fontFamily: "var(--font-body)",
                 fontSize: "18px",
-                color: "rgba(248,249,250,0.6)",
+                color: "var(--text-secondary)",
                 lineHeight: 1.75,
                 marginBottom: "32px",
               }}
@@ -76,7 +76,7 @@ export function About() {
               <ChevronRight size={18} />
             </button>
           </div>
-          <div className="glass-card" style={{ padding: "48px", background: "rgba(0, 98, 155, 0.1)", textAlign: "center" }}>
+          <div className="glass-card" style={{ padding: "48px", background: "rgba(0, 98, 155, 0.05)", textAlign: "center" }}>
              <div style={{ fontSize: "64px", fontWeight: 700, color: "var(--electric-blue)", fontFamily: "var(--font-headline)", marginBottom: "8px" }}>1903</div>
              <p style={{ color: "var(--cyber-gold)", textTransform: "uppercase", letterSpacing: "0.2em", fontSize: "12px", fontFamily: "var(--font-mono)" }}>Established & Innovating</p>
           </div>

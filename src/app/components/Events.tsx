@@ -70,15 +70,15 @@ function EventSkeleton() {
       }}
     >
       <div style={{ minWidth: 56, display: "flex", flexDirection: "column", gap: 6 }}>
-        <div style={{ width: 34, height: 10, background: "rgba(248,249,250,0.06)", borderRadius: 2 }} />
-        <div style={{ width: 50, height: 18, background: "rgba(248,249,250,0.08)", borderRadius: 2 }} />
-        <div style={{ width: 28, height: 8, background: "rgba(248,249,250,0.04)", borderRadius: 2 }} />
+        <div style={{ width: 34, height: 10, background: "var(--text-muted)", opacity: 0.1, borderRadius: 2 }} />
+        <div style={{ width: 50, height: 18, background: "var(--text-muted)", opacity: 0.15, borderRadius: 2 }} />
+        <div style={{ width: 28, height: 8, background: "var(--text-muted)", opacity: 0.08, borderRadius: 2 }} />
       </div>
-      <div style={{ width: 1, alignSelf: "stretch", background: "rgba(235,211,169,0.08)" }} />
+      <div style={{ width: 1, alignSelf: "stretch", background: "var(--text-muted)", opacity: 0.1 }} />
       <div style={{ flex: 1 }}>
-        <div style={{ width: "60%", height: 16, background: "rgba(248,249,250,0.08)", borderRadius: 2, marginBottom: 8 }} />
-        <div style={{ width: "90%", height: 12, background: "rgba(248,249,250,0.05)", borderRadius: 2, marginBottom: 12 }} />
-        <div style={{ width: "40%", height: 10, background: "rgba(248,249,250,0.04)", borderRadius: 2 }} />
+        <div style={{ width: "60%", height: 16, background: "var(--text-muted)", opacity: 0.15, borderRadius: 2, marginBottom: 8 }} />
+        <div style={{ width: "90%", height: 12, background: "var(--text-muted)", opacity: 0.1, borderRadius: 2, marginBottom: 12 }} />
+        <div style={{ width: "40%", height: 10, background: "var(--text-muted)", opacity: 0.08, borderRadius: 2 }} />
       </div>
     </div>
   );
@@ -188,7 +188,7 @@ export function Events() {
                 fontFamily: "var(--font-mono)",
                 fontSize: "0.65rem",
                 letterSpacing: "0.15em",
-                color: "rgba(248,249,250,0.3)",
+                color: "var(--text-muted)",
                 textTransform: "uppercase",
               }}
             >
@@ -219,7 +219,7 @@ export function Events() {
                   style={{
                     fontFamily: "var(--font-body)",
                     fontSize: "15px",
-                    color: "rgba(248,249,250,0.4)",
+                    color: "var(--text-secondary)",
                   }}
                 >
                   No upcoming events right now. Check back soon!
@@ -263,7 +263,7 @@ export function Events() {
                             fontFamily: "var(--font-mono)",
                             fontSize: "0.58rem",
                             letterSpacing: "0.12em",
-                            color: "rgba(248,249,250,0.3)",
+                            color: "var(--text-muted)",
                             textTransform: "uppercase",
                           }}
                         >
@@ -284,7 +284,8 @@ export function Events() {
                           style={{
                             fontFamily: "var(--font-mono)",
                             fontSize: "0.55rem",
-                            color: "rgba(248,249,250,0.2)",
+                            color: "var(--text-muted)",
+                            opacity: 0.6,
                           }}
                         >
                           {fmtYear(event.start)}
@@ -297,7 +298,8 @@ export function Events() {
                         style={{
                           width: "1px",
                           alignSelf: "stretch",
-                          background: "rgba(235,211,169,0.08)",
+                          background: "var(--text-muted)",
+                          opacity: 0.1,
                           flexShrink: 0,
                         }}
                       />
@@ -321,7 +323,7 @@ export function Events() {
                             style={{
                               fontFamily: "var(--font-body)",
                               fontSize: "13px",
-                              color: "rgba(248,249,250,0.45)",
+                              color: "var(--text-secondary)",
                               marginBottom: "12px",
                               lineHeight: 1.5,
                               overflow: "hidden",
@@ -346,13 +348,13 @@ export function Events() {
                             <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
                               <Clock
                                 size={11}
-                                style={{ color: "rgba(248,249,250,0.3)", flexShrink: 0 }}
+                                style={{ color: "var(--text-muted)", flexShrink: 0 }}
                               />
                               <span
                                 style={{
                                   fontFamily: "var(--font-mono)",
                                   fontSize: "0.62rem",
-                                  color: "rgba(248,249,250,0.3)",
+                                  color: "var(--text-muted)",
                                   letterSpacing: "0.06em",
                                 }}
                               >
@@ -364,13 +366,13 @@ export function Events() {
                             <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
                               <MapPin
                                 size={11}
-                                style={{ color: "rgba(248,249,250,0.3)", flexShrink: 0 }}
+                                style={{ color: "var(--text-muted)", flexShrink: 0 }}
                               />
                               <span
                                 style={{
                                   fontFamily: "var(--font-mono)",
                                   fontSize: "0.62rem",
-                                  color: "rgba(248,249,250,0.3)",
+                                  color: "var(--text-muted)",
                                   letterSpacing: "0.06em",
                                   overflow: "hidden",
                                   whiteSpace: "nowrap",
@@ -418,7 +420,7 @@ export function Events() {
                       <div className="hidden xs:block" style={{ flexShrink: 0, paddingTop: "4px" }}>
                         <ChevronRight
                           size={16}
-                          style={{ color: "rgba(248,249,250,0.2)" }}
+                          style={{ color: "var(--text-muted)", opacity: 0.6 }}
                         />
                       </div>
                     </div>
@@ -484,7 +486,7 @@ export function Events() {
                 style={{
                   fontFamily: "var(--font-mono)",
                   fontSize: "0.65rem",
-                  color: "rgba(235,211,169,0.4)",
+                  color: "var(--text-muted)",
                   letterSpacing: "0.15em",
                   textTransform: "uppercase",
                   marginBottom: "20px",
@@ -512,7 +514,7 @@ export function Events() {
                   style={{
                     fontFamily: "var(--font-body)",
                     fontSize: "13px",
-                    color: "rgba(248,249,250,0.45)",
+                    color: "var(--text-secondary)",
                     lineHeight: 1.65,
                     marginBottom: "24px",
                   }}
@@ -531,7 +533,7 @@ export function Events() {
                       style={{
                         fontFamily: "var(--font-body)",
                         fontSize: "12.5px",
-                        color: "rgba(248,249,250,0.45)",
+                        color: "var(--text-secondary)",
                       }}
                     >
                       {fmtTime(nextEvent.start, nextEvent.end)}
@@ -545,7 +547,7 @@ export function Events() {
                       style={{
                         fontFamily: "var(--font-body)",
                         fontSize: "12.5px",
-                        color: "rgba(248,249,250,0.45)",
+                        color: "var(--text-secondary)",
                       }}
                     >
                       {nextEvent.location}
@@ -586,7 +588,7 @@ export function Events() {
                   fontFamily: "var(--font-mono)",
                   fontSize: "0.62rem",
                   letterSpacing: "0.1em",
-                  color: "rgba(248,249,250,0.3)",
+                  color: "var(--text-muted)",
                   textDecoration: "none",
                   textTransform: "uppercase",
                   transition: "color 0.2s ease",
@@ -595,7 +597,7 @@ export function Events() {
                   (e.currentTarget as HTMLAnchorElement).style.color = "var(--electric-blue)";
                 }}
                 onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.color = "rgba(248,249,250,0.3)";
+                  (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-muted)";
                 }}
               >
                 <ExternalLink size={11} />

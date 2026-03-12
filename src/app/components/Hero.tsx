@@ -19,7 +19,7 @@ export function Hero() {
       style={{
         position: "relative",
         minHeight: "100vh",
-        background: "#000000",
+        background: "var(--boiler-black)",
         display: "flex",
         alignItems: "center",
         overflow: "hidden",
@@ -43,7 +43,7 @@ export function Hero() {
           position: "absolute",
           inset: 0,
           background:
-            "linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.8) 85%, #000000 100%)",
+            "linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.8) 85%, var(--boiler-black) 100%)",
         }}
       />
 
@@ -140,7 +140,7 @@ export function Hero() {
                 fontSize: "clamp(0.55rem, 1.5vw, 0.65rem)",
                 letterSpacing: "0.15em",
                 textTransform: "uppercase",
-                color: "#00629B",
+                color: "var(--electric-blue)",
               }}
             >
               Purdue University · West Lafayette, IN
@@ -170,7 +170,7 @@ export function Hero() {
                 fontFamily: "var(--font-mono)",
                 fontSize: "clamp(0.55rem, 1.5vw, 0.62rem)",
                 letterSpacing: "0.15em",
-                color: "rgba(248,249,250,0.45)",
+                color: "var(--text-muted)",
                 textTransform: "uppercase",
               }}
             >
@@ -217,7 +217,7 @@ export function Hero() {
           style={{
             fontFamily: "var(--font-mono)",
             fontSize: "clamp(0.7rem, 1.5vw, 0.85rem)",
-            color: "rgba(248,249,250,0.4)",
+            color: "var(--text-muted)",
             letterSpacing: "0.2em",
             textTransform: "uppercase",
             marginBottom: "48px",
@@ -282,7 +282,7 @@ export function Hero() {
                     fontFamily: "var(--font-mono)",
                     fontSize: "0.6rem",
                     letterSpacing: "0.15em",
-                    color: "rgba(248,249,250,0.35)",
+                    color: "var(--text-muted)",
                     textTransform: "uppercase",
                   }}
                 >
@@ -353,14 +353,14 @@ export function Hero() {
             fontFamily: "var(--font-mono)",
             fontSize: "0.58rem",
             letterSpacing: "0.2em",
-            color: "rgba(248,249,250,0.3)",
+            color: "var(--text-muted)",
             textTransform: "uppercase",
           }}
         >
           Scroll
         </span>
         <div className="scroll-indicator">
-          <ChevronDown size={18} style={{ color: "rgba(248,249,250,0.3)" }} />
+          <ChevronDown size={18} style={{ color: "var(--text-muted)" }} />
         </div>
       </button>
     </section>

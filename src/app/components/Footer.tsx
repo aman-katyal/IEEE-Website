@@ -1,6 +1,7 @@
 import { Github, Linkedin, Instagram, Twitter, ExternalLink } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { committees } from "../../data/committees";
+import { IeeePurdueLogo } from "./IeeePurdueLogo";
 
 const footerCommitteeLinks = committees.map((c) => ({
   label: c.shortName,
@@ -20,7 +21,7 @@ const footerLinks = {
   ],
   Connect: [
     { label: "Contact Us", href: "/join" },
-    { label: "Industry Partners", href: "#about" },
+    { label: "Industry Partners", href: "/about" },
     { label: "Join IEEE", href: "/join" },
   ],
 };
@@ -55,7 +56,7 @@ export function Footer() {
     <footer
       style={{
         background: "var(--boiler-black)",
-        borderTop: "1px solid rgba(235,211,169,0.08)",
+        borderTop: "1px solid var(--glass-border)",
         paddingTop: "72px",
       }}
     >
@@ -83,57 +84,46 @@ export function Footer() {
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: "0",
-                marginBottom: "16px",
+                gap: "12px",
                 textDecoration: "none",
               }}
             >
-              <span
-                style={{
-                  fontFamily: "var(--font-headline)",
-                  fontWeight: 700,
-                  fontSize: "20px",
-                  color: "var(--stellar-white)",
-                  letterSpacing: "0.18em",
-                }}
-              >
-                PURDUE
-              </span>
-              <div
-                style={{
-                  width: "1px",
-                  height: "24px",
-                  background: "rgba(248,249,250,0.2)",
-                  margin: "0 14px",
-                }}
-              />
-              <div
-                style={{
-                  width: "5px",
-                  height: "5px",
-                  background: "var(--electric-blue)",
-                  borderRadius: "50%",
-                  marginRight: "8px",
-                  boxShadow: "0 0 8px rgba(0,98,155,0.9)",
-                }}
-              />
-              <span
-                style={{
-                  fontFamily: "var(--font-headline)",
-                  fontWeight: 700,
-                  fontSize: "20px",
-                  color: "var(--stellar-white)",
-                  letterSpacing: "0.22em",
-                }}
-              >
-                IEEE
-              </span>
+              <IeeePurdueLogo style={{ height: "48px", width: "auto" }} />
+              
+              <div style={{ display: "flex", flexDirection: "column", gap: "0" }}>
+                <span
+                  style={{
+                    fontFamily: "var(--font-headline)",
+                    fontWeight: 700,
+                    fontSize: "18px",
+                    color: "var(--text-primary)",
+                    letterSpacing: "0.15em",
+                    textTransform: "uppercase",
+                    lineHeight: "1"
+                  }}
+                >
+                  PURDUE
+                </span>
+                <span
+                  style={{
+                    fontFamily: "var(--font-headline)",
+                    fontWeight: 700,
+                    fontSize: "18px",
+                    color: "var(--electric-blue)",
+                    letterSpacing: "0.18em",
+                    textTransform: "uppercase",
+                    lineHeight: "1"
+                  }}
+                >
+                  IEEE
+                </span>
+              </div>
             </Link>
             <p
               style={{
                 fontFamily: "var(--font-body)",
                 fontSize: "13px",
-                color: "rgba(248,249,250,0.35)",
+                color: "var(--text-secondary)",
                 lineHeight: 1.7,
               }}
             >
@@ -156,7 +146,7 @@ export function Footer() {
                 fontFamily: "var(--font-mono)",
                 fontSize: "0.6rem",
                 letterSpacing: "0.15em",
-                color: "rgba(248,249,250,0.25)",
+                color: "var(--text-muted)",
                 textTransform: "uppercase",
               }}
             >
@@ -176,22 +166,22 @@ export function Footer() {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    border: "1px solid rgba(235,211,169,0.12)",
+                    border: "1px solid var(--glass-border)",
                     borderRadius: "4px",
-                    color: "rgba(248,249,250,0.4)",
+                    color: "var(--text-secondary)",
                     textDecoration: "none",
-                    transition: "border-color 0.25s ease, color 0.25s ease, background 0.25s ease",
+                    transition: "all 0.25s ease",
                   }}
                   onMouseEnter={(e) => {
                     const el = e.currentTarget;
-                    el.style.borderColor = "rgba(0,98,155,0.6)";
+                    el.style.borderColor = "var(--electric-blue)";
                     el.style.color = "var(--electric-blue)";
                     el.style.background = "rgba(0,98,155,0.08)";
                   }}
                   onMouseLeave={(e) => {
                     const el = e.currentTarget;
-                    el.style.borderColor = "rgba(235,211,169,0.12)";
-                    el.style.color = "rgba(248,249,250,0.4)";
+                    el.style.borderColor = "var(--glass-border)";
+                    el.style.color = "var(--text-secondary)";
                     el.style.background = "transparent";
                   }}
                 >
@@ -207,7 +197,7 @@ export function Footer() {
           className="ieee-grid-footer"
           style={{
             paddingBottom: "56px",
-            borderBottom: "1px solid rgba(235,211,169,0.07)",
+            borderBottom: "1px solid var(--glass-border)",
           }}
         >
           {/* Committees column — uses react-router Links */}
@@ -238,15 +228,15 @@ export function Footer() {
                   style={{
                     fontFamily: "var(--font-body)",
                     fontSize: "13px",
-                    color: "rgba(248,249,250,0.35)",
+                    color: "var(--text-secondary)",
                     textDecoration: "none",
                     transition: "color 0.2s ease",
                   }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLAnchorElement).style.color = "var(--stellar-white)";
+                    (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-primary)";
                   }}
                   onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLAnchorElement).style.color = "rgba(248,249,250,0.35)";
+                    (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-secondary)";
                   }}
                 >
                   {link.label}
@@ -295,15 +285,15 @@ export function Footer() {
                       gap: "6px",
                       fontFamily: "var(--font-body)",
                       fontSize: "13px",
-                      color: "rgba(248,249,250,0.35)",
+                      color: "var(--text-secondary)",
                       textDecoration: "none",
                       transition: "color 0.2s ease",
                     }}
                     onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLAnchorElement).style.color = "var(--stellar-white)";
+                      (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-primary)";
                     }}
                     onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLAnchorElement).style.color = "rgba(248,249,250,0.35)";
+                      (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-secondary)";
                     }}
                   >
                     {link.label}
@@ -333,7 +323,7 @@ export function Footer() {
               fontFamily: "var(--font-mono)",
               fontSize: "0.6rem",
               letterSpacing: "0.1em",
-              color: "rgba(248,249,250,0.2)",
+              color: "var(--text-muted)",
             }}
           >
             © 2026 Purdue IEEE Student Branch · All rights reserved
@@ -350,15 +340,15 @@ export function Footer() {
                   fontFamily: "var(--font-mono)",
                   fontSize: "0.58rem",
                   letterSpacing: "0.1em",
-                  color: "rgba(248,249,250,0.18)",
+                  color: "var(--text-muted)",
                   textDecoration: "none",
                   transition: "color 0.2s ease",
                 }}
                 onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.color = "rgba(248,249,250,0.5)";
+                  (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-secondary)";
                 }}
                 onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.color = "rgba(248,249,250,0.18)";
+                  (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-muted)";
                 }}
               >
                 {item}
@@ -372,7 +362,8 @@ export function Footer() {
               fontFamily: "var(--font-mono)",
               fontSize: "0.58rem",
               letterSpacing: "0.12em",
-              color: "rgba(0,98,155,0.4)",
+              color: "var(--text-muted)",
+              opacity: 0.6
             }}
           >
             v2.6.0 · SPRING_2026

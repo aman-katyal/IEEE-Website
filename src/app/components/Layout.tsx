@@ -16,11 +16,12 @@ export function Layout() {
   return (
     <div
       style={{
-        background: "#000000",
+        background: "var(--boiler-black)",
         minHeight: "100vh",
-        fontFamily: "'IBM Plex Sans', sans-serif",
-        color: "#F8F9FA",
+        fontFamily: "var(--font-body)",
+        color: "var(--text-primary)",
         overflowX: "hidden",
+        transition: "background 0.3s ease, color 0.3s ease"
       }}
     >
       <ScrollToTop />

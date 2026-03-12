@@ -88,7 +88,7 @@ function CommitteeCard({ c }: { c: Committee }) {
               fontFamily: "var(--font-headline)",
               fontSize: "17px",
               fontWeight: 700,
-              color: "var(--stellar-white)",
+              color: "var(--text-primary)",
               marginBottom: "4px",
               lineHeight: 1.3,
             }}
@@ -99,10 +99,11 @@ function CommitteeCard({ c }: { c: Committee }) {
             style={{
               fontFamily: "var(--font-mono)",
               fontSize: "0.65rem",
-              color: "rgba(235,211,169,0.55)",
+              color: "var(--cyber-gold)",
               letterSpacing: "0.1em",
               textTransform: "uppercase",
               marginBottom: "14px",
+              opacity: 0.8
             }}
           >
             {c.tagline}
@@ -113,7 +114,7 @@ function CommitteeCard({ c }: { c: Committee }) {
             style={{
               fontFamily: "var(--font-body)",
               fontSize: "13px",
-              color: "rgba(248,249,250,0.5)",
+              color: "var(--text-secondary)",
               lineHeight: 1.65,
               marginBottom: "20px",
               flex: 1,
@@ -128,8 +129,8 @@ function CommitteeCard({ c }: { c: Committee }) {
               display: "grid",
               gridTemplateColumns: "repeat(3, 1fr)",
               gap: "0",
-              borderTop: "1px solid rgba(235,211,169,0.08)",
-              borderBottom: "1px solid rgba(235,211,169,0.08)",
+              borderTop: "1px solid var(--glass-border)",
+              borderBottom: "1px solid var(--glass-border)",
               marginBottom: "20px",
               padding: "12px 0",
             }}
@@ -146,7 +147,7 @@ function CommitteeCard({ c }: { c: Committee }) {
                   flexDirection: "column",
                   alignItems: "center",
                   gap: "3px",
-                  borderRight: i < 2 ? "1px solid rgba(235,211,169,0.08)" : "none",
+                  borderRight: i < 2 ? "1px solid var(--glass-border)" : "none",
                   padding: "0 8px",
                 }}
               >
@@ -165,7 +166,7 @@ function CommitteeCard({ c }: { c: Committee }) {
                   style={{
                     fontFamily: "var(--font-mono)",
                     fontSize: "0.58rem",
-                    color: "rgba(248,249,250,0.3)",
+                    color: "var(--text-muted)",
                     letterSpacing: "0.12em",
                     textTransform: "uppercase",
                   }}
@@ -223,7 +224,8 @@ function CommitteeCard({ c }: { c: Committee }) {
                 width: "4px",
                 height: "4px",
                 borderRadius: "50%",
-                background: "rgba(235,211,169,0.3)",
+                background: "var(--cyber-gold)",
+                opacity: 0.5
               }}
             />
           </div>
@@ -286,7 +288,7 @@ export function Committees() {
                 fontFamily: "var(--font-headline)",
                 fontSize: "clamp(28px, 4vw, 44px)",
                 fontWeight: 700,
-                color: "var(--stellar-white)",
+                color: "var(--text-primary)",
                 lineHeight: 1.15,
                 letterSpacing: "-0.02em",
               }}
@@ -309,7 +311,7 @@ export function Committees() {
                 fontFamily: "var(--font-mono)",
                 fontSize: "0.65rem",
                 letterSpacing: "0.15em",
-                color: "rgba(248,249,250,0.35)",
+                color: "var(--text-muted)",
                 textTransform: "uppercase",
               }}
             >

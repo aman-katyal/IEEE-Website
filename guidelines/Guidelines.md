@@ -1,61 +1,41 @@
-**Add your own guidelines here**
-<!--
+# Purdue IEEE Website Development Guidelines
 
-System Guidelines
+## Design System & Theming
+- **Dual-Theme Support:** The site must maintain high accessibility and professional aesthetics in both Dark and Light modes.
+- **Color Variables:** Strictly adhere to CSS variables in `src/styles/ieee.css`. Never use hardcoded hex values in components.
 
-Use this file to provide the AI with rules and guidelines you want it to follow.
-This template outlines a few examples of things you can add. You can add your own sections and format it to suit your needs
+### 🌑 Dark Mode Guidelines (Default)
+- **Backgrounds:** Use `--boiler-black` (#000000) for primary areas and `--deep-space-blue` for sections.
+- **Accents:** Use `--electric-blue` (#00629B) and `--cyber-gold` (#EBD3A9).
+- **Typography:** Primary text is `--stellar-white` (#F8F9FA). Use low-opacity whites for secondary/muted text.
+- **Aesthetic:** High-contrast, glowing accents, and deep glassmorphism.
 
-TIP: More context isn't always better. It can confuse the LLM. Try and add the most important rules you need
+### ☀️ Light Mode Guidelines
+- **Backgrounds:** Use `--boiler-black` (mapped to #FFFFFF) and `--deep-space-blue` (#F1F5F9).
+- **Accents:** Use `--electric-blue` (#005A87) and `--cyber-gold` (#85754D - darker for legibility).
+- **Typography:** Primary text is `--stellar-white` (mapped to #0F172A). Use Slate grays for secondary/muted text.
+- **Aesthetic:** Clean, professional, minimal shadows, and subtle border-based glassmorphism.
 
-# General guidelines
+## Typography Standards
+- **Headlines:** `var(--font-headline)` (Space Grotesk) - Bold, high tracking for headers.
+- **Body Copy:** `var(--font-body)` (IBM Plex Sans) - Optimized for readability.
+- **Monospace:** `var(--font-mono)` (IBM Plex Mono) - Used for labels, tags, and technical data.
 
-Any general rules you want the AI to follow.
-For example:
+## Responsiveness and Accessibility
+- **Contrast Ratios:** All text must meet WCAG AA standards. Light mode uses darkened accents to ensure legibility against white backgrounds.
+- **Viewport Support:** Ensure all layouts are tested on 375px wide viewports.
+- **Grid Architecture:** Use standardized grid classes (e.g., `.ieee-grid-2`, `.ieee-grid-3`) for structural integrity.
 
-* Only use absolute positioning when necessary. Opt for responsive and well structured layouts that use flexbox and grid by default
-* Refactor code as you go to keep code clean
-* Keep file sizes small and put helper functions and components in their own files.
+## Animation and Interaction
+- **Framework:** Use Framer Motion (`motion/react`) for transitions.
+- **Navigation:** Wrap page components in `<PageTransition>` for smooth route changes.
+- **Micro-interactions:** Use `<MagneticButton>` for primary CTAs to enhance the high-tech feel.
 
---------------
+## Data Architecture
+- **Centralized Storage:** Content (committees, officers, projects) must be managed in `src/data/`.
+- **Type Safety:** Maintain strict TypeScript interfaces for all data structures in `src/data/committees/types.ts`.
 
-# Design system guidelines
-Rules for how the AI should make generations look like your company's design system
-
-Additionally, if you select a design system to use in the prompt box, you can reference
-your design system's components, tokens, variables and components.
-For example:
-
-* Use a base font-size of 14px
-* Date formats should always be in the format “Jun 10”
-* The bottom toolbar should only ever have a maximum of 4 items
-* Never use the floating action button with the bottom toolbar
-* Chips should always come in sets of 3 or more
-* Don't use a dropdown if there are 2 or fewer options
-
-You can also create sub sections and add more specific details
-For example:
-
-
-## Button
-The Button component is a fundamental interactive element in our design system, designed to trigger actions or navigate
-users through the application. It provides visual feedback and clear affordances to enhance user experience.
-
-### Usage
-Buttons should be used for important actions that users need to take, such as form submissions, confirming choices,
-or initiating processes. They communicate interactivity and should have clear, action-oriented labels.
-
-### Variants
-* Primary Button
-  * Purpose : Used for the main action in a section or page
-  * Visual Style : Bold, filled with the primary brand color
-  * Usage : One primary button per section to guide users toward the most important action
-* Secondary Button
-  * Purpose : Used for alternative or supporting actions
-  * Visual Style : Outlined with the primary color, transparent background
-  * Usage : Can appear alongside a primary button for less important actions
-* Tertiary Button
-  * Purpose : Used for the least important actions
-  * Visual Style : Text-only with no border, using primary color
-  * Usage : For actions that should be available but not emphasized
--->
+## Code Quality Standards
+- **Component Design:** Prefer functional components with hooks.
+- **Performance:** Avoid heavy SVG filters or excessive blur on large containers.
+- **Styling:** Prefer Tailwind utility classes combined with the design system variables.

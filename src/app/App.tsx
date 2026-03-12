@@ -1,5 +1,6 @@
 import { Routes, Route, useLocation } from "react-router";
 import { AnimatePresence } from "motion/react";
+import { ThemeProvider } from "next-themes";
 import { Layout } from "./components/Layout";
 import { HomePage } from "./pages/HomePage";
 import { CommitteePage } from "./pages/CommitteePage";
@@ -17,7 +18,7 @@ export default function App() {
   const location = useLocation();
 
   return (
-    <>
+    <ThemeProvider attribute="class" defaultTheme="dark">
       <UXEffects />
       <BackToTop />
       
@@ -35,6 +36,6 @@ export default function App() {
           </Route>
         </Routes>
       </AnimatePresence>
-    </>
+    </ThemeProvider>
   );
 }

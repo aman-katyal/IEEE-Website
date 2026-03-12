@@ -48,7 +48,7 @@ export function JoinPage() {
               fontFamily: "var(--font-headline)",
               fontSize: "clamp(32px, 5vw, 56px)",
               fontWeight: 700,
-              color: "var(--stellar-white)",
+              color: "var(--text-primary)",
               lineHeight: 1.1,
               letterSpacing: "-0.03em",
               marginBottom: "24px",
@@ -60,7 +60,7 @@ export function JoinPage() {
             style={{
               fontFamily: "var(--font-body)",
               fontSize: "18px",
-              color: "rgba(248,249,250,0.6)",
+              color: "var(--text-secondary)",
               lineHeight: 1.6,
               maxWidth: "700px",
               margin: "0 auto",
@@ -76,18 +76,18 @@ export function JoinPage() {
             <div className="glass-card" style={{ padding: "24px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "20px" }}>
                 <Users size={24} style={{ color: "var(--electric-blue)" }} />
-                <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "20px", fontWeight: 600, color: "var(--stellar-white)" }}>Attend Meetings</h3>
+                <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "20px", fontWeight: 600, color: "var(--text-primary)" }}>Attend Meetings</h3>
               </div>
-              <p style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "rgba(248,249,250,0.5)", lineHeight: 1.6 }}>
+              <p style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--text-secondary)", lineHeight: 1.6 }}>
                 Check out our list of committees and find one that interests you. You're welcome to attend any meeting to see what we're about.
               </p>
             </div>
             <div className="glass-card" style={{ padding: "24px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "20px" }}>
                 <CreditCard size={24} style={{ color: "var(--cyber-gold)" }} />
-                <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "20px", fontWeight: 600, color: "var(--stellar-white)" }}>Pay Dues</h3>
+                <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "20px", fontWeight: 600, color: "var(--text-primary)" }}>Pay Dues</h3>
               </div>
-              <p style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "rgba(248,249,250,0.5)", lineHeight: 1.6 }}>
+              <p style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--text-secondary)", lineHeight: 1.6 }}>
                 Official membership requires small annual dues, which fund our projects, competitions, and events.
               </p>
             </div>
@@ -97,8 +97,8 @@ export function JoinPage() {
           <div className="glass-card" style={{ padding: "clamp(24px, 5vw, 48px)", background: "rgba(88, 101, 242, 0.05)", borderColor: "rgba(88, 101, 242, 0.2)" }}>
             <div style={{ display: "flex", gap: "32px", alignItems: "center", flexWrap: "wrap" }}>
               <div style={{ flex: 1, minWidth: "260px" }}>
-                <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "28px", fontWeight: 600, color: "var(--stellar-white)", marginBottom: "16px" }}>Connect with us</h3>
-                <p style={{ fontFamily: "var(--font-body)", fontSize: "16px", color: "rgba(248,249,250,0.6)", lineHeight: 1.6, marginBottom: "24px" }}>
+                <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "28px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "16px" }}>Connect with us</h3>
+                <p style={{ fontFamily: "var(--font-body)", fontSize: "16px", color: "var(--text-secondary)", lineHeight: 1.6, marginBottom: "24px" }}>
                   Join Purdue IEEE today and start connecting with fellow members on Discord. Stay engaged with all committee updates and event announcements.
                 </p>
                 <a
@@ -131,19 +131,19 @@ export function JoinPage() {
           <div style={{ marginTop: "32px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "32px" }}>
               <div style={{ width: "40px", height: "1px", background: "var(--cyber-gold)" }} />
-              <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "32px", fontWeight: 700, color: "var(--stellar-white)" }}>Dues</h3>
+              <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "32px", fontWeight: 700, color: "var(--text-primary)" }}>Dues</h3>
             </div>
 
             <div className="ieee-grid-2" style={{ gap: "32px" }}>
               <div>
-                <p style={{ fontFamily: "var(--font-body)", fontSize: "16px", color: "rgba(248,249,250,0.6)", lineHeight: 1.7, marginBottom: "24px" }}>
+                <p style={{ fontFamily: "var(--font-body)", fontSize: "16px", color: "var(--text-secondary)", lineHeight: 1.7, marginBottom: "24px" }}>
                   Purdue IEEE Student Branch requires payment of dues for membership. To pay, follow the link below and <strong>search for "IEEE"</strong> in the catalog search box. Payment gives access to:
                 </p>
                 <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                   {duesBenefits.map((benefit) => (
                     <div key={benefit} style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}>
                       <CheckCircle2 size={18} style={{ color: "var(--electric-blue)", flexShrink: 0, marginTop: "2px" }} />
-                      <span style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--stellar-white)" }}>{benefit}</span>
+                      <span style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--text-primary)" }}>{benefit}</span>
                     </div>
                   ))}
                 </div>
@@ -154,17 +154,17 @@ export function JoinPage() {
                   2025-26 Options
                 </h4>
                 <div style={{ display: "flex", flexDirection: "column", gap: "24px", marginBottom: "32px" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(235, 211, 169, 0.1)", paddingBottom: "16px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--glass-border)", paddingBottom: "16px" }}>
                     <div>
-                      <span style={{ display: "block", color: "var(--stellar-white)", fontWeight: 600 }}>Standard Membership</span>
-                      <span style={{ fontSize: "12px", color: "rgba(248,249,250,0.4)" }}>Local dues only</span>
+                      <span style={{ display: "block", color: "var(--text-primary)", fontWeight: 600 }}>Standard Membership</span>
+                      <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>Local dues only</span>
                     </div>
                     <span style={{ fontSize: "24px", fontWeight: 700, color: "var(--electric-blue)" }}>$10</span>
                   </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(235, 211, 169, 0.1)", paddingBottom: "16px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--glass-border)", paddingBottom: "16px" }}>
                     <div>
-                      <span style={{ display: "block", color: "var(--stellar-white)", fontWeight: 600 }}>Membership + Shirt</span>
-                      <span style={{ fontSize: "12px", color: "rgba(248,249,250,0.4)" }}>Support the branch & gear up</span>
+                      <span style={{ display: "block", color: "var(--text-primary)", fontWeight: 600 }}>Membership + Shirt</span>
+                      <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>Support the branch & gear up</span>
                     </div>
                     <span style={{ fontSize: "24px", fontWeight: 700, color: "var(--electric-blue)" }}>$15</span>
                   </div>
@@ -185,7 +185,7 @@ export function JoinPage() {
                   Search for "IEEE" in the search box on TooCool
                 </p>
                 
-                <p style={{ marginTop: "24px", fontSize: "13px", color: "rgba(248,249,250,0.4)", fontStyle: "italic", lineHeight: 1.5 }}>
+                <p style={{ marginTop: "24px", fontSize: "13px", color: "var(--text-muted)", fontStyle: "italic", lineHeight: 1.5 }}>
                   * If you have an active International IEEE Membership, you are exempt from local dues! Contact an officer to complete registration.
                 </p>
               </div>

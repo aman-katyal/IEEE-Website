@@ -64,7 +64,8 @@ export function JoinCTA() {
           right: 0,
           height: "1px",
           background:
-            "linear-gradient(90deg, transparent, rgba(0,98,155,0.6), rgba(235,211,169,0.4), rgba(0,98,155,0.6), transparent)",
+            "linear-gradient(90deg, transparent, var(--electric-blue), var(--cyber-gold), var(--electric-blue), transparent)",
+          opacity: 0.4
         }}
       />
       <div
@@ -75,7 +76,8 @@ export function JoinCTA() {
           right: 0,
           height: "1px",
           background:
-            "linear-gradient(90deg, transparent, rgba(0,98,155,0.4), transparent)",
+            "linear-gradient(90deg, transparent, var(--electric-blue), transparent)",
+          opacity: 0.2
         }}
       />
 
@@ -99,7 +101,7 @@ export function JoinCTA() {
               fontFamily: "var(--font-headline)",
               fontSize: "clamp(32px, 4.5vw, 54px)",
               fontWeight: 700,
-              color: "var(--stellar-white)",
+              color: "var(--text-primary)",
               lineHeight: 1.1,
               letterSpacing: "-0.025em",
               marginBottom: "24px",
@@ -120,7 +122,7 @@ export function JoinCTA() {
             style={{
               fontFamily: "var(--font-body)",
               fontSize: "16px",
-              color: "rgba(248,249,250,0.55)",
+              color: "var(--text-secondary)",
               lineHeight: 1.75,
               marginBottom: "32px",
             }}
@@ -177,7 +179,7 @@ export function JoinCTA() {
                   style={{
                     fontFamily: "var(--font-body)",
                     fontSize: "13.5px",
-                    color: "rgba(248,249,250,0.55)",
+                    color: "var(--text-secondary)",
                     lineHeight: 1.5,
                   }}
                 >
@@ -231,7 +233,7 @@ export function JoinCTA() {
                   fontFamily: "var(--font-headline)",
                   fontSize: "24px",
                   fontWeight: 600,
-                  color: "var(--stellar-white)",
+                  color: "var(--text-primary)",
                   lineHeight: 1.2,
                   marginBottom: "12px"
                 }}
@@ -242,7 +244,7 @@ export function JoinCTA() {
                 style={{
                   fontFamily: "var(--font-body)",
                   fontSize: "14px",
-                  color: "rgba(248,249,250,0.5)",
+                  color: "var(--text-secondary)",
                   lineHeight: 1.6
                 }}
               >
@@ -276,7 +278,7 @@ export function JoinCTA() {
               style={{
                 fontFamily: "var(--font-mono)",
                 fontSize: "0.58rem",
-                color: "rgba(248,249,250,0.2)",
+                color: "var(--text-muted)",
                 textAlign: "center",
                 letterSpacing: "0.08em",
                 textTransform: "uppercase"

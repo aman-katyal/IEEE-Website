@@ -29,7 +29,8 @@ export function CalendarPage() {
           right: 0,
           height: "1px",
           background:
-            "linear-gradient(90deg, transparent 0%, rgba(0,98,155,0.6) 30%, rgba(235,211,169,0.4) 50%, rgba(0,98,155,0.6) 70%, transparent 100%)",
+            "linear-gradient(90deg, transparent 0%, var(--electric-blue) 30%, var(--cyber-gold) 50%, var(--electric-blue) 70%, transparent 100%)",
+          opacity: 0.4
         }}
       />
 
@@ -49,7 +50,7 @@ export function CalendarPage() {
             display: "inline-flex",
             alignItems: "center",
             gap: "8px",
-            color: "rgba(248, 249, 250, 0.4)",
+            color: "var(--text-muted)",
             textDecoration: "none",
             fontFamily: "var(--font-mono)",
             fontSize: "0.7rem",
@@ -58,8 +59,8 @@ export function CalendarPage() {
             marginBottom: "32px",
             transition: "color 0.2s ease",
           }}
-          onMouseOver={(e) => (e.currentTarget.style.color = "var(--electric-blue)")}
-          onMouseOut={(e) => (e.currentTarget.style.color = "rgba(248, 249, 250, 0.4)")}
+          onMouseEnter={(e) => (e.currentTarget.style.color = "var(--electric-blue)")}
+          onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-muted)")}
         >
           <ChevronLeft size={14} />
           Back to Home
@@ -75,7 +76,7 @@ export function CalendarPage() {
               fontFamily: "var(--font-headline)",
               fontSize: "clamp(32px, 5vw, 56px)",
               fontWeight: 700,
-              color: "var(--stellar-white)",
+              color: "var(--text-primary)",
               lineHeight: 1.1,
               letterSpacing: "-0.03em",
               marginBottom: "20px",
@@ -89,7 +90,7 @@ export function CalendarPage() {
               style={{
                 fontFamily: "var(--font-body)",
                 fontSize: "18px",
-                color: "rgba(248,249,250,0.6)",
+                color: "var(--text-secondary)",
                 lineHeight: 1.6,
                 maxWidth: "700px",
               }}
@@ -116,10 +117,10 @@ export function CalendarPage() {
           className="glass-card" 
           style={{ 
             padding: "8px", 
-            background: "rgba(0, 30, 60, 0.2)",
-            borderColor: "rgba(0, 98, 155, 0.2)",
+            background: "rgba(128, 128, 128, 0.05)",
+            borderColor: "var(--glass-border)",
             marginBottom: "64px",
-            overflowX: "auto" // Allow scroll on very small screens
+            overflowX: "auto"
           }}
         >
           <div style={{ borderRadius: "4px", overflow: "hidden", background: "#fff", minWidth: "600px" }}>
@@ -133,14 +134,14 @@ export function CalendarPage() {
         </div>
 
         {/* Quarterly / 3-Month Overview Header */}
-        <div style={{ marginBottom: "32px", borderTop: "1px solid rgba(235, 211, 169, 0.1)", paddingTop: "64px" }}>
+        <div style={{ marginBottom: "32px", borderTop: "1px solid var(--glass-border)", paddingTop: "64px" }}>
            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px" }}>
              <CalendarIcon size={20} style={{ color: "var(--electric-blue)" }} />
-             <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "24px", fontWeight: 600, color: "var(--stellar-white)" }}>
+             <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "24px", fontWeight: 600, color: "var(--text-primary)" }}>
                Upcoming <span style={{ color: "var(--electric-blue)" }}>Overview</span>
              </h3>
            </div>
-           <p style={{ color: "rgba(248, 249, 250, 0.4)", fontSize: "14px" }}>
+           <p style={{ color: "var(--text-muted)", fontSize: "14px" }}>
              A high-level list of upcoming events for the next few months.
            </p>
         </div>
@@ -150,8 +151,8 @@ export function CalendarPage() {
           className="glass-card" 
           style={{ 
             padding: "8px", 
-            background: "rgba(0, 30, 60, 0.2)",
-            borderColor: "rgba(0, 98, 155, 0.1)"
+            background: "rgba(128, 128, 128, 0.05)",
+            borderColor: "var(--glass-border)"
           }}
         >
           <div style={{ borderRadius: "4px", overflow: "hidden", background: "#fff" }}>
@@ -169,8 +170,8 @@ export function CalendarPage() {
           style={{ 
             marginTop: "48px", 
             padding: "20px", 
-            background: "rgba(235, 211, 169, 0.03)", 
-            border: "1px solid rgba(235, 211, 169, 0.1)",
+            background: "rgba(235, 211, 169, 0.05)", 
+            border: "1px solid var(--glass-border)",
             borderRadius: "4px",
             display: "flex",
             gap: "16px",
@@ -178,7 +179,7 @@ export function CalendarPage() {
           }}
         >
           <Info size={20} style={{ color: "var(--cyber-gold)", flexShrink: 0, marginTop: "2px" }} />
-          <p style={{ fontSize: "13px", color: "rgba(248, 249, 250, 0.5)", lineHeight: 1.6 }}>
+          <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.6 }}>
             The calendar above is synced directly with Google Calendar. Use the tabs at the top of the calendar to switch between <strong>Month</strong>, <strong>Week</strong>, and <strong>Agenda</strong> views. If you are a committee chair and need to add events, please contact the Infrastructure chair.
           </p>
         </div>

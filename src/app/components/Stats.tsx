@@ -69,7 +69,7 @@ function StatItem({ value, suffix, prefix = "", label, sublabel, delay }: {
           top: "20%",
           height: "60%",
           width: "1px",
-          background: "linear-gradient(to bottom, transparent, rgba(235,211,169,0.15), transparent)",
+          background: "linear-gradient(to bottom, transparent, var(--glass-border), transparent)",
         }}
       />
 
@@ -81,18 +81,18 @@ function StatItem({ value, suffix, prefix = "", label, sublabel, delay }: {
           marginBottom: "6px",
         }}
       >
-        <span style={{ color: "#EBD3A9", fontSize: "0.6em" }}>{prefix}</span>
+        <span style={{ color: "var(--cyber-gold)", fontSize: "0.6em" }}>{prefix}</span>
         {label === "Founded" ? count : count.toLocaleString()}
-        <span style={{ color: "#EBD3A9", fontSize: "0.6em" }}>{suffix}</span>
+        <span style={{ color: "var(--cyber-gold)", fontSize: "0.6em" }}>{suffix}</span>
       </div>
 
       {/* Label */}
       <div
         style={{
-          fontFamily: "'Space Grotesk', sans-serif",
+          fontFamily: "var(--font-headline)",
           fontSize: "16px",
           fontWeight: 600,
-          color: "#F8F9FA",
+          color: "var(--text-primary)",
           marginBottom: "6px",
           letterSpacing: "0.01em",
         }}
@@ -103,10 +103,10 @@ function StatItem({ value, suffix, prefix = "", label, sublabel, delay }: {
       {/* Sublabel */}
       <div
         style={{
-          fontFamily: "'IBM Plex Mono', monospace",
+          fontFamily: "var(--font-mono)",
           fontSize: "0.65rem",
           letterSpacing: "0.12em",
-          color: "rgba(248,249,250,0.3)",
+          color: "var(--text-muted)",
           textTransform: "uppercase",
         }}
       >
@@ -135,7 +135,8 @@ export function Stats() {
           right: 0,
           height: "1px",
           background:
-            "linear-gradient(90deg, transparent 0%, rgba(0,98,155,0.8) 30%, rgba(235,211,169,0.5) 50%, rgba(0,98,155,0.8) 70%, transparent 100%)",
+            "linear-gradient(90deg, transparent 0%, var(--electric-blue) 30%, var(--cyber-gold) 50%, var(--electric-blue) 70%, transparent 100%)",
+          opacity: 0.5
         }}
       />
       <div
@@ -146,7 +147,8 @@ export function Stats() {
           right: 0,
           height: "1px",
           background:
-            "linear-gradient(90deg, transparent 0%, rgba(0,98,155,0.5) 50%, transparent 100%)",
+            "linear-gradient(90deg, transparent 0%, var(--electric-blue) 50%, transparent 100%)",
+          opacity: 0.3
         }}
       />
 
@@ -176,7 +178,7 @@ export function Stats() {
         {/* Mono header line */}
         <div
           style={{
-            borderBottom: "1px solid rgba(235,211,169,0.08)",
+            borderBottom: "1px solid var(--glass-border)",
             padding: "24px 0",
             display: "flex",
             gap: "32px",
@@ -193,10 +195,10 @@ export function Stats() {
             <span
               key={item}
               style={{
-                fontFamily: "'IBM Plex Mono', monospace",
+                fontFamily: "var(--font-mono)",
                 fontSize: "0.65rem",
                 letterSpacing: "0.12em",
-                color: "rgba(0,98,155,0.7)",
+                color: "var(--text-secondary)",
                 whiteSpace: "nowrap",
               }}
             >
