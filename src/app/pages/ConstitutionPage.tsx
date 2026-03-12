@@ -1,7 +1,11 @@
-import { FileText, Shield, ChevronRight, Download, ExternalLink } from "lucide-react";
+import { FileText, Shield, Download, ExternalLink } from "lucide-react";
 import { useEffect } from "react";
+import { useTheme } from "next-themes";
 
 export function ConstitutionPage() {
+  const { theme } = useTheme();
+  const isLight = theme === "light";
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -33,7 +37,7 @@ export function ConstitutionPage() {
       {/* Background grid */}
       <div
         className="ieee-grid-bg"
-        style={{ position: "absolute", inset: 0, opacity: 0.25 }}
+        style={{ position: "absolute", inset: 0, opacity: isLight ? 0.4 : 0.25 }}
       />
 
       <div
@@ -47,7 +51,7 @@ export function ConstitutionPage() {
       >
         {/* Header */}
         <div style={{ marginBottom: "72px" }}>
-          <p className="section-eyebrow" style={{ marginBottom: "16px" }}>
+          <p className="section-eyebrow" style={{ marginBottom: "16px", opacity: isLight ? 1 : 0.9 }}>
             // Governance
           </p>
           <h2

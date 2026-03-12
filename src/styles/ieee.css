@@ -38,8 +38,8 @@
   --semantic-warning: #D97706;
 
   --text-primary: #0F172A;
-  --text-secondary: #334155;
-  --text-muted: #64748B;
+  --text-secondary: #1E293B; /* Darker Slate for better readability */
+  --text-muted: #475569; /* Darker Slate for muted text to meet WCAG AA */
 
   --glass-bg: rgba(255, 255, 255, 0.4); /* More transparent for cleaner look */
   --glass-border: rgba(0, 0, 0, 0.08);

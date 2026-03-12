@@ -1,5 +1,6 @@
 import { Github, Linkedin, Instagram, Twitter, ExternalLink } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router";
+import { useTheme } from "next-themes";
 import { committees } from "../../data/committees";
 import { IeeePurdueLogo } from "./IeeePurdueLogo";
 
@@ -36,6 +37,8 @@ const socials = [
 export function Footer() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { theme } = useTheme();
+  const isLight = theme === "light";
   const isHome = location.pathname === "/";
 
   const handleHashNav = (href: string) => {
@@ -148,6 +151,7 @@ export function Footer() {
                 letterSpacing: "0.15em",
                 color: "var(--text-muted)",
                 textTransform: "uppercase",
+                opacity: isLight ? 1 : 0.8
               }}
             >
               Find us online
@@ -324,6 +328,7 @@ export function Footer() {
               fontSize: "0.6rem",
               letterSpacing: "0.1em",
               color: "var(--text-muted)",
+              opacity: isLight ? 1 : 0.8
             }}
           >
             © 2026 Purdue IEEE Student Branch · All rights reserved
@@ -343,6 +348,7 @@ export function Footer() {
                   color: "var(--text-muted)",
                   textDecoration: "none",
                   transition: "color 0.2s ease",
+                  opacity: isLight ? 1 : 0.8
                 }}
                 onMouseEnter={(e) => {
                   (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-secondary)";
@@ -363,7 +369,7 @@ export function Footer() {
               fontSize: "0.58rem",
               letterSpacing: "0.12em",
               color: "var(--text-muted)",
-              opacity: 0.6
+              opacity: isLight ? 0.8 : 0.6
             }}
           >
             v2.6.0 · SPRING_2026

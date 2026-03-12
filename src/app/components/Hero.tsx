@@ -181,6 +181,7 @@ export function Hero() {
                 letterSpacing: "0.15em",
                 color: "var(--text-muted)",
                 textTransform: "uppercase",
+                opacity: isLight ? 1 : 0.8
               }}
             >
               Spring 2026 Active
@@ -230,6 +231,7 @@ export function Hero() {
             letterSpacing: "0.2em",
             textTransform: "uppercase",
             marginBottom: "48px",
+            opacity: isLight ? 1 : 0.8
           }}
         >
           — IEEE Mission Statement
@@ -293,6 +295,7 @@ export function Hero() {
                     letterSpacing: "0.15em",
                     color: "var(--text-muted)",
                     textTransform: "uppercase",
+                    opacity: isLight ? 1 : 0.8
                   }}
                 >
                   {s.label}
@@ -379,12 +382,13 @@ export function Hero() {
             letterSpacing: "0.2em",
             color: "var(--text-muted)",
             textTransform: "uppercase",
+            opacity: isLight ? 1 : 0.8
           }}
         >
           Scroll
         </span>
         <div className="scroll-indicator">
-          <ChevronDown size={18} style={{ color: "var(--text-muted)" }} />
+          <ChevronDown size={18} style={{ color: "var(--text-muted)", opacity: isLight ? 1 : 0.8 }} />
         </div>
       </button>
     </section>

@@ -1,9 +1,12 @@
 import { ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router";
 import { motion } from "motion/react";
+import { useTheme } from "next-themes";
 
 export function About() {
   const navigate = useNavigate();
+  const { theme } = useTheme();
+  const isLight = theme === "light";
 
   return (
     <section
@@ -17,7 +20,7 @@ export function About() {
     >
       <div
         className="ieee-grid-bg"
-        style={{ position: "absolute", inset: 0, opacity: 0.25 }}
+        style={{ position: "absolute", inset: 0, opacity: isLight ? 0.4 : 0.25 }}
       />
 
       <div

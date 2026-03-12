@@ -136,22 +136,26 @@ export function OfficersPage() {
                       onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
                     />
                     
-                    {/* Bottom Gradient Fade (Mixes subject into card) */}
+                    {/* Bottom Gradient Fade - Softer in Light Mode */}
                     <div 
                       style={{ 
                         position: "absolute", 
                         inset: 0, 
-                        background: `linear-gradient(to bottom, transparent 60%, ${isLight ? 'rgba(248, 250, 252, 0.9)' : 'rgba(10, 10, 12, 0.9)'} 100%)`,
+                        background: isLight 
+                          ? "linear-gradient(to bottom, transparent 80%, rgba(248, 250, 252, 0.5) 100%)"
+                          : "linear-gradient(to bottom, transparent 60%, rgba(10, 10, 12, 0.9) 100%)",
                         pointerEvents: "none"
                       }} 
                     />
 
-                    {/* Subtle Inner Shadow for Depth */}
+                    {/* Subtle Inner Shadow - Much lighter in Light Mode */}
                     <div 
                       style={{ 
                         position: "absolute", 
                         inset: 0, 
-                        boxShadow: "inset 0 0 40px rgba(0,0,0,0.2)",
+                        boxShadow: isLight 
+                          ? "inset 0 0 20px rgba(0,0,0,0.03)" 
+                          : "inset 0 0 40px rgba(0,0,0,0.2)",
                         pointerEvents: "none"
                       }} 
                     />

@@ -230,7 +230,7 @@ function CommitteeCard({ c }: { c: Committee }) {
                 height: "4px",
                 borderRadius: "50%",
                 background: "var(--cyber-gold)",
-                opacity: 0.5
+                opacity: isLight ? 1 : 0.5
               }}
             />
           </div>
@@ -321,6 +321,7 @@ export function Committees() {
                 letterSpacing: "0.15em",
                 color: "var(--text-muted)",
                 textTransform: "uppercase",
+                opacity: isLight ? 1 : 0.8
               }}
             >
               sys.committees.count

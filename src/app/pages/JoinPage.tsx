@@ -1,7 +1,11 @@
-import { MessageCircle, CreditCard, Users, CheckCircle2, ChevronRight, ExternalLink } from "lucide-react";
+import { MessageCircle, CreditCard, Users, CheckCircle2, ExternalLink } from "lucide-react";
 import { useEffect } from "react";
+import { useTheme } from "next-themes";
 
 export function JoinPage() {
+  const { theme } = useTheme();
+  const isLight = theme === "light";
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -26,7 +30,7 @@ export function JoinPage() {
       {/* Background grid */}
       <div
         className="ieee-grid-bg"
-        style={{ position: "absolute", inset: 0, opacity: 0.25 }}
+        style={{ position: "absolute", inset: 0, opacity: isLight ? 0.4 : 0.25 }}
       />
 
       <div
@@ -40,7 +44,7 @@ export function JoinPage() {
       >
         {/* Header */}
         <div style={{ marginBottom: "72px", textAlign: "center" }}>
-          <p className="section-eyebrow" style={{ marginBottom: "16px" }}>
+          <p className="section-eyebrow" style={{ marginBottom: "16px", opacity: isLight ? 1 : 0.9 }}>
             // Get Started
           </p>
           <h2
@@ -94,7 +98,7 @@ export function JoinPage() {
           </div>
 
           {/* Connect Section */}
-          <div className="glass-card" style={{ padding: "clamp(24px, 5vw, 48px)", background: "rgba(88, 101, 242, 0.05)", borderColor: "rgba(88, 101, 242, 0.2)" }}>
+          <div className="glass-card" style={{ padding: "clamp(24px, 5vw, 48px)", background: isLight ? "rgba(88, 101, 242, 0.08)" : "rgba(88, 101, 242, 0.05)", borderColor: isLight ? "rgba(88, 101, 242, 0.3)" : "rgba(88, 101, 242, 0.2)" }}>
             <div style={{ display: "flex", gap: "32px", alignItems: "center", flexWrap: "wrap" }}>
               <div style={{ flex: 1, minWidth: "260px" }}>
                 <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "28px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "16px" }}>Connect with us</h3>
@@ -149,22 +153,22 @@ export function JoinPage() {
                 </div>
               </div>
 
-              <div className="glass-card" style={{ padding: "clamp(24px, 5vw, 40px)", background: "rgba(0, 98, 155, 0.05)" }}>
-                <h4 style={{ fontFamily: "var(--font-headline)", fontSize: "18px", fontWeight: 600, color: "var(--cyber-gold)", marginBottom: "20px", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+              <div className="glass-card" style={{ padding: "clamp(24px, 5vw, 40px)", background: isLight ? "rgba(0, 90, 135, 0.05)" : "rgba(0, 98, 155, 0.05)" }}>
+                <h4 style={{ fontFamily: "var(--font-headline)", fontSize: "18px", fontWeight: 600, color: "var(--cyber-gold)", marginBottom: "20px", textTransform: "uppercase", letterSpacing: "0.1em", opacity: isLight ? 1 : 0.9 }}>
                   2025-26 Options
                 </h4>
                 <div style={{ display: "flex", flexDirection: "column", gap: "24px", marginBottom: "32px" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--glass-border)", paddingBottom: "16px" }}>
                     <div>
                       <span style={{ display: "block", color: "var(--text-primary)", fontWeight: 600 }}>Standard Membership</span>
-                      <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>Local dues only</span>
+                      <span style={{ fontSize: "12px", color: "var(--text-muted)", opacity: isLight ? 1 : 0.8 }}>Local dues only</span>
                     </div>
                     <span style={{ fontSize: "24px", fontWeight: 700, color: "var(--electric-blue)" }}>$10</span>
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--glass-border)", paddingBottom: "16px" }}>
                     <div>
                       <span style={{ display: "block", color: "var(--text-primary)", fontWeight: 600 }}>Membership + Shirt</span>
-                      <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>Support the branch & gear up</span>
+                      <span style={{ fontSize: "12px", color: "var(--text-muted)", opacity: isLight ? 1 : 0.8 }}>Support the branch & gear up</span>
                     </div>
                     <span style={{ fontSize: "24px", fontWeight: 700, color: "var(--electric-blue)" }}>$15</span>
                   </div>
@@ -181,11 +185,11 @@ export function JoinPage() {
                   <ExternalLink size={14} />
                 </a>
                 
-                <p style={{ marginTop: "12px", fontSize: "12px", color: "var(--electric-blue)", textAlign: "center", fontFamily: "var(--font-mono)" }}>
+                <p style={{ marginTop: "12px", fontSize: "12px", color: "var(--electric-blue)", textAlign: "center", fontFamily: "var(--font-mono)", fontWeight: isLight ? 600 : 400 }}>
                   Search for "IEEE" in the search box on TooCool
                 </p>
                 
-                <p style={{ marginTop: "24px", fontSize: "13px", color: "var(--text-muted)", fontStyle: "italic", lineHeight: 1.5 }}>
+                <p style={{ marginTop: "24px", fontSize: "13px", color: "var(--text-muted)", fontStyle: "italic", lineHeight: 1.5, opacity: isLight ? 1 : 0.8 }}>
                   * If you have an active International IEEE Membership, you are exempt from local dues! Contact an officer to complete registration.
                 </p>
               </div>

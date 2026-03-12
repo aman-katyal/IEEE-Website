@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router";
+import { useTheme } from "next-themes";
 import { ThemeToggle } from "./ThemeToggle";
 import { IeeePurdueLogo } from "./IeeePurdueLogo";
 
@@ -33,6 +34,8 @@ export function Navigation() {
   const dropdownTimeoutRef = useRef<number | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
+  const { theme } = useTheme();
+  const isLight = theme === "light";
   const isHome = location.pathname === "/";
 
   useEffect(() => {
@@ -203,7 +206,7 @@ export function Navigation() {
                         borderRadius: "4px",
                         padding: "8px 0",
                         marginTop: "-8px",
-                        boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
+                        boxShadow: isLight ? "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)" : "0 10px 30px rgba(0,0,0,0.4)",
                         backdropFilter: "blur(10px)",
                         zIndex: 110
                       }}
@@ -222,7 +225,7 @@ export function Navigation() {
                             fontSize: "0.85rem",
                             fontFamily: "var(--font-body)",
                             transition: "all 0.2s",
-                            background: location.pathname === subItem.href ? "rgba(0, 98, 155, 0.05)" : "transparent"
+                            background: location.pathname === subItem.href ? (isLight ? "rgba(0, 90, 135, 0.05)" : "rgba(0, 98, 155, 0.05)") : "transparent"
                           }}
                           onClick={(e) => { e.preventDefault(); handleNav(subItem.href); }}
                           onMouseEnter={(e) => (e.currentTarget.style.color = "var(--text-primary)")}
@@ -277,7 +280,7 @@ export function Navigation() {
               className="nav-mobile-toggle"
               onClick={() => setMenuOpen(!menuOpen)}
               style={{
-                background: "rgba(128, 128, 128, 0.1)",
+                background: isLight ? "rgba(0, 0, 0, 0.05)" : "rgba(128, 128, 128, 0.1)",
                 border: "1px solid var(--glass-border)",
                 borderRadius: "4px",
                 color: "var(--text-primary)",
@@ -310,7 +313,7 @@ export function Navigation() {
               display: "flex",
               flexDirection: "column",
               gap: "8px",
-              boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
+              boxShadow: isLight ? "0 20px 25px -5px rgba(0, 0, 0, 0.1)" : "0 20px 40px rgba(0,0,0,0.4)",
               backdropFilter: "blur(20px)"
             }}
           >
@@ -328,7 +331,8 @@ export function Navigation() {
                         textTransform: "uppercase",
                         letterSpacing: "0.15em",
                         fontWeight: 600,
-                        cursor: "pointer"
+                        cursor: "pointer",
+                        opacity: isLight ? 1 : 0.9
                       }}
                     >
                       {link.label}
@@ -345,7 +349,7 @@ export function Navigation() {
                             color: location.pathname === subItem.href ? "var(--text-primary)" : "var(--text-secondary)",
                             textDecoration: "none",
                             padding: "14px 16px",
-                            background: location.pathname === subItem.href ? "rgba(0, 98, 155, 0.1)" : "rgba(128,128,128,0.05)",
+                            background: location.pathname === subItem.href ? (isLight ? "rgba(0, 90, 135, 0.08)" : "rgba(0, 98, 155, 0.1)") : (isLight ? "rgba(0,0,0,0.03)" : "rgba(128,128,128,0.05)"),
                             borderRadius: "6px",
                             borderLeft: location.pathname === subItem.href ? "3px solid var(--electric-blue)" : "3px solid transparent"
                           }}
@@ -369,7 +373,7 @@ export function Navigation() {
                       letterSpacing: "0.05em",
                       textDecoration: "none",
                       padding: "18px 16px",
-                      background: location.pathname === link.href ? "rgba(0, 98, 155, 0.1)" : "rgba(128,128,128,0.05)",
+                      background: location.pathname === link.href ? (isLight ? "rgba(0, 90, 135, 0.08)" : "rgba(0, 98, 155, 0.1)") : (isLight ? "rgba(0,0,0,0.03)" : "rgba(128,128,128,0.05)"),
                       borderRadius: "6px",
                       marginBottom: "8px",
                       textTransform: "uppercase",

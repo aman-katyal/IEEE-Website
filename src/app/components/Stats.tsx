@@ -26,13 +26,14 @@ function useCountUp(target: number, duration = 1800, start = false) {
   return count;
 }
 
-function StatItem({ value, suffix, prefix = "", label, sublabel, delay }: {
+function StatItem({ value, suffix, prefix = "", label, sublabel, delay, isLight }: {
   value: number;
   suffix: string;
   prefix?: string;
   label: string;
   sublabel: string;
   delay: number;
+  isLight: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -109,6 +110,7 @@ function StatItem({ value, suffix, prefix = "", label, sublabel, delay }: {
           letterSpacing: "0.12em",
           color: "var(--text-muted)",
           textTransform: "uppercase",
+          opacity: isLight ? 1 : 0.8
         }}
       >
         {sublabel}
@@ -203,8 +205,9 @@ export function Stats() {
                 fontFamily: "var(--font-mono)",
                 fontSize: "0.65rem",
                 letterSpacing: "0.12em",
-                color: "var(--text-secondary)",
+                color: "var(--text-muted)",
                 whiteSpace: "nowrap",
+                opacity: isLight ? 1 : 0.7
               }}
             >
               {item}
@@ -215,7 +218,7 @@ export function Stats() {
         {/* Stats grid */}
         <div className="ieee-grid-4">
           {stats.map((s, i) => (
-            <StatItem key={s.label} {...s} delay={i * 100} />
+            <StatItem key={s.label} {...s} delay={i * 100} isLight={isLight} />
           ))}
         </div>
       </div>

@@ -1,11 +1,14 @@
 import { useParams, Link, useNavigate } from "react-router";
 import { ArrowLeft, Mail, Users, Trophy, Cpu, ChevronRight, Calendar, Globe, MessageCircle } from "lucide-react";
+import { useTheme } from "next-themes";
 import { getCommitteeById, committees } from "../../data/committees";
 
 export function CommitteePage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const committee = getCommitteeById(id ?? "");
+  const { theme } = useTheme();
+  const isLight = theme === "light";
 
   if (!committee) {
     return (
@@ -86,18 +89,19 @@ export function CommitteePage() {
             backgroundImage: `url('${committee.image}')`,
             backgroundSize: "cover",
             backgroundPosition: "center 40%",
-            filter: "brightness(0.35) saturate(0.7)",
+            filter: isLight ? "brightness(0.9) saturate(1.1)" : "brightness(0.35) saturate(0.7)",
           }}
         />
         <div
           style={{
             position: "absolute",
             inset: 0,
-            background:
-              "linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0.85) 80%, var(--boiler-black) 100%)",
+            background: isLight 
+              ? "linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 30%, rgba(248,250,252,0.85) 80%, var(--boiler-black) 100%)"
+              : "linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0.85) 80%, var(--boiler-black) 100%)",
           }}
         />
-        <div className="ieee-grid-bg" style={{ position: "absolute", inset: 0, opacity: 0.6 }} />
+        <div className="ieee-grid-bg" style={{ position: "absolute", inset: 0, opacity: isLight ? 0.4 : 0.6 }} />
 
         <div
           style={{
@@ -123,6 +127,7 @@ export function CommitteePage() {
               textTransform: "uppercase",
               marginBottom: "24px",
               transition: "color 0.2s ease",
+              opacity: isLight ? 1 : 0.8
             }}
             onMouseEnter={(e) => {
               (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-primary)";
@@ -153,7 +158,7 @@ export function CommitteePage() {
               fontFamily: "var(--font-headline)",
               fontSize: "clamp(32px, 5vw, 56px)",
               fontWeight: 700,
-              color: "var(--stellar-white)",
+              color: "var(--text-primary)",
               lineHeight: 1.1,
               letterSpacing: "-0.02em",
               marginBottom: "8px",
@@ -170,7 +175,8 @@ export function CommitteePage() {
               color: "var(--cyber-gold)",
               letterSpacing: "0.12em",
               textTransform: "uppercase",
-              opacity: 0.8
+              opacity: isLight ? 1 : 0.8,
+              fontWeight: isLight ? 600 : 400
             }}
           >
             {committee.tagline}
@@ -231,7 +237,7 @@ export function CommitteePage() {
                 }}
               >
                 {committee.tags.map((tag) => (
-                  <span key={tag} className="tech-tag">
+                  <span key={tag} className="tech-tag" style={{ opacity: isLight ? 1 : 0.9 }}>
                     {tag}
                   </span>
                 ))}
@@ -305,7 +311,7 @@ export function CommitteePage() {
                           const imgEl = e.currentTarget.querySelector('img');
                           if (imgEl) imgEl.style.transform = "scale(1.05)";
                           e.currentTarget.style.borderColor = "var(--electric-blue)";
-                          e.currentTarget.style.boxShadow = "0 8px 24px rgba(0, 0, 0, 0.2)";
+                          e.currentTarget.style.boxShadow = isLight ? "0 8px 20px rgba(0, 0, 0, 0.08)" : "0 8px 24px rgba(0, 0, 0, 0.2)";
                         }}
                         onMouseLeave={(e) => {
                           const imgEl = e.currentTarget.querySelector('img');
@@ -322,7 +328,7 @@ export function CommitteePage() {
                             height: "auto",
                             display: "block",
                             transition: "transform 0.6s cubic-bezier(0.2, 0, 0.2, 1)",
-                            filter: "brightness(0.85)",
+                            filter: isLight ? "brightness(1)" : "brightness(0.85)",
                           }}
                         />
                         {img.caption && (
@@ -444,6 +450,7 @@ export function CommitteePage() {
                     color: "var(--electric-blue)",
                     textTransform: "uppercase",
                     marginBottom: "20px",
+                    opacity: isLight ? 1 : 0.9
                   }}
                 >
                   // Committee Details
@@ -494,6 +501,7 @@ export function CommitteePage() {
                           color: "var(--text-muted)",
                           letterSpacing: "0.12em",
                           textTransform: "uppercase",
+                          opacity: isLight ? 1 : 0.8
                         }}
                       >
                         {m.label}
@@ -512,7 +520,7 @@ export function CommitteePage() {
                         gap: "8px",
                         marginBottom: "16px",
                         padding: "12px",
-                        background: "rgba(0, 98, 155, 0.05)",
+                        background: isLight ? "rgba(0, 90, 135, 0.05)" : "rgba(0, 98, 155, 0.05)",
                         borderRadius: "4px",
                         border: "1px solid var(--glass-border)",
                       }}
@@ -542,6 +550,7 @@ export function CommitteePage() {
                       color: "var(--text-muted)",
                       textTransform: "uppercase",
                       marginBottom: "8px",
+                      opacity: isLight ? 1 : 0.8
                     }}
                   >
                     Committee Chair
@@ -586,9 +595,9 @@ export function CommitteePage() {
                   <div
                     style={{
                       padding: "12px",
-                      background: "rgba(0,200,83,0.06)",
+                      background: isLight ? "rgba(22, 163, 74, 0.06)" : "rgba(0,200,83,0.06)",
                       borderRadius: "4px",
-                      border: "1px solid rgba(0,200,83,0.12)",
+                      border: isLight ? "1px solid rgba(22, 163, 74, 0.12)" : "1px solid rgba(0,200,83,0.12)",
                       marginBottom: "20px",
                     }}
                   >
@@ -616,6 +625,7 @@ export function CommitteePage() {
                         color: "var(--text-muted)",
                         textTransform: "uppercase",
                         marginBottom: "10px",
+                        opacity: isLight ? 1 : 0.8
                       }}
                     >
                       Follow Us
@@ -722,13 +732,14 @@ export function CommitteePage() {
                           color: "var(--cyber-gold)",
                           letterSpacing: "0.1em",
                           textTransform: "uppercase",
-                          opacity: 0.7
+                          opacity: isLight ? 1 : 0.7,
+                          fontWeight: isLight ? 600 : 400
                         }}
                       >
                         {c.tagline}
                       </p>
                     </div>
-                    <ChevronRight size={16} style={{ color: "var(--text-muted)" }} />
+                    <ChevronRight size={16} style={{ color: isLight ? "var(--electric-blue)" : "var(--text-muted)" }} />
                   </div>
                 </Link>
               ))}

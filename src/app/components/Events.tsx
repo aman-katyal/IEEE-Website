@@ -1,5 +1,6 @@
 import { MapPin, ChevronRight, Clock, CalendarPlus, ExternalLink, Loader2 } from "lucide-react";
 import { Link } from "react-router";
+import { useTheme } from "next-themes";
 import { useGoogleCalendarEvents, type CalendarEvent } from "../../hooks/useGoogleCalendarEvents";
 
 // ─── Fallback events (used if Google Calendar API fails) ────────
@@ -87,6 +88,8 @@ function EventSkeleton() {
 // ─── Component ──────────────────────────────────────────────────
 export function Events() {
   const { events: liveEvents, loading } = useGoogleCalendarEvents();
+  const { theme } = useTheme();
+  const isLight = theme === "light";
   const events = liveEvents.length > 0 ? liveEvents : fallbackEvents;
   const isLive = liveEvents.length > 0;
   
@@ -106,7 +109,7 @@ export function Events() {
       {/* Background grid */}
       <div
         className="ieee-grid-bg"
-        style={{ position: "absolute", inset: 0, opacity: 0.4 }}
+        style={{ position: "absolute", inset: 0, opacity: isLight ? 0.6 : 0.4 }}
       />
 
       <div
@@ -138,7 +141,7 @@ export function Events() {
                 fontFamily: "var(--font-headline)",
                 fontSize: "clamp(28px, 4vw, 44px)",
                 fontWeight: 700,
-                color: "var(--stellar-white)",
+                color: "var(--text-primary)",
                 lineHeight: 1.15,
                 letterSpacing: "-0.02em",
               }}
@@ -165,7 +168,7 @@ export function Events() {
                   fontFamily: "var(--font-mono)",
                   fontSize: "0.6rem",
                   letterSpacing: "0.12em",
-                  color: "#00C853",
+                  color: isLight ? "#16A34A" : "#00C853",
                   textTransform: "uppercase",
                 }}
               >
@@ -174,8 +177,8 @@ export function Events() {
                     width: 6,
                     height: 6,
                     borderRadius: "50%",
-                    background: "#00C853",
-                    boxShadow: "0 0 8px rgba(0,200,83,0.6)",
+                    background: isLight ? "#16A34A" : "#00C853",
+                    boxShadow: isLight ? "none" : "0 0 8px rgba(0,200,83,0.6)",
                     display: "inline-block",
                   }}
                 />
@@ -190,6 +193,7 @@ export function Events() {
                 letterSpacing: "0.15em",
                 color: "var(--text-muted)",
                 textTransform: "uppercase",
+                opacity: isLight ? 1 : 0.8
               }}
             >
               {loading ? "..." : `${events.length} events`}
@@ -285,7 +289,7 @@ export function Events() {
                             fontFamily: "var(--font-mono)",
                             fontSize: "0.55rem",
                             color: "var(--text-muted)",
-                            opacity: 0.6,
+                            opacity: isLight ? 1 : 0.6,
                           }}
                         >
                           {fmtYear(event.start)}
@@ -299,7 +303,7 @@ export function Events() {
                           width: "1px",
                           alignSelf: "stretch",
                           background: "var(--text-muted)",
-                          opacity: 0.1,
+                          opacity: isLight ? 0.2 : 0.1,
                           flexShrink: 0,
                         }}
                       />
@@ -311,7 +315,7 @@ export function Events() {
                             fontFamily: "var(--font-headline)",
                             fontSize: "clamp(15px, 4vw, 16px)",
                             fontWeight: 600,
-                            color: "var(--stellar-white)",
+                            color: "var(--text-primary)",
                             marginBottom: "4px",
                             lineHeight: 1.3,
                           }}
@@ -330,6 +334,7 @@ export function Events() {
                               display: "-webkit-box",
                               WebkitLineClamp: 2,
                               WebkitBoxOrient: "vertical",
+                              opacity: isLight ? 1 : 0.9
                             }}
                           >
                             {event.description}
@@ -348,7 +353,7 @@ export function Events() {
                             <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
                               <Clock
                                 size={11}
-                                style={{ color: "var(--text-muted)", flexShrink: 0 }}
+                                style={{ color: isLight ? "var(--electric-blue)" : "var(--text-muted)", flexShrink: 0 }}
                               />
                               <span
                                 style={{
@@ -356,6 +361,7 @@ export function Events() {
                                   fontSize: "0.62rem",
                                   color: "var(--text-muted)",
                                   letterSpacing: "0.06em",
+                                  opacity: isLight ? 1 : 0.8
                                 }}
                               >
                                 {fmtTime(event.start, event.end)}
@@ -366,7 +372,7 @@ export function Events() {
                             <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
                               <MapPin
                                 size={11}
-                                style={{ color: "var(--text-muted)", flexShrink: 0 }}
+                                style={{ color: isLight ? "var(--electric-blue)" : "var(--text-muted)", flexShrink: 0 }}
                               />
                               <span
                                 style={{
@@ -377,7 +383,8 @@ export function Events() {
                                   overflow: "hidden",
                                   whiteSpace: "nowrap",
                                   textOverflow: "ellipsis",
-                                  maxWidth: "150px"
+                                  maxWidth: "150px",
+                                  opacity: isLight ? 1 : 0.8
                                 }}
                               >
                                 {event.location}
