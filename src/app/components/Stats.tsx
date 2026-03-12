@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTheme } from "next-themes";
 
 const stats = [
   { value: 11, suffix: "", label: "Committees", sublabel: "Technical & support" },
@@ -117,6 +118,9 @@ function StatItem({ value, suffix, prefix = "", label, sublabel, delay }: {
 }
 
 export function Stats() {
+  const { theme } = useTheme();
+  const isLight = theme === "light";
+
   return (
     <section
       id="research"
@@ -136,7 +140,7 @@ export function Stats() {
           height: "1px",
           background:
             "linear-gradient(90deg, transparent 0%, var(--electric-blue) 30%, var(--cyber-gold) 50%, var(--electric-blue) 70%, transparent 100%)",
-          opacity: 0.5
+          opacity: isLight ? 0.2 : 0.5
         }}
       />
       <div
@@ -148,7 +152,7 @@ export function Stats() {
           height: "1px",
           background:
             "linear-gradient(90deg, transparent 0%, var(--electric-blue) 50%, transparent 100%)",
-          opacity: 0.3
+          opacity: isLight ? 0.15 : 0.3
         }}
       />
 
@@ -161,8 +165,9 @@ export function Stats() {
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          background:
-            "radial-gradient(ellipse, rgba(0,98,155,0.15) 0%, transparent 70%)",
+          background: isLight
+            ? "radial-gradient(ellipse, rgba(0,98,155,0.06) 0%, transparent 70%)"
+            : "radial-gradient(ellipse, rgba(0,98,155,0.15) 0%, transparent 70%)",
         }}
       />
 

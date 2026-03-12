@@ -22,20 +22,20 @@
 }
 
 .light {
-  --boiler-black: #FFFFFF;
+  --boiler-black: #F8FAFC;
   --deep-space-blue: #F1F5F9;
   --electric-blue: #005A87; /* Slightly darker for better light-mode contrast */
   --midnight-gray: #F8FAFC;
   --cyber-gold: #85754D; /* Darker Purdue Gold for text legibility on white */
   --stellar-white: #0F172A;
-  
+
   --text-primary: #0F172A;
   --text-secondary: #334155;
   --text-muted: #64748B;
-  
-  --glass-bg: rgba(255, 255, 255, 0.8);
-  --glass-border: rgba(0, 0, 0, 0.1);
-  --glass-shadow: rgba(0, 0, 0, 0.05);
+
+  --glass-bg: rgba(255, 255, 255, 0.4); /* More transparent for cleaner look */
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-shadow: rgba(0, 0, 0, 0.04);
 }
 
 /* ─── Background Grid ──────────────────────────────────── */
@@ -48,8 +48,8 @@
 
 .light .ieee-grid-bg {
   background-image:
-    linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+    linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
 }
 
 /* ─── Navigation ──────────────────────────────────── */
@@ -182,10 +182,20 @@
 
 .glass-card:hover {
   border-color: var(--electric-blue);
-  box-shadow:
-    0 8px 32px var(--glass-shadow),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  box-shadow: 0 12px 40px var(--glass-shadow);
   transform: translateY(-4px);
+}
+
+.light .glass-card:hover {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+.light .glass-card {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+.light .glass-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
 }
 
 /* ─── Status Badge ──────────────────────────────────── */
@@ -230,6 +240,10 @@
   background: linear-gradient(90deg, transparent, rgba(235, 211, 169, 0.4), transparent);
 }
 
+.light .gold-divider {
+  background: linear-gradient(90deg, transparent, rgba(133, 117, 77, 0.3), transparent);
+}
+
 /* ─── Electric Glow (hero accent) ──────────────────────────────────── */
 .electric-glow-orb {
   position: absolute;
@@ -240,7 +254,11 @@
 }
 
 .light .electric-glow-orb {
-  opacity: 0.1 !important;
+  display: none;
+}
+
+.light .glass-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
 }
 
 /* ─── Stat Number ──────────────────────────────────── */
@@ -292,12 +310,8 @@
 
 .marquee-track {
   display: flex;
-  animation: marquee-slide 28s linear infinite;
+  animation: marquee-slide 40s linear infinite;
   width: max-content;
-}
-
-.marquee-track:hover {
-  animation-play-state: paused;
 }
 
 /* ─── Responsive Grid Utilities ──────────────────────────────────── */

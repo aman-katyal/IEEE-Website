@@ -4,6 +4,8 @@ import { Link, useLocation, useNavigate } from "react-router";
 import { ThemeToggle } from "./ThemeToggle";
 import { IeeePurdueLogo } from "./IeeePurdueLogo";
 
+import { committees } from "../../data/committees";
+
 const navLinks = [
   { 
     label: "About", 
@@ -13,7 +15,11 @@ const navLinks = [
       { label: "Constitution", href: "/constitution" },
     ]
   },
-  { label: "Committees", href: "/committees" },
+  { 
+    label: "Committees", 
+    href: "/committees",
+    dropdown: committees.map(c => ({ label: c.shortName, href: `/committee/${c.id}` }))
+  },
   { label: "Events", href: "/calendar" },
   { label: "Officers", href: "/officers" },
   { label: "Join", href: "/join" },
@@ -22,7 +28,7 @@ const navLinks = [
 export function Navigation() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [activeLink, setActiveLink] = useState("");
   const dropdownTimeoutRef = useRef<number | null>(null);
   const location = useLocation();
@@ -35,14 +41,14 @@ export function Navigation() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const handleMouseEnter = () => {
+  const handleMouseEnter = (label: string) => {
     if (dropdownTimeoutRef.current) window.clearTimeout(dropdownTimeoutRef.current);
-    setDropdownOpen(true);
+    setOpenDropdown(label);
   };
 
   const handleMouseLeave = () => {
     dropdownTimeoutRef.current = window.setTimeout(() => {
-      setDropdownOpen(false);
+      setOpenDropdown(null);
     }, 150);
   };
 
@@ -58,7 +64,7 @@ export function Navigation() {
   const handleNav = (href: string) => {
     setActiveLink(href);
     setMenuOpen(false);
-    setDropdownOpen(false);
+    setOpenDropdown(null);
 
     if (href.startsWith("/")) {
       navigate(href);
@@ -160,10 +166,11 @@ export function Navigation() {
                 <div 
                   key={link.label} 
                   style={{ position: "relative" }}
-                  onMouseEnter={handleMouseEnter}
+                  onMouseEnter={() => handleMouseEnter(link.label)}
                   onMouseLeave={handleMouseLeave}
                 >
-                  <button
+                  <a
+                    href={link.href}
                     className="nav-link"
                     style={{
                       display: "flex",
@@ -173,22 +180,24 @@ export function Navigation() {
                       border: "none",
                       cursor: "pointer",
                       padding: "24px 0",
-                      color: location.pathname.startsWith(link.href) || location.pathname === "/constitution"
+                      textDecoration: "none",
+                      color: location.pathname.startsWith(link.href) || (link.label === "About" && location.pathname === "/constitution")
                         ? "var(--text-primary)"
                         : "var(--text-secondary)",
                     }}
+                    onClick={(e) => { e.preventDefault(); handleNav(link.href); }}
                   >
                     {link.label}
-                    <ChevronDown size={14} style={{ transform: dropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
-                  </button>
+                    <ChevronDown size={14} style={{ transform: openDropdown === link.label ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                  </a>
                   
-                  {dropdownOpen && (
+                  {openDropdown === link.label && (
                     <div
                       style={{
                         position: "absolute",
                         top: "100%",
                         left: "0",
-                        width: "180px",
+                        width: link.label === "Committees" ? "220px" : "180px",
                         background: "var(--boiler-black)",
                         border: "1px solid var(--glass-border)",
                         borderRadius: "4px",
@@ -309,15 +318,19 @@ export function Navigation() {
               <div key={link.label}>
                 {link.dropdown ? (
                   <div style={{ marginBottom: "12px" }}>
-                    <div style={{ 
-                      fontFamily: "var(--font-body)", 
-                      fontSize: "0.8rem", 
-                      color: "var(--cyber-gold)", 
-                      padding: "20px 0 8px",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.15em",
-                      fontWeight: 600
-                    }}>
+                    <div 
+                      onClick={() => handleNav(link.href)}
+                      style={{ 
+                        fontFamily: "var(--font-body)", 
+                        fontSize: "0.8rem", 
+                        color: "var(--cyber-gold)", 
+                        padding: "20px 0 8px",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.15em",
+                        fontWeight: 600,
+                        cursor: "pointer"
+                      }}
+                    >
                       {link.label}
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>

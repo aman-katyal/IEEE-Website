@@ -1,7 +1,11 @@
 import { Mail, Users, User } from "lucide-react";
+import { useTheme } from "next-themes";
 import { leaders } from "../../data/leadership";
 
 export function OfficersPage() {
+  const { theme } = useTheme();
+  const isLight = theme === "light";
+
   return (
     <section
       style={{
@@ -101,27 +105,61 @@ export function OfficersPage() {
                 overflow: "hidden"
               }}
             >
-              {/* Image Placeholder / Container */}
+              {/* Image Container with masked fade */}
               <div
                 style={{
                   width: "100%",
                   aspectRatio: "1/1",
-                  background: "rgba(128, 128, 128, 0.05)",
+                  background: isLight ? "rgba(0, 0, 0, 0.03)" : "rgba(0, 0, 0, 0.2)",
                   borderRadius: "4px",
                   marginBottom: "24px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   border: "1px solid var(--glass-border)",
+                  position: "relative",
                   overflow: "hidden"
                 }}
               >
                 {officer.image ? (
-                  <img 
-                    src={officer.image} 
-                    alt={officer.name} 
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                  />
+                  <>
+                    <img 
+                      src={officer.image} 
+                      alt={officer.name} 
+                      style={{ 
+                        width: "100%", 
+                        height: "100%", 
+                        objectFit: "cover",
+                        transition: "transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)"
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
+                      onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                    />
+                    
+                    {/* Bottom Gradient Fade (Mixes subject into card) */}
+                    <div 
+                      style={{ 
+                        position: "absolute", 
+                        inset: 0, 
+                        background: `linear-gradient(to bottom, transparent 60%, ${isLight ? 'rgba(248, 250, 252, 0.9)' : 'rgba(10, 10, 12, 0.9)'} 100%)`,
+                        pointerEvents: "none"
+                      }} 
+                    />
+
+                    {/* Subtle Inner Shadow for Depth */}
+                    <div 
+                      style={{ 
+                        position: "absolute", 
+                        inset: 0, 
+                        boxShadow: "inset 0 0 40px rgba(0,0,0,0.2)",
+                        pointerEvents: "none"
+                      }} 
+                    />
+
+                    {/* Stylized Tech Accents - More prominent */}
+                    <div style={{ position: "absolute", top: "10px", left: "10px", width: "16px", height: "16px", borderTop: "2px solid var(--electric-blue)", borderLeft: "2px solid var(--electric-blue)", opacity: 0.8, zIndex: 2 }} />
+                    <div style={{ position: "absolute", bottom: "10px", right: "10px", width: "16px", height: "16px", borderBottom: "2px solid var(--cyber-gold)", borderRight: "2px solid var(--cyber-gold)", opacity: 0.8, zIndex: 2 }} />
+                  </>
                 ) : (
                   <User size={48} style={{ color: "var(--text-muted)", opacity: 0.3 }} />
                 )}

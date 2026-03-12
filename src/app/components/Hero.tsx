@@ -1,5 +1,6 @@
 import { ChevronDown, Zap } from "lucide-react";
 import { Link, useNavigate } from "react-router";
+import { useTheme } from "next-themes";
 import { committees } from "../../data/committees";
 import { MagneticButton } from "./MagneticButton";
 
@@ -8,10 +9,14 @@ const LAB_IMAGE =
 
 export function Hero() {
   const navigate = useNavigate();
+  const { theme } = useTheme();
+  
   const handleScroll = () => {
     const el = document.querySelector("#about");
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
+
+  const isLight = theme === "light";
 
   return (
     <section
@@ -33,7 +38,7 @@ export function Hero() {
           backgroundImage: `url('${LAB_IMAGE}')`,
           backgroundSize: "cover",
           backgroundPosition: "center 30%",
-          opacity: 0.18,
+          opacity: isLight ? 0.3 : 0.25,
         }}
       />
 
@@ -42,8 +47,9 @@ export function Hero() {
         style={{
           position: "absolute",
           inset: 0,
-          background:
-            "linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.8) 85%, var(--boiler-black) 100%)",
+          background: isLight 
+            ? "linear-gradient(to bottom, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 40%, rgba(248,250,252,0.8) 85%, var(--boiler-black) 100%)"
+            : "linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.8) 85%, var(--boiler-black) 100%)",
         }}
       />
 
@@ -66,8 +72,9 @@ export function Hero() {
           top: "-100px",
           left: "50%",
           transform: "translateX(-50%)",
-          background:
-            "radial-gradient(circle, rgba(0,98,155,0.22) 0%, transparent 65%)",
+          background: isLight
+            ? "radial-gradient(circle, rgba(0,98,155,0.08) 0%, transparent 65%)"
+            : "radial-gradient(circle, rgba(0,98,155,0.22) 0%, transparent 65%)",
         }}
       />
       <div
@@ -77,8 +84,9 @@ export function Hero() {
           height: "400px",
           bottom: "80px",
           right: "-60px",
-          background:
-            "radial-gradient(circle, rgba(0,98,155,0.14) 0%, transparent 70%)",
+          background: isLight
+            ? "radial-gradient(circle, rgba(0,98,155,0.06) 0%, transparent 70%)"
+            : "radial-gradient(circle, rgba(0,98,155,0.14) 0%, transparent 70%)",
           animationDelay: "2s"
         }}
       />
@@ -89,8 +97,9 @@ export function Hero() {
           height: "300px",
           top: "30%",
           left: "-40px",
-          background:
-            "radial-gradient(circle, rgba(235,211,169,0.05) 0%, transparent 70%)",
+          background: isLight
+            ? "radial-gradient(circle, rgba(133,117,77,0.03) 0%, transparent 70%)"
+            : "radial-gradient(circle, rgba(235,211,169,0.05) 0%, transparent 70%)",
           animationDelay: "4s"
         }}
       />
@@ -124,15 +133,15 @@ export function Hero() {
               display: "flex",
               alignItems: "center",
               gap: "6px",
-              background: "rgba(0,98,155,0.15)",
-              border: "1px solid rgba(0,98,155,0.4)",
+              background: isLight ? "rgba(0,90,135,0.08)" : "rgba(0,98,155,0.15)",
+              border: isLight ? "1px solid rgba(0,90,135,0.2)" : "1px solid rgba(0,98,155,0.4)",
               borderRadius: "2px",
               padding: "6px 14px 6px 10px",
             }}
           >
             <Zap
               size={12}
-              style={{ color: "#00629B", fill: "#00629B" }}
+              style={{ color: "var(--electric-blue)", fill: "var(--electric-blue)" }}
             />
             <span
               style={{
@@ -161,7 +170,7 @@ export function Hero() {
                 height: "6px",
                 borderRadius: "50%",
                 background: "#00C853",
-                boxShadow: "0 0 8px #00C853",
+                boxShadow: isLight ? "none" : "0 0 8px #00C853",
                 animation: "pulse-dot 2s ease-in-out infinite",
               }}
             />
@@ -187,7 +196,7 @@ export function Hero() {
             fontSize: "clamp(34px, 5.5vw, 72px)",
             fontWeight: 700,
             lineHeight: 1.1,
-            color: "var(--stellar-white)",
+            color: "var(--text-primary)",
             maxWidth: "1000px",
             marginBottom: "32px",
             letterSpacing: "-0.02em",
@@ -197,7 +206,7 @@ export function Hero() {
           <span
             style={{
               color: "var(--electric-blue)",
-              textShadow: "0 0 40px rgba(0,98,155,0.3)",
+              textShadow: isLight ? "none" : "0 0 40px rgba(0,98,155,0.3)",
             }}
           >
             innovation
@@ -299,8 +308,11 @@ export function Hero() {
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "12px 24px",
+            justifyContent: "center", // Center the tiles
+            gap: "10px 16px",
             flexWrap: "wrap",
+            maxWidth: "900px", // Better containment
+            margin: "0 auto"
           }}
         >
           {committees.map((c) => (
@@ -308,21 +320,33 @@ export function Hero() {
               key={c.id}
               to={`/committee/${c.id}`}
               className="tech-tag"
+              title={c.tagline} // Native tooltip for quick info
               style={{ 
                 textDecoration: "none", 
                 cursor: "pointer", 
-                transition: "all 0.2s ease",
-                padding: "4px 10px"
+                transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+                padding: "6px 14px",
+                fontSize: "0.68rem",
+                background: "rgba(128, 128, 128, 0.03)",
+                borderColor: "var(--glass-border)",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px"
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "rgba(0,98,155,0.6)";
-                e.currentTarget.style.color = "#00629B";
+                e.currentTarget.style.borderColor = "var(--electric-blue)";
+                e.currentTarget.style.color = "var(--electric-blue)";
+                e.currentTarget.style.transform = "translateY(-2px)";
+                e.currentTarget.style.background = "rgba(0, 98, 155, 0.05)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "rgba(235,211,169,0.2)";
-                e.currentTarget.style.color = "rgba(235,211,169,0.6)";
+                e.currentTarget.style.borderColor = "var(--glass-border)";
+                e.currentTarget.style.color = "var(--text-secondary)";
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.background = "rgba(128, 128, 128, 0.03)";
               }}
             >
+              <div style={{ width: "4px", height: "4px", borderRadius: "50%", background: "currentColor", opacity: 0.5 }} />
               {c.shortName}
             </Link>
           ))}

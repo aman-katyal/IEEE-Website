@@ -1,8 +1,12 @@
 import { ArrowUpRight, Users, Trophy, Cpu } from "lucide-react";
 import { Link } from "react-router";
+import { useTheme } from "next-themes";
 import { committees, type Committee } from "../../data/committees";
 
 function CommitteeCard({ c }: { c: Committee }) {
+  const { theme } = useTheme();
+  const isLight = theme === "light";
+
   return (
     <Link
       to={`/committee/${c.id}`}
@@ -33,26 +37,27 @@ function CommitteeCard({ c }: { c: Committee }) {
               width: "100%",
               height: "100%",
               objectFit: "cover",
-              filter: "brightness(0.65) saturate(0.8)",
+              filter: isLight ? "brightness(0.9) saturate(1.1)" : "brightness(0.65) saturate(0.8)",
               transition: "transform 0.5s ease, filter 0.4s ease",
             }}
             onMouseEnter={(e) => {
               (e.currentTarget as HTMLImageElement).style.transform = "scale(1.06)";
-              (e.currentTarget as HTMLImageElement).style.filter = "brightness(0.8) saturate(0.9)";
+              (e.currentTarget as HTMLImageElement).style.filter = isLight ? "brightness(1) saturate(1.2)" : "brightness(0.8) saturate(0.9)";
             }}
             onMouseLeave={(e) => {
               (e.currentTarget as HTMLImageElement).style.transform = "scale(1)";
-              (e.currentTarget as HTMLImageElement).style.filter = "brightness(0.65) saturate(0.8)";
+              (e.currentTarget as HTMLImageElement).style.filter = isLight ? "brightness(0.9) saturate(1.1)" : "brightness(0.65) saturate(0.8)";
             }}
           />
 
-          {/* Blue tint overlay */}
+          {/* Theme-aware overlay */}
           <div
             style={{
               position: "absolute",
               inset: 0,
-              background:
-                "linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.8) 100%)",
+              background: isLight
+                ? "linear-gradient(to bottom, transparent 50%, rgba(241,245,249,0.3) 100%)"
+                : "linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.8) 100%)",
             }}
           />
 
@@ -103,7 +108,7 @@ function CommitteeCard({ c }: { c: Committee }) {
               letterSpacing: "0.1em",
               textTransform: "uppercase",
               marginBottom: "14px",
-              opacity: 0.8
+              opacity: isLight ? 1 : 0.8
             }}
           >
             {c.tagline}
@@ -236,6 +241,9 @@ function CommitteeCard({ c }: { c: Committee }) {
 }
 
 export function Committees() {
+  const { theme } = useTheme();
+  const isLight = theme === "light";
+
   return (
     <section
       id="committees"
@@ -255,7 +263,7 @@ export function Committees() {
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          opacity: 0.5,
+          opacity: isLight ? 0 : 0.5, // Hidden in light mode per guidelines
         }}
       />
 

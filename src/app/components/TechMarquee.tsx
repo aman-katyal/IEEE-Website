@@ -55,7 +55,7 @@ export function TechMarquee() {
         }}
       />
 
-      <div className="marquee-track">
+      <div className="marquee-track" style={{ willChange: "transform" }}>
         {[...partners, ...partners].map((p, i) => (
           <div
             key={`${p}-${i}`}
@@ -73,9 +73,9 @@ export function TechMarquee() {
                 fontSize: "0.72rem",
                 letterSpacing: "0.18em",
                 textTransform: "uppercase",
-                color: "var(--text-muted)",
+                color: "var(--text-primary)",
                 whiteSpace: "nowrap",
-                opacity: 0.4
+                opacity: 1
               }}
             >
               {p}
@@ -87,7 +87,7 @@ export function TechMarquee() {
                 borderRadius: "50%",
                 background: "var(--electric-blue)",
                 flexShrink: 0,
-                opacity: 0.5
+                opacity: 0.8
               }}
             />
           </div>

@@ -1,8 +1,18 @@
 import { ChevronLeft, Calendar as CalendarIcon, ExternalLink, Info } from "lucide-react";
 import { Link } from "react-router";
+import { useTheme } from "next-themes";
 
 export function CalendarPage() {
-  const calendarBaseUrl = "https://calendar.google.com/calendar/embed?src=7e80819a448e91ef81721772e0c6d9236076b45ad51343474265c1b7d4a363f1%40group.calendar.google.com&ctz=America%2FIndiana%2FIndianapolis";
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+  
+  // Official IEEE Blue for the calendar accents
+  const calendarColor = "00629B";
+  const calendarBaseUrl = `https://calendar.google.com/calendar/embed?src=7e80819a448e91ef81721772e0c6d9236076b45ad51343474265c1b7d4a363f1%40group.calendar.google.com&ctz=America%2FIndiana%2FIndianapolis&color=%23${calendarColor}`;
+
+  // CSS Filter to make Google Calendar look dark
+  // We invert it, then rotate hue to keep the blues blue, then adjust contrast/brightness
+  const darkCalendarFilter = "invert(90%) hue-rotate(180deg) brightness(1.1) contrast(90%)";
 
   return (
     <section
@@ -57,10 +67,16 @@ export function CalendarPage() {
             textTransform: "uppercase",
             letterSpacing: "0.1em",
             marginBottom: "32px",
-            transition: "color 0.2s ease",
+            transition: "all 0.2s ease",
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = "var(--electric-blue)")}
-          onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-muted)")}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = "var(--electric-blue)";
+            e.currentTarget.style.transform = "translateX(-4px)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = "var(--text-muted)";
+            e.currentTarget.style.transform = "translateX(0)";
+          }}
         >
           <ChevronLeft size={14} />
           Back to Home
@@ -117,16 +133,28 @@ export function CalendarPage() {
           className="glass-card" 
           style={{ 
             padding: "8px", 
-            background: "rgba(128, 128, 128, 0.05)",
+            background: isDark ? "rgba(0, 0, 0, 0.2)" : "rgba(128, 128, 128, 0.05)",
             borderColor: "var(--glass-border)",
             marginBottom: "64px",
             overflowX: "auto"
           }}
         >
-          <div style={{ borderRadius: "4px", overflow: "hidden", background: "#fff", minWidth: "600px" }}>
+          <div style={{ 
+            borderRadius: "4px", 
+            overflow: "hidden", 
+            background: isDark ? "#111" : "#fff", 
+            minWidth: "600px",
+            transition: "all 0.4s ease"
+          }}>
             <iframe
               src={`${calendarBaseUrl}&mode=MONTH&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=1&showCalendars=0&showTz=0`}
-              style={{ border: 0, width: "100%", height: "clamp(500px, 70vh, 800px)" }}
+              style={{ 
+                border: 0, 
+                width: "100%", 
+                height: "clamp(500px, 70vh, 800px)",
+                filter: isDark ? darkCalendarFilter : "none",
+                transition: "filter 0.4s ease"
+              }}
               frameBorder="0"
               scrolling="no"
             ></iframe>
@@ -151,14 +179,25 @@ export function CalendarPage() {
           className="glass-card" 
           style={{ 
             padding: "8px", 
-            background: "rgba(128, 128, 128, 0.05)",
+            background: isDark ? "rgba(0, 0, 0, 0.2)" : "rgba(128, 128, 128, 0.05)",
             borderColor: "var(--glass-border)"
           }}
         >
-          <div style={{ borderRadius: "4px", overflow: "hidden", background: "#fff" }}>
+          <div style={{ 
+            borderRadius: "4px", 
+            overflow: "hidden", 
+            background: isDark ? "#111" : "#fff",
+            transition: "all 0.4s ease"
+          }}>
             <iframe
               src={`${calendarBaseUrl}&mode=AGENDA&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=0&showCalendars=0&showTz=0`}
-              style={{ border: 0, width: "100%", height: "500px" }}
+              style={{ 
+                border: 0, 
+                width: "100%", 
+                height: "500px",
+                filter: isDark ? darkCalendarFilter : "none",
+                transition: "filter 0.4s ease"
+              }}
               frameBorder="0"
               scrolling="no"
             ></iframe>
