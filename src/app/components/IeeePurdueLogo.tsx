@@ -7,17 +7,17 @@ interface IeeePurdueLogoProps extends React.ImgHTMLAttributes<HTMLImageElement> 
 
 /**
  * IEEE Purdue Logo Component
- * - Temporarily using processed PNG for better stability
- * - Added theme-aware styling to make it pop in Light Mode
+ * - Uses the transparent PNG logo asset
+ * - Responsive to light/dark modes with subtle filters
  */
 export const IeeePurdueLogo: React.FC<IeeePurdueLogoProps> = (props) => {
   const { theme } = useTheme();
   const isLight = theme === 'light';
 
   return (
-    <img 
-      src="/images/logo/logo_clean.png" 
-      alt="IEEE Purdue Logo" 
+    <img
+      src="/images/logo/logo_clean.png"
+      alt="IEEE Purdue Logo"
       {...props}
       style={{
         display: 'block',

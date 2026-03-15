@@ -1,22 +1,45 @@
 import { ChevronDown, Zap } from "lucide-react";
 import { Link, useNavigate } from "react-router";
 import { useTheme } from "next-themes";
-import { committees } from "../../data/committees";
+import { motion } from "motion/react";
+import { committees as committeeData } from "../../data/committees";
 import { MagneticButton } from "./MagneticButton";
 
 const LAB_IMAGE =
   "https://images.unsplash.com/photo-1619834043185-acbe47811e6a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlbmdpbmVlcmluZyUyMHJlc2VhcmNoJTIwbGFiJTIwZGFyayUyMGhpZ2glMjB0ZWNofGVufDF8fHx8MTc3MzE4NjE2N3ww&ixlib=rb-4.1.0&q=80&w=1080";
 
+const MotionLink = motion(Link);
+
 export function Hero() {
   const navigate = useNavigate();
   const { theme } = useTheme();
-  
+
   const handleScroll = () => {
     const el = document.querySelector("#about");
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
   const isLight = theme === "light";
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05,
+        delayChildren: 0.6
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 15 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] }
+    }
+  };
 
   return (
     <section
@@ -77,35 +100,19 @@ export function Hero() {
             : "radial-gradient(circle, rgba(0,98,155,0.22) 0%, transparent 65%)",
         }}
       />
-      <div
-        className="electric-glow-orb animate-glow-pulse-no-x"
-        style={{
-          width: "400px",
-          height: "400px",
-          bottom: "80px",
-          right: "-60px",
-          background: isLight
-            ? "radial-gradient(circle, rgba(0,98,155,0.06) 0%, transparent 70%)"
-            : "radial-gradient(circle, rgba(0,98,155,0.14) 0%, transparent 70%)",
-          animationDelay: "2s"
-        }}
-      />
-      <div
-        className="electric-glow-orb animate-glow-pulse-no-x"
-        style={{
-          width: "300px",
-          height: "300px",
-          top: "30%",
-          left: "-40px",
-          background: isLight
-            ? "radial-gradient(circle, rgba(133,117,77,0.03) 0%, transparent 70%)"
-            : "radial-gradient(circle, rgba(235,211,169,0.05) 0%, transparent 70%)",
-          animationDelay: "4s"
-        }}
-      />
 
       {/* Content */}
-      <div
+      <motion.div
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={{
+          visible: {
+            transition: {
+              staggerChildren: 0.1
+            }
+          }
+        }}
         style={{
           position: "relative",
           zIndex: 10,
@@ -118,8 +125,8 @@ export function Hero() {
         }}
       >
         {/* Eyebrow Tag */}
-        <div
-          className="animate-fade-in-up opacity-0-init stagger-1"
+        <motion.div
+          variants={itemVariants}
           style={{
             display: "flex",
             flexWrap: "wrap",
@@ -139,10 +146,7 @@ export function Hero() {
               padding: "6px 14px 6px 10px",
             }}
           >
-            <Zap
-              size={12}
-              style={{ color: "var(--electric-blue)", fill: "var(--electric-blue)" }}
-            />
+            <Zap size={12} style={{ color: "var(--electric-blue)", fill: "var(--electric-blue)" }} />
             <span
               style={{
                 fontFamily: "var(--font-mono)",
@@ -157,23 +161,8 @@ export function Hero() {
           </div>
 
           {/* Status indicator */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-            }}
-          >
-            <div
-              style={{
-                width: "6px",
-                height: "6px",
-                borderRadius: "50%",
-                background: "#00C853",
-                boxShadow: isLight ? "none" : "0 0 8px #00C853",
-                animation: "pulse-dot 2s ease-in-out infinite",
-              }}
-            />
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#00C853", animation: "pulse-dot 2s ease-in-out infinite" }} />
             <span
               style={{
                 fontFamily: "var(--font-mono)",
@@ -181,17 +170,16 @@ export function Hero() {
                 letterSpacing: "0.15em",
                 color: "var(--text-muted)",
                 textTransform: "uppercase",
-                opacity: isLight ? 1 : 0.8
               }}
             >
               Spring 2026 Active
             </span>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Main Headline (Mission Statement) */}
-        <h1
-          className="animate-fade-in-up opacity-0-init stagger-2"
+        {/* Main Headline */}
+        <motion.h1
+          variants={itemVariants}
           style={{
             fontFamily: "var(--font-headline)",
             fontSize: "clamp(34px, 5.5vw, 72px)",
@@ -204,42 +192,30 @@ export function Hero() {
           }}
         >
           “Fostering technological{" "}
-          <span
-            style={{
-              color: "var(--electric-blue)",
-              textShadow: isLight ? "none" : "0 0 40px rgba(0,98,155,0.3)",
-            }}
-          >
+          <span style={{ color: "var(--electric-blue)", textShadow: isLight ? "none" : "0 0 40px rgba(0,98,155,0.3)" }}>
             innovation
           </span>{" "}
           and excellence for the benefit of{" "}
-          <span
-            style={{
-              color: "var(--cyber-gold)",
-            }}
-          >
-            humanity.
-          </span>”
-        </h1>
+          <span style={{ color: "var(--cyber-gold)" }}>humanity.</span>”
+        </motion.h1>
 
-        <p
-          className="animate-fade-in-up opacity-0-init stagger-3"
+        <motion.p
+          variants={itemVariants}
           style={{
             fontFamily: "var(--font-mono)",
             fontSize: "clamp(0.7rem, 1.5vw, 0.85rem)",
             color: "var(--text-muted)",
             letterSpacing: "0.2em",
             textTransform: "uppercase",
-            marginBottom: "48px",
-            opacity: isLight ? 1 : 0.8
+            marginBottom: "48px"
           }}
         >
           — IEEE Mission Statement
-        </p>
+        </motion.p>
 
         {/* CTA Buttons */}
-        <div
-          className="animate-fade-in-up opacity-0-init stagger-4"
+        <motion.div
+          variants={itemVariants}
           style={{
             display: "flex",
             flexWrap: "wrap",
@@ -248,116 +224,60 @@ export function Hero() {
             marginBottom: "72px",
           }}
         >
-          <MagneticButton
-            className="btn-primary"
-            onClick={() => navigate("/committees")}
-            style={{ width: "auto", minWidth: "180px", padding: "16px 32px" }}
-          >
+          <MagneticButton className="btn-primary" onClick={() => navigate("/committees")} style={{ width: "auto", minWidth: "180px", padding: "16px 32px" }}>
             Explore Committees
           </MagneticButton>
-          <MagneticButton
-            className="btn-ghost"
-            onClick={() => navigate("/about")}
-            style={{ width: "auto", minWidth: "180px", padding: "16px 32px" }}
-          >
+          <MagneticButton className="btn-ghost" onClick={() => navigate("/about")} style={{ width: "auto", minWidth: "180px", padding: "16px 32px" }}>
             Learn More
           </MagneticButton>
-
-          {/* Inline Stats (visible on medium+ screens) */}
-          <div
-            style={{ 
-              display: "flex", 
-              gap: "24px",
-              marginLeft: "8px"
-            }}
-            className="hidden sm:flex"
-          >
-            {[
-              { value: "750+", label: "Members" },
-              { value: `${committees.length}`, label: "Committees" },
-            ].map((s) => (
-              <div key={s.label} style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-                <span
-                  style={{
-                    fontFamily: "var(--font-headline)",
-                    fontSize: "22px",
-                    fontWeight: 700,
-                    color: "var(--electric-blue)",
-                    lineHeight: 1,
-                  }}
-                >
-                  {s.value}
-                </span>
-                <span
-                  style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: "0.6rem",
-                    letterSpacing: "0.15em",
-                    color: "var(--text-muted)",
-                    textTransform: "uppercase",
-                    opacity: isLight ? 1 : 0.8
-                  }}
-                >
-                  {s.label}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
+        </motion.div>
 
         {/* Bottom Meta Bar (Technical Committee Tags) */}
-        <div
-          className="animate-fade-in-up opacity-0-init stagger-5"
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
           style={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "center", // Center the tiles
+            justifyContent: "center",
             gap: "10px 16px",
             flexWrap: "wrap",
-            maxWidth: "900px", // Better containment
+            maxWidth: "900px",
             margin: "0 auto"
           }}
         >
-          {committees.map((c) => (
-            <Link
+          {committeeData.map((c) => (
+            <MotionLink
               key={c.id}
               to={`/committee/${c.id}`}
+              variants={itemVariants}
               className="tech-tag"
-              title={c.tagline} // Native tooltip for quick info
               style={{ 
                 textDecoration: "none", 
                 cursor: "pointer", 
                 transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
                 padding: "6px 14px",
                 fontSize: "0.68rem",
-                background: "rgba(128, 128, 128, 0.03)",
-                borderColor: "var(--glass-border)",
                 display: "flex",
                 alignItems: "center",
                 gap: "6px"
               }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "var(--electric-blue)";
-                e.currentTarget.style.color = "var(--electric-blue)";
-                e.currentTarget.style.transform = "translateY(-2px)";
-                e.currentTarget.style.background = "rgba(0, 98, 155, 0.05)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "var(--glass-border)";
-                e.currentTarget.style.color = "var(--text-secondary)";
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.background = "rgba(128, 128, 128, 0.03)";
-              }}
+              whileHover={{ y: -2, backgroundColor: "rgba(0, 98, 155, 0.05)", borderColor: "var(--electric-blue)", color: "var(--electric-blue)" }}
             >
               <div style={{ width: "4px", height: "4px", borderRadius: "50%", background: "currentColor", opacity: 0.5 }} />
               {c.shortName}
-            </Link>
+            </MotionLink>
           ))}
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       {/* Scroll Indicator */}
-      <button
+      <motion.button
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 2 }}
         onClick={handleScroll}
         style={{
           position: "absolute",
@@ -373,24 +293,15 @@ export function Hero() {
           gap: "6px",
           zIndex: 10,
         }}
-        className="hidden md:flex animate-fade-in-up opacity-0-init stagger-5"
+        className="hidden md:flex"
       >
-        <span
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: "0.58rem",
-            letterSpacing: "0.2em",
-            color: "var(--text-muted)",
-            textTransform: "uppercase",
-            opacity: isLight ? 1 : 0.8
-          }}
-        >
+        <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.58rem", letterSpacing: "0.2em", color: "var(--text-muted)", textTransform: "uppercase" }}>
           Scroll
         </span>
         <div className="scroll-indicator">
-          <ChevronDown size={18} style={{ color: "var(--text-muted)", opacity: isLight ? 1 : 0.8 }} />
+          <ChevronDown size={18} style={{ color: "var(--text-muted)" }} />
         </div>
-      </button>
+      </motion.button>
     </section>
   );
 }

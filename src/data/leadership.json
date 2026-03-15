@@ -1,0 +1,144 @@
+{
+  "leaders": [
+    {
+      "name": "Aiyan Alam",
+      "role": "President",
+      "committees": "SMC",
+      "image": "/images/officers/aiyan_alam.png",
+      "email": "alam31@purdue.edu"
+    },
+    {
+      "name": "Taraknath Peddi",
+      "role": "Vice President of Operations",
+      "committees": "Racing",
+      "image": "/images/officers/tarakanath_peddi.png",
+      "email": "tpeddi@purdue.edu"
+    },
+    {
+      "name": "Max Vallone",
+      "role": "Vice President of Technical Committees",
+      "committees": "SMC",
+      "image": "/images/officers/max_vallone.png",
+      "email": "mvallone@purdue.edu"
+    },
+    {
+      "name": "Aman Katyal",
+      "role": "Vice President of Member Involvement",
+      "committees": "ROV",
+      "image": "/images/officers/aman_katyal.png",
+      "email": "katyal0@purdue.edu"
+    },
+    {
+      "name": "Daniel Ng",
+      "role": "Secretary",
+      "committees": "SMC",
+      "image": "/images/officers/daniel_ng.png",
+      "email": "ng205@purdue.edu"
+    },
+    {
+      "name": "Saishri Bagde",
+      "role": "Head of Business Development",
+      "committees": "SMC",
+      "image": "/images/officers/saishri_bagde.png",
+      "email": "sbagde@purdue.edu"
+    },
+    {
+      "name": "Jonathon Reilly",
+      "role": "Head of Infrastructure",
+      "committees": "AESC",
+      "image": "/images/officers/jonathon_reilly.png",
+      "email": "reilly53@purdue.edu"
+    },
+    {
+      "name": "Shidan Wan",
+      "role": "Head of Public Relations",
+      "committees": "ROV",
+      "image": "/images/officers/shidan_wan.png",
+      "email": "wan166@purdue.edu"
+    },
+    {
+      "name": "Su Park",
+      "role": "Head of Events",
+      "committees": "SMC",
+      "image": "/images/officers/su_park.png",
+      "email": "park1784@purdue.edu"
+    },
+    {
+      "name": "Soumil Verma",
+      "role": "Head of Learning",
+      "committees": "Learning, SMC",
+      "image": "/images/officers/soumil_verma.png",
+      "email": "verma178@purdue.edu"
+    },
+    {
+      "name": "Tarakanath Peddi",
+      "role": "Lead Treasurer",
+      "committees": "Racing",
+      "image": "/images/officers/tarakanath_peddi.png",
+      "email": "tpeddi@purdue.edu"
+    },
+    {
+      "name": "Dishan Bhattacharya",
+      "role": "Treasurer",
+      "committees": "Learning, Industrial Relations",
+      "image": "/images/officers/dishan_bhattacharya.png",
+      "email": "bhatt123@purdue.edu"
+    },
+    {
+      "name": "Mason Fleming",
+      "role": "EMBS Chair",
+      "committees": "EMBS",
+      "image": "/images/officers/mason_fleming.png",
+      "email": "fleminn@purdue.edu"
+    },
+    {
+      "name": "Ryan Wans",
+      "role": "MTT-S Chair",
+      "committees": "MTT-S",
+      "image": "/images/officers/ryan_wans.png",
+      "email": "wansr@purdue.edu"
+    },
+    {
+      "name": "Sia Gupta",
+      "role": "Chair of Racing",
+      "committees": "Racing",
+      "image": "/images/officers/sia_gupta.png",
+      "email": "gupta952@purdue.edu"
+    },
+    {
+      "name": "Rhea Virk",
+      "role": "ROV Captain",
+      "committees": "ROV",
+      "image": "/images/officers/rhea_virk.png",
+      "email": "rvirk@purdue.edu"
+    },
+    {
+      "name": "Lee Haglid",
+      "role": "Chair of SMC",
+      "committees": "SMC",
+      "image": "/images/officers/lee_haglid.png",
+      "email": "haglid@purdue.edu"
+    },
+    {
+      "name": "Jonah Femrite",
+      "role": "AESC Chair",
+      "committees": "AESC, SMC",
+      "image": "/images/officers/jonah_femrite.png",
+      "email": "jfemrite@purdue.edu"
+    },
+    {
+      "name": "Aniket Iyer",
+      "role": "CSociety Chair",
+      "committees": "CSociety",
+      "image": "/images/officers/aniket_iyer.png",
+      "email": "iyer185@purdue.edu"
+    },
+    {
+      "name": "Ryan Baker",
+      "role": "Software Saturdays Chair",
+      "committees": "Software Saturdays",
+      "image": "/images/officers/ryan_baker.png",
+      "email": "baker852@purdue.edu"
+    }
+  ]
+}

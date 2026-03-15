@@ -1,0 +1,38 @@
+{
+  "longDescription": "The Racing committee competes in the Electric Vehicle Grand Prix (evGrandPrix). They maintain two karts — one driver-operated and one autonomous — with subteams for Mechanical, Controls, and Electrical systems. Members gain hands-on experience in electric vehicle design, power electronics, and autonomous driving.",
+  "metrics": [
+    { "label": "Members", "value": "45" },
+    { "label": "Founded", "value": "2012" },
+    { "label": "Awards", "value": "6" }
+  ],
+  "chair": "Calvin Hoang",
+  "shortName": "Racing",
+  "name": "Racing",
+  "socialLinks": [],
+  "tagline": "Electric Vehicle Grand Prix",
+  "statusColor": "#FF3D57",
+  "gallery": [],
+  "status": "Competition",
+  "statusBg": "rgba(255, 61, 87, 0.15)",
+  "tags": [
+    "Electric Vehicles",
+    "Autonomous",
+    "Controls",
+    "Power Electronics"
+  ],
+  "projects": [
+    {
+      "name": "Driver-Operated Kart",
+      "description": "A custom-built electric go-kart designed for the evGrandPrix endurance race, optimizing for speed and battery efficiency."
+    },
+    {
+      "name": "Autonomous Kart",
+      "description": "A self-driving electric kart using LiDAR, computer vision, and control algorithms to navigate the track autonomously."
+    }
+  ],
+  "id": "racing",
+  "image": "/images/committees/racing/rov-in-pool-test.jpg",
+  "email": "hoang65@purdue.edu",
+  "description": "Competes in evGrandPrix with driver-operated and autonomous electric karts.",
+  "customSections": []
+}

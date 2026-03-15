@@ -9,6 +9,7 @@ import { OfficersPage } from "./pages/OfficersPage";
 import { CalendarPage } from "./pages/CalendarPage";
 import { JoinPage } from "./pages/JoinPage";
 import { AboutUsPage } from "./pages/AboutUsPage";
+import { PartnersPage } from "./pages/PartnersPage";
 import { ConstitutionPage } from "./pages/ConstitutionPage";
 import { UXEffects } from "./components/UXEffects";
 import { BackToTop } from "./components/BackToTop";
@@ -32,7 +33,9 @@ export default function App() {
             <Route path="/officers" element={<PageTransition><OfficersPage /></PageTransition>} />
             <Route path="/calendar" element={<PageTransition><CalendarPage /></PageTransition>} />
             <Route path="/join" element={<PageTransition><JoinPage /></PageTransition>} />
+            <Route path="/partners" element={<PageTransition><PartnersPage /></PageTransition>} />
             <Route path="/constitution" element={<PageTransition><ConstitutionPage /></PageTransition>} />
+            <Route path="*" element={<div style={{ color: 'white', padding: '100px' }}>404 - Page Not Found</div>} />
           </Route>
         </Routes>
       </AnimatePresence>

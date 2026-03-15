@@ -1,0 +1,33 @@
+{
+  "id": "mtts",
+  "name": "Microwave Theory & Technology Society",
+  "shortName": "MTT-S",
+  "tagline": "High-Frequency RF Systems",
+  "description": "Explores high-frequency technology including radar systems and competes at the International Microwave Symposium.",
+  "longDescription": "The Microwave Theory and Techniques Society (MTT-S) explores high-frequency technology and RF engineering. Projects include a radar system for Spin Scooters to prevent collisions and competing at the International Microwave Symposium (IMS). Members work with microwave circuits, antenna design, and signal processing.",
+  "status": "Research",
+  "statusColor": "#A855F7",
+  "statusBg": "rgba(168, 85, 247, 0.15)",
+  "image": "https://images.unsplash.com/photo-1518770660439-4636190af475?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600",
+  "metrics": [
+    { "label": "Members", "value": "20" },
+    { "label": "Founded", "value": "2017" },
+    { "label": "Awards", "value": "2" }
+  ],
+  "tags": ["RF Engineering", "Radar", "Antenna Design", "IMS"],
+  "chair": "Ryan Wans",
+  "email": "mtts@purdueieee.org",
+  "projects": [
+    {
+      "name": "Spin Scooter Radar",
+      "description": "A radar collision-avoidance system for Spin Scooters, using microwave sensing to detect obstacles and prevent accidents."
+    },
+    {
+      "name": "IMS Competition Entry",
+      "description": "The team's entry for the International Microwave Symposium, showcasing cutting-edge microwave circuit design."
+    }
+  ],
+  "socialLinks": [],
+  "gallery": [],
+  "customSections": []
+}

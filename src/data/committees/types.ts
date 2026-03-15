@@ -27,6 +27,36 @@ export interface CustomSection {
   content: string;
 }
 
+export interface ImageStyle {
+  crop?: boolean; // true = cover, false = contain
+  size?: "small" | "medium" | "large" | "full";
+}
+
+export interface JoinConfig {
+  /** 
+   * 'default' -> Links to /join
+   * 'link' -> Links to a custom URL (Discord, etc.)
+   * 'message' -> Shows a text message instead of a button
+   */
+  type: "default" | "link" | "message";
+  buttonText?: string;
+  url?: string;
+  message?: string;
+}
+
+export interface Metric {
+  label: string;
+  value: string | number;
+}
+
+export type CommitteeSection = 
+  | { type: "text"; title: string; content: string; image?: string; layout?: "top" | "left" | "right"; imageStyle?: ImageStyle }
+  | { type: "projects"; title: string; items: (CommitteeProject & { image?: string })[]; imageStyle?: ImageStyle }
+  | { type: "gallery"; title: string; items: GalleryItem[] }
+  | { type: "faq"; title: string; items: FAQ[] }
+  | { type: "cta"; title: string; content: string; buttonText: string; buttonLink: string }
+  | { type: "contact"; title: string; name: string; email: string; role?: string };
+
 export interface Committee {
   /** URL slug — used in routes like /committee/rov */
   id: string;
@@ -39,15 +69,22 @@ export interface Committee {
   statusColor: string;
   statusBg: string;
   image: string;
-  members: number;
-  founded: string;
-  awards: number;
+  
+  /** Dynamic metrics (e.g. Members: 40, Founded: 2010) */
+  metrics?: Metric[];
+
   tags: string[];
   chair: string;
   email: string;
-  projects: CommitteeProject[];
 
-  // ── Optional extended fields (add these per-committee as needed) ──
+  // ── Join Button Configuration ──
+  joinConfig?: JoinConfig;
+
+  // ── Flexible Content Sections ──
+  sections?: CommitteeSection[];
+
+  // ── Legacy/Optional fields ──
+  projects?: CommitteeProject[];
   gallery?: GalleryItem[];
   faqs?: FAQ[];
   recruitmentInfo?: string;

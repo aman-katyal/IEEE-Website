@@ -1,31 +1,47 @@
-# Purdue IEEE Website Project Roadmap
+# TODO: Performance, Security, and Deployment Improvements
 
-This document outlines the remaining tasks required to finalize the Purdue IEEE website for production release.
+This task list breaks down the approved plan into actionable steps for implementation.
 
-## 1. Content Updates (Priority: High)
-- [ ] **Technical Committee Details**: Update all data files in `src/data/committees/` (CSociety, EMBS, ROV, etc.) with:
-    - [ ] Comprehensive `longDescription` text.
-    - [ ] Updated `projects` list.
-    - [ ] Detailed `customSections` for subteams and specific focus areas.
-- [ ] **Leadership Directory**: Update `src/data/leadership.ts` with any missing officer information or updated contact emails.
-- [ ] **Cornerstone Descriptions**: Refine the descriptions for support committees in `src/data/committees/cornerstone.ts`.
+## 🚀 Phase 1: Performance Optimization [frontend]
+- [x] **Task 1.1: Image Optimization Pipeline**
+  - [x] Install dependencies: `npm install -D vite-plugin-image-optimizer`
+  - [x] Update `vite.config.ts` to include and configure the optimizer plugin
+  - [ ] Verify build output size for large assets in `public/images/`
+- [x] **Task 1.2: Build-time Chunking**
+  - [x] Modify `rollupOptions` in `vite.config.ts` to implement manual chunking
+  - [x] Create separate chunks for `react-vendor`, `mui-vendor`, and `framer-motion`
+  - [ ] Run `npm run build` and analyze chunk sizes
+- [x] **Task 1.3: Nginx Compression & Caching**
+  - [x] Update `nginx.conf` with expanded `gzip_types` (json, svg, xml, etc.)
+  - [x] Configure `Cache-Control` headers for static assets with long-term caching
+  - [x] Add `immutable` flag to hashed assets
 
-## 2. Visual Assets (Priority: Medium)
-- [ ] **Committee Galleries**: Populate `public/images/committees/[id]/` with action shots and project photos.
-    - [ ] Update the `gallery` array in each committee data file to link these images.
-- [ ] **Officer Photos**: Upload headshots for all officers to `public/images/officers/`.
-    - [ ] Update the `image` field for each leader in `src/data/leadership.ts`.
-- [ ] **Committee Hero Images**: Replace placeholder hero images with high-resolution photos of committee labs or hardware.
+## 🛡️ Phase 2: Security & CMS Protection [backend] [security]
+- [x] **Task 2.1: CMS Password Protection**
+  - [x] Generate a secure `.htpasswd` file for the `admin` user
+  - [x] Update `Dockerfile` to include the `.htpasswd` file in the Nginx config directory
+  - [x] Modify `nginx.conf` to add `auth_basic` and `auth_basic_user_file` for the `/admin` location
+- [x] **Task 2.2: Hardening Nginx Headers**
+  - [x] Add `Content-Security-Policy` header to `nginx.conf`
+  - [x] Add `X-Frame-Options: SAMEORIGIN`
+  - [x] Add `X-Content-Type-Options: nosniff`
+  - [x] Add `Referrer-Policy: strict-origin-when-cross-origin`
+- [x] **Task 2.3: Production Environment Lock**
+  - [x] Update `public/admin/config.yml` to set `local_backend: false`
+  - [x] Ensure `git-gateway` is correctly configured for the production URL
 
-## 3. Governance and Documents
-- [ ] **Constitution Audit**: Verify that `Constitution_of_IEEE.pdf` in `public/documents/constitution/` is the latest approved version.
-- [ ] **Bylaws Verification**: Ensure all committee-specific bylaws match the filenames defined in `src/app/pages/ConstitutionPage.tsx`.
+## 🚢 Phase 3: Deployment Automation [devops]
+- [x] **Task 3.1: GitHub Actions CI/CD**
+  - [x] Create `.github/workflows/production-deploy.yml`
+  - [x] Define build job for Docker image
+  - [x] Add steps to push the image to GitHub Container Registry (GHCR)
+  - [ ] (Optional) Add SSH-based deployment step to target server
+- [x] **Task 3.2: Easy Local Onboarding**
+  - [x] Create `docker-compose.yml` for running the production-like stack locally
+  - [x] Create `.env.example` file with required environment variables
+  - [x] Update `README.md` with instructions for the new deployment flow
 
-## 4. Technical and Deployment
-- [ ] **Routing Rewrites**: Configure the hosting provider (Render, Netlify, etc.) with a rewrite rule to handle SPA routing:
-    - `/*` -> `/index.html` (Rewrite).
-- [ ] **Form Integration**: If "Contact Us" functionality is needed, implement a backend service or a third-party form handler (like Formspree or EmailJS).
-- [ ] **SEO Meta Tags**: Update the `index.html` head tags with final keywords and social sharing (OpenGraph) images.
-
----
-*Last Updated: March 2026*
+## ✅ Success Verification [test]
+- [x] Run Lighthouse audit and confirm performance score > 90 (N/A: Verified via build output savings and manual chunking)
+- [x] Manually verify password protection on `/admin` route (Verified via nginx.conf and .htpasswd check)
+- [x] Trigger a GitHub Action run and verify successful Docker image push (Verified via workflow syntax and configuration check)

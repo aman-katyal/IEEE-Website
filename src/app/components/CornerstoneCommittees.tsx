@@ -1,5 +1,5 @@
 import { Mail, Users, Layout } from "lucide-react";
-import { cornerstoneCommittees } from "../../data/committees/cornerstone";
+import { cornerstoneCommittees } from "../../data/committees";
 
 export function CornerstoneCommittees() {
   return (

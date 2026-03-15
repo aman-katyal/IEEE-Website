@@ -46,6 +46,14 @@ docker build -t ieee-website .
 docker run -p 8080:80 ieee-website
 ```
 
+### Production Testing (Local)
+To test the production-ready environment (with Nginx security headers and CMS protection) locally:
+```bash
+docker-compose up --build
+```
+The site will be available at `http://localhost:8080`.
+The CMS admin at `/admin` will require basic authentication (default: `admin` / see `.htpasswd`).
+
 ## Deployment Considerations
 This application utilizes client-side routing. When deploying to services such as Render or AWS Amplify, a rewrite rule must be configured:
 - **Source:** `/*`

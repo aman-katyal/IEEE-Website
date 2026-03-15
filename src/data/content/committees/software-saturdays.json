@@ -1,0 +1,69 @@
+{
+  "id": "software-saturdays",
+  "name": "Software Saturdays",
+  "shortName": "Software Saturdays",
+  "tagline": "Modern Software Engineering Certificate",
+  "description": "An 8-week certificate course teaching frameworks like React, sponsored by the College of Engineering.",
+  "longDescription": "Software Saturdays is an 8-week, project-oriented certificate course designed to bridge the gap between academic theory and practical software engineering. Sponsored by the Purdue College of Engineering, the program teaches high-demand skills like Web Development with React, Git, and Cloud Deployment. Students from all backgrounds and experience levels are welcome, from complete beginners to those looking to master a new framework. By the end of the course, participants walk away with a functional personal project and a formal certificate recognized by the department.",
+  "status": "Active",
+  "statusColor": "#00C853",
+  "statusBg": "rgba(0, 200, 83, 0.15)",
+  "image": "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600",
+  "metrics": [
+    { "label": "Students/Sem", "value": "60+" },
+    { "label": "Weeks", "value": "8" },
+    { "label": "Sponsor", "value": "Purdue CoE" }
+  ],
+  "tags": ["React", "Web Dev", "Git", "Teaching"],
+  "chair": "Ryan Baker",
+  "email": "softsat@purdueieee.org",
+  "joinConfig": {
+    "type": "link",
+    "buttonText": "Join Discord",
+    "url": "https://discord.gg/sPPQequ9ws"
+  },
+  "sections": [
+    {
+      "type": "text",
+      "title": "Project-Based Learning",
+      "content": "Every Saturday, we host workshops that combine lectures with hands-on coding sessions. We don't just talk about code; we build real applications. Mentors are available in every session to help debug and provide industry-standard best practices.",
+      "layout": "left"
+    },
+    {
+      "type": "projects",
+      "title": "Curriculum Modules",
+      "items": [
+        {
+          "name": "Foundations",
+          "description": "Mastering the basics of the web: semantic HTML, modern CSS, and responsive design fundamentals.",
+          "image": "https://images.unsplash.com/photo-1587620962725-abab7fe55159?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400"
+        },
+        {
+          "name": "JavaScript & React",
+          "description": "Learning state management, component lifecycles, and how to build interactive user interfaces with React.",
+          "image": "https://images.unsplash.com/photo-1633356122544-f134324a6cee?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400"
+        },
+        {
+          "name": "Deployment",
+          "description": "Shipping code to the world. We cover Git workflows, CI/CD, and hosting platforms like Vercel and AWS.",
+          "image": "https://images.unsplash.com/photo-1558494949-ef010cbdcc51?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400"
+        }
+      ]
+    },
+    {
+      "type": "faq",
+      "title": "General Information",
+      "items": [
+        {
+          "question": "Is it really only for beginners?",
+          "answer": "While we are very beginner-friendly, we also provide advanced tracks for students who already have a foundation and want to learn more complex patterns."
+        },
+        {
+          "question": "Do I get a certificate?",
+          "answer": "Yes! Students who attend at least 6 out of 8 sessions and complete their final project will receive a certificate from the Purdue College of Engineering."
+        }
+      ]
+    }
+  ],
+  "socialLinks": []
+}

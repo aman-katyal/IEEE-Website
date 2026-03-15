@@ -119,7 +119,7 @@ export function AboutUsPage() {
             }}
             {...revealProps}
           >
-            <div style={{ order: window.innerWidth > 640 ? 2 : 1 }}>
+            <div style={{ order: 2 }}>
               <p className="section-eyebrow" style={{ marginBottom: "16px" }}>
                 // Technical Growth
               </p>
@@ -160,7 +160,7 @@ export function AboutUsPage() {
                 Our teams apply the knowledge and create real-world, practical solutions to complex engineering projects.
               </p>
             </div>
-            <div style={{ order: window.innerWidth > 640 ? 1 : 2 }}>
+            <div style={{ order: 1 }}>
                <div className="glass-card" style={{ padding: "40px", background: "rgba(235, 211, 169, 0.05)" }}>
                   <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "16px" }}>
                      {["Professional Careers", "Engineering Software", "Practical Solutions", "Lasting Connections"].map(item => (

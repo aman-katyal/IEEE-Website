@@ -1,4 +1,4 @@
-import { ArrowUpRight, Users, Trophy, Cpu } from "lucide-react";
+import { ArrowUpRight, Users, Trophy, Cpu, Globe } from "lucide-react";
 import { Link } from "react-router";
 import { useTheme } from "next-themes";
 import { committees, type Committee } from "../../data/committees";
@@ -6,6 +6,9 @@ import { committees, type Committee } from "../../data/committees";
 function CommitteeCard({ c }: { c: Committee }) {
   const { theme } = useTheme();
   const isLight = theme === "light";
+
+  // Use dynamic metrics or fallback to empty array
+  const displayMetrics = c.metrics || [];
 
   return (
     <Link
@@ -87,7 +90,6 @@ function CommitteeCard({ c }: { c: Committee }) {
             flexDirection: "column",
           }}
         >
-          {/* Committee Name */}
           <h3
             style={{
               fontFamily: "var(--font-headline)",
@@ -114,7 +116,6 @@ function CommitteeCard({ c }: { c: Committee }) {
             {c.tagline}
           </p>
 
-          {/* Description */}
           <p
             style={{
               fontFamily: "var(--font-body)",
@@ -128,59 +129,57 @@ function CommitteeCard({ c }: { c: Committee }) {
             {c.description}
           </p>
 
-          {/* Technical Metrics */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(3, 1fr)",
-              gap: "0",
-              borderTop: "1px solid var(--glass-border)",
-              borderBottom: "1px solid var(--glass-border)",
-              marginBottom: "20px",
-              padding: "12px 0",
-            }}
-          >
-            {[
-              { label: "Members", value: `${c.members}`, icon: Users },
-              { label: "Founded", value: c.founded, icon: Cpu },
-              { label: "Awards", value: `${c.awards}`, icon: Trophy },
-            ].map((m, i) => (
-              <div
-                key={m.label}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: "3px",
-                  borderRight: i < 2 ? "1px solid var(--glass-border)" : "none",
-                  padding: "0 8px",
-                }}
-              >
-                <span
+          {/* Dynamic Metrics Row */}
+          {displayMetrics.length > 0 && (
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: `repeat(${displayMetrics.length}, 1fr)`,
+                gap: "0",
+                borderTop: "1px solid var(--glass-border)",
+                borderBottom: "1px solid var(--glass-border)",
+                marginBottom: "20px",
+                padding: "12px 0",
+              }}
+            >
+              {displayMetrics.map((m, i) => (
+                <div
+                  key={m.label}
                   style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: "15px",
-                    fontWeight: 600,
-                    color: "var(--electric-blue)",
-                    lineHeight: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: "3px",
+                    borderRight: i < displayMetrics.length - 1 ? "1px solid var(--glass-border)" : "none",
+                    padding: "0 8px",
                   }}
                 >
-                  {m.value}
-                </span>
-                <span
-                  style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: "0.58rem",
-                    color: "var(--text-muted)",
-                    letterSpacing: "0.12em",
-                    textTransform: "uppercase",
-                  }}
-                >
-                  {m.label}
-                </span>
-              </div>
-            ))}
-          </div>
+                  <span
+                    style={{
+                      fontFamily: "var(--font-mono)",
+                      fontSize: "15px",
+                      fontWeight: 600,
+                      color: "var(--electric-blue)",
+                      lineHeight: 1,
+                    }}
+                  >
+                    {m.value}
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: "var(--font-mono)",
+                      fontSize: "0.58rem",
+                      color: "var(--text-muted)",
+                      letterSpacing: "0.12em",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    {m.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* Tags Row */}
           <div
@@ -198,7 +197,6 @@ function CommitteeCard({ c }: { c: Committee }) {
             ))}
           </div>
 
-          {/* Footer Link */}
           <div
             style={{
               display: "flex",
@@ -223,7 +221,6 @@ function CommitteeCard({ c }: { c: Committee }) {
               <ArrowUpRight size={14} />
             </span>
 
-            {/* Gold accent dot */}
             <div
               style={{
                 width: "4px",
@@ -254,7 +251,6 @@ export function Committees() {
         overflow: "hidden",
       }}
     >
-      {/* Faint glow */}
       <div
         className="electric-glow-orb"
         style={{
@@ -263,7 +259,7 @@ export function Committees() {
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          opacity: isLight ? 0 : 0.5, // Hidden in light mode per guidelines
+          opacity: isLight ? 0 : 0.5,
         }}
       />
 
@@ -276,7 +272,6 @@ export function Committees() {
           padding: "0 32px",
         }}
       >
-        {/* Section Header */}
         <div
           style={{
             display: "flex",
@@ -339,7 +334,6 @@ export function Committees() {
           </div>
         </div>
 
-        {/* Cards Grid */}
         <div className="ieee-grid-3">
           {committees.map((c, index) => (
             <div 
