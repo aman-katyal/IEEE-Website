@@ -2,6 +2,7 @@ backend:
   name: github
   repo: aman-katyal/IEEE-Website
   branch: main
+  base_url: https://decap-cms-github-oauth-anywhere.vercel.app
 
 local_backend: false
 
