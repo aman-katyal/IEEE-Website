@@ -79,7 +79,7 @@ collections:
             fields:
               - { label: "Section Title", name: "title", widget: "string", default: "Active Projects" }
               - { label: "Image Style", name: "imageStyle", widget: "object", fields: [{ label: "Crop Project Images (Fill)", name: "crop", widget: "boolean", default: true }] }
-              - label: "Projects", name: "items" , widget: "list", fields: [{ label: "Project Name", name: "name", widget: "string" }, { label: "Project Description", name: "description", widget: "text" }, { label: "Project Image", name: "image", widget: "image", required: false }]
+              - { label: "Projects", name: "items", widget: "list", fields: [{ label: "Project Name", name: "name", widget: "string" }, { label: "Project Description", name: "description", widget: "text" }, { label: "Project Image", name: "image", widget: "image", required: false }] }
 
           - label: "Contact Card"
             name: "contact"
