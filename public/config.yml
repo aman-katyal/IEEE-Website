@@ -1,5 +1,6 @@
 backend:
-  name: git-gateway
+  name: github
+  repo: aman-katyal/IEEE-Website
   branch: main
 
 local_backend: false
