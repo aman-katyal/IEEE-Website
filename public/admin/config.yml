@@ -14,13 +14,11 @@ collections:
   - name: "committees"
     label: "Committees"
     folder: "src/data/content/committees"
-    media_folder: "/public/images/committees/{{fields.id}}"
-    public_folder: "/images/committees/{{fields.id}}"
-    identifier_field: "id"
-    create: true
-    slug: "{{id}}"
     extension: "json"
     format: "json"
+    create: true
+    slug: "{{id}}"
+    identifier_field: "id"
     fields:
       - { label: "ID (URL Slug)", name: "id", widget: "string" }
       - { label: "Name", name: "name", widget: "string" }
