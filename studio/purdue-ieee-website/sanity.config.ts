@@ -16,11 +16,11 @@ export default defineConfig({
     visionTool(),
     presentationTool({
       previewUrl: {
-        origin: typeof window !== 'undefined' && window.location.origin.includes('localhost') 
-          ? 'http://localhost:5173' 
+        origin: location.origin.includes('localhost') 
+          ? (location.hostname === '127.0.0.1' ? 'http://127.0.0.1:5173' : 'http://localhost:5173')
           : 'https://ieee-website-9ix.pages.dev',
         previewMode: {
-          enable: '/api/draft',
+          enable: '/',
         },
       },
     }),

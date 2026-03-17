@@ -22,8 +22,23 @@ export default function App() {
 
   useEffect(() => {
     // Enable visual editing handshake when inside an iframe (Sanity Studio)
-    const disable = enableVisualEditing();
-    return () => disable();
+    console.log("Sanity Visual Editing: Initializing handshake...");
+    const disable = enableVisualEditing({
+      zIndex: 1000,
+      onPublish: () => {
+        console.log("Sanity Visual Editing: Content published");
+        window.location.reload();
+      }
+    });
+    
+    if (window.self !== window.top) {
+      console.log("Sanity Visual Editing: Detected iframe environment");
+    }
+
+    return () => {
+      console.log("Sanity Visual Editing: Disabling handshake");
+      disable();
+    };
   }, []);
 
   return (
