@@ -1,6 +1,8 @@
+import { useEffect } from "react";
 import { Routes, Route, useLocation } from "react-router";
 import { AnimatePresence } from "motion/react";
 import { ThemeProvider } from "next-themes";
+import { enableVisualEditing } from "@sanity/visual-editing";
 import { Layout } from "./components/Layout";
 import { HomePage } from "./pages/HomePage";
 import { CommitteePage } from "./pages/CommitteePage";
@@ -17,6 +19,12 @@ import { PageTransition } from "./components/PageTransition";
 
 export default function App() {
   const location = useLocation();
+
+  useEffect(() => {
+    // Enable visual editing handshake when inside an iframe (Sanity Studio)
+    const disable = enableVisualEditing();
+    return () => disable();
+  }, []);
 
   return (
     <ThemeProvider attribute="class" defaultTheme="dark">
