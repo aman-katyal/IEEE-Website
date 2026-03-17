@@ -1,14 +1,26 @@
 {
   "longDescription": "The Racing committee competes in the Electric Vehicle Grand Prix (evGrandPrix). They maintain two karts — one driver-operated and one autonomous — with subteams for Mechanical, Controls, and Electrical systems. Members gain hands-on experience in electric vehicle design, power electronics, and autonomous driving.",
   "metrics": [
-    { "label": "Members", "value": "45" },
-    { "label": "Founded", "value": "2012" },
-    { "label": "Awards", "value": "6" }
+    {
+      "label": "Members",
+      "value": "45"
+    },
+    {
+      "label": "Founded",
+      "value": "2012"
+    },
+    {
+      "label": "Awards",
+      "value": "6"
+    }
   ],
   "chair": "Calvin Hoang",
   "shortName": "Racing",
   "name": "Racing",
   "socialLinks": [],
+  "joinConfig": {
+    "type": "default"
+  },
   "tagline": "Electric Vehicle Grand Prix",
   "statusColor": "#FF3D57",
   "gallery": [],
