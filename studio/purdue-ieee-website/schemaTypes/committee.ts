@@ -127,6 +127,25 @@ export const committee = defineType({
             { name: 'title', type: 'string', title: 'Title' },
             { name: 'content', type: 'text', title: 'Content (Markdown support)' },
             { name: 'image', type: 'image', title: 'Image', options: { hotspot: true } },
+            defineField({
+              name: 'imageStyle',
+              type: 'object',
+              title: 'Image Style',
+              fields: [
+                { 
+                  name: 'crop', 
+                  type: 'boolean', 
+                  title: 'Crop (Cover)', 
+                  description: 'If true, image will cover the area. If false, it will be contained.' 
+                },
+                { 
+                  name: 'size', 
+                  type: 'string', 
+                  title: 'Image Size', 
+                  options: { list: ['small', 'medium', 'large', 'full'] } 
+                },
+              ],
+            }),
             { 
               name: 'layout', 
               type: 'string', 
@@ -141,6 +160,20 @@ export const committee = defineType({
           title: 'Projects Grid',
           fields: [
             { name: 'title', type: 'string', title: 'Title' },
+            defineField({
+              name: 'imageStyle',
+              type: 'object',
+              title: 'Image Style',
+              fields: [
+                { name: 'crop', type: 'boolean', title: 'Crop (Cover)' },
+                { 
+                  name: 'size', 
+                  type: 'string', 
+                  title: 'Image Size', 
+                  options: { list: ['small', 'medium', 'large', 'full'] } 
+                },
+              ],
+            }),
             {
               name: 'items',
               type: 'array',

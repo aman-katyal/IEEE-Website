@@ -44,17 +44,38 @@ async function migrateCommittees() {
       // Note: Images need to be uploaded separately as assets in a real migration
       // This script assumes placeholder or manually uploaded images for now
       // Or you can use the image string as a temporary field
-      sections: data.sections?.map((section, idx) => ({
-        _key: `section-${idx}`,
-        ...section,
-        // Map types to match Sanity schema
-        _type: section.type === 'text' ? 'textSection' : 
-               section.type === 'projects' ? 'projectsSection' :
-               section.type === 'faq' ? 'faqSection' :
-               section.type === 'gallery' ? 'gallerySection' : 'textSection'
-      })),
+      sections: data.sections?.map((section, idx) => {
+        const { image, type, ...rest } = section;
+        return {
+          _key: `section-${idx}`,
+          ...rest,
+          // Map types to match Sanity schema
+          _type: type === 'text' ? 'textSection' : 
+                 type === 'projects' ? 'projectsSection' :
+                 type === 'faq' ? 'faqSection' :
+                 type === 'gallery' ? 'gallerySection' : 'textSection'
+        };
+      }),
       socialLinks: data.socialLinks?.map((link, idx) => ({ _key: `link-${idx}`, ...link })),
     };
+
+    // Deeply remove any remaining 'image' fields that are strings
+    if (doc.sections) {
+      doc.sections.forEach(section => {
+        if (section.items && Array.isArray(section.items)) {
+          section.items.forEach(item => {
+            if (typeof item.image === 'string') {
+              delete item.image;
+            }
+          });
+        }
+      });
+    }
+
+    // Remove the root image if it's a string
+    if (typeof doc.image === 'string') {
+      delete doc.image;
+    }
 
     try {
       await client.createOrReplace(doc);
