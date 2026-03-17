@@ -4,8 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router";
 import { useTheme } from "next-themes";
 import { ThemeToggle } from "./ThemeToggle";
 import { IeeePurdueLogo } from "./IeeePurdueLogo";
-
-import { committees } from "../../data/committees";
+import { useCommittees } from "../../hooks/useSanityData";
 
 const DiscordIcon = ({ size = 16 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -13,27 +12,8 @@ const DiscordIcon = ({ size = 16 }: { size?: number }) => (
   </svg>
 );
 
-const navLinks = [
-  { 
-    label: "About", 
-    href: "/about",
-    dropdown: [
-      { label: "About Us", href: "/about" },
-      { label: "Partners", href: "/partners" },
-      { label: "Constitution", href: "/constitution" },
-    ]
-  },
-  { 
-    label: "Committees", 
-    href: "/committees",
-    dropdown: committees.map(c => ({ label: c.shortName, href: `/committee/${c.id}` }))
-  },
-  { label: "Events", href: "/calendar" },
-  { label: "Officers", href: "/officers" },
-  { label: "Join", href: "/join" },
-];
-
 export function Navigation() {
+  const { committees } = useCommittees();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -44,6 +24,26 @@ export function Navigation() {
   const { theme } = useTheme();
   const isLight = theme === "light";
   const isHome = location.pathname === "/";
+
+  const navLinks = [
+    { 
+      label: "About", 
+      href: "/about",
+      dropdown: [
+        { label: "About Us", href: "/about" },
+        { label: "Partners", href: "/partners" },
+        { label: "Constitution", href: "/constitution" },
+      ]
+    },
+    { 
+      label: "Committees", 
+      href: "/committees",
+      dropdown: committees.map(c => ({ label: c.shortName, href: `/committee/${c.id}` }))
+    },
+    { label: "Events", href: "/calendar" },
+    { label: "Officers", href: "/officers" },
+    { label: "Join", href: "/join" },
+  ];
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);

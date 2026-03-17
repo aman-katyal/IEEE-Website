@@ -1,13 +1,8 @@
 import { Github, Linkedin, Instagram, Twitter, ExternalLink } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { useTheme } from "next-themes";
-import { committees } from "../../data/committees";
+import { useCommittees } from "../../hooks/useSanityData";
 import { IeeePurdueLogo } from "./IeeePurdueLogo";
-
-const footerCommitteeLinks = committees.map((c) => ({
-  label: c.shortName,
-  to: `/committee/${c.id}`,
-}));
 
 const footerLinks = {
   Organization: [
@@ -35,11 +30,17 @@ const socials = [
 ];
 
 export function Footer() {
+  const { committees } = useCommittees();
   const location = useLocation();
   const navigate = useNavigate();
   const { theme } = useTheme();
   const isLight = theme === "light";
   const isHome = location.pathname === "/";
+
+  const footerCommitteeLinks = committees.map((c) => ({
+    label: c.shortName,
+    to: `/committee/${c.id}`,
+  }));
 
   const handleHashNav = (href: string) => {
     if (href.startsWith("/")) {

@@ -1,0 +1,2 @@
+Generate a commit message as a bullet list. Each bullet point must start with '- ' and list one change. Do not include any additional text or headings.
+++ /dev/null

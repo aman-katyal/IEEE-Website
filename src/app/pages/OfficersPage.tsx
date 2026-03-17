@@ -1,10 +1,27 @@
-import { Mail, Users, User } from "lucide-react";
+import { Mail, Users, User, Loader2 } from "lucide-react";
 import { useTheme } from "next-themes";
-import { leaders } from "../../data/leadership";
+import { useLeaders } from "../../hooks/useSanityData";
 
 export function OfficersPage() {
+  const { leaders, loading, error } = useLeaders();
   const { theme } = useTheme();
   const isLight = theme === "light";
+
+  if (loading) {
+    return (
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--boiler-black)" }}>
+        <Loader2 className="animate-spin" size={48} style={{ color: "var(--electric-blue)" }} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--boiler-black)", color: "var(--text-secondary)" }}>
+        Error loading officers: {error.message}
+      </div>
+    );
+  }
 
   return (
     <section

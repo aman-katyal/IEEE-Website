@@ -1,7 +1,7 @@
 import { useParams, Link, useNavigate } from "react-router";
-import { ArrowLeft, Mail, Users, Trophy, Cpu, ChevronRight, Calendar, Globe, MessageCircle, ExternalLink, UserCircle, AlertCircle, Github, Instagram, Linkedin, Twitter, Slack, Youtube, Info } from "lucide-react";
+import { ArrowLeft, Mail, Users, Trophy, Cpu, ChevronRight, Calendar, Globe, MessageCircle, ExternalLink, UserCircle, AlertCircle, Github, Instagram, Linkedin, Twitter, Slack, Youtube, Info, Loader2 } from "lucide-react";
 import { useTheme } from "next-themes";
-import { getCommitteeById, committees } from "../../data/committees";
+import { useCommittee } from "../../hooks/useSanityData";
 import type { CommitteeSection } from "../../data/committees/types";
 
 /** 
@@ -32,15 +32,27 @@ function getPlatformIcon(platform: string = "", url: string = "", size: number =
 export function CommitteePage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const committee = getCommitteeById(id ?? "");
+  const { committee, loading, error } = useCommittee(id ?? "");
   const { theme } = useTheme();
   const isLight = theme === "light";
 
-  if (!committee) {
+  if (loading) {
+    return (
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--boiler-black)" }}>
+        <Loader2 className="animate-spin" size={48} style={{ color: "var(--electric-blue)" }} />
+      </div>
+    );
+  }
+
+  if (error || !committee) {
     return (
       <section style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "120px 32px 80px", textAlign: "center", background: "var(--boiler-black)" }}>
-        <h1 style={{ fontFamily: "var(--font-headline)", fontSize: "48px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px" }}>Committee Not Found</h1>
-        <p style={{ fontFamily: "var(--font-body)", fontSize: "16px", color: "var(--text-secondary)", marginBottom: "32px" }}>The committee you're looking for doesn't exist or may have been moved.</p>
+        <h1 style={{ fontFamily: "var(--font-headline)", fontSize: "48px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px" }}>
+          {error ? "Error Loading Committee" : "Committee Not Found"}
+        </h1>
+        <p style={{ fontFamily: "var(--font-body)", fontSize: "16px", color: "var(--text-secondary)", marginBottom: "32px" }}>
+          {error ? error.message : "The committee you're looking for doesn't exist or may have been moved."}
+        </p>
         <Link to="/" style={{ display: "inline-flex", alignItems: "center", gap: "8px", color: "var(--electric-blue)", textDecoration: "none", fontFamily: "var(--font-body)", fontSize: "0.9rem", fontWeight: 500, letterSpacing: "0.05em", textTransform: "uppercase" }}>
           <ArrowLeft size={16} /> Back to Home
         </Link>

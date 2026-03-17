@@ -1,7 +1,24 @@
-import { Mail, Users, Layout } from "lucide-react";
-import { cornerstoneCommittees } from "../../data/committees";
+import { Mail, Users, Layout, Loader2 } from "lucide-react";
+import { useCornerstoneCommittees } from "../../hooks/useSanityData";
 
 export function CornerstoneCommittees() {
+  const { committees: cornerstoneCommittees, loading, error } = useCornerstoneCommittees();
+
+  if (loading) {
+    return (
+      <div style={{ minHeight: "300px", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--boiler-black)" }}>
+        <Loader2 className="animate-spin" size={32} style={{ color: "var(--electric-blue)" }} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ padding: "48px 0", textAlign: "center", color: "var(--text-secondary)" }}>
+        Error loading cornerstone committees: {error.message}
+      </div>
+    );
+  }
   return (
     <section
       id="cornerstone"

@@ -1,7 +1,8 @@
-import { ArrowUpRight, Users, Trophy, Cpu, Globe } from "lucide-react";
+import { ArrowUpRight, Users, Trophy, Cpu, Globe, Loader2 } from "lucide-react";
 import { Link } from "react-router";
 import { useTheme } from "next-themes";
-import { committees, type Committee } from "../../data/committees";
+import { useCommittees } from "../../hooks/useSanityData";
+import type { Committee } from "../../data/committees/types";
 
 function CommitteeCard({ c }: { c: Committee }) {
   const { theme } = useTheme();
@@ -238,8 +239,25 @@ function CommitteeCard({ c }: { c: Committee }) {
 }
 
 export function Committees() {
+  const { committees, loading, error } = useCommittees();
   const { theme } = useTheme();
   const isLight = theme === "light";
+
+  if (loading) {
+    return (
+      <div style={{ minHeight: "300px", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--boiler-black)" }}>
+        <Loader2 className="animate-spin" size={32} style={{ color: "var(--electric-blue)" }} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ padding: "48px 0", textAlign: "center", color: "var(--text-secondary)" }}>
+        Error loading committees: {error.message}
+      </div>
+    );
+  }
 
   return (
     <section
