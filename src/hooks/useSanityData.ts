@@ -12,13 +12,13 @@ export function useCommittees() {
     const query = groq`*[_type == "committee"]{
       ...,
       "id": id.current,
-      "image": image.asset->url,
+      "image": coalesce(image.asset->url, image),
       sections[]{
         ...,
-        "image": image.asset->url,
+        "image": coalesce(image.asset->url, image),
         items[]{
           ...,
-          "image": image.asset->url
+          "image": coalesce(image.asset->url, image)
         }
       }
     }`
@@ -104,7 +104,7 @@ export function useLeaders() {
   useEffect(() => {
     const query = groq`*[_type == "leader"] | order(order asc){
       ...,
-      "image": image.asset->url
+      "image": coalesce(image.asset->url, image)
     }`
 
     client.fetch(query)
