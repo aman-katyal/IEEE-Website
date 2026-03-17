@@ -1,5 +1,6 @@
 export const onRequest: PagesFunction = async ({ request, next, env }) => {
   const url = new URL(request.url);
+  console.log("Admin Middleware Request URL:", url.pathname);
 
   // Only protect the /admin route
   if (url.pathname.startsWith('/admin')) {
