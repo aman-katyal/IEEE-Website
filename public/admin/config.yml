@@ -4,6 +4,7 @@ backend:
   branch: master
   base_url: https://ieee-cms-auth.mysticscull.workers.dev
   auth_endpoint: auth
+  site_domain: ieee-website-9ix.pages.dev
 
 publish_mode: editorial_workflow
 show_preview_links: true
