@@ -5,6 +5,9 @@ backend:
   base_url: https://ieee-cms-auth.mysticscull.workers.dev
   auth_endpoint: auth
 
+publish_mode: editorial_workflow
+show_preview_links: true
+
 
 local_backend: false
 

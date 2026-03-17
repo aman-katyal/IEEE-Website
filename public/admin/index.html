@@ -6,9 +6,48 @@
   <meta name="robots" content="noindex" />
   <title>Content Manager | Purdue IEEE</title>
   <link href="/admin/config.yml" type="text/yaml" rel="cms-config-url">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* CMS UI Adjustments */
+    #nc-root [class^="Pane2"] { background: #0f172a !important; }
+  </style>
 </head>
 <body>
-  <!-- Include the script that builds the page and powers Decap CMS -->
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  <script>
+    const CommitteePreview = createClass({
+      render: function() {
+        const entry = this.props.entry;
+        const name = entry.getIn(['data', 'name']);
+        const tagline = entry.getIn(['data', 'tagline']);
+        const description = entry.getIn(['data', 'description']);
+        const longDescription = entry.getIn(['data', 'longDescription']);
+        const image = this.props.getAsset(entry.getIn(['data', 'image']));
+
+        return h('div', { className: "p-8 bg-[#0f172a] min-h-screen text-white font-sans" },
+          h('div', { className: "max-w-4xl mx-auto space-y-8" },
+            // Hero
+            h('div', { className: "relative h-64 w-full rounded-2xl overflow-hidden bg-slate-800" },
+              image ? h('img', { src: image.toString(), className: "w-full h-full object-cover" }) : null,
+              h('div', { className: "absolute inset-0 bg-black/40 flex flex-col justify-end p-8" },
+                h('h1', { className: "text-4xl font-bold" }, name || "Committee Name"),
+                h('p', { className: "text-blue-400 font-medium" }, tagline || "Tagline goes here")
+              )
+            ),
+            // Content
+            h('div', { className: "space-y-4" },
+              h('h2', { className: "text-xl font-semibold text-blue-400 uppercase tracking-wider" }, "About"),
+              h('p', { className: "text-lg text-slate-300 leading-relaxed" }, description),
+              h('div', { className: "prose prose-invert max-w-none text-slate-400" }, 
+                h('p', {}, longDescription)
+              )
+            )
+          )
+        );
+      }
+    });
+
+    CMS.registerPreviewTemplate("committees", CommitteePreview);
+  </script>
 </body>
 </html>
