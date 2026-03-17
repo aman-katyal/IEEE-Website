@@ -1,27 +1,28 @@
 {
-  "id": "rov",
-  "name": "Remotely Operated Vehicle",
-  "shortName": "ROV",
-  "tagline": "Underwater Robotics Engineering",
-  "description": "Designs and builds underwater robots for the MATE International ROV Competition. Placed 6th at 2024 Worlds.",
   "longDescription": "The Purdue IEEE ROV (Remotely Operated Vehicle) committee is a world-class underwater robotics team that competes annually in the MATE International ROV Competition. Our mission is to design, manufacture, and operate advanced underwater robots capable of performing complex tasks in extreme environments. The committee is divided into four main subteams—Mechanical, Electrical, Software, and Administrative—working together to solve challenges in sensor fusion, real-time control, and fluid dynamics. Our most recent vehicle, X15 ISO-Squid, secured 6th place globally at the 2024 World Championships.",
-  "status": "Active",
-  "statusColor": "#00E5FF",
-  "statusBg": "rgba(0, 229, 255, 0.15)",
-  "image": "https://images.unsplash.com/photo-1754297813553-43eb3a9f65a4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600",
   "metrics": [
-    { "label": "Members", "value": "42" },
-    { "label": "Founded", "value": "2008" },
-    { "label": "Awards", "value": "7" }
-  ],
-  "tags": [
-    "Mechanical",
-    "Embedded",
-    "Controls",
-    "Underwater"
+    {
+      "label": "Members",
+      "value": "42"
+    },
+    {
+      "label": "Founded",
+      "value": "2008"
+    },
+    {
+      "label": "Awards",
+      "value": "7"
+    }
   ],
   "chair": "Rhea Virk",
-  "email": "rov@purdueieee.org",
+  "shortName": "ROV",
+  "name": "Remotely Operated Vehicle",
+  "socialLinks": [
+    {
+      "platform": "Instagram",
+      "url": "https://www.instagram.com/purduerov/"
+    }
+  ],
   "joinConfig": {
     "type": "message",
     "message": "We accept new members at the beginning of each Fall semester. Visit us at the callout!"
@@ -33,7 +34,10 @@
       "layout": "right",
       "content": "Our team is structured to simulate a real engineering firm. The **Mechanical** subteam handles structural design and waterproofing. **Electrical** designs custom PCBs and power systems. **Software** develops the control logic and pilot interface. Finally, our **Administrative** subteam manages the business and documentation aspects of the competition.",
       "image": "/images/committees/rov/rov whole team picture.jpg",
-      "imageStyle": { "crop": true, "size": "medium" }
+      "imageStyle": {
+        "crop": true,
+        "size": "medium"
+      }
     },
     {
       "type": "projects",
@@ -49,7 +53,10 @@
           "description": "The 2023 vehicle that pioneered our modular electronics housing and custom thruster designs.",
           "image": "/images/committees/rov/rov whole team picture.jpg"
         }
-      ]
+      ],
+      "imageStyle": {
+        "crop": true
+      }
     },
     {
       "type": "faq",
@@ -66,10 +73,18 @@
       ]
     }
   ],
-  "socialLinks": [
-    {
-      "platform": "Instagram",
-      "url": "https://www.instagram.com/purduerov/"
-    }
-  ]
+  "tagline": "Underwater Robotics ",
+  "statusColor": "#00E5FF",
+  "status": "Active",
+  "statusBg": "rgba(0, 229, 255, 0.15)",
+  "tags": [
+    "Mechanical",
+    "Embedded",
+    "Controls",
+    "Underwater"
+  ],
+  "id": "rov",
+  "image": "https://images.unsplash.com/photo-1754297813553-43eb3a9f65a4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600",
+  "email": "rov@purdueieee.org",
+  "description": "Designs and builds underwater robots for the MATE International ROV Competition. Placed 6th at 2024 Worlds."
 }
