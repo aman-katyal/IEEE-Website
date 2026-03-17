@@ -3,6 +3,7 @@ backend:
   repo: aman-katyal/IEEE-Website
   branch: master
   base_url: https://ieee-cms-auth.mysticscull.workers.dev
+  auth_endpoint: auth
 
 
 local_backend: false
