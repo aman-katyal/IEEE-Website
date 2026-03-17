@@ -1,7 +1,7 @@
 backend:
   name: github
   repo: aman-katyal/IEEE-Website
-  branch: main
+  branch: master
   base_url: https://ieee-cms-auth.mysticscull.workers.dev
 
 local_backend: false
