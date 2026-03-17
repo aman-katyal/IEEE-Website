@@ -28,6 +28,9 @@ export const onRequest: PagesFunction = async ({ request, next, env }) => {
     const ADMIN_USER = (env.ADMIN_USER as string) || 'admin';
     const ADMIN_PASS = (env.ADMIN_PASS as string) || 'purdueieee2026';
 
+    console.log("Checking credentials for:", username);
+    console.log("Env User is set:", !!env.ADMIN_USER);
+
     if (username === ADMIN_USER && password === ADMIN_PASS) {
       return await next();
     }
