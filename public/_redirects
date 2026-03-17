@@ -1,2 +1,5 @@
+# Exempt admin from SPA redirect
+/admin*  /admin/index.html  200
+
 # Single Page Application routing
 /*    /index.html   200
