@@ -2,14 +2,14 @@
 
 This plan outlines the standardization of interactive effects (glow, scale, border) and the expansion of the "magnet effect" across the Purdue IEEE website.
 
-## Phase 1: Foundations and Shared Utilities
+## Phase 1: Foundations and Shared Utilities [checkpoint: c53fe44]
 Goal: Create reusable foundations for the new effects.
 
-- [ ] Task: Red Phase - Write failing tests for shared utility components
-- [ ] Task: Green Phase - Implement `MagneticWrapper` component in `src/app/components/ui/`
-- [ ] Task: Green Phase - Add theme-aware glow utility classes to `src/styles/ieee.css` or `tailwind.config.js`
-- [ ] Task: Refactor and Verify Coverage
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Foundations and Shared Utilities' (Protocol in workflow.md)
+- [x] Task: Red Phase - Write failing tests for shared utility components [3f30a45]
+- [x] Task: Green Phase - Implement `MagneticWrapper` component in `src/app/components/ui/` [42f63de]
+- [x] Task: Green Phase - Add theme-aware glow utility classes to `src/styles/ieee.css` or `tailwind.config.js` [3782f05]
+- [x] Task: Refactor and Verify Coverage [3782f05]
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Foundations and Shared Utilities' (Protocol in workflow.md) [c53fe44]
 
 ## Phase 2: Interactive Element Standardization
 Goal: Apply effects to base interactive elements.
