@@ -23,5 +23,6 @@ To provide a high-performance, visually engaging, and easily maintainable platfo
 - **Officer Directory:** A centralized listing of current branch leadership and committee officers.
 - **Sanity CMS Integration:** Headless CMS back-end for managing time-sensitive or frequently changing data.
 - **Optimized UX:** Skeleton loaders and intelligent data prefetching for near-instant page transitions.
+- **Interactive Feedback:** Standardized magnetic and glow effects for enhanced tactile feedback on all interactive elements.
 - **Resource Hub:** Direct access to governance documents (Constitution, Bylaws) and other member resources.
 - **Responsive & Accessible UI:** A mobile-friendly design built with Radix UI and Tailwind CSS.

@@ -8,6 +8,7 @@
 ## UI/UX Principles
 - **Brand-Consistent Design:** Adhere to the official Purdue IEEE branding and color scheme. Ensure consistency in typography and visual elements across all pages.
 - **Motion-Driven Interactivity:** Use animations to enhance the user experience, providing visual feedback and smooth transitions between states and pages.
+- **Standardized Interaction Effects:** Use magnetic attraction and theme-aware glow effects consistently across all interactive elements to provide tactile feedback and visual clarity.
 - **Performance-First Implementation:** Prioritize runtime smoothness and fast perceived load times through techniques like lazy loading, data prefetching, and hardware acceleration.
 - **Consistency:** Maintain a unified look and feel by using standardized components and utility classes.
 
