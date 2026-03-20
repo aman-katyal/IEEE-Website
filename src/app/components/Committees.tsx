@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { useTheme } from "next-themes";
 import { useCommittees } from "../../hooks/useSanityData";
 import { Skeleton } from "./ui/skeleton";
+import { MagneticWrapper } from "./ui/MagneticWrapper";
 import type { Committee } from "../../data/committees/types";
 
 function CommitteeCard({ c }: { c: Committee }) {
@@ -13,20 +14,21 @@ function CommitteeCard({ c }: { c: Committee }) {
   const displayMetrics = c.metrics || [];
 
   return (
-    <Link
-      to={`/committee/${c.id}`}
-      style={{ textDecoration: "none", color: "inherit" }}
-    >
-      <div
-        className="glass-card"
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          overflow: "hidden",
-          cursor: "pointer",
-          height: "100%",
-        }}
+    <MagneticWrapper strength={0.05} className="w-full h-full">
+      <Link
+        to={`/committee/${c.id}`}
+        style={{ textDecoration: "none", color: "inherit" }}
       >
+        <div
+          className="glass-card hover-glow-blue hover-scale hover-border-blue"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
+            cursor: "pointer",
+            height: "100%",
+          }}
+        >
         {/* Image */}
         <div
           style={{
