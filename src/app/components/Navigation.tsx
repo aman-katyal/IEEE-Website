@@ -5,6 +5,8 @@ import { useTheme } from "next-themes";
 import { ThemeToggle } from "./ThemeToggle";
 import { IeeePurdueLogo } from "./IeeePurdueLogo";
 import { useCommittees, prefetchData } from "../../hooks/useSanityData";
+import { MagneticWrapper } from "./ui/MagneticWrapper";
+import { MagneticButton } from "./MagneticButton";
 import groq from "groq";
 
 const DiscordIcon = ({ size = 16 }: { size?: number }) => (
@@ -315,31 +317,33 @@ export function Navigation() {
 
             <ThemeToggle />
 
-            <a
-              href="https://discord.gg/sPPQequ9ws"
-              target="_blank"
-              rel="noreferrer"
-              className="btn-ghost"
-              style={{ 
-                padding: "9px 16px", 
-                fontSize: "0.8rem", 
-                display: "flex", 
-                alignItems: "center", 
-                gap: "8px",
-                textDecoration: "none"
-              }}
-            >
-              <DiscordIcon size={16} />
-              Discord
-            </a>
+            <MagneticWrapper strength={0.1}>
+              <a
+                href="https://discord.gg/sPPQequ9ws"
+                target="_blank"
+                rel="noreferrer"
+                className="btn-ghost hover-glow-gold"
+                style={{ 
+                  padding: "9px 16px", 
+                  fontSize: "0.8rem", 
+                  display: "flex", 
+                  alignItems: "center", 
+                  gap: "8px",
+                  textDecoration: "none"
+                }}
+              >
+                <DiscordIcon size={16} />
+                Discord
+              </a>
+            </MagneticWrapper>
 
-            <button
-              className="btn-primary"
+            <MagneticButton
+              variant="primary"
               style={{ padding: "9px 22px", fontSize: "0.8rem" }}
               onClick={() => handleNav("/join")}
             >
               Join IEEE
-            </button>
+            </MagneticButton>
           </div>
 
           {/* Mobile Hamburger & Toggle */}
@@ -456,32 +460,35 @@ export function Navigation() {
             ))}
             
             <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "32px" }}>
-              <a
-                href="https://discord.gg/sPPQequ9ws"
-                target="_blank"
-                rel="noreferrer"
-                className="btn-ghost"
-                style={{ 
-                  width: "100%", 
-                  padding: "18px", 
-                  fontSize: "1rem", 
-                  display: "flex", 
-                  alignItems: "center", 
-                  justifyContent: "center",
-                  gap: "10px",
-                  textDecoration: "none"
-                }}
-              >
-                <DiscordIcon size={20} />
-                Join Discord
-              </a>
-              <button
-                className="btn-primary"
-                style={{ width: "100%", padding: "20px", fontSize: "1rem" }}
-                onClick={() => handleNav("/join")}
-              >
-                Join IEEE
-              </button>
+              <MagneticWrapper strength={0.1} className="w-full">
+                <a
+                  href="https://discord.gg/sPPQequ9ws"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-ghost hover-glow-gold w-full"
+                  style={{ 
+                    padding: "18px", 
+                    fontSize: "1rem", 
+                    display: "flex", 
+                    alignItems: "center", 
+                    justifyContent: "center",
+                    gap: "10px",
+                    textDecoration: "none"
+                  }}
+                >
+                  <DiscordIcon size={20} />
+                  Join Discord
+                </a>
+              </MagneticWrapper>
+              <MagneticWrapper strength={0.1} className="w-full">
+                <button
+                  className="btn-primary hover-glow-blue w-full"
+                  style={{ padding: "20px", fontSize: "1rem" }}
+                  onClick={() => handleNav("/join")}
+                >
+                  Join IEEE
+                </button>
+              </MagneticWrapper>
             </div>
           </div>
         )}

@@ -1,40 +1,57 @@
-import { useRef, useState } from "react";
-import { motion } from "motion/react";
+import { useRef, ReactNode } from "react";
+import { motion, useMotionValue, useSpring } from "motion/react";
 
 interface MagneticButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children: React.ReactNode;
+  children: ReactNode;
+  variant?: "primary" | "ghost" | "gold";
+  strength?: number;
   className?: string;
   style?: React.CSSProperties;
-  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
-export function MagneticButton({ children, className = "", style, onClick, ...props }: MagneticButtonProps) {
+export function MagneticButton({ 
+  children, 
+  variant = "primary",
+  strength = 0.2,
+  className = "", 
+  style,
+  ...props 
+}: MagneticButtonProps) {
   const ref = useRef<HTMLButtonElement>(null);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+  
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
 
-  const handleMouse = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const springConfig = { stiffness: 150, damping: 15, mass: 0.1 };
+  const x = useSpring(mouseX, springConfig);
+  const y = useSpring(mouseY, springConfig);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (!ref.current) return;
     const { clientX, clientY } = e;
-    const { height, width, left, top } = ref.current.getBoundingClientRect();
-    const middleX = clientX - (left + width / 2);
-    const middleY = clientY - (top + height / 2);
-    setPosition({ x: middleX * 0.2, y: middleY * 0.2 }); 
+    const { left, top, width, height } = ref.current.getBoundingClientRect();
+    const centerX = left + width / 2;
+    const centerY = top + height / 2;
+    mouseX.set((clientX - centerX) * strength);
+    mouseY.set((clientY - centerY) * strength);
   };
 
-  const reset = () => {
-    setPosition({ x: 0, y: 0 });
+  const handleMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
   };
+
+  const variantClass = variant === "primary" ? "btn-primary hover-glow-blue" : 
+                       variant === "ghost" ? "btn-ghost hover-glow-gold" : 
+                       "btn-gold hover-glow-gold";
 
   return (
     <motion.button
       ref={ref}
-      onMouseMove={handleMouse}
-      onMouseLeave={reset}
-      animate={{ x: position.x, y: position.y }}
-      transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
-      className={className}
-      style={{ ...style, zIndex: 10 }}
-      onClick={onClick}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{ ...style, x, y }}
+      className={`${variantClass} ${className}`}
       {...props}
     >
       {children}

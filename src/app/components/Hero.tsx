@@ -224,10 +224,10 @@ export function Hero() {
             marginBottom: "72px",
           }}
         >
-          <MagneticButton className="btn-primary" onClick={() => navigate("/committees")} style={{ width: "auto", minWidth: "180px", padding: "16px 32px" }}>
+          <MagneticButton variant="primary" onClick={() => navigate("/committees")} style={{ width: "auto", minWidth: "180px", padding: "16px 32px" }}>
             Explore Committees
           </MagneticButton>
-          <MagneticButton className="btn-ghost" onClick={() => navigate("/about")} style={{ width: "auto", minWidth: "180px", padding: "16px 32px" }}>
+          <MagneticButton variant="ghost" onClick={() => navigate("/about")} style={{ width: "auto", minWidth: "180px", padding: "16px 32px" }}>
             Learn More
           </MagneticButton>
         </motion.div>
