@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router";
 import { useTheme } from "next-themes";
 import { useCommittees } from "../../hooks/useSanityData";
 import { IeeePurdueLogo } from "./IeeePurdueLogo";
+import { MagneticWrapper } from "./ui/MagneticWrapper";
 
 const footerLinks = {
   Organization: [
@@ -159,39 +160,41 @@ export function Footer() {
             </div>
             <div style={{ display: "flex", gap: "8px" }}>
               {socials.map(({ Icon, label, href }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={label}
-                  style={{
-                    width: "36px",
-                    height: "36px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    border: "1px solid var(--glass-border)",
-                    borderRadius: "4px",
-                    color: "var(--text-secondary)",
-                    textDecoration: "none",
-                    transition: "all 0.25s ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    const el = e.currentTarget;
-                    el.style.borderColor = "var(--electric-blue)";
-                    el.style.color = "var(--electric-blue)";
-                    el.style.background = "rgba(0,98,155,0.08)";
-                  }}
-                  onMouseLeave={(e) => {
-                    const el = e.currentTarget;
-                    el.style.borderColor = "var(--glass-border)";
-                    el.style.color = "var(--text-secondary)";
-                    el.style.background = "transparent";
-                  }}
-                >
-                  <Icon size={15} />
-                </a>
+                <MagneticWrapper key={label} strength={0.15}>
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    className="hover-glow-blue"
+                    style={{
+                      width: "36px",
+                      height: "36px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      border: "1px solid var(--glass-border)",
+                      borderRadius: "4px",
+                      color: "var(--text-secondary)",
+                      textDecoration: "none",
+                      transition: "all 0.25s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      const el = e.currentTarget;
+                      el.style.borderColor = "var(--electric-blue)";
+                      el.style.color = "var(--electric-blue)";
+                      el.style.background = "rgba(0,98,155,0.08)";
+                    }}
+                    onMouseLeave={(e) => {
+                      const el = e.currentTarget;
+                      el.style.borderColor = "var(--glass-border)";
+                      el.style.color = "var(--text-secondary)";
+                      el.style.background = "transparent";
+                    }}
+                  >
+                    <Icon size={15} />
+                  </a>
+                </MagneticWrapper>
               ))}
             </div>
           </div>
