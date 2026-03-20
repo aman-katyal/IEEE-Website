@@ -516,6 +516,53 @@
 .stagger-4 { animation-delay: 400ms; }
 .stagger-5 { animation-delay: 500ms; }
 
+/* ─── Glow & Hover Utilities ──────────────────────────────────── */
+.glow-blue {
+  box-shadow: 0 0 15px rgba(0, 98, 155, 0.4);
+}
+
+.glow-gold {
+  box-shadow: 0 0 15px rgba(235, 211, 169, 0.3);
+}
+
+.light .glow-gold {
+  box-shadow: 0 0 15px rgba(133, 117, 77, 0.2);
+}
+
+.hover-glow-blue:hover {
+  box-shadow: 
+    0 0 20px rgba(0, 98, 155, 0.6),
+    0 0 40px rgba(0, 98, 155, 0.2);
+}
+
+.hover-glow-gold:hover {
+  box-shadow: 
+    0 0 20px rgba(235, 211, 169, 0.4),
+    0 0 40px rgba(235, 211, 169, 0.1);
+}
+
+.light .hover-glow-gold:hover {
+  box-shadow: 
+    0 0 20px rgba(133, 117, 77, 0.3),
+    0 0 40px rgba(133, 117, 77, 0.1);
+}
+
+.hover-scale {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hover-scale:hover {
+  transform: scale(1.02);
+}
+
+.hover-border-blue:hover {
+  border-color: var(--electric-blue);
+}
+
+.hover-border-gold:hover {
+  border-color: var(--cyber-gold);
+}
+
 /* Ensure elements are hidden before animation starts */
 .opacity-0-init {
   opacity: 0;
