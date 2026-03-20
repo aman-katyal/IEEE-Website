@@ -1,0 +1,8 @@
+{
+  "track_id": "ui_ux_standardization_20260319",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-03-19T15:00:00Z",
+  "updated_at": "2026-03-19T15:00:00Z",
+  "description": "i wanna fix animations and make sure all effects are everywhere nicely, like animations when i hover to select, what i am hovering should like show that its selected, add glow fx both light and dark modes, add gold glow like blue glow, add the magnet effect everywhere, i wanna standardize everythting accross whole page in terms of looks"
+}
