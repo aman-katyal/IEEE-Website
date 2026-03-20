@@ -7,6 +7,7 @@
 - **React 18:** Modern UI development with hooks and concurrent features.
 - **Vite:** Next-generation frontend tooling for fast development and optimized builds.
 - **React Router 7:** Client-side routing for seamless navigation.
+- **Vitest:** Next-generation testing framework for unit and component testing.
 
 ## Styling & Design
 - **Tailwind CSS v4:** A utility-first CSS framework for rapid UI development.
