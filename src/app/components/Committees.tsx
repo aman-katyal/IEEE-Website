@@ -240,6 +240,7 @@ function CommitteeCard({ c }: { c: Committee }) {
         </div>
       </div>
     </Link>
+    </MagneticWrapper>
   );
 }
 
