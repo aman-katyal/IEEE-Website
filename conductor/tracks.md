@@ -4,5 +4,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Integrate Sanity CMS for Committee Data**
+- [x] **Track: Integrate Sanity CMS for Committee Data**
   *Link: [./tracks/integrate_sanity_20260317/](./tracks/integrate_sanity_20260317/)*

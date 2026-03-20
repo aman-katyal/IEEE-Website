@@ -36,4 +36,4 @@ This phase involves updating the React application to fetch and display data fro
     - [x] Update the `Committees` landing page to use data from Sanity.
     - [x] Update the `CommitteeDetail` pages to fetch specific committee data by slug.
     - [x] Verify visual consistency with the previous static version. (Handled by existing integration and cornerstone migration)
-- [ ] **Task: Conductor - User Manual Verification 'Phase 2: Frontend Integration' (Protocol in workflow.md)**
+- [x] **Task: Conductor - User Manual Verification 'Phase 2: Frontend Integration' (Protocol in workflow.md)** (768cad8)
