@@ -11,14 +11,14 @@ Goal: Create reusable foundations for the new effects.
 - [x] Task: Refactor and Verify Coverage [3782f05]
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Foundations and Shared Utilities' (Protocol in workflow.md) [c53fe44]
 
-## Phase 2: Interactive Element Standardization
+## Phase 2: Interactive Element Standardization [checkpoint: 5323940]
 Goal: Apply effects to base interactive elements.
 
-- [ ] Task: Red Phase - Write failing tests for Button enhancements
-- [ ] Task: Green Phase - Update primary and ghost buttons to use `MagneticWrapper` and glow utilities
-- [ ] Task: Green Phase - Standardize hover transitions for small icons (Socials, Nav)
-- [ ] Task: Refactor and Verify Coverage
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Interactive Element Standardization' (Protocol in workflow.md)
+- [x] Task: Red Phase - Write failing tests for Button enhancements [a71c122]
+- [x] Task: Green Phase - Update primary and ghost buttons to use `MagneticWrapper` and glow utilities [553035a]
+- [x] Task: Green Phase - Standardize hover transitions for small icons (Socials, Nav) [89a64c0]
+- [x] Task: Refactor and Verify Coverage [89a64c0]
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Interactive Element Standardization' (Protocol in workflow.md) [5323940]
 
 ## Phase 3: Card Interactions
 Goal: Enhance cards with magnetic and standardized hover states.
