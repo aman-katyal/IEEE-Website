@@ -9,5 +9,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: increase performance and snappiness of website**
+- [x] **Track: increase performance and snappiness of website**
 *Link: [./tracks/performance_snappiness_20260319/](./tracks/performance_snappiness_20260319/)*
