@@ -1,13 +1,21 @@
 import { useEffect, useState } from "react";
-import { motion } from "motion/react";
+import { motion, useMotionValue, useSpring } from "motion/react";
 import { useTheme } from "next-themes";
 
 export function UXEffects() {
-  const [mousePosition, setMousePosition] = useState({ x: -100, y: -100 });
   const [isHovering, setIsHovering] = useState(false);
   const [isDesktop, setIsDesktop] = useState(true);
   const { theme } = useTheme();
   const isLight = theme === "light";
+
+  // Use MotionValues to avoid React re-renders on mousemove
+  const mouseX = useMotionValue(-100);
+  const mouseY = useMotionValue(-100);
+
+  // Smooth springs for the outer ring
+  const springConfig = { stiffness: 400, damping: 30, mass: 0.2 };
+  const springX = useSpring(mouseX, springConfig);
+  const springY = useSpring(mouseY, springConfig);
 
   useEffect(() => {
     // Only apply custom cursor on non-touch devices
@@ -20,7 +28,9 @@ export function UXEffects() {
     document.body.classList.add("custom-cursor-active");
 
     const updateMousePosition = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
+      // Direct update of motion values doesn't trigger React re-render
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
       
       const target = e.target as HTMLElement;
       const isClickable = target.closest("a, button, [role='button'], input, textarea, select");
@@ -35,7 +45,7 @@ export function UXEffects() {
       window.removeEventListener('resize', checkDesktop);
       document.body.classList.remove("custom-cursor-active");
     };
-  }, [isDesktop]);
+  }, [isDesktop, mouseX, mouseY]);
 
   // Dynamic colors based on theme
   const cursorColor = isLight ? "rgba(0, 90, 135, 0.5)" : "rgba(235, 211, 169, 0.4)";
@@ -49,31 +59,29 @@ export function UXEffects() {
         <>
           {/* Outer Ring */}
           <motion.div
-            className="pointer-events-none fixed z-[10000] rounded-full border"
-            animate={{
-              x: mousePosition.x - (isHovering ? 20 : 10),
-              y: mousePosition.y - (isHovering ? 20 : 10),
+            className="pointer-events-none fixed z-[10000] rounded-full border will-change-transform"
+            style={{
+              x: springX,
+              y: springY,
+              translateX: isHovering ? -20 : -10,
+              translateY: isHovering ? -20 : -10,
               width: isHovering ? 40 : 20,
               height: isHovering ? 40 : 20,
               backgroundColor: isHovering ? cursorGlow : "transparent",
               borderColor: cursorColor,
-            }}
-            transition={{ type: "spring", stiffness: 400, damping: 30, mass: 0.2 }}
-            style={{
-              boxShadow: isHovering ? `0 0 15px ${cursorGlow}` : "none"
+              boxShadow: isHovering ? `0 0 15px ${cursorGlow}` : "none",
             }}
           />
           {/* Inner Dot with mixBlendMode for contrast */}
           <motion.div
-            className="pointer-events-none fixed z-[10000] w-[5px] h-[5px] rounded-full"
-            animate={{
-              x: mousePosition.x - 2.5,
-              y: mousePosition.y - 2.5,
-              opacity: isHovering ? 0 : 1,
-              backgroundColor: innerDotColor
-            }}
-            transition={{ type: "tween", ease: "backOut", duration: 0.05 }}
+            className="pointer-events-none fixed z-[10000] w-[5px] h-[5px] rounded-full will-change-transform"
             style={{
+              x: mouseX,
+              y: mouseY,
+              translateX: -2.5,
+              translateY: -2.5,
+              opacity: isHovering ? 0 : 1,
+              backgroundColor: innerDotColor,
               mixBlendMode: isLight ? "normal" : "difference"
             }}
           />

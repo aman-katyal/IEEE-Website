@@ -78,6 +78,7 @@ export function TechMarquee() {
               <img 
                 src={`https://logo.clearbit.com/${p.domain}`} 
                 alt={p.name} 
+                loading="lazy"
                 style={{ 
                   height: "32px", 
                   width: "auto", 
@@ -86,7 +87,8 @@ export function TechMarquee() {
                     ? "grayscale(1) opacity(0.6)" 
                     : "grayscale(1) invert(1) brightness(1.5) opacity(0.5)",
                   transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
-                  cursor: "pointer"
+                  cursor: "pointer",
+                  willChange: "transform, filter",
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.filter = "grayscale(0) opacity(1)";

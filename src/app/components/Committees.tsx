@@ -2,6 +2,7 @@ import { ArrowUpRight, Users, Trophy, Cpu, Globe, Loader2 } from "lucide-react";
 import { Link } from "react-router";
 import { useTheme } from "next-themes";
 import { useCommittees } from "../../hooks/useSanityData";
+import { Skeleton } from "./ui/skeleton";
 import type { Committee } from "../../data/committees/types";
 
 function CommitteeCard({ c }: { c: Committee }) {
@@ -37,12 +38,14 @@ function CommitteeCard({ c }: { c: Committee }) {
           <img
             src={c.image}
             alt={c.name}
+            loading="lazy"
             style={{
               width: "100%",
               height: "100%",
               objectFit: "cover",
               filter: isLight ? "brightness(0.9) saturate(1.1)" : "brightness(0.65) saturate(0.8)",
               transition: "transform 0.5s ease, filter 0.4s ease",
+              willChange: "transform, filter",
             }}
             onMouseEnter={(e) => {
               (e.currentTarget as HTMLImageElement).style.transform = "scale(1.06)";
@@ -243,14 +246,6 @@ export function Committees() {
   const { theme } = useTheme();
   const isLight = theme === "light";
 
-  if (loading) {
-    return (
-      <div style={{ minHeight: "300px", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--boiler-black)" }}>
-        <Loader2 className="animate-spin" size={32} style={{ color: "var(--electric-blue)" }} />
-      </div>
-    );
-  }
-
   if (error) {
     return (
       <div style={{ padding: "48px 0", textAlign: "center", color: "var(--text-secondary)" }}>
@@ -339,29 +334,47 @@ export function Committees() {
             >
               sys.committees.count
             </div>
-            <div
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: "0.65rem",
-                color: "var(--electric-blue)",
-                letterSpacing: "0.1em",
-              }}
-            >
-              = {committees.length}
-            </div>
+            {loading ? (
+              <Skeleton style={{ height: "16px", width: "30px", background: "rgba(255,255,255,0.1)" }} />
+            ) : (
+              <div
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "0.65rem",
+                  color: "var(--electric-blue)",
+                  letterSpacing: "0.1em",
+                }}
+              >
+                = {committees.length}
+              </div>
+            )}
           </div>
         </div>
 
         <div className="ieee-grid-3">
-          {committees.map((c, index) => (
-            <div 
-              key={c.id} 
-              className={`animate-fade-in-up opacity-0-init`}
-              style={{ animationDelay: `${(index % 3) * 150}ms` }}
-            >
-              <CommitteeCard c={c} />
-            </div>
-          ))}
+          {loading ? (
+            Array.from({ length: 6 }).map((_, i) => (
+              <div key={`skeleton-${i}`} className="glass-card" style={{ height: "450px" }}>
+                <Skeleton style={{ height: "180px", width: "100%", background: "rgba(255,255,255,0.05)" }} />
+                <div style={{ padding: "24px" }}>
+                  <Skeleton style={{ height: "24px", width: "60%", marginBottom: "12px", background: "rgba(255,255,255,0.05)" }} />
+                  <Skeleton style={{ height: "16px", width: "40%", marginBottom: "20px", background: "rgba(255,255,255,0.05)" }} />
+                  <Skeleton style={{ height: "80px", width: "100%", marginBottom: "24px", background: "rgba(255,255,255,0.05)" }} />
+                  <Skeleton style={{ height: "40px", width: "100%", background: "rgba(255,255,255,0.05)" }} />
+                </div>
+              </div>
+            ))
+          ) : (
+            committees.map((c, index) => (
+              <div 
+                key={c.id} 
+                className={`animate-fade-in-up opacity-0-init`}
+                style={{ animationDelay: `${(index % 3) * 150}ms` }}
+              >
+                <CommitteeCard c={c} />
+              </div>
+            ))
+          )}
         </div>
       </div>
     </section>

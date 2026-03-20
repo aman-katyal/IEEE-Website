@@ -4,7 +4,8 @@ import { Link, useLocation, useNavigate } from "react-router";
 import { useTheme } from "next-themes";
 import { ThemeToggle } from "./ThemeToggle";
 import { IeeePurdueLogo } from "./IeeePurdueLogo";
-import { useCommittees } from "../../hooks/useSanityData";
+import { useCommittees, prefetchData } from "../../hooks/useSanityData";
+import groq from "groq";
 
 const DiscordIcon = ({ size = 16 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -38,7 +39,7 @@ export function Navigation() {
     { 
       label: "Committees", 
       href: "/committees",
-      dropdown: committees.map(c => ({ label: c.shortName, href: `/committee/${c.id}` }))
+      dropdown: committees.map(c => ({ label: c.shortName, href: `/committee/${c.id}`, id: c.id }))
     },
     { label: "Events", href: "/calendar" },
     { label: "Officers", href: "/officers" },
@@ -54,12 +55,55 @@ export function Navigation() {
   const handleMouseEnter = (label: string) => {
     if (dropdownTimeoutRef.current) window.clearTimeout(dropdownTimeoutRef.current);
     setOpenDropdown(label);
+
+    // Prefetch committees list if hovering over Committees
+    if (label === "Committees") {
+      const query = groq`*[_type == "committee"]{
+        ...,
+        "id": id.current,
+        "image": coalesce(image.asset->url, image),
+        sections[]{
+          ...,
+          "image": coalesce(image.asset->url, image),
+          items[]{
+            ...,
+            "image": coalesce(image.asset->url, image)
+          }
+        }
+      }`;
+      prefetchData(query);
+    }
   };
 
   const handleMouseLeave = () => {
     dropdownTimeoutRef.current = window.setTimeout(() => {
       setOpenDropdown(null);
     }, 150);
+  };
+
+  const handleLinkHover = (href: string, committeeId?: string) => {
+    if (href === "/officers") {
+      const query = groq`*[_type == "leader"] | order(order asc){
+        ...,
+        "image": coalesce(image.asset->url, image)
+      }`;
+      prefetchData(query);
+    } else if (committeeId) {
+      const query = groq`*[_type == "committee" && id.current == $id][0]{
+        ...,
+        "id": id.current,
+        "image": coalesce(image.asset->url, image),
+        sections[]{
+          ...,
+          "image": coalesce(image.asset->url, image),
+          items[]{
+            ...,
+            "image": coalesce(image.asset->url, image)
+          }
+        }
+      }`;
+      prefetchData(query, { id: committeeId });
+    }
   };
 
   useEffect(() => {
@@ -220,7 +264,7 @@ export function Navigation() {
                     >
                       <div style={{ position: "absolute", top: "-20px", left: 0, right: 0, height: "20px" }} />
                       
-                      {link.dropdown.map((subItem) => (
+                      {link.dropdown.map((subItem: any) => (
                         <a
                           key={subItem.href}
                           href={subItem.href}
@@ -234,9 +278,8 @@ export function Navigation() {
                             transition: "all 0.2s",
                             background: location.pathname === subItem.href ? (isLight ? "rgba(0, 90, 135, 0.05)" : "rgba(0, 98, 155, 0.05)") : "transparent"
                           }}
+                          onMouseEnter={() => handleLinkHover(subItem.href, subItem.id)}
                           onClick={(e) => { e.preventDefault(); handleNav(subItem.href); }}
-                          onMouseEnter={(e) => (e.currentTarget.style.color = "var(--text-primary)")}
-                          onMouseLeave={(e) => (e.currentTarget.style.color = location.pathname === subItem.href ? "var(--electric-blue)" : "var(--text-secondary)")}
                         >
                           {subItem.label}
                         </a>
@@ -254,6 +297,7 @@ export function Navigation() {
                       ? "var(--text-primary)"
                       : "var(--text-secondary)",
                   }}
+                  onMouseEnter={() => handleLinkHover(link.href)}
                   onClick={(e) => { e.preventDefault(); handleNav(link.href); }}
                 >
                   {link.label}
@@ -363,7 +407,7 @@ export function Navigation() {
                       {link.label}
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                      {link.dropdown.map((subItem) => (
+                      {link.dropdown.map((subItem: any) => (
                         <a
                           key={subItem.href}
                           href={subItem.href}

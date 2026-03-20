@@ -155,6 +155,7 @@ function PartnerCard({ partner, isLight }: { partner: any, isLight: boolean }) {
       <img 
         src={`https://logo.clearbit.com/${partner.domain}`} 
         alt={partner.name}
+        loading="lazy"
         style={{ 
           maxHeight: partner.tier === "Gold" ? "60px" : "40px", 
           maxWidth: "80%", 

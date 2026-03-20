@@ -1,7 +1,15 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { client, previewClient } from '../lib/sanity'
 import groq from 'groq'
 import type { Committee, CornerstoneCommittee } from '../data/committees/types'
+
+// Simple in-memory cache
+const cache: Record<string, any> = {};
+
+// Helper to generate a cache key from query and params
+const getCacheKey = (query: string, params?: any) => {
+  return `${query}-${JSON.stringify(params || {})}`;
+};
 
 // Simple helper to detect if we should use the preview client
 const usePreview = () => {
@@ -10,132 +18,108 @@ const usePreview = () => {
   return params.has('preview') || window.location.hostname.includes('sanity.studio') || window.self !== window.top;
 };
 
-export function useCommittees() {
-  const [committees, setCommittees] = useState<Committee[]>([])
+/**
+ * Prefetches data from Sanity and populates the cache.
+ * Useful for improving perceived performance during navigation.
+ */
+export async function prefetchData(query: string, params?: any) {
+  const cacheKey = getCacheKey(query, params);
+  if (cache[cacheKey]) return cache[cacheKey];
+
+  try {
+    const data = await client.fetch(query, params);
+    cache[cacheKey] = data;
+    return data;
+  } catch (error) {
+    console.error('Prefetch failed:', error);
+    return null;
+  }
+}
+
+function useDataFetching<T>(query: string, params?: any) {
+  const [data, setData] = useState<T | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
 
   const isPreview = usePreview();
   const activeClient = isPreview ? previewClient : client;
+  const cacheKey = getCacheKey(query, params);
+
+  const fetchData = useCallback(async (ignoreCache = false) => {
+    if (!ignoreCache && !isPreview && cache[cacheKey]) {
+      setData(cache[cacheKey]);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const result = await activeClient.fetch(query, params);
+      if (!isPreview) cache[cacheKey] = result;
+      setData(result);
+      setLoading(false);
+    } catch (err) {
+      setError(err as Error);
+      setLoading(false);
+    }
+  }, [query, JSON.stringify(params), isPreview, activeClient, cacheKey]);
 
   useEffect(() => {
-    const query = groq`*[_type == "committee"]{
+    fetchData();
+  }, [fetchData]);
+
+  return { data, loading, error, refetch: () => fetchData(true) };
+}
+
+export function useCommittees() {
+  const query = groq`*[_type == "committee"]{
+    ...,
+    "id": id.current,
+    "image": coalesce(image.asset->url, image),
+    sections[]{
       ...,
-      "id": id.current,
       "image": coalesce(image.asset->url, image),
-      sections[]{
+      items[]{
         ...,
-        "image": coalesce(image.asset->url, image),
-        items[]{
-          ...,
-          "image": coalesce(image.asset->url, image)
-        }
+        "image": coalesce(image.asset->url, image)
       }
-    }`
-
-    activeClient.fetch(query)
-      .then(data => {
-        setCommittees(data)
-        setLoading(false)
-      })
-      .catch(err => {
-        setError(err)
-        setLoading(false)
-      })
-  }, [])
-
-  return { committees, loading, error }
+    }
+  }`
+  const { data, loading, error } = useDataFetching<Committee[]>(query);
+  return { committees: data || [], loading, error };
 }
 
 export function useCommittee(id: string) {
-  const [committee, setCommittee] = useState<Committee | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<Error | null>(null)
-
-  const isPreview = usePreview();
-  const activeClient = isPreview ? previewClient : client;
-
-  useEffect(() => {
-    const query = groq`*[_type == "committee" && id.current == $id][0]{
+  const query = groq`*[_type == "committee" && id.current == $id][0]{
+    ...,
+    "id": id.current,
+    "image": coalesce(image.asset->url, image),
+    sections[]{
       ...,
-      "id": id.current,
       "image": coalesce(image.asset->url, image),
-      sections[]{
+      items[]{
         ...,
-        "image": coalesce(image.asset->url, image),
-        items[]{
-          ...,
-          "image": coalesce(image.asset->url, image)
-        }
+        "image": coalesce(image.asset->url, image)
       }
-    }`
-
-    activeClient.fetch(query, { id })
-      .then(data => {
-        setCommittee(data)
-        setLoading(false)
-      })
-      .catch(err => {
-        setError(err)
-        setLoading(false)
-      })
-  }, [id])
-
-  return { committee, loading, error }
+    }
+  }`
+  const { data, loading, error } = useDataFetching<Committee>(query, { id });
+  return { committee: data, loading, error };
 }
 
 export function useCornerstoneCommittees() {
-  const [committees, setCommittees] = useState<CornerstoneCommittee[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<Error | null>(null)
-
-  const isPreview = usePreview();
-  const activeClient = isPreview ? previewClient : client;
-
-  useEffect(() => {
-    const query = groq`*[_type == "cornerstone"]{
-      ...,
-      "id": id.current
-    }`
-
-    activeClient.fetch(query)
-      .then(data => {
-        setCommittees(data)
-        setLoading(false)
-      })
-      .catch(err => {
-        setError(err)
-        setLoading(false)
-      })
-  }, [])
-
-  return { committees, loading, error }
+  const query = groq`*[_type == "cornerstone"]{
+    ...,
+    "id": id.current
+  }`
+  const { data, loading, error } = useDataFetching<CornerstoneCommittee[]>(query);
+  return { committees: data || [], loading, error };
 }
 
 export function useLeaders() {
-  const [leaders, setLeaders] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<Error | null>(null)
-
-  const isPreview = usePreview();
-  const activeClient = isPreview ? previewClient : client;
-
-  useEffect(() => {
-    const query = groq`*[_type == "leader"] | order(order asc){
-      ...,
-      "image": coalesce(image.asset->url, image)
-    }`
-
-    activeClient.fetch(query)
-      .then(data => {
-        setLeaders(data)
-        setLoading(false)
-      })
-      .catch(err => {
-        setError(err)
-        setLoading(false)
-      })
-  }, [])
-
-  return { leaders, loading, error }
+  const query = groq`*[_type == "leader"] | order(order asc){
+    ...,
+    "image": coalesce(image.asset->url, image)
+  }`
+  const { data, loading, error } = useDataFetching<any[]>(query);
+  return { leaders: data || [], loading, error };
 }
