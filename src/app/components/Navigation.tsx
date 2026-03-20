@@ -277,10 +277,28 @@ export function Navigation() {
                             textDecoration: "none",
                             fontSize: "0.85rem",
                             fontFamily: "var(--font-body)",
-                            transition: "all 0.2s",
-                            background: location.pathname === subItem.href ? (isLight ? "rgba(0, 90, 135, 0.05)" : "rgba(0, 98, 155, 0.05)") : "transparent"
+                            transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+                            background: location.pathname === subItem.href ? (isLight ? "rgba(0, 90, 135, 0.05)" : "rgba(0, 98, 155, 0.05)") : "transparent",
+                            transformOrigin: "left",
                           }}
-                          onMouseEnter={() => handleLinkHover(subItem.href, subItem.id)}
+                          onMouseEnter={(e) => {
+                            handleLinkHover(subItem.href, subItem.id);
+                            const el = e.currentTarget;
+                            el.style.transform = "scale(1.03) translateX(4px)";
+                            el.style.color = "var(--electric-blue)";
+                            el.style.background = isLight ? "rgba(0, 90, 135, 0.05)" : "rgba(0, 98, 155, 0.08)";
+                          }}
+                          onMouseLeave={(e) => {
+                            const el = e.currentTarget;
+                            if (location.pathname !== subItem.href) {
+                              el.style.transform = "scale(1) translateX(0)";
+                              el.style.color = "var(--text-secondary)";
+                              el.style.background = "transparent";
+                            } else {
+                              el.style.transform = "scale(1) translateX(0)";
+                              el.style.background = isLight ? "rgba(0, 90, 135, 0.05)" : "rgba(0, 98, 155, 0.05)";
+                            }
+                          }}
                           onClick={(e) => { e.preventDefault(); handleNav(subItem.href); }}
                         >
                           {subItem.label}
