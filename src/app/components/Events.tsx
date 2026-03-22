@@ -232,11 +232,9 @@ export function Events() {
             ) : (
               <>
                 {displayEvents.map((event, i) => (
-                  <a
+                  <div
                     key={event.id}
-                    href={event.htmlLink || "#"}
-                    target={event.htmlLink ? "_blank" : undefined}
-                    rel="noopener noreferrer"
+                    onClick={() => event.htmlLink && window.open(event.htmlLink, "_blank", "noopener,noreferrer")}
                     style={{ textDecoration: "none", color: "inherit" }}
                   >
                     <div
@@ -431,7 +429,7 @@ export function Events() {
                         />
                       </div>
                     </div>
-                  </a>
+                  </div>
                 ))}
                 
                 {/* View All Events Button */}

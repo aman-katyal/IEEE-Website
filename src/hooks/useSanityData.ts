@@ -77,6 +77,14 @@ export function useCommittees() {
     "image": coalesce(image.asset->url, image),
     sections[]{
       ...,
+      "type": select(
+        _type == "textSection" => "text",
+        _type == "projectsSection" => "projects",
+        _type == "faqSection" => "faq",
+        _type == "gallerySection" => "gallery",
+        _type == "contactSection" => "contact",
+        _type
+      ),
       "image": coalesce(image.asset->url, image),
       items[]{
         ...,
@@ -95,6 +103,14 @@ export function useCommittee(id: string) {
     "image": coalesce(image.asset->url, image),
     sections[]{
       ...,
+      "type": select(
+        _type == "textSection" => "text",
+        _type == "projectsSection" => "projects",
+        _type == "faqSection" => "faq",
+        _type == "gallerySection" => "gallery",
+        _type == "contactSection" => "contact",
+        _type
+      ),
       "image": coalesce(image.asset->url, image),
       items[]{
         ...,

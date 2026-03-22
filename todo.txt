@@ -1,0 +1,5 @@
+split officers page by sections
+
+fix bug of committee content pages not rendering 
+
+fix links

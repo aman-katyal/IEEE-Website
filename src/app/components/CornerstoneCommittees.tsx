@@ -1,5 +1,6 @@
 import { Mail, Users, Layout, Loader2 } from "lucide-react";
 import { useCornerstoneCommittees } from "../../hooks/useSanityData";
+import ReactMarkdown from "react-markdown";
 
 export function CornerstoneCommittees() {
   const { committees: cornerstoneCommittees, loading, error } = useCornerstoneCommittees();
@@ -96,7 +97,7 @@ export function CornerstoneCommittees() {
                   {section.id === "operations" ? <Layout size={24} style={{ color: "var(--electric-blue)" }} /> : <Users size={24} style={{ color: "var(--cyber-gold)" }} />}
                   {section.name}
                 </h3>
-                <p
+                <div
                   style={{
                     fontFamily: "var(--font-body)",
                     fontSize: "17px",
@@ -104,8 +105,8 @@ export function CornerstoneCommittees() {
                     lineHeight: 1.6,
                   }}
                 >
-                  {section.description}
-                </p>
+                  <ReactMarkdown>{section.description}</ReactMarkdown>
+                </div>
               </div>
 
               <div
@@ -159,7 +160,7 @@ export function CornerstoneCommittees() {
                       </h4>
                     </div>
 
-                    <p
+                    <div
                       style={{
                         fontFamily: "var(--font-body)",
                         fontSize: "14px",
@@ -169,8 +170,8 @@ export function CornerstoneCommittees() {
                         flexGrow: 1,
                       }}
                     >
-                      {lead.description}
-                    </p>
+                      <ReactMarkdown>{lead.description || ""}</ReactMarkdown>
+                    </div>
 
                     <div style={{ display: "flex", gap: "12px", alignItems: "center", borderTop: "1px solid var(--glass-border)", paddingTop: "20px" }}>
                       <Mail size={16} style={{ color: "var(--electric-blue)", flexShrink: 0 }} />

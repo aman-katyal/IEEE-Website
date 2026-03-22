@@ -3,6 +3,7 @@ import { ArrowLeft, Mail, Users, Trophy, Cpu, ChevronRight, Calendar, Globe, Mes
 import { useTheme } from "next-themes";
 import { useCommittee } from "../../hooks/useSanityData";
 import { Skeleton } from "../components/ui/skeleton";
+import ReactMarkdown from "react-markdown";
 import type { CommitteeSection } from "../../data/committees/types";
 
 /** 
@@ -124,7 +125,9 @@ export function CommitteePage() {
                 </div>
               )}
               <div style={{ flex: "1 1 300px" }}>
-                <p style={{ fontFamily: "var(--font-body)", fontSize: "15.5px", color: "var(--text-secondary)", lineHeight: 1.85, whiteSpace: "pre-line" }}>{section.content}</p>
+                <div style={{ fontFamily: "var(--font-body)", fontSize: "15.5px", color: "var(--text-secondary)", lineHeight: 1.85 }}>
+                  <ReactMarkdown>{section.content}</ReactMarkdown>
+                </div>
               </div>
             </div>
           </div>
@@ -139,7 +142,7 @@ export function CommitteePage() {
               {section.items.map((p, i) => (
                 <div key={i} className="glass-card" style={{ display: "flex", flexDirection: "column", overflow: "hidden" }}>
                   {p.image && <div style={{ height: "180px", width: "100%", borderBottom: "1px solid var(--glass-border)" }}><img src={p.image} alt={p.name} style={{ width: "100%", height: "100%", objectFit: projCrop ? "cover" : "contain", background: "rgba(0,0,0,0.05)" }} /></div>}
-                  <div style={{ padding: "24px" }}><h3 style={{ fontFamily: "var(--font-headline)", fontSize: "17px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "10px" }}>{p.name}</h3><p style={{ fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.65 }}>{p.description}</p></div>
+                  <div style={{ padding: "24px" }}><h3 style={{ fontFamily: "var(--font-headline)", fontSize: "17px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "10px" }}>{p.name}</h3><div style={{ fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.65 }}><ReactMarkdown>{p.description}</ReactMarkdown></div></div>
                 </div>
               ))}
             </div>
@@ -162,9 +165,9 @@ export function CommitteePage() {
           <div key={index} style={{ marginBottom: "64px" }}>
             <p className="section-eyebrow" style={{ marginBottom: "20px" }}>// {section.title || "Gallery"}</p>
             <div style={{ columns: "2 300px", columnGap: "16px" }}>
-              {section.items.map((img, i) => (
+              {section.items.map((img: any, i) => (
                 <div key={i} style={{ breakInside: "avoid", marginBottom: "16px", position: "relative", borderRadius: "8px", overflow: "hidden", border: "1px solid var(--glass-border)", cursor: "pointer" }} className="gallery-item-container">
-                  <img src={img.src} alt={img.caption} style={{ width: "100%", height: "auto", display: "block", transition: "transform 0.6s ease", filter: isLight ? "brightness(1)" : "brightness(0.85)" }} />
+                  <img src={img.image || img.src} alt={img.caption} style={{ width: "100%", height: "auto", display: "block", transition: "transform 0.6s ease", filter: isLight ? "brightness(1)" : "brightness(0.85)" }} />
                   {img.caption && <div className="caption-overlay" style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "linear-gradient(transparent, rgba(0,0,0,0.9))", padding: "24px 16px 12px", fontFamily: "var(--font-mono)", fontSize: "0.65rem", color: "#FFFFFF", letterSpacing: "0.06em", opacity: 0, transform: "translateY(10px)", transition: "all 0.3s ease" }}>{img.caption}</div>}
                 </div>
               ))}
@@ -180,7 +183,7 @@ export function CommitteePage() {
               {section.items.map((faq, i) => (
                 <div key={i} className="glass-card" style={{ padding: "24px 32px" }}>
                   <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginBottom: "10px" }}><MessageCircle size={16} style={{ color: "var(--electric-blue)", flexShrink: 0, marginTop: "2px" }} /><h4 style={{ fontFamily: "var(--font-headline)", fontSize: "15px", fontWeight: 600, color: "var(--text-primary)", lineHeight: 1.45 }}>{faq.question}</h4></div>
-                  <p style={{ fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.7, paddingLeft: "28px" }}>{faq.answer}</p>
+                  <div style={{ fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.7, paddingLeft: "28px" }}><ReactMarkdown>{faq.answer}</ReactMarkdown></div>
                 </div>
               ))}
             </div>
