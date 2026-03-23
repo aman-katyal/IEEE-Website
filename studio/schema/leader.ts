@@ -35,6 +35,20 @@ export const leader = defineType({
       type: 'string',
     }),
     defineField({
+      name: 'category',
+      title: 'Category',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Executive Committee', value: 'executive' },
+          { title: 'Technical Committee Chairs', value: 'technical' },
+          { title: 'Operational Leads', value: 'operations' },
+          { title: 'Member Involvement', value: 'member' },
+        ],
+      },
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
       name: 'order',
       title: 'Display Order',
       type: 'number',
