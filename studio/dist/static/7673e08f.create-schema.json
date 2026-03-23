@@ -1,0 +1,599 @@
+[
+  {
+    "fields": [
+      {
+        "options": {
+          "source": "name",
+          "maxLength": 96
+        },
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "custom"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "id",
+        "type": "slug",
+        "title": "ID (URL Slug)"
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "title": "Full Name"
+      },
+      {
+        "name": "shortName",
+        "type": "string"
+      },
+      {
+        "name": "tagline",
+        "type": "string"
+      },
+      {
+        "name": "description",
+        "type": "text",
+        "title": "Short Description"
+      },
+      {
+        "name": "longDescription",
+        "type": "text"
+      },
+      {
+        "name": "status",
+        "type": "string"
+      },
+      {
+        "name": "statusColor",
+        "type": "string",
+        "title": "Status Color (Hex)"
+      },
+      {
+        "name": "statusBg",
+        "type": "string",
+        "title": "Status Background (RGBA)"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "name": "image",
+        "type": "image",
+        "title": "Hero Image"
+      },
+      {
+        "of": [
+          {
+            "fields": [
+              {
+                "name": "label",
+                "type": "string"
+              },
+              {
+                "name": "value",
+                "type": "string"
+              }
+            ],
+            "type": "object"
+          }
+        ],
+        "name": "metrics",
+        "type": "array",
+        "title": "Key Metrics"
+      },
+      {
+        "of": [
+          {
+            "type": "string"
+          }
+        ],
+        "name": "tags",
+        "type": "array"
+      },
+      {
+        "name": "chair",
+        "type": "string",
+        "title": "Chair Name"
+      },
+      {
+        "name": "email",
+        "type": "string",
+        "title": "Contact Email"
+      },
+      {
+        "fields": [
+          {
+            "options": {
+              "list": [
+                {
+                  "title": "Default (/join page)",
+                  "value": "default"
+                },
+                {
+                  "title": "Custom Link",
+                  "value": "link"
+                },
+                {
+                  "title": "Display Message",
+                  "value": "message"
+                }
+              ]
+            },
+            "name": "type",
+            "type": "string",
+            "title": "Join Type"
+          },
+          {
+            "name": "buttonText",
+            "type": "string"
+          },
+          {
+            "name": "url",
+            "type": "string",
+            "title": "Custom URL"
+          },
+          {
+            "name": "message",
+            "type": "text",
+            "title": "Custom Message"
+          }
+        ],
+        "name": "joinConfig",
+        "type": "object",
+        "title": "Join Configuration"
+      },
+      {
+        "of": [
+          {
+            "fields": [
+              {
+                "name": "title",
+                "type": "string"
+              },
+              {
+                "name": "content",
+                "type": "text",
+                "title": "Content (Markdown support)"
+              },
+              {
+                "options": {
+                  "hotspot": true
+                },
+                "name": "image",
+                "type": "image"
+              },
+              {
+                "fields": [
+                  {
+                    "description": "If true, image will cover the area. If false, it will be contained.",
+                    "name": "crop",
+                    "type": "boolean",
+                    "title": "Crop (Cover)"
+                  },
+                  {
+                    "options": {
+                      "list": [
+                        "small",
+                        "medium",
+                        "large",
+                        "full"
+                      ]
+                    },
+                    "name": "size",
+                    "type": "string",
+                    "title": "Image Size"
+                  }
+                ],
+                "name": "imageStyle",
+                "type": "object"
+              },
+              {
+                "options": {
+                  "list": [
+                    "top",
+                    "left",
+                    "right"
+                  ]
+                },
+                "name": "layout",
+                "type": "string"
+              }
+            ],
+            "type": "object",
+            "name": "textSection",
+            "title": "Text Content"
+          },
+          {
+            "fields": [
+              {
+                "name": "title",
+                "type": "string"
+              },
+              {
+                "fields": [
+                  {
+                    "name": "crop",
+                    "type": "boolean",
+                    "title": "Crop (Cover)"
+                  },
+                  {
+                    "options": {
+                      "list": [
+                        "small",
+                        "medium",
+                        "large",
+                        "full"
+                      ]
+                    },
+                    "name": "size",
+                    "type": "string",
+                    "title": "Image Size"
+                  }
+                ],
+                "name": "imageStyle",
+                "type": "object"
+              },
+              {
+                "of": [
+                  {
+                    "fields": [
+                      {
+                        "name": "name",
+                        "type": "string",
+                        "title": "Project Name"
+                      },
+                      {
+                        "name": "description",
+                        "type": "text",
+                        "title": "Project Description"
+                      },
+                      {
+                        "options": {
+                          "hotspot": true
+                        },
+                        "name": "image",
+                        "type": "image",
+                        "title": "Project Image"
+                      }
+                    ],
+                    "type": "object"
+                  }
+                ],
+                "name": "items",
+                "type": "array"
+              }
+            ],
+            "type": "object",
+            "name": "projectsSection",
+            "title": "Projects Grid"
+          },
+          {
+            "fields": [
+              {
+                "name": "title",
+                "type": "string"
+              },
+              {
+                "of": [
+                  {
+                    "fields": [
+                      {
+                        "name": "question",
+                        "type": "string"
+                      },
+                      {
+                        "name": "answer",
+                        "type": "text"
+                      }
+                    ],
+                    "type": "object"
+                  }
+                ],
+                "name": "items",
+                "type": "array"
+              }
+            ],
+            "type": "object",
+            "name": "faqSection",
+            "title": "FAQ Accordion"
+          },
+          {
+            "fields": [
+              {
+                "name": "title",
+                "type": "string"
+              },
+              {
+                "of": [
+                  {
+                    "fields": [
+                      {
+                        "options": {
+                          "hotspot": true
+                        },
+                        "name": "image",
+                        "type": "image"
+                      },
+                      {
+                        "name": "caption",
+                        "type": "string"
+                      }
+                    ],
+                    "type": "object"
+                  }
+                ],
+                "name": "items",
+                "type": "array"
+              }
+            ],
+            "type": "object",
+            "name": "gallerySection",
+            "title": "Image Gallery"
+          }
+        ],
+        "name": "sections",
+        "type": "array",
+        "title": "Content Sections"
+      },
+      {
+        "of": [
+          {
+            "fields": [
+              {
+                "name": "platform",
+                "type": "string"
+              },
+              {
+                "name": "url",
+                "type": "string",
+                "title": "URL"
+              }
+            ],
+            "type": "object"
+          }
+        ],
+        "name": "socialLinks",
+        "type": "array"
+      }
+    ],
+    "name": "committee",
+    "type": "document"
+  },
+  {
+    "fields": [
+      {
+        "name": "name",
+        "type": "string",
+        "title": "Full Name"
+      },
+      {
+        "name": "role",
+        "type": "string"
+      },
+      {
+        "description": "Comma-separated list of committees",
+        "name": "committees",
+        "type": "string"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "name": "image",
+        "type": "image",
+        "title": "Officer Image"
+      },
+      {
+        "name": "email",
+        "type": "string",
+        "title": "Email Address"
+      },
+      {
+        "options": {
+          "list": [
+            {
+              "title": "Executive Committee",
+              "value": "executive"
+            },
+            {
+              "title": "Technical Committee Chairs",
+              "value": "technical"
+            },
+            {
+              "title": "Operational Leads",
+              "value": "operations"
+            },
+            {
+              "title": "Member Involvement",
+              "value": "member"
+            }
+          ]
+        },
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "valid",
+                "constraint": [
+                  "executive",
+                  "technical",
+                  "operations",
+                  "member"
+                ]
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "category",
+        "type": "string"
+      },
+      {
+        "name": "order",
+        "type": "number",
+        "title": "Display Order"
+      }
+    ],
+    "name": "leader",
+    "type": "document",
+    "title": "Officer"
+  },
+  {
+    "fields": [
+      {
+        "options": {
+          "source": "name",
+          "maxLength": 96
+        },
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "custom"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "id",
+        "type": "slug",
+        "title": "ID (URL Slug)"
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "title": "Committee Name"
+      },
+      {
+        "name": "description",
+        "type": "text"
+      },
+      {
+        "of": [
+          {
+            "fields": [
+              {
+                "name": "role",
+                "type": "string"
+              },
+              {
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "name": "email",
+                "type": "string"
+              },
+              {
+                "name": "description",
+                "type": "text",
+                "title": "Bio/Description"
+              }
+            ],
+            "type": "object"
+          }
+        ],
+        "name": "leads",
+        "type": "array",
+        "title": "Committee Leads"
+      }
+    ],
+    "name": "cornerstone",
+    "type": "document",
+    "title": "Cornerstone Committee"
+  },
+  {
+    "fields": [
+      {
+        "description": "Drag and drop to reorder Executive Committee members.",
+        "of": [
+          {
+            "options": {
+              "filter": "category == \"executive\""
+            },
+            "to": [
+              {
+                "type": "leader"
+              }
+            ],
+            "type": "reference",
+            "title": "Reference to officer"
+          }
+        ],
+        "name": "executiveOrder",
+        "type": "array",
+        "title": "Executive Committee Order"
+      },
+      {
+        "description": "Drag and drop to reorder Technical Committee chairs.",
+        "of": [
+          {
+            "options": {
+              "filter": "category == \"technical\""
+            },
+            "to": [
+              {
+                "type": "leader"
+              }
+            ],
+            "type": "reference",
+            "title": "Reference to officer"
+          }
+        ],
+        "name": "technicalOrder",
+        "type": "array",
+        "title": "Technical Committee Chairs Order"
+      },
+      {
+        "description": "Drag and drop to reorder Operational leads.",
+        "of": [
+          {
+            "options": {
+              "filter": "category == \"operations\""
+            },
+            "to": [
+              {
+                "type": "leader"
+              }
+            ],
+            "type": "reference",
+            "title": "Reference to officer"
+          }
+        ],
+        "name": "operationsOrder",
+        "type": "array",
+        "title": "Operational Leads Order"
+      },
+      {
+        "description": "Drag and drop to reorder Member Involvement leads.",
+        "of": [
+          {
+            "options": {
+              "filter": "category == \"member\""
+            },
+            "to": [
+              {
+                "type": "leader"
+              }
+            ],
+            "type": "reference",
+            "title": "Reference to officer"
+          }
+        ],
+        "name": "memberOrder",
+        "type": "array",
+        "title": "Member Involvement Order"
+      }
+    ],
+    "name": "officersConfig",
+    "type": "document",
+    "title": "Officers Configuration"
+  }
+]

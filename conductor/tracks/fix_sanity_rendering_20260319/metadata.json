@@ -1,8 +1,0 @@
-{
-  "track_id": "fix_sanity_rendering_20260319",
-  "type": "bug",
-  "status": "new",
-  "created_at": "2026-03-19T19:20:00Z",
-  "updated_at": "2026-03-19T19:20:00Z",
-  "description": "the sanity thing doesnt work fully like some of the sections arent rendered, from sanity and like the content sections and stuff, use chrome dev tools to test automattically"
-}

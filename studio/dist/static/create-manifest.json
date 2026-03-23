@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "createdAt": "2026-03-23T00:51:50.428Z",
+  "workspaces": [
+    {
+      "name": "default",
+      "title": "Purdue IEEE CMS",
+      "basePath": "/",
+      "projectId": "vq0v7yv4",
+      "dataset": "production",
+      "icon": "<style data-styled=\"true\" data-styled-version=\"6.3.11\">.eZpFmC{font-family:Inter,-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,\"Helvetica Neue\",\"Liberation Sans\",Helvetica,Arial,system-ui,sans-serif;font-weight:500;font-size:13px;transform:translateY(1px);}/*!sc*/\ndata-styled.g106[id=\"sc-dAlyuI\"]{content:\"eZpFmC,\"}/*!sc*/\n</style><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 32 32\"><rect width=\"32\" height=\"32\" rx=\"2\" fill=\"#a8bfff\"></rect><text x=\"50%\" y=\"50%\" text-anchor=\"middle\" alignment-baseline=\"middle\" fill=\"hsla(224, 100%, 43%, 1)\" class=\"sc-dAlyuI eZpFmC\">PI</text></svg>",
+      "mediaLibrary": {
+        "enabled": false
+      },
+      "schema": "7673e08f.create-schema.json",
+      "tools": "6c876fb2.create-tools.json"
+    }
+  ]
+}

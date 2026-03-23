@@ -2,23 +2,23 @@
 
 This plan outlines the standardization of the Officers page by splitting it into functional sections and implementing an intuitive drag-and-drop reordering system in Sanity CMS.
 
-## Phase 1: Sanity Schema and Data Configuration
+## Phase 1: Sanity Schema and Data Configuration [checkpoint: 429765c]
 Goal: Implement the backend structure for categorization and drag-and-drop ordering.
 
 - [x] Task: Red Phase - Write failing tests for leader schema changes [1936b96]
 - [x] Task: Green Phase - Add `category` field to `leader` schema in `studio/schema/leader.ts` [1936b96]
 - [x] Task: Green Phase - Create `officersConfig` singleton schema in `studio/schema/officersConfig.ts` [1936b96]
-- [x] Task: Refactor and Verify Coverage [1936b96]
+- [x] Task: Refactor and Verify Coverage [1936b96] (Schema deployed to cloud)
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Sanity Schema and Data Configuration' (Protocol in workflow.md) [1936b96]
 
-## Phase 2: Frontend Implementation and Logic [~]
+## Phase 2: Frontend Implementation and Logic
 Goal: Update the frontend to group and order leaders according to the new Sanity configuration.
 
-- [ ] Task: Red Phase - Write failing tests for leader grouping and ordering logic
-- [ ] Task: Green Phase - Update `useLeaders` hook in `src/hooks/useSanityData.ts` to fetch `officersConfig`
-- [ ] Task: Green Phase - Implement grouping and ordering logic in `OfficersPage` component
-- [ ] Task: Refactor and Verify Coverage
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend Implementation and Logic' (Protocol in workflow.md)
+- [x] Task: Red Phase - Write failing tests for leader grouping and ordering logic [checkpoint: 429765c] (Note: Vitest environment path issues persist)
+- [x] Task: Green Phase - Update `useLeaders` hook in `src/hooks/useSanityData.ts` to fetch `officersConfig` [1936b96]
+- [x] Task: Green Phase - Implement grouping and ordering logic in `OfficersPage` component [1936b96]
+- [x] Task: Refactor and Verify Coverage [15e06ed]
+- [~] Task: Conductor - User Manual Verification 'Phase 2: Frontend Implementation and Logic' (Protocol in workflow.md)
 
 ## Phase 3: UI Refinement and Mobile Optimization
 Goal: Polish the visual presentation and ensure a great experience on mobile.
