@@ -21,24 +21,25 @@ export default function App() {
   const location = useLocation();
 
   useEffect(() => {
-    // Enable visual editing handshake when inside an iframe (Sanity Studio)
-    console.log("Sanity Visual Editing: Initializing handshake...");
-    const disable = enableVisualEditing({
-      zIndex: 1000,
-      onPublish: () => {
-        console.log("Sanity Visual Editing: Content published");
-        window.location.reload();
-      }
-    });
-    
-    if (window.self !== window.top) {
-      console.log("Sanity Visual Editing: Detected iframe environment");
-    }
+    // Only enable visual editing if we're in an iframe or have a preview parameter
+    const isIframe = window.self !== window.top;
+    const isPreview = new URLSearchParams(window.location.search).has('preview');
 
-    return () => {
-      console.log("Sanity Visual Editing: Disabling handshake");
-      disable();
-    };
+    if (isIframe || isPreview) {
+      console.log("Sanity Visual Editing: Initializing handshake...");
+      const disable = enableVisualEditing({
+        zIndex: 1000,
+        onPublish: () => {
+          console.log("Sanity Visual Editing: Content published");
+          window.location.reload();
+        }
+      });
+
+      return () => {
+        console.log("Sanity Visual Editing: Disabling handshake");
+        disable();
+      };
+    }
   }, []);
 
   return (

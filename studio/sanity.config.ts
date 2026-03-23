@@ -14,11 +14,11 @@ export default defineConfig({
     deskTool(),
     presentationTool({
       previewUrl: {
-        origin: typeof window !== 'undefined' && window.location.origin.includes('localhost') 
+        origin: (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
           ? 'http://localhost:5173' 
-          : 'https://ieee-website-9ix.pages.dev', // Default preview URL
+          : 'https://ieee-website-9ix.pages.dev',
         previewMode: {
-          enable: '/api/draft',
+          enable: '/', // Match the frontend's preview route
         },
       },
     }),
