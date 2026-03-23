@@ -5,13 +5,13 @@ This plan outlines the standardization of the Officers page by splitting it into
 ## Phase 1: Sanity Schema and Data Configuration
 Goal: Implement the backend structure for categorization and drag-and-drop ordering.
 
-- [ ] Task: Red Phase - Write failing tests for leader schema changes
-- [ ] Task: Green Phase - Add `category` field to `leader` schema in `studio/schema/leader.ts`
-- [ ] Task: Green Phase - Create `officersConfig` singleton schema in `studio/schema/officersConfig.ts`
-- [ ] Task: Refactor and Verify Coverage
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Sanity Schema and Data Configuration' (Protocol in workflow.md)
+- [x] Task: Red Phase - Write failing tests for leader schema changes [1936b96]
+- [x] Task: Green Phase - Add `category` field to `leader` schema in `studio/schema/leader.ts` [1936b96]
+- [x] Task: Green Phase - Create `officersConfig` singleton schema in `studio/schema/officersConfig.ts` [1936b96]
+- [x] Task: Refactor and Verify Coverage [1936b96]
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Sanity Schema and Data Configuration' (Protocol in workflow.md) [1936b96]
 
-## Phase 2: Frontend Implementation and Logic
+## Phase 2: Frontend Implementation and Logic [~]
 Goal: Update the frontend to group and order leaders according to the new Sanity configuration.
 
 - [ ] Task: Red Phase - Write failing tests for leader grouping and ordering logic
