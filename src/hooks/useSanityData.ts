@@ -126,7 +126,7 @@ export function useLeaders() {
     "category": coalesce(category, 
       select(
         role match "*President*" || role match "*Secretary*" || role match "*Treasurer*" => "executive",
-        role match "*Chair*" || role match "*Lead*" => "technical",
+        role match "*Chair*" || role match "*MTT-S*" || role match "*AESC*" || role match "*EMBS*" || role match "*SMC*" || role match "*CSOCIETY*" || role match "*RACING*" || role match "*SOFTWARE SATURDAYS*" => "technical",
         role match "*Infrastructure*" || role match "*Industrial*" || role match "*Operations*" => "operations",
         "member"
       )
