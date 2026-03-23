@@ -3,6 +3,25 @@ import { client, previewClient } from '../lib/sanity'
 import groq from 'groq'
 import type { Committee, CornerstoneCommittee } from '../data/committees/types'
 
+const SECTION_PROJECTION = groq`
+  sections[]{
+    ...,
+    "type": select(
+      _type == "textSection" => "text",
+      _type == "projectsSection" => "projects",
+      _type == "faqSection" => "faq",
+      _type == "gallerySection" => "gallery",
+      _type == "contactSection" => "contact",
+      _type
+    ),
+    "image": coalesce(image.asset->url, image),
+    items[]{
+      ...,
+      "image": coalesce(image.asset->url, image)
+    }
+  }
+`;
+
 // Simple in-memory cache
 const cache: Record<string, any> = {};
 
@@ -75,22 +94,7 @@ export function useCommittees() {
     ...,
     "id": id.current,
     "image": coalesce(image.asset->url, image),
-    sections[]{
-      ...,
-      "type": select(
-        _type == "textSection" => "text",
-        _type == "projectsSection" => "projects",
-        _type == "faqSection" => "faq",
-        _type == "gallerySection" => "gallery",
-        _type == "contactSection" => "contact",
-        _type
-      ),
-      "image": coalesce(image.asset->url, image),
-      items[]{
-        ...,
-        "image": coalesce(image.asset->url, image)
-      }
-    }
+    ${SECTION_PROJECTION}
   }`
   const { data, loading, error } = useDataFetching<Committee[]>(query);
   return { committees: data || [], loading, error };
@@ -101,22 +105,7 @@ export function useCommittee(id: string) {
     ...,
     "id": id.current,
     "image": coalesce(image.asset->url, image),
-    sections[]{
-      ...,
-      "type": select(
-        _type == "textSection" => "text",
-        _type == "projectsSection" => "projects",
-        _type == "faqSection" => "faq",
-        _type == "gallerySection" => "gallery",
-        _type == "contactSection" => "contact",
-        _type
-      ),
-      "image": coalesce(image.asset->url, image),
-      items[]{
-        ...,
-        "image": coalesce(image.asset->url, image)
-      }
-    }
+    ${SECTION_PROJECTION}
   }`
   const { data, loading, error } = useDataFetching<Committee>(query, { id });
   return { committee: data, loading, error };
