@@ -1,52 +1,78 @@
-# Maintenance & Workflow Guide
+# Maintenance & Deployment Guide
 
-This guide covers the ongoing maintenance, deployment, and development workflow for the Purdue IEEE Website.
+This guide covers the ongoing maintenance, manual deployment, and schema management for the Purdue IEEE Website.
 
-## 🔄 Development Workflow
+## 🚀 Deployment to Cloudflare Pages
 
-We follow a structured, spec-driven development process using the **Conductor** framework.
+We use Cloudflare Pages for our production and preview environments. While GitHub Actions handles most deployments, you may need to deploy manually or verify settings.
 
-### Track-Based Development
-Every feature or bug fix is managed as a "Track".
-1. **Initialize Track:** Run `/conductor:setup` or `/conductor:implement` to start a new track.
-2. **Implementation:** Follow the `plan.md` created for the track.
-3. **Red Phase:** Write failing unit tests first.
-4. **Green Phase:** Implement the minimum code to pass the tests.
-5. **Verify:** Ensure coverage is >85% and all tests pass.
-6. **Checkpoint:** Create a checkpoint commit at the end of each phase.
+### 🌎 Project URL
+**[https://ieee-website-9ix.pages.dev](https://ieee-website-9ix.pages.dev)**
 
-### Code Style & Quality
-- **TypeScript:** Strict typing is required for all new code.
-- **Testing:** We use **Vitest**. New components should have corresponding `.test.tsx` files.
-- **Linting:** Run `npm run lint` before committing to ensure adherence to style guides in `conductor/code_styleguides/`.
+### 🛠️ Build Settings
+If configuring from scratch in the Cloudflare Dashboard:
+- **Framework Preset:** `Vite`
+- **Build Command:** `npm run build`
+- **Build Output Directory:** `dist`
+- **Node.js Version:** `18+`
 
-## 🚀 Deployment
+### 🔑 Environment Variables
+The following must be set in the Cloudflare dashboard (`Settings > Functions > Variables`):
+- `VITE_SANITY_PROJECT_ID`: `vq0v7yv4`
+- `VITE_SANITY_DATASET`: `production`
 
-The site is containerized using Docker and served via Nginx.
+---
 
-### CI/CD Pipeline
-- **GitHub Actions:** Automatically triggers on pushes to `main`.
-- **Build Process:** Vite compiles the React app into the `dist/` folder.
-- **Nginx Config:** `nginx.conf` handles SPA routing by redirecting all unknown paths to `index.html`.
+## 🏗️ Managing the Sanity Schema
 
-### Docker
-To build and run the site locally in a production-like environment:
+When the content requirements change (e.g., adding a new field to a Committee), you must update the schema code.
+
+### 1. File Location
+All schema definitions are located in:
+**`/studio/purdue-ieee-website/schemaTypes/`**
+
+### 2. Making Changes
+- Open the relevant file (e.g., `leader.ts`).
+- Add or modify a `defineField` block.
+- **TypeScript First:** Ensure any new fields are also added to the corresponding interface in `src/data/leadership.ts` or `src/data/committees/types.ts`.
+
+### 3. Deploying the Schema
+After editing the local files, you must push the changes to Sanity's servers:
 ```bash
+# Navigate to the studio directory
+cd studio/purdue-ieee-website
+
+# Deploy the updated Studio and Schema
+npm run deploy
+```
+*Note: You must have the Sanity CLI installed (`npm install -g sanity`) and be logged in (`sanity login`).*
+
+---
+
+## 🔄 Standard Development Workflow
+
+For those not using specialized AI tools (like Conductor), follow this standard Git workflow:
+
+1. **Create a Branch:** `git checkout -b feature/your-feature-name`
+2. **Develop:** Make your changes in `src/`.
+3. **Test:** Run `npm test` to ensure no regressions.
+4. **Build:** Run `npm run build` to verify the production build passes.
+5. **Commit:** Follow the [Conventional Commits](https://www.conventionalcommits.org/) format:
+   - `feat(...)`: New features
+   - `fix(...)`: Bug fixes
+   - `docs(...)`: Documentation changes
+6. **Push & PR:** Push your branch and open a Pull Request on GitHub.
+
+---
+
+## 🐳 Docker (Optional Local Testing)
+
+To test the site in a containerized environment similar to our production Nginx setup:
+```bash
+# Build the image
 docker build -t ieee-website .
+
+# Run the container
 docker run -p 8080:80 ieee-website
 ```
-
-## 🛠️ CMS Maintenance
-
-We use **Sanity.io** as our Headless CMS.
-
-- **Schema Changes:** Modifications to the content structure must be made in the `studio/` directory and deployed via `sanity deploy` (run from the `studio/` folder).
-- **Environment Variables:** Ensure `VITE_SANITY_PROJECT_ID` and `VITE_SANITY_DATASET` are correctly set in the production environment.
-
-## 📋 Definition of Done
-A task is considered complete only when:
-- [ ] Code meets specification.
-- [ ] Unit tests pass with >85% coverage.
-- [ ] Documentation is updated.
-- [ ] UI is verified on both desktop and mobile.
-- [ ] Changes are committed with a proper summary in the body.
+The site will be available at `http://localhost:8080`.
