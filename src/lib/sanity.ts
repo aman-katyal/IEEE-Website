@@ -5,13 +5,18 @@ const dataset = import.meta.env.VITE_SANITY_DATASET || 'production'
 const apiVersion = '2024-03-16'
 const studioUrl = 'https://purdue-ieee-website.sanity.studio'
 
+// Check if we should enable stega based on URL or environment
+const isStegaEnabled = typeof window !== 'undefined' && 
+  (new URLSearchParams(window.location.search).has('stega') || 
+   window.self !== window.top);
+
 export const client = createClient({
   projectId,
   dataset,
   useCdn: true,
   apiVersion,
   stega: {
-    enabled: true,
+    enabled: false, // Keep disabled for production delivery to prevent string issues
     studioUrl,
   },
 })
@@ -25,7 +30,7 @@ export const previewClient = createClient({
   token: import.meta.env.VITE_SANITY_API_TOKEN,
   perspective: 'previewDrafts',
   stega: {
-    enabled: true,
+    enabled: isStegaEnabled,
     studioUrl,
   },
 })
