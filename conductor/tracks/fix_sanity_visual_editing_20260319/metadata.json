@@ -1,0 +1,8 @@
+{
+  "track_id": "fix_sanity_visual_editing_20260319",
+  "type": "bug",
+  "status": "new",
+  "created_at": "2026-03-19T20:00:00Z",
+  "updated_at": "2026-03-19T20:00:00Z",
+  "description": "we need to fix live editing and presentation page on sanity whihc shows Unable to connect, check the browser console for more information. https://www.sanity.io/docs/user-guides/preview-and-page-building https://www.sanity.io/docs/visual-editing/introduction-to-visual-editing https://www.sanity.io/docs/visual-editing/visual-editing-with-next-js-app-router https://www.sanity.io/docs/visual-editing/visual-editing-with-next-js-pages-router https://github.com/sanity-io/next-sanity#live-content-api use these links to help"
+}
