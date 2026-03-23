@@ -7,19 +7,20 @@ import { MagneticWrapper } from "./ui/MagneticWrapper";
 
 const footerLinks = {
   Organization: [
-    { label: "About IEEE", href: "/about" },
-    { label: "Leadership Team", href: "/officers" },
+    { label: "About Us", href: "/about" },
+    { label: "Officers", href: "/officers" },
     { label: "Constitution", href: "/constitution" },
+    { label: "Corporate Partners", href: "/partners" },
   ],
   Resources: [
     { label: "IEEE.org", href: "https://ieee.org", external: true },
-    { label: "Workshops", href: "/calendar" },
-    { label: "Member Portal", href: "https://ieee.org", external: true },
+    { label: "Event Calendar", href: "/calendar" },
+    { label: "Member Benefits", href: "https://www.ieee.org/membership/benefits/index.html", external: true },
   ],
   Connect: [
-    { label: "Contact Us", href: "/join" },
-    { label: "Industry Partners", href: "/about" },
-    { label: "Join IEEE", href: "/join" },
+    { label: "Join Purdue IEEE", href: "/join" },
+    { label: "Contact Us", href: "mailto:ieee@purdue.edu", external: true },
+    { label: "Community Discord", href: "https://discord.gg/sPPQequ9ws", external: true },
   ],
 };
 
@@ -210,18 +211,28 @@ export function Footer() {
         >
           {/* Committees column — uses react-router Links */}
           <div>
-            <div
+            <Link
+              to="/committees"
               style={{
+                display: "block",
                 fontFamily: "var(--font-mono)",
                 fontSize: "0.6rem",
                 letterSpacing: "0.18em",
                 color: "var(--electric-blue)",
                 textTransform: "uppercase",
                 marginBottom: "20px",
+                textDecoration: "none",
+                transition: "color 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-primary)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLAnchorElement).style.color = "var(--electric-blue)";
               }}
             >
               Committees
-            </div>
+            </Link>
             <div
               style={{
                 display: "flex",
@@ -335,7 +346,7 @@ export function Footer() {
               opacity: isLight ? 1 : 0.8
             }}
           >
-            © 2026 Purdue IEEE Student Branch · All rights reserved
+            © {new Date().getFullYear()} Purdue IEEE Student Branch · All rights reserved
           </span>
 
           <div style={{ display: "flex", gap: "24px", alignItems: "center" }}>
