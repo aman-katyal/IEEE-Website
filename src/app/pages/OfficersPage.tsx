@@ -35,7 +35,24 @@ export function OfficersPage() {
 
   // Group and order leaders
   const getOrderedLeaders = (categoryId: string) => {
-    const categoryLeaders = leaders.filter((l: Leader) => l.category === categoryId);
+    const categoryLeaders = leaders.filter((l: Leader) => {
+      // Use explicit category if available
+      if (l.category) return l.category === categoryId;
+
+      // Fallback logic in JS
+      const role = l.role || "";
+      let inferredCategory = "member";
+      
+      if (role.includes("President") || role.includes("Secretary") || role.includes("Treasurer")) {
+        inferredCategory = "executive";
+      } else if (role.includes("Chair") || role.includes("Lead") || role.includes("MTT-S") || role.includes("AESC") || role.includes("EMBS") || role.includes("SMC") || role.includes("CSOCIETY") || role.includes("RACING") || role.includes("SOFTWARE SATURDAYS")) {
+        inferredCategory = "technical";
+      } else if (role.includes("Head of") || role.includes("Infrastructure") || role.includes("Industrial") || role.includes("Operations")) {
+        inferredCategory = "operations";
+      }
+
+      return inferredCategory === categoryId;
+    });
     
     if (!config) return categoryLeaders;
 

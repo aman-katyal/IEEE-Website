@@ -123,14 +123,6 @@ export function useCornerstoneCommittees() {
 export function useLeaders() {
   const query = groq`*[_type == "leader"] | order(order asc){
     ...,
-    "category": coalesce(category, 
-      select(
-        role match "*President*" || role match "*Secretary*" || role match "*Treasurer*" => "executive",
-        role match "*Chair*" || role match "*MTT-S*" || role match "*AESC*" || role match "*EMBS*" || role match "*SMC*" || role match "*CSOCIETY*" || role match "*RACING*" || role match "*SOFTWARE SATURDAYS*" => "technical",
-        role match "*Infrastructure*" || role match "*Industrial*" || role match "*Operations*" => "operations",
-        "member"
-      )
-    ),
     "image": coalesce(image.asset->url, image)
   }`
   const { data, loading, error } = useDataFetching<any[]>(query);
