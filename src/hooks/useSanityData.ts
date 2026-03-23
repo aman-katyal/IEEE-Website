@@ -123,8 +123,21 @@ export function useCornerstoneCommittees() {
 export function useLeaders() {
   const query = groq`*[_type == "leader"] | order(order asc){
     ...,
+    "category": coalesce(category, "member"),
     "image": coalesce(image.asset->url, image)
   }`
   const { data, loading, error } = useDataFetching<any[]>(query);
   return { leaders: data || [], loading, error };
+}
+
+export function useOfficersConfig() {
+  const query = groq`*[_type == "officersConfig"][0]{
+    ...,
+    executiveOrder[]->{ _id },
+    technicalOrder[]->{ _id },
+    operationsOrder[]->{ _id },
+    memberOrder[]->{ _id }
+  }`
+  const { data, loading, error } = useDataFetching<any>(query);
+  return { config: data, loading, error };
 }

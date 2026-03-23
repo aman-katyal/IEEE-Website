@@ -4,9 +4,11 @@
 import leadershipData from "./leadership.json";
 
 export interface Leader {
+  _id: string;
   role: string;
   name: string;
   email: string;
+  category?: string;
   /** Optional image URL — replace placeholders with real photos */
   image?: string;
   committees?: string;
