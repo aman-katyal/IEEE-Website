@@ -2,6 +2,15 @@
 
 The official web platform for the Purdue University IEEE Student Branch. This project serves as a modern landing page and informational hub for the branch's technical committees, leadership, and resources.
 
+## 📚 Documentation
+
+Detailed guides for various users and tasks:
+
+- [**Content Editor Guide**](./docs/sanity-guide.md) — How to update committees, officers, and events via Sanity CMS.
+- [**Developer Onboarding Guide**](./docs/developer-guide.md) — Tech stack details, local setup, and architecture overview.
+- [**Design & Brand Guidelines**](./docs/design-guidelines.md) — Visual standards, colors, typography, and motion principles.
+- [**Maintenance & Workflow Guide**](./docs/maintenance-guide.md) — Deployment, CI/CD, and the Conductor development workflow.
+
 ## Tech Stack
 
 - **Framework:** React 18 with Vite
