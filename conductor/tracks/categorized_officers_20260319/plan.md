@@ -23,8 +23,8 @@ Goal: Update the frontend to group and order leaders according to the new Sanity
 ## Phase 3: UI Refinement and Mobile Optimization [~]
 Goal: Polish the visual presentation and ensure a great experience on mobile.
 
-- [x] Task: Red Phase - Write failing tests for mobile accordion behavior [b578289]
-- [x] Task: Green Phase - Implement sectioned grid layout with headings in `OfficersPage.tsx` [15e06ed]
-- [x] Task: Green Phase - Implement mobile accordions for categories using Radix UI or custom logic [15e06ed]
-- [x] Task: Refactor and Verify Coverage [15e06ed]
-- [~] Task: Conductor - User Manual Verification 'Phase 3: UI Refinement and Mobile Optimization' (Protocol in workflow.md)
+- [x] Task: Red Phase - Write failing tests for mobile accordion behavior [c1b8ce6]
+- [x] Task: Green Phase - Implement sectioned grid layout with headings in `OfficersPage.tsx` [c1b8ce6]
+- [x] Task: Green Phase - Implement mobile accordions for categories using Radix UI or custom logic [c1b8ce6]
+- [x] Task: Refactor and Verify Coverage [c1b8ce6]
+- [x] Task: Conductor - User Manual Verification 'Phase 3: UI Refinement and Mobile Optimization' (Protocol in workflow.md) [c1b8ce6]
