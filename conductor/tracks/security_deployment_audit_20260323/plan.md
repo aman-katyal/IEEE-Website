@@ -12,19 +12,20 @@ Address and identify existing security issues in the codebase and dependencies.
     - [x] Identify common security pitfalls such as insecure data handling or configuration. (Result: No critical issues; `dangerouslySetInnerHTML` used safely in `chart.tsx` for CSS)
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Security Audit & Vulnerability Scanning' (Protocol in workflow.md) 2b0b446
 
-## Phase 2: Secret Migration & Environment Configuration
+## Phase 2: Secret Migration & Environment Configuration [checkpoint: be54b1a]
 Migrate hardcoded secrets to a secure environment variable setup.
 
-- [ ] Task: Write a unit test to verify that sensitive configuration is loaded from environment variables.
-    - [ ] Ensure that the component or utility responsible for Google Calendar integration retrieves its key from `import.meta.env`.
-- [ ] Task: Create and configure environment variable files.
-    - [ ] Create a local `.env` file (if not present) with the necessary keys.
-    - [ ] Update `.env.example` with placeholders for all required environment variables.
-- [ ] Task: Refactor the codebase to remove hardcoded secrets.
-    - [ ] Replace hardcoded **Google Calendar API Key** and other identified secrets with their corresponding `import.meta.env` references.
-- [ ] Task: Verify the migration with tests.
-    - [ ] Run the newly created unit tests and ensure they pass.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Secret Migration & Environment Configuration' (Protocol in workflow.md)
+- [x] Task: Write a unit test to verify that sensitive configuration is loaded from environment variables. 0a2cf60
+    - [x] Ensure that the component or utility responsible for Google Calendar integration retrieves its key from `import.meta.env`.
+- [x] Task: Create and configure environment variable files. 0a2cf60
+    - [x] Create a local `.env` file (if not present) with the necessary keys.
+    - [x] Update `.env.example` with placeholders for all required environment variables.
+    - [x] (Urgent) Added `.env` to `.gitignore` and removed from git tracking to fix security leak.
+- [x] Task: Refactor the codebase to remove hardcoded secrets. 0a2cf60
+    - [x] Replace hardcoded **Google Calendar API Key** and other identified secrets with their corresponding `import.meta.env` references.
+- [x] Task: Verify the migration with tests. 047b09d
+    - [x] Run the newly created unit tests and ensure they pass.
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Secret Migration & Environment Configuration' (Protocol in workflow.md) be54b1a
 
 ## Phase 3: Vulnerability Remediation & Final Audit
 Resolve identified issues and perform final readiness checks for Cloudflare/Sanity deployment.
