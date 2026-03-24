@@ -5,11 +5,11 @@ Address and identify existing security issues in the codebase and dependencies.
 
 - [x] Task: Conduct a thorough vulnerability scan of project dependencies using `npm audit`. 25ee8a2
     - [x] Run `npm audit` and document the number of high and critical vulnerabilities found. (Result: 0 High, 0 Critical, 1 Moderate in Vite)
-- [ ] Task: Perform a scan for hardcoded secrets and API keys throughout the repository.
-    - [ ] Use `grep_search` or specialized tools to find hardcoded credentials.
-    - [ ] Identify all occurrences of the **Google Calendar API Key** and any other sensitive tokens.
-- [ ] Task: Execute Static Application Security Testing (SAST) on the source code.
-    - [ ] Identify common security pitfalls such as insecure data handling or configuration.
+- [x] Task: Perform a scan for hardcoded secrets and API keys throughout the repository. 8f653ca
+    - [x] Use `grep_search` or specialized tools to find hardcoded credentials.
+    - [x] Identify all occurrences of the **Google Calendar API Key** and any other sensitive tokens. (Found: `src/data/calendarConfig.ts`)
+- [x] Task: Execute Static Application Security Testing (SAST) on the source code. 8f653ca
+    - [x] Identify common security pitfalls such as insecure data handling or configuration. (Result: No critical issues; `dangerouslySetInnerHTML` used safely in `chart.tsx` for CSS)
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Security Audit & Vulnerability Scanning' (Protocol in workflow.md)
 
 ## Phase 2: Secret Migration & Environment Configuration
