@@ -8,9 +8,9 @@ describe('Sanity Client Configuration', () => {
 
     console.log('Client Stega Config:', clientConfig.stega);
     
-    // We want stega enabled with specific options
+    // We want stega disabled by default to prevent string issues in production
     expect(clientConfig.stega).toMatchObject({
-      enabled: true,
+      enabled: false,
       studioUrl: expect.any(String)
     });
   });

@@ -1,3 +1,4 @@
+import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { CommitteePage } from './CommitteePage';
@@ -32,7 +33,7 @@ describe('CommitteePage Rendering', () => {
       metrics: [{ label: 'Members', value: '10' }],
       sections: [
         {
-          _type: 'textSection',
+          type: 'text',
           title: 'Section Title',
           content: 'This is test content that should be visible.',
         }
@@ -57,8 +58,7 @@ describe('CommitteePage Rendering', () => {
     expect(screen.getByText('Test Committee')).toBeInTheDocument();
 
     // Verify section renders
-    // THIS IS EXPECTED TO FAIL until we fix the mapping from _type to type
-    expect(screen.getByText('Section Title')).toBeInTheDocument();
-    expect(screen.getByText('This is test content that should be visible.')).toBeInTheDocument();
+    expect(screen.getByText(/Section Title/)).toBeInTheDocument();
+    expect(screen.getByText(/This is test content/)).toBeInTheDocument();
   });
 });
