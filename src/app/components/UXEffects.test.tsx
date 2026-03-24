@@ -1,3 +1,4 @@
+import React from 'react';
 import { render, fireEvent, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { UXEffects } from './UXEffects';
