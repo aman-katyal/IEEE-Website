@@ -1,2 +1,9 @@
 .gemini/
 gha-creds-*.json
+.env
+.env.local
+.env.*.local
+dist
+dist-ssr
+*.local
+node_modules

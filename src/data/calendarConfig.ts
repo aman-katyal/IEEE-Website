@@ -3,7 +3,7 @@
 
 export const CALENDAR_CONFIG = {
   /** Google Calendar API key (restricted to Calendar API) */
-  apiKey: "AIzaSyCiHFpbbbSmpu60-2KpFdqIhoLaygoCAIA",
+  apiKey: import.meta.env.VITE_GOOGLE_CALENDAR_API_KEY,
 
   /** Public calendar ID */
   calendarId:
