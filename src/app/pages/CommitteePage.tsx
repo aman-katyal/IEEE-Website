@@ -220,12 +220,12 @@ export function CommitteePage() {
           <div key={index} className="mb-16">
             <p className="section-eyebrow mb-5">// {section.title || "Gallery"}</p>
             <div className="columns-2 md:columns-3 gap-4">
-              <div key={i} className="gallery-item-container relative mb-4 break-inside-avoid rounded-lg overflow-hidden border border-[var(--glass-border)] cursor-pointer group">
-                <img 
-                  src={(img.image?.asset || img.src?.asset) ? urlFor(img.image || img.src).width(800).auto('format').url() : (img.image || img.src)} 
-                  alt={img.caption} 
-                  className="w-full h-auto block transition-transform duration-500 group-hover:scale-105" 
-              ...
+              {section.items.map((img: any, i) => (
+                <div key={i} className="gallery-item-container relative mb-4 break-inside-avoid rounded-lg overflow-hidden border border-[var(--glass-border)] cursor-pointer group">
+                  <img 
+                    src={(img.image?.asset || img.src?.asset) ? urlFor(img.image || img.src).width(800).auto('format').url() : (img.image || img.src)} 
+                    alt={img.caption} 
+                    className="w-full h-auto block transition-transform duration-500 group-hover:scale-105" 
                     style={{ filter: isLight ? "brightness(1)" : "brightness(0.85)" }} 
                   />
                   {img.caption && (
@@ -300,97 +300,60 @@ export function CommitteePage() {
         </div>
       </section>
 
-      <section style={{ background: "var(--boiler-black)", padding: "80px 0 120px", position: "relative" }}>
-        <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 32px" }}>
-          <div className="ieee-grid-sidebar" style={{ gap: "48px" }}>
-            <div>
-              <div style={{ marginBottom: "64px" }}>
-                <p className="section-eyebrow" style={{ marginBottom: "20px" }}>// About This Committee</p>
-                <div className="glass-card" style={{ padding: "32px" }}>
-                  {loading ? (
-                    <>
-                      <Skeleton style={{ height: "20px", width: "100%", marginBottom: "8px", background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)" }} />
-                      <Skeleton style={{ height: "20px", width: "100%", marginBottom: "8px", background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)" }} />
-                      <Skeleton style={{ height: "20px", width: "90%", marginBottom: "8px", background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)" }} />
-                      <Skeleton style={{ height: "20px", width: "95%", background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)" }} />
-                    </>
-                  ) : (
-                    <p style={{ fontFamily: "var(--font-body)", fontSize: "16px", color: "var(--text-secondary)", lineHeight: 1.85 }}>{committee?.longDescription}</p>
-                  )}
-                </div>
-              </div>
-
-              {/* Dynamic Content Blocks */}
+      <div style={{ background: "var(--boiler-black)", position: "relative" }}>
+        <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "80px 32px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: "64px", alignItems: "flex-start" }} className="committee-main-grid">
+            {/* Left Column: Content */}
+            <div style={{ minWidth: 0 }}>
               {loading ? (
-                <div style={{ marginBottom: "64px" }}>
-                  <Skeleton style={{ height: "300px", width: "100%", borderRadius: "8px", background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)" }} />
+                <div style={{ display: "flex", flexDirection: "column", gap: "48px" }}>
+                  {[1, 2].map(i => (
+                    <div key={i}>
+                      <Skeleton style={{ height: "20px", width: "100px", marginBottom: "16px", background: "rgba(255,255,255,0.05)" }} />
+                      <div className="glass-card" style={{ padding: "32px" }}>
+                        <Skeleton style={{ height: "200px", width: "100%", background: "rgba(255,255,255,0.05)" }} />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               ) : (
-                committee?.sections?.map((section, i) => renderSection(section, i))
+                committee?.sections?.map(renderSection)
               )}
-
-              {/* Tags */}
-              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "64px" }}>
-                {loading ? (
-                  Array.from({ length: 5 }).map((_, i) => (
-                    <Skeleton key={i} style={{ height: "32px", width: "80px", borderRadius: "16px", background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)" }} />
-                  ))
-                ) : (
-                  committee?.tags.map((tag) => <span key={tag} className="tech-tag" style={{ opacity: isLight ? 1 : 0.9, padding: "6px 12px" }}>{tag}</span>)
-                )}
-              </div>
             </div>
 
-            <div>
-              <div className="glass-card" style={{ padding: "32px", position: "sticky", top: "112px" }}>
-                <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.18em", color: "var(--electric-blue)", textTransform: "uppercase", marginBottom: "24px", opacity: isLight ? 1 : 0.9 }}>// Committee Details</div>
-                
-                {/* Metrics */}
-                <div style={{ display: "grid", gridTemplateColumns: `repeat(3, 1fr)`, gap: "0", borderTop: "1px solid var(--glass-border)", borderBottom: "1px solid var(--glass-border)", padding: "20px 0", marginBottom: "32px" }}>
-                  {loading ? (
-                    Array.from({ length: 3 }).map((_, i) => (
-                      <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "6px" }}>
-                        <Skeleton style={{ height: "24px", width: "30px", background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)" }} />
-                        <Skeleton style={{ height: "12px", width: "40px", background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)" }} />
-                      </div>
-                    ))
-                  ) : (
-                    (committee?.metrics || []).map((m, i) => (
-                      <div key={m.label} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "6px", borderRight: i < (committee?.metrics?.length || 0) - 1 ? "1px solid var(--glass-border)" : "none" }}>
-                        <span style={{ fontFamily: "var(--font-mono)", fontSize: "19px", fontWeight: 600, color: "var(--electric-blue)", lineHeight: 1 }}>{m.value}</span>
-                        <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", color: "var(--text-muted)", letterSpacing: "0.12em", textTransform: "uppercase", opacity: isLight ? 1 : 0.8 }}>{m.label}</span>
-                      </div>
-                    ))
-                  )}
+            {/* Right Column: Sidebar */}
+            <aside style={{ position: "sticky", top: "120px" }}>
+              {loading ? (
+                <div className="glass-card" style={{ padding: "32px" }}>
+                  <Skeleton style={{ height: "24px", width: "150px", marginBottom: "24px", background: "rgba(255,255,255,0.05)" }} />
+                  <Skeleton style={{ height: "56px", width: "100%", background: "rgba(255,255,255,0.05)" }} />
                 </div>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
+                  <div className="glass-card" style={{ padding: "32px" }}>
+                    <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "18px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "20px", borderLeft: "3px solid var(--electric-blue)", paddingLeft: "12px" }}>Get Involved</h3>
+                    {renderJoinButton()}
+                  </div>
 
-                {/* Chair */}
-                <div style={{ marginBottom: "32px" }}>
-                  <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.12em", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: "10px" }}>Committee Chair</div>
-                  {loading ? (
-                    <>
-                      <Skeleton style={{ height: "24px", width: "150px", marginBottom: "8px", background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)" }} />
-                      <Skeleton style={{ height: "16px", width: "180px", background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)" }} />
-                    </>
-                  ) : (
-                    <>
-                      <div style={{ fontFamily: "var(--font-headline)", fontSize: "18px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "8px" }}>{committee?.chair}</div>
-                      <a href={`mailto:${committee?.email}`} style={{ display: "inline-flex", alignItems: "center", gap: "8px", fontFamily: "var(--font-mono)", fontSize: "0.75rem", color: "var(--electric-blue)", textDecoration: "none" }}><Mail size={14} /> {committee?.email}</a>
-                    </>
-                  )}
+                  <div className="glass-card" style={{ padding: "32px" }}>
+                    <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "18px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "20px", borderLeft: "3px solid var(--cyber-gold)", paddingLeft: "12px" }}>Details</h3>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                      <div>
+                        <p style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "4px" }}>Committee Chair</p>
+                        <p style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--text-primary)", fontWeight: 500 }}>{committee?.chair}</p>
+                      </div>
+                      <div>
+                        <p style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "4px" }}>Contact Email</p>
+                        <a href={`mailto:${committee?.email}`} style={{ fontFamily: "var(--font-mono)", fontSize: "13.5px", color: "var(--electric-blue)", textDecoration: "none" }}>{committee?.email}</a>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-
-                {loading ? (
-                  <Skeleton style={{ height: "54px", width: "100%", borderRadius: "4px", background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)" }} />
-                ) : (
-                  renderJoinButton()
-                )}
-              </div>
-            </div>
+              )}
+            </aside>
           </div>
         </div>
-      </section>
-      <style>{`.gallery-item-container:hover .caption-overlay { opacity: 1 !important; transform: translateY(0) !important; } .gallery-item-container:hover img { filter: brightness(1) !important; transform: scale(1.05); } .social-tag:hover { border-color: var(--electric-blue); color: var(--electric-blue); background: rgba(0, 98, 155, 0.05); }`}</style>
+      </div>
     </>
   );
 }

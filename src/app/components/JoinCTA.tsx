@@ -231,7 +231,7 @@ export function JoinCTA() {
             <CardContent className="flex flex-col items-center gap-6 p-12 pt-4">
               <Button
                 asChild
-                className="w-full bg-[#5865F2] hover:bg-[#4752c4] border-none py-6"
+                className="w-full bg-[#5865F2] hover:bg-[#4752c4] border-none py-6 text-white"
               >
                 <a
                   href="https://discord.gg/sPPQequ9ws"
