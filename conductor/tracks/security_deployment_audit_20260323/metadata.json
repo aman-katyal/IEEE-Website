@@ -1,8 +1,0 @@
-{
-  "track_id": "security_deployment_audit_20260323",
-  "type": "chore",
-  "status": "new",
-  "created_at": "2026-03-23T14:30:00Z",
-  "updated_at": "2026-03-23T14:30:00Z",
-  "description": "fix all security issues such as hardcoded keys and make it env file, and like do scan to see what is vulnerable and basically do a check to see what is needed to deploy, all the htings before that"
-}

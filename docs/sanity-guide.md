@@ -1,3 +1,4 @@
+
 # Content Editor Guide (Sanity CMS)
 
 This guide is for Purdue IEEE officers and members who need to update the website's content without touching the code. We use **Sanity.io**, a flexible Headless CMS, to manage our data.
