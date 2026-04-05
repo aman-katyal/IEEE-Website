@@ -10,9 +10,6 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     include: ['src/**/*.{test,spec}.{ts,tsx}', 'studio/**/*.{test,spec}.{ts,tsx}', 'src/*.test.ts'],
   },
-  esbuild: {
-    jsxInject: `import React from 'react'`,
-  },
   server: {
     fs: {
       allow: ['C:/Users/aman', 'C:/Users/Aman Katyal', '..']

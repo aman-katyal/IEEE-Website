@@ -1,8 +1,6 @@
 import { FileText, Shield, Download, ExternalLink } from "lucide-react";
 import { useEffect } from "react";
 import { useTheme } from "next-themes";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
-import { Button } from "../components/ui/button";
 
 export function ConstitutionPage() {
   const { theme } = useTheme();
@@ -84,47 +82,48 @@ export function ConstitutionPage() {
         <div style={{ display: "flex", flexDirection: "column", gap: "64px" }}>
           {/* Core Constitution */}
           <div>
-            <div className="flex items-center gap-3 mb-8">
-              <Shield size={24} className="text-[var(--electric-blue)]" />
-              <h3 className="font-headline text-2xl font-semibold text-[var(--text-primary)]">Branch Constitution</h3>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "32px" }}>
+              <Shield size={24} style={{ color: "var(--electric-blue)" }} />
+              <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "24px", fontWeight: 600, color: "var(--text-primary)" }}>Branch Constitution</h3>
             </div>
             {coreDocs.map((doc) => (
-              <Card key={doc.name} className="glass-card border-none shadow-none">
-                <CardContent className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 p-8">
-                  <div>
-                    <h4 className="font-headline text-xl font-semibold text-[var(--text-primary)] mb-2">{doc.name}</h4>
-                    <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{doc.description}</p>
-                  </div>
-                  <Button asChild className="gap-2 px-6 shrink-0">
-                    <a href={doc.link} target="_blank" rel="noopener noreferrer" className="no-underline">
-                      <Download size={16} />
-                      View PDF
-                    </a>
-                  </Button>
-                </CardContent>
-              </Card>
+              <div key={doc.name} className="glass-card" style={{ padding: "32px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "24px" }}>
+                <div>
+                  <h4 style={{ fontFamily: "var(--font-headline)", fontSize: "20px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "8px" }}>{doc.name}</h4>
+                  <p style={{ fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.5 }}>{doc.description}</p>
+                </div>
+                <a href={doc.link} className="btn-primary" style={{ display: "flex", alignItems: "center", gap: "8px", textDecoration: "none", flexShrink: 0 }}>
+                  <Download size={16} />
+                  View PDF
+                </a>
+              </div>
             ))}
           </div>
 
           {/* Committee Bylaws */}
           <div>
-            <div className="flex items-center gap-3 mb-8">
-              <FileText size={24} className="text-[var(--cyber-gold)]" />
-              <h3 className="font-headline text-2xl font-semibold text-[var(--text-primary)]">Technical Committee Bylaws</h3>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "32px" }}>
+              <FileText size={24} style={{ color: "var(--cyber-gold)" }} />
+              <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "24px", fontWeight: 600, color: "var(--text-primary)" }}>Technical Committee Bylaws</h3>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "16px" }}>
               {committeeBylaws.map((doc) => (
-                <Card key={doc.name} className="glass-card border-none shadow-none group cursor-pointer hover:bg-white/5 transition-colors">
-                  <a 
-                    href={doc.link} 
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex justify-between items-center p-6 no-underline"
-                  >
-                    <span className="font-body text-[var(--text-primary)] font-medium">{doc.name}</span>
-                    <ExternalLink size={14} className="text-[var(--electric-blue)] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                  </a>
-                </Card>
+                <a 
+                  key={doc.name} 
+                  href={doc.link} 
+                  className="glass-card" 
+                  style={{ 
+                    padding: "20px 24px", 
+                    display: "flex", 
+                    justifyContent: "space-between", 
+                    alignItems: "center", 
+                    textDecoration: "none",
+                    transition: "all 0.2s ease"
+                  }}
+                >
+                  <span style={{ fontFamily: "var(--font-body)", color: "var(--text-primary)", fontWeight: 500 }}>{doc.name}</span>
+                  <ExternalLink size={14} style={{ color: "var(--electric-blue)" }} />
+                </a>
               ))}
             </div>
           </div>

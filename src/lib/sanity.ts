@@ -14,7 +14,7 @@ const isStegaEnabled = typeof window !== 'undefined' &&
 export const client = createClient({
   projectId,
   dataset,
-  useCdn: true,
+  useCdn: false,
   apiVersion,
   stega: {
     enabled: false, // Keep disabled for production delivery to prevent string issues

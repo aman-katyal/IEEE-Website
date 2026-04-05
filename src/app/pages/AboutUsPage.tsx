@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { motion } from "motion/react";
-import { Card, CardContent } from "../components/ui/card";
 
 export function AboutUsPage() {
   useEffect(() => {
@@ -105,12 +104,10 @@ export function AboutUsPage() {
                 of every academic background. Our members work on real-world problems and advance their engineering skills.
               </p>
             </div>
-            <Card className="glass-card border-none shadow-none p-10 text-center bg-[rgba(0,98,155,0.05)]">
-               <CardContent className="p-0">
-                 <h3 className="text-[var(--cyber-gold)] text-2xl mb-4 font-headline">Established 1903</h3>
-                 <p className="text-[var(--text-secondary)] text-sm font-body opacity-80">Over a century of fostering innovation and engineering excellence at Purdue University.</p>
-               </CardContent>
-            </Card>
+            <div className="glass-card" style={{ padding: "40px", textAlign: "center", background: "rgba(0, 98, 155, 0.05)" }}>
+               <h3 style={{ color: "var(--cyber-gold)", fontSize: "24px", marginBottom: "16px", fontFamily: "var(--font-headline)" }}>Established 1903</h3>
+               <p style={{ color: "var(--text-secondary)", fontSize: "14px", fontFamily: "var(--font-body)", opacity: 0.8 }}>Over a century of fostering innovation and engineering excellence at Purdue University.</p>
+            </div>
           </motion.div>
 
           {/* Section 2: Applying academics to extracurriculars */}
@@ -164,18 +161,16 @@ export function AboutUsPage() {
               </p>
             </div>
             <div style={{ order: 1 }}>
-               <Card className="glass-card border-none shadow-none p-10 bg-[rgba(235,211,169,0.05)]">
-                  <CardContent className="p-0">
-                    <ul className="list-none p-0 m-0 flex flex-col gap-4">
-                       {["Professional Careers", "Engineering Software", "Practical Solutions", "Lasting Connections"].map(item => (
-                         <li key={item} className="flex items-center gap-3 text-[var(--text-primary)] text-[15px] font-body">
-                            <div className="w-1.5 h-1.5 rounded-full bg-[var(--electric-blue)]" />
-                            {item}
-                         </li>
-                       ))}
-                    </ul>
-                  </CardContent>
-               </Card>
+               <div className="glass-card" style={{ padding: "40px", background: "rgba(235, 211, 169, 0.05)" }}>
+                  <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "16px" }}>
+                     {["Professional Careers", "Engineering Software", "Practical Solutions", "Lasting Connections"].map(item => (
+                       <li key={item} style={{ display: "flex", alignItems: "center", gap: "12px", color: "var(--text-primary)", fontSize: "15px", fontFamily: "var(--font-body)" }}>
+                          <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "var(--electric-blue)" }} />
+                          {item}
+                       </li>
+                     ))}
+                  </ul>
+               </div>
             </div>
           </motion.div>
 
@@ -237,13 +232,11 @@ export function AboutUsPage() {
                 With Purdue IEEE, you can learn what it takes to be successful after college, whether it be in industry or academia.
               </p>
             </div>
-            <Card className="glass-card border-none shadow-none p-10 bg-[rgba(0,98,155,0.05)] border-l-4 border-[var(--cyber-gold)]">
-               <CardContent className="p-0">
-                 <p className="italic text-[var(--text-secondary)] leading-relaxed text-[15px] font-body">
-                   "Our alumni go on to work at some of the world's largest companies... helping shape the future of technology."
-                 </p>
-               </CardContent>
-            </Card>
+            <div className="glass-card" style={{ padding: "40px", background: "rgba(0, 98, 155, 0.05)", borderLeft: "4px solid var(--cyber-gold)" }}>
+               <p style={{ fontStyle: "italic", color: "var(--text-secondary)", lineHeight: 1.6, fontSize: "15px", fontFamily: "var(--font-body)" }}>
+                 "Our alumni go on to work at some of the world's largest companies... helping shape the future of technology."
+               </p>
+            </div>
           </motion.div>
         </div>
       </section>

@@ -2,11 +2,7 @@ import { useParams, Link, useNavigate } from "react-router";
 import { ArrowLeft, Mail, Users, Trophy, Cpu, ChevronRight, Calendar, Globe, MessageCircle, ExternalLink, UserCircle, AlertCircle, Github, Instagram, Linkedin, Twitter, Slack, Youtube, Info } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useCommittee } from "../../hooks/useSanityData";
-import { urlFor } from "../../lib/sanity";
 import { Skeleton } from "../components/ui/skeleton";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "../components/ui/card";
-import { Button } from "../components/ui/button";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../components/ui/accordion";
 import ReactMarkdown from "react-markdown";
 import type { CommitteeSection } from "../../data/committees/types";
 
@@ -64,12 +60,9 @@ export function CommitteePage() {
     
     if (!config || config.type === "default") {
       return (
-        <Button 
-          onClick={() => navigate("/join")} 
-          className="w-full py-7 text-base font-semibold gap-3"
-        >
+        <button onClick={() => navigate("/join")} className="btn-primary" style={{ width: "100%", textAlign: "center", padding: "18px", display: "flex", alignItems: "center", justifyContent: "center", gap: "12px" }}>
           Join This Committee <ChevronRight size={18} />
-        </Button>
+        </button>
       );
     }
 
@@ -79,42 +72,35 @@ export function CommitteePage() {
       const isDiscord = url.toLowerCase().includes("discord");
       
       return (
-        <Button 
-          asChild={isExternal}
-          onClick={() => !isExternal && navigate(url || "/join")}
-          className="w-full py-7 text-base font-semibold gap-3"
+        <button 
+          onClick={() => isExternal ? window.open(url) : navigate(url || "/join")} 
+          className="btn-primary" 
           style={{ 
-            background: isDiscord ? "#5865F2" : undefined,
-            borderColor: isDiscord ? "#5865F2" : undefined
+            width: "100%", 
+            textAlign: "center", 
+            padding: "18px", 
+            display: "flex", 
+            alignItems: "center", 
+            justifyContent: "center", 
+            gap: "12px",
+            background: isDiscord ? "#5865F2" : "var(--electric-blue)" 
           }}
         >
-          {isExternal ? (
-            <a href={url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-3 no-underline">
-              {getPlatformIcon("", url, 20)}
-              <span>{config.buttonText || "Join Us"}</span>
-              <ExternalLink size={16} style={{ opacity: 0.8 }} />
-            </a>
-          ) : (
-            <>
-              {getPlatformIcon("", url, 20)}
-              <span>{config.buttonText || "Join Us"}</span>
-              <ChevronRight size={18} />
-            </>
-          )}
-        </Button>
+          {getPlatformIcon("", url, 20)}
+          <span style={{ fontWeight: 600 }}>{config.buttonText || "Join Us"}</span>
+          {isExternal ? <ExternalLink size={16} style={{ opacity: 0.8 }} /> : <ChevronRight size={18} />}
+        </button>
       );
     }
 
     if (config.type === "message") {
       return (
-        <Card className="bg-[rgba(235,211,169,0.05)] border-[var(--glass-border)] shadow-none">
-          <CardContent className="flex items-start gap-3 p-5">
-            <AlertCircle size={18} className="text-[var(--cyber-gold)] shrink-0 mt-0.5" />
-            <p className="font-body text-[13.5px] text-[var(--text-secondary)] leading-relaxed">
-              {config.message || "We are not currently accepting new members. Please check back later!"}
-            </p>
-          </CardContent>
-        </Card>
+        <div style={{ padding: "20px", background: "rgba(235, 211, 169, 0.05)", border: "1px solid var(--glass-border)", borderRadius: "4px", display: "flex", alignItems: "flex-start", gap: "12px" }}>
+          <AlertCircle size={18} style={{ color: "var(--cyber-gold)", flexShrink: 0, marginTop: "2px" }} />
+          <p style={{ fontFamily: "var(--font-body)", fontSize: "13.5px", color: "var(--text-secondary)", lineHeight: 1.5 }}>
+            {config.message || "We are not currently accepting new members. Please check back later!"}
+          </p>
+        </div>
       );
     }
 
@@ -130,58 +116,34 @@ export function CommitteePage() {
         const widthMap = { small: "250px", medium: "400px", large: "600px", full: "100%" };
 
         return (
-          <div key={index} className="mb-16">
-            <p className="section-eyebrow mb-5">// {section.title || "Information"}</p>
-            <Card className="glass-card flex flex-col border-none shadow-none p-8" style={{ flexDirection: layout === "top" ? "column" : layout === "left" ? "row" : "row-reverse", gap: "32px", alignItems: "flex-start" }}>
+          <div key={index} style={{ marginBottom: "64px" }}>
+            <p className="section-eyebrow" style={{ marginBottom: "20px" }}>// {section.title || "Information"}</p>
+            <div className="glass-card" style={{ padding: "32px", display: "flex", flexDirection: layout === "top" ? "column" : layout === "left" ? "row" : "row-reverse", gap: "32px", alignItems: "flex-start", flexWrap: "wrap" }}>
               {section.image && (
-                <div 
-                  className="shrink-0 overflow-hidden border border-[var(--glass-border)] bg-black/10 rounded-sm"
-                  style={{ flex: layout === "top" ? "1 1 100%" : `0 0 ${widthMap[size]}`, maxWidth: "100%" }}
-                >
-                  <img 
-                    src={section.image?.asset ? urlFor(section.image).width(1000).auto('format').url() : section.image} 
-                    alt={section.title} 
-                    className="w-full h-auto block" 
-                    style={{ maxHeight: layout === "top" ? "500px" : "600px", objectFit: isCrop ? "cover" : "contain" }} 
-                  />
+                <div style={{ flex: layout === "top" ? "1 1 100%" : `0 0 ${widthMap[size]}`, maxWidth: "100%", borderRadius: "4px", overflow: "hidden", border: "1px solid var(--glass-border)", background: "rgba(0,0,0,0.1)" }}>
+                  <img src={section.image} alt={section.title} style={{ width: "100%", height: "auto", maxHeight: layout === "top" ? "500px" : "600px", objectFit: isCrop ? "cover" : "contain", display: "block" }} />
                 </div>
               )}
-              <CardContent className="p-0 flex-1 min-w-[300px]">
-                <div className="font-body text-[15.5px] text-[var(--text-secondary)] leading-loose">
+              <div style={{ flex: "1 1 300px" }}>
+                <div style={{ fontFamily: "var(--font-body)", fontSize: "15.5px", color: "var(--text-secondary)", lineHeight: 1.85 }}>
                   <ReactMarkdown>{section.content}</ReactMarkdown>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         );
       
       case "projects":
         const projCrop = section.imageStyle?.crop !== false;
         return (
-          <div key={index} className="mb-16">
-            <p className="section-eyebrow mb-5">// {section.title || "Projects"}</p>
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-6">
+          <div key={index} style={{ marginBottom: "64px" }}>
+            <p className="section-eyebrow" style={{ marginBottom: "20px" }}>// {section.title || "Projects"}</p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "24px" }}>
               {section.items.map((p, i) => (
-                <Card key={i} className="glass-card flex flex-col overflow-hidden border-none shadow-none">
-                  {p.image && (
-                    <div className="h-[180px] w-full border-b border-[var(--glass-border)]">
-                      <img 
-                        src={p.image?.asset ? urlFor(p.image).width(600).auto('format').url() : p.image} 
-                        alt={p.name} 
-                        className="w-full h-full object-cover bg-black/5" 
-                        style={{ objectFit: projCrop ? "cover" : "contain" }} 
-                      />
-                    </div>
-                  )}
-                  <CardHeader className="p-6">
-                    <CardTitle className="font-headline text-[17px] font-semibold text-[var(--text-primary)]">
-                      {p.name}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="px-6 pb-6 font-body text-[14px] text-[var(--text-secondary)] leading-relaxed">
-                    <ReactMarkdown>{p.description}</ReactMarkdown>
-                  </CardContent>
-                </Card>
+                <div key={i} className="glass-card" style={{ display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                  {p.image && <div style={{ height: "180px", width: "100%", borderBottom: "1px solid var(--glass-border)" }}><img src={p.image} alt={p.name} style={{ width: "100%", height: "100%", objectFit: projCrop ? "cover" : "contain", background: "rgba(0,0,0,0.05)" }} /></div>}
+                  <div style={{ padding: "24px" }}><h3 style={{ fontFamily: "var(--font-headline)", fontSize: "17px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "10px" }}>{p.name}</h3><div style={{ fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.65 }}><ReactMarkdown>{p.description}</ReactMarkdown></div></div>
+                </div>
               ))}
             </div>
           </div>
@@ -189,50 +151,24 @@ export function CommitteePage() {
 
       case "contact":
         return (
-          <div key={index} className="mb-16">
-            <p className="section-eyebrow mb-5">// {section.title || "Contact"}</p>
-            <Card className="glass-card border-none shadow-none">
-              <CardContent className="flex items-center gap-6 p-8">
-                <div className="w-16 h-16 rounded-full bg-[var(--electric-blue)]/10 flex items-center justify-center border border-[var(--glass-border)]">
-                  <UserCircle size={32} className="text-[var(--electric-blue)]" />
-                </div>
-                <div>
-                  <h4 className="font-headline text-[18px] font-semibold text-[var(--text-primary)] mb-1">{section.name}</h4>
-                  {section.role && (
-                    <p className="font-mono text-[0.7rem] text-[var(--cyber-gold)] uppercase mb-2">
-                      {section.role}
-                    </p>
-                  )}
-                  <a 
-                    href={`mailto:${section.email}`} 
-                    className="text-[var(--electric-blue)] no-underline text-sm flex items-center gap-1.5 transition-opacity hover:opacity-80"
-                  >
-                    <Mail size={14} /> {section.email}
-                  </a>
-                </div>
-              </CardContent>
-            </Card>
+          <div key={index} style={{ marginBottom: "64px" }}>
+            <p className="section-eyebrow" style={{ marginBottom: "20px" }}>// {section.title || "Contact"}</p>
+            <div className="glass-card" style={{ padding: "32px", display: "flex", alignItems: "center", gap: "24px" }}>
+              <div style={{ width: "64px", height: "64px", borderRadius: "50%", background: "rgba(0, 98, 155, 0.1)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--glass-border)" }}><UserCircle size={32} style={{ color: "var(--electric-blue)" }} /></div>
+              <div><h4 style={{ fontFamily: "var(--font-headline)", fontSize: "18px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "4px" }}>{section.name}</h4>{section.role && <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.7rem", color: "var(--cyber-gold)", textTransform: "uppercase", marginBottom: "8px" }}>{section.role}</p>}<a href={`mailto:${section.email}`} style={{ color: "var(--electric-blue)", textDecoration: "none", fontSize: "14px", display: "flex", alignItems: "center", gap: "6px" }}><Mail size={14} /> {section.email}</a></div>
+            </div>
           </div>
         );
 
       case "gallery":
         return (
-          <div key={index} className="mb-16">
-            <p className="section-eyebrow mb-5">// {section.title || "Gallery"}</p>
-            <div className="columns-2 md:columns-3 gap-4">
+          <div key={index} style={{ marginBottom: "64px" }}>
+            <p className="section-eyebrow" style={{ marginBottom: "20px" }}>// {section.title || "Gallery"}</p>
+            <div style={{ columns: "2 300px", columnGap: "16px" }}>
               {section.items.map((img: any, i) => (
-                <div key={i} className="gallery-item-container relative mb-4 break-inside-avoid rounded-lg overflow-hidden border border-[var(--glass-border)] cursor-pointer group">
-                  <img 
-                    src={(img.image?.asset || img.src?.asset) ? urlFor(img.image || img.src).width(800).auto('format').url() : (img.image || img.src)} 
-                    alt={img.caption} 
-                    className="w-full h-auto block transition-transform duration-500 group-hover:scale-105" 
-                    style={{ filter: isLight ? "brightness(1)" : "brightness(0.85)" }} 
-                  />
-                  {img.caption && (
-                    <div className="caption-overlay absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-6 pt-12 font-mono text-[0.65rem] text-white tracking-wider opacity-0 translate-y-2.5 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
-                      {img.caption}
-                    </div>
-                  )}
+                <div key={i} style={{ breakInside: "avoid", marginBottom: "16px", position: "relative", borderRadius: "8px", overflow: "hidden", border: "1px solid var(--glass-border)", cursor: "pointer" }} className="gallery-item-container">
+                  <img src={img.image || img.src} alt={img.caption} style={{ width: "100%", height: "auto", display: "block", transition: "transform 0.6s ease", filter: isLight ? "brightness(1)" : "brightness(0.85)" }} />
+                  {img.caption && <div className="caption-overlay" style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "linear-gradient(transparent, rgba(0,0,0,0.9))", padding: "24px 16px 12px", fontFamily: "var(--font-mono)", fontSize: "0.65rem", color: "#FFFFFF", letterSpacing: "0.06em", opacity: 0, transform: "translateY(10px)", transition: "all 0.3s ease" }}>{img.caption}</div>}
                 </div>
               ))}
             </div>
@@ -241,29 +177,16 @@ export function CommitteePage() {
 
       case "faq":
         return (
-          <div key={index} className="mb-16">
-            <p className="section-eyebrow mb-5">// {section.title || "FAQ"}</p>
-            <Accordion type="single" collapsible className="w-full flex flex-col gap-3">
+          <div key={index} style={{ marginBottom: "64px" }}>
+            <p className="section-eyebrow" style={{ marginBottom: "20px" }}>// {section.title || "FAQ"}</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
               {section.items.map((faq, i) => (
-                <AccordionItem 
-                  key={i} 
-                  value={`item-${i}`} 
-                  className="glass-card border-none px-6 py-1"
-                >
-                  <AccordionTrigger className="hover:no-underline py-4">
-                    <div className="flex items-center gap-3 text-left">
-                      <MessageCircle size={16} className="text-[var(--electric-blue)] shrink-0 mt-0.5" />
-                      <span className="font-headline text-[15px] font-semibold text-[var(--text-primary)] leading-tight">
-                        {faq.question}
-                      </span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="font-body text-[14px] text-[var(--text-secondary)] leading-relaxed pl-7 pb-6">
-                    <ReactMarkdown>{faq.answer}</ReactMarkdown>
-                  </AccordionContent>
-                </AccordionItem>
+                <div key={i} className="glass-card" style={{ padding: "24px 32px" }}>
+                  <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginBottom: "10px" }}><MessageCircle size={16} style={{ color: "var(--electric-blue)", flexShrink: 0, marginTop: "2px" }} /><h4 style={{ fontFamily: "var(--font-headline)", fontSize: "15px", fontWeight: 600, color: "var(--text-primary)", lineHeight: 1.45 }}>{faq.question}</h4></div>
+                  <div style={{ fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.7, paddingLeft: "28px" }}><ReactMarkdown>{faq.answer}</ReactMarkdown></div>
+                </div>
               ))}
-            </Accordion>
+            </div>
           </div>
         );
 
@@ -277,7 +200,7 @@ export function CommitteePage() {
         {loading ? (
           <Skeleton style={{ position: "absolute", inset: 0, background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)" }} />
         ) : (
-          <div style={{ position: "absolute", inset: 0, backgroundImage: `url('${committee?.image?.asset ? urlFor(committee.image).width(1920).auto('format').url() : committee?.image}')`, backgroundSize: "cover", backgroundPosition: "center 40%", filter: isLight ? "brightness(0.9) saturate(1.1)" : "brightness(0.35) saturate(0.7)" }} />
+          <div style={{ position: "absolute", inset: 0, backgroundImage: `url('${committee?.image}')`, backgroundSize: "cover", backgroundPosition: "center 40%", filter: isLight ? "brightness(0.9) saturate(1.1)" : "brightness(0.35) saturate(0.7)" }} />
         )}
         <div style={{ position: "absolute", inset: 0, background: isLight ? "linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 30%, rgba(248,250,252,0.85) 80%, var(--boiler-black) 100%)" : "linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0.85) 80%, var(--boiler-black) 100%)" }} />
         <div className="ieee-grid-bg" style={{ position: "absolute", inset: 0, opacity: isLight ? 0.4 : 0.6 }} />
@@ -300,60 +223,97 @@ export function CommitteePage() {
         </div>
       </section>
 
-      <div style={{ background: "var(--boiler-black)", position: "relative" }}>
-        <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "80px 32px" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: "64px", alignItems: "flex-start" }} className="committee-main-grid">
-            {/* Left Column: Content */}
-            <div style={{ minWidth: 0 }}>
+      <section style={{ background: "var(--boiler-black)", padding: "80px 0 120px", position: "relative" }}>
+        <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 32px" }}>
+          <div className="ieee-grid-sidebar" style={{ gap: "48px" }}>
+            <div>
+              <div style={{ marginBottom: "64px" }}>
+                <p className="section-eyebrow" style={{ marginBottom: "20px" }}>// About This Committee</p>
+                <div className="glass-card" style={{ padding: "32px" }}>
+                  {loading ? (
+                    <>
+                      <Skeleton style={{ height: "20px", width: "100%", marginBottom: "8px", background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)" }} />
+                      <Skeleton style={{ height: "20px", width: "100%", marginBottom: "8px", background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)" }} />
+                      <Skeleton style={{ height: "20px", width: "90%", marginBottom: "8px", background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)" }} />
+                      <Skeleton style={{ height: "20px", width: "95%", background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)" }} />
+                    </>
+                  ) : (
+                    <p style={{ fontFamily: "var(--font-body)", fontSize: "16px", color: "var(--text-secondary)", lineHeight: 1.85 }}>{committee?.longDescription}</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Dynamic Content Blocks */}
               {loading ? (
-                <div style={{ display: "flex", flexDirection: "column", gap: "48px" }}>
-                  {[1, 2].map(i => (
-                    <div key={i}>
-                      <Skeleton style={{ height: "20px", width: "100px", marginBottom: "16px", background: "rgba(255,255,255,0.05)" }} />
-                      <div className="glass-card" style={{ padding: "32px" }}>
-                        <Skeleton style={{ height: "200px", width: "100%", background: "rgba(255,255,255,0.05)" }} />
-                      </div>
-                    </div>
-                  ))}
+                <div style={{ marginBottom: "64px" }}>
+                  <Skeleton style={{ height: "300px", width: "100%", borderRadius: "8px", background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)" }} />
                 </div>
               ) : (
-                committee?.sections?.map(renderSection)
+                committee?.sections?.map((section, i) => renderSection(section, i))
               )}
+
+              {/* Tags */}
+              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "64px" }}>
+                {loading ? (
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <Skeleton key={i} style={{ height: "32px", width: "80px", borderRadius: "16px", background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)" }} />
+                  ))
+                ) : (
+                  committee?.tags.map((tag) => <span key={tag} className="tech-tag" style={{ opacity: isLight ? 1 : 0.9, padding: "6px 12px" }}>{tag}</span>)
+                )}
+              </div>
             </div>
 
-            {/* Right Column: Sidebar */}
-            <aside style={{ position: "sticky", top: "120px" }}>
-              {loading ? (
-                <div className="glass-card" style={{ padding: "32px" }}>
-                  <Skeleton style={{ height: "24px", width: "150px", marginBottom: "24px", background: "rgba(255,255,255,0.05)" }} />
-                  <Skeleton style={{ height: "56px", width: "100%", background: "rgba(255,255,255,0.05)" }} />
+            <div>
+              <div className="glass-card" style={{ padding: "32px", position: "sticky", top: "112px" }}>
+                <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.18em", color: "var(--electric-blue)", textTransform: "uppercase", marginBottom: "24px", opacity: isLight ? 1 : 0.9 }}>// Committee Details</div>
+                
+                {/* Metrics */}
+                <div style={{ display: "grid", gridTemplateColumns: `repeat(3, 1fr)`, gap: "0", borderTop: "1px solid var(--glass-border)", borderBottom: "1px solid var(--glass-border)", padding: "20px 0", marginBottom: "32px" }}>
+                  {loading ? (
+                    Array.from({ length: 3 }).map((_, i) => (
+                      <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "6px" }}>
+                        <Skeleton style={{ height: "24px", width: "30px", background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)" }} />
+                        <Skeleton style={{ height: "12px", width: "40px", background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)" }} />
+                      </div>
+                    ))
+                  ) : (
+                    (committee?.metrics || []).map((m, i) => (
+                      <div key={m.label} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "6px", borderRight: i < (committee?.metrics?.length || 0) - 1 ? "1px solid var(--glass-border)" : "none" }}>
+                        <span style={{ fontFamily: "var(--font-mono)", fontSize: "19px", fontWeight: 600, color: "var(--electric-blue)", lineHeight: 1 }}>{m.value}</span>
+                        <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", color: "var(--text-muted)", letterSpacing: "0.12em", textTransform: "uppercase", opacity: isLight ? 1 : 0.8 }}>{m.label}</span>
+                      </div>
+                    ))
+                  )}
                 </div>
-              ) : (
-                <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
-                  <div className="glass-card" style={{ padding: "32px" }}>
-                    <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "18px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "20px", borderLeft: "3px solid var(--electric-blue)", paddingLeft: "12px" }}>Get Involved</h3>
-                    {renderJoinButton()}
-                  </div>
 
-                  <div className="glass-card" style={{ padding: "32px" }}>
-                    <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "18px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "20px", borderLeft: "3px solid var(--cyber-gold)", paddingLeft: "12px" }}>Details</h3>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-                      <div>
-                        <p style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "4px" }}>Committee Chair</p>
-                        <p style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--text-primary)", fontWeight: 500 }}>{committee?.chair}</p>
-                      </div>
-                      <div>
-                        <p style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "4px" }}>Contact Email</p>
-                        <a href={`mailto:${committee?.email}`} style={{ fontFamily: "var(--font-mono)", fontSize: "13.5px", color: "var(--electric-blue)", textDecoration: "none" }}>{committee?.email}</a>
-                      </div>
-                    </div>
-                  </div>
+                {/* Chair */}
+                <div style={{ marginBottom: "32px" }}>
+                  <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.12em", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: "10px" }}>Committee Chair</div>
+                  {loading ? (
+                    <>
+                      <Skeleton style={{ height: "24px", width: "150px", marginBottom: "8px", background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)" }} />
+                      <Skeleton style={{ height: "16px", width: "180px", background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)" }} />
+                    </>
+                  ) : (
+                    <>
+                      <div style={{ fontFamily: "var(--font-headline)", fontSize: "18px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "8px" }}>{committee?.chair}</div>
+                      <a href={`mailto:${committee?.email}`} style={{ display: "inline-flex", alignItems: "center", gap: "8px", fontFamily: "var(--font-mono)", fontSize: "0.75rem", color: "var(--electric-blue)", textDecoration: "none" }}><Mail size={14} /> {committee?.email}</a>
+                    </>
+                  )}
                 </div>
-              )}
-            </aside>
+
+                {loading ? (
+                  <Skeleton style={{ height: "54px", width: "100%", borderRadius: "4px", background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)" }} />
+                ) : (
+                  renderJoinButton()
+                )}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
+      <style>{`.gallery-item-container:hover .caption-overlay { opacity: 1 !important; transform: translateY(0) !important; } .gallery-item-container:hover img { filter: brightness(1) !important; transform: scale(1.05); } .social-tag:hover { border-color: var(--electric-blue); color: var(--electric-blue); background: rgba(0, 98, 155, 0.05); }`}</style>
     </>
   );
 }

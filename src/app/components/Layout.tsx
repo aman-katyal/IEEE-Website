@@ -26,9 +26,7 @@ export function Layout() {
     >
       <ScrollToTop />
       <Navigation />
-      <main id="main-content" role="main">
-        <Outlet />
-      </main>
+      <Outlet />
       <Footer />
     </div>
   );

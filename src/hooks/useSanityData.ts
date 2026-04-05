@@ -3,10 +3,9 @@ import { client, previewClient } from '../lib/sanity'
 import groq from 'groq'
 import type { Committee, CornerstoneCommittee } from '../data/committees/types'
 
-const SECTION_PROJECTION = groq`
+const SECTION_PROJECTION = `
   sections[]{
-    _key,
-    _type,
+    ...,
     "type": select(
       _type == "textSection" => "text",
       _type == "projectsSection" => "projects",
@@ -15,19 +14,10 @@ const SECTION_PROJECTION = groq`
       _type == "contactSection" => "contact",
       _type
     ),
-    title,
-    content,
-    image,
-    imageStyle{ crop, size },
-    layout,
+    "image": coalesce(image.asset->url, image),
     items[]{
-      _key,
-      name,
-      description,
-      question,
-      answer,
-      caption,
-      image
+      ...,
+      "image": coalesce(image.asset->url, image)
     }
   }
 `;
@@ -101,31 +91,9 @@ function useDataFetching<T>(query: string, params?: any) {
 
 export function useCommittees() {
   const query = groq`*[_type == "committee"]{
-    _id,
-    _rev,
-    _type,
-    _createdAt,
-    _updatedAt,
+    ...,
     "id": id.current,
-    name,
-    shortName,
-    tagline,
-    description,
-    longDescription,
-    status,
-    statusColor,
-    statusBg,
-    image,
-    metrics[]{ label, value },
-    tags,
-    chair,
-    email,
-    joinConfig{
-      type,
-      buttonText,
-      url,
-      message
-    },
+    "image": coalesce(image.asset->url, image),
     ${SECTION_PROJECTION}
   }`
   const { data, loading, error } = useDataFetching<Committee[]>(query);
@@ -134,31 +102,9 @@ export function useCommittees() {
 
 export function useCommittee(id: string) {
   const query = groq`*[_type == "committee" && id.current == $id][0]{
-    _id,
-    _rev,
-    _type,
-    _createdAt,
-    _updatedAt,
+    ...,
     "id": id.current,
-    name,
-    shortName,
-    tagline,
-    description,
-    longDescription,
-    status,
-    statusColor,
-    statusBg,
-    image,
-    metrics[]{ label, value },
-    tags,
-    chair,
-    email,
-    joinConfig{
-      type,
-      buttonText,
-      url,
-      message
-    },
+    "image": coalesce(image.asset->url, image),
     ${SECTION_PROJECTION}
   }`
   const { data, loading, error } = useDataFetching<Committee>(query, { id });
@@ -167,20 +113,8 @@ export function useCommittee(id: string) {
 
 export function useCornerstoneCommittees() {
   const query = groq`*[_type == "cornerstone"]{
-    _id,
-    _rev,
-    _type,
-    _createdAt,
-    _updatedAt,
-    "id": id.current,
-    name,
-    description,
-    leads[]{
-      role,
-      name,
-      email,
-      description
-    }
+    ...,
+    "id": id.current
   }`
   const { data, loading, error } = useDataFetching<CornerstoneCommittee[]>(query);
   return { committees: data || [], loading, error };
@@ -188,18 +122,8 @@ export function useCornerstoneCommittees() {
 
 export function useLeaders() {
   const query = groq`*[_type == "leader"] | order(order asc){
-    _id,
-    _rev,
-    _type,
-    _createdAt,
-    _updatedAt,
-    name,
-    role,
-    committees,
-    image,
-    email,
-    category,
-    order
+    ...,
+    "image": coalesce(image.asset->url, image)
   }`
   const { data, loading, error } = useDataFetching<any[]>(query);
   return { leaders: data || [], loading, error };
@@ -207,11 +131,7 @@ export function useLeaders() {
 
 export function useOfficersConfig() {
   const query = groq`*[_type == "officersConfig"][0]{
-    _id,
-    _rev,
-    _type,
-    _createdAt,
-    _updatedAt,
+    ...,
     executiveOrder[]->{ _id },
     technicalOrder[]->{ _id },
     operationsOrder[]->{ _id },

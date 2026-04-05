@@ -3,7 +3,7 @@
 :root {
   --boiler-black: #000000;
   --deep-space-blue: #001E3C;
-  --electric-blue: #0098FF; /* Brighter blue for better contrast on black (approx 5.5:1) */
+  --electric-blue: #00629B;
   --midnight-gray: #1A1A1B;
   --cyber-gold: #EBD3A9;
   --stellar-white: #F8F9FA;
@@ -13,12 +13,12 @@
   --semantic-warning: #F59E0B;
   
   --text-primary: #F8F9FA;
-  --text-secondary: rgba(248, 249, 250, 0.75); /* Increased opacity */
-  --text-muted: rgba(248, 249, 250, 0.6); /* Increased to meet 4.5:1 contrast on black */
+  --text-secondary: rgba(248, 249, 250, 0.6);
+  --text-muted: rgba(248, 249, 250, 0.35);
   
   --glass-bg: rgba(26, 26, 27, 0.7);
-  --glass-border: rgba(235, 211, 169, 0.15); /* Slightly more visible border */
-  --glass-shadow: rgba(0, 0, 0, 0.4);
+  --glass-border: rgba(235, 211, 169, 0.1);
+  --glass-shadow: rgba(0, 0, 0, 0.3);
   
   --font-headline: 'Space Grotesk', sans-serif;
   --font-body: 'IBM Plex Sans', sans-serif;

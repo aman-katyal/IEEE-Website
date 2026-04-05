@@ -50,8 +50,8 @@ export interface Metric {
 }
 
 export type CommitteeSection = 
-  | { type: "text"; title: string; content: string; image?: any; layout?: "top" | "left" | "right"; imageStyle?: ImageStyle }
-  | { type: "projects"; title: string; items: (CommitteeProject & { image?: any })[]; imageStyle?: ImageStyle }
+  | { type: "text"; title: string; content: string; image?: string; layout?: "top" | "left" | "right"; imageStyle?: ImageStyle }
+  | { type: "projects"; title: string; items: (CommitteeProject & { image?: string })[]; imageStyle?: ImageStyle }
   | { type: "gallery"; title: string; items: GalleryItem[] }
   | { type: "faq"; title: string; items: FAQ[] }
   | { type: "cta"; title: string; content: string; buttonText: string; buttonLink: string }
@@ -68,7 +68,7 @@ export interface Committee {
   status: string;
   statusColor: string;
   statusBg: string;
-  image: any;
+  image: string;
   
   /** Dynamic metrics (e.g. Members: 40, Founded: 2010) */
   metrics?: Metric[];
