@@ -17,7 +17,7 @@ const SECTION_PROJECTION = groq`
     ),
     title,
     content,
-    "image": coalesce(image.asset->url, image),
+    image,
     imageStyle{ crop, size },
     layout,
     items[]{
@@ -27,7 +27,7 @@ const SECTION_PROJECTION = groq`
       question,
       answer,
       caption,
-      "image": coalesce(image.asset->url, image)
+      image
     }
   }
 `;
@@ -115,7 +115,7 @@ export function useCommittees() {
     status,
     statusColor,
     statusBg,
-    "image": coalesce(image.asset->url, image),
+    image,
     metrics[]{ label, value },
     tags,
     chair,
@@ -148,7 +148,7 @@ export function useCommittee(id: string) {
     status,
     statusColor,
     statusBg,
-    "image": coalesce(image.asset->url, image),
+    image,
     metrics[]{ label, value },
     tags,
     chair,
@@ -196,7 +196,7 @@ export function useLeaders() {
     name,
     role,
     committees,
-    "image": coalesce(image.asset->url, image),
+    image,
     email,
     category,
     order

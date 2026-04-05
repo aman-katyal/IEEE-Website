@@ -1,4 +1,5 @@
 import { createClient } from '@sanity/client'
+import imageUrlBuilder from '@sanity/image-url'
 
 const projectId = import.meta.env.VITE_SANITY_PROJECT_ID
 const dataset = import.meta.env.VITE_SANITY_DATASET || 'production'
@@ -20,6 +21,13 @@ export const client = createClient({
     studioUrl,
   },
 })
+
+// Image URL builder
+const builder = imageUrlBuilder(client)
+
+export function urlFor(source: any) {
+  return builder.image(source)
+}
 
 // Client for fetching draft content (requires a token)
 export const previewClient = createClient({

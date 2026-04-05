@@ -2,6 +2,7 @@ import { ArrowUpRight, Users, Trophy, Cpu, Globe, Loader2 } from "lucide-react";
 import { Link } from "react-router";
 import { useTheme } from "next-themes";
 import { useCommittees } from "../../hooks/useSanityData";
+import { urlFor } from "../../lib/sanity";
 import { Skeleton } from "./ui/skeleton";
 import { MagneticWrapper } from "./ui/MagneticWrapper";
 import { Card, CardContent, CardFooter, CardHeader } from "./ui/card";
@@ -28,7 +29,7 @@ function CommitteeCard({ c }: { c: Committee }) {
             className="relative h-[180px] overflow-hidden"
           >
             <img
-              src={c.image}
+              src={c.image?.asset ? urlFor(c.image).width(600).auto('format').url() : c.image}
               alt={c.name}
               loading="lazy"
               className="w-full h-full object-cover transition-all duration-500 will-change-transform"

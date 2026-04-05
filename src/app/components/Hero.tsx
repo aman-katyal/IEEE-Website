@@ -8,7 +8,7 @@ import { MagneticButton } from "./MagneticButton";
 const LAB_IMAGE =
   "https://images.unsplash.com/photo-1619834043185-acbe47811e6a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlbmdpbmVlcmluZyUyMHJlc2VhcmNoJTIwbGFiJTIwZGFyayUyMGhpZ2glMjB0ZWNofGVufDF8fHx8MTc3MzE4NjE2N3ww&ixlib=rb-4.1.0&q=80&w=1080";
 
-const MotionLink = motion(Link);
+const MotionLink = motion.create(Link);
 
 export function Hero() {
   const navigate = useNavigate();

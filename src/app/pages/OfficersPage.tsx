@@ -1,6 +1,7 @@
 import { Mail, Users, User, ChevronDown } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useLeaders, useOfficersConfig } from "../../hooks/useSanityData";
+import { urlFor } from "../../lib/sanity";
 import { Skeleton } from "../components/ui/skeleton";
 import { MagneticWrapper } from "../components/ui/MagneticWrapper";
 import { Leader } from "../../data/leadership";
@@ -99,7 +100,7 @@ export function OfficersPage() {
           {officer.image ? (
             <>
               <img 
-                src={officer.image} 
+                src={officer.image?.asset ? urlFor(officer.image).width(400).auto('format').url() : officer.image} 
                 alt={officer.name} 
                 className="w-full h-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-105"
               />

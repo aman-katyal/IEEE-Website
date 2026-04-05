@@ -2,6 +2,7 @@ import { useParams, Link, useNavigate } from "react-router";
 import { ArrowLeft, Mail, Users, Trophy, Cpu, ChevronRight, Calendar, Globe, MessageCircle, ExternalLink, UserCircle, AlertCircle, Github, Instagram, Linkedin, Twitter, Slack, Youtube, Info } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useCommittee } from "../../hooks/useSanityData";
+import { urlFor } from "../../lib/sanity";
 import { Skeleton } from "../components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "../components/ui/card";
 import { Button } from "../components/ui/button";
@@ -138,7 +139,7 @@ export function CommitteePage() {
                   style={{ flex: layout === "top" ? "1 1 100%" : `0 0 ${widthMap[size]}`, maxWidth: "100%" }}
                 >
                   <img 
-                    src={section.image} 
+                    src={section.image?.asset ? urlFor(section.image).width(1000).auto('format').url() : section.image} 
                     alt={section.title} 
                     className="w-full h-auto block" 
                     style={{ maxHeight: layout === "top" ? "500px" : "600px", objectFit: isCrop ? "cover" : "contain" }} 
@@ -165,7 +166,7 @@ export function CommitteePage() {
                   {p.image && (
                     <div className="h-[180px] w-full border-b border-[var(--glass-border)]">
                       <img 
-                        src={p.image} 
+                        src={p.image?.asset ? urlFor(p.image).width(600).auto('format').url() : p.image} 
                         alt={p.name} 
                         className="w-full h-full object-cover bg-black/5" 
                         style={{ objectFit: projCrop ? "cover" : "contain" }} 
@@ -219,12 +220,12 @@ export function CommitteePage() {
           <div key={index} className="mb-16">
             <p className="section-eyebrow mb-5">// {section.title || "Gallery"}</p>
             <div className="columns-2 md:columns-3 gap-4">
-              {section.items.map((img: any, i) => (
-                <div key={i} className="gallery-item-container relative mb-4 break-inside-avoid rounded-lg overflow-hidden border border-[var(--glass-border)] cursor-pointer group">
-                  <img 
-                    src={img.image || img.src} 
-                    alt={img.caption} 
-                    className="w-full h-auto block transition-transform duration-500 group-hover:scale-105" 
+              <div key={i} className="gallery-item-container relative mb-4 break-inside-avoid rounded-lg overflow-hidden border border-[var(--glass-border)] cursor-pointer group">
+                <img 
+                  src={(img.image?.asset || img.src?.asset) ? urlFor(img.image || img.src).width(800).auto('format').url() : (img.image || img.src)} 
+                  alt={img.caption} 
+                  className="w-full h-auto block transition-transform duration-500 group-hover:scale-105" 
+              ...
                     style={{ filter: isLight ? "brightness(1)" : "brightness(0.85)" }} 
                   />
                   {img.caption && (
@@ -276,7 +277,7 @@ export function CommitteePage() {
         {loading ? (
           <Skeleton style={{ position: "absolute", inset: 0, background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)" }} />
         ) : (
-          <div style={{ position: "absolute", inset: 0, backgroundImage: `url('${committee?.image}')`, backgroundSize: "cover", backgroundPosition: "center 40%", filter: isLight ? "brightness(0.9) saturate(1.1)" : "brightness(0.35) saturate(0.7)" }} />
+          <div style={{ position: "absolute", inset: 0, backgroundImage: `url('${committee?.image?.asset ? urlFor(committee.image).width(1920).auto('format').url() : committee?.image}')`, backgroundSize: "cover", backgroundPosition: "center 40%", filter: isLight ? "brightness(0.9) saturate(1.1)" : "brightness(0.35) saturate(0.7)" }} />
         )}
         <div style={{ position: "absolute", inset: 0, background: isLight ? "linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 30%, rgba(248,250,252,0.85) 80%, var(--boiler-black) 100%)" : "linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0.85) 80%, var(--boiler-black) 100%)" }} />
         <div className="ieee-grid-bg" style={{ position: "absolute", inset: 0, opacity: isLight ? 0.4 : 0.6 }} />
