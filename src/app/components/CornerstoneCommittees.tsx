@@ -1,6 +1,7 @@
 import { Mail, Users, Layout, Loader2 } from "lucide-react";
 import { useCornerstoneCommittees } from "../../hooks/useSanityData";
 import ReactMarkdown from "react-markdown";
+import { Card, CardContent, CardFooter, CardHeader } from "./ui/card";
 
 export function CornerstoneCommittees() {
   const { committees: cornerstoneCommittees, loading, error } = useCornerstoneCommittees();
@@ -117,80 +118,42 @@ export function CornerstoneCommittees() {
                 }}
               >
                 {section.leads.map((lead, index) => (
-                  <div
+                  <Card
                     key={lead.role}
-                    className="glass-card animate-fade-in-up opacity-0-init"
+                    className="glass-card flex flex-col h-full border-none shadow-none bg-[rgba(128,128,128,0.05)] animate-fade-in-up opacity-0-init"
                     style={{
-                      padding: "32px",
-                      display: "flex",
-                      flexDirection: "column",
-                      height: "100%",
-                      background: "rgba(128, 128, 128, 0.05)",
                       animationDelay: `${index * 150}ms`
                     }}
                   >
-                    <div style={{ marginBottom: "20px" }}>
+                    <CardHeader className="p-8 pb-5">
                       <div
-                        style={{
-                          display: "inline-block",
-                          padding: "4px 12px",
-                          background: "rgba(0, 98, 155, 0.1)",
-                          border: "1px solid var(--glass-border)",
-                          borderRadius: "4px",
-                          color: "var(--electric-blue)",
-                          fontSize: "12px",
-                          fontWeight: 600,
-                          textTransform: "uppercase",
-                          letterSpacing: "0.05em",
-                          marginBottom: "16px",
-                        }}
+                        className="inline-block px-3 py-1 bg-[rgba(0,98,155,0.1)] border border-[var(--glass-border)] rounded-sm text-[var(--electric-blue)] text-[12px] font-semibold uppercase tracking-[0.05em] mb-4 w-fit"
                       >
                         {lead.role}
                       </div>
                       <h4
-                        style={{
-                          fontFamily: "var(--font-headline)",
-                          fontSize: "22px",
-                          fontWeight: 600,
-                          color: "var(--text-primary)",
-                          marginBottom: "8px",
-                        }}
+                        className="font-headline text-[22px] font-semibold text-[var(--text-primary)] mb-2"
                       >
                         {lead.name}
                       </h4>
-                    </div>
+                    </CardHeader>
 
-                    <div
-                      style={{
-                        fontFamily: "var(--font-body)",
-                        fontSize: "14px",
-                        color: "var(--text-secondary)",
-                        lineHeight: 1.6,
-                        marginBottom: "24px",
-                        flexGrow: 1,
-                      }}
-                    >
+                    <CardContent className="px-8 flex-1 font-body text-[14px] text-[var(--text-secondary)] leading-relaxed">
                       <ReactMarkdown>{lead.description || ""}</ReactMarkdown>
-                    </div>
+                    </CardContent>
 
-                    <div style={{ display: "flex", gap: "12px", alignItems: "center", borderTop: "1px solid var(--glass-border)", paddingTop: "20px" }}>
-                      <Mail size={16} style={{ color: "var(--electric-blue)", flexShrink: 0 }} />
-                      <a
-                        href={`mailto:${lead.email}`}
-                        style={{
-                          fontFamily: "var(--font-mono)",
-                          fontSize: "13px",
-                          color: "var(--text-secondary)",
-                          textDecoration: "none",
-                          transition: "color 0.2s ease",
-                        }}
-                        onMouseEnter={(e) => (e.currentTarget.style.color = "var(--electric-blue)")}
-                        onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-secondary)")}
-                      >
-                        {lead.email}
-                      </a>
-                    </div>
-                  </div>
+                    <CardFooter className="p-8 pt-5 border-t border-[var(--glass-border)]">
+                      <div className="flex gap-3 items-center">
+                        <Mail size={16} className="text-[var(--electric-blue)] shrink-0" />
+                        <a
+                          href={`mailto:${lead.email}`}
+                          className="font-mono text-[13px] text-[var(--text-secondary)] no-underline transition-colors duration-200 hover:text-[var(--electric-blue)]"
+                        >
+                          {lead.email}
+                        </a>
+                      </div>
+                    </CardFooter>
+                  </Card>
                 ))}
               </div>
             </div>

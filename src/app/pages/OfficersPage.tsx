@@ -5,7 +5,8 @@ import { Skeleton } from "../components/ui/skeleton";
 import { MagneticWrapper } from "../components/ui/MagneticWrapper";
 import { Leader } from "../../data/leadership";
 import { useIsMobile } from "../components/ui/use-mobile";
-import * as Accordion from "@radix-ui/react-accordion";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "../components/ui/card";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../components/ui/accordion";
 
 export function OfficersPage() {
   const { leaders, loading: leadersLoading, error: leadersError } = useLeaders();
@@ -85,32 +86,14 @@ export function OfficersPage() {
 
   const renderOfficerCard = (officer: Leader) => (
     <MagneticWrapper key={officer._id || officer.name + officer.role} strength={0.05} className="w-full h-full">
-      <div
-        className="glass-card hover-glow-gold hover-scale hover-border-gold"
-        style={{
-          padding: "20px",
-          display: "flex",
-          flexDirection: "column",
-          height: "100%",
-          transition: "all 0.3s ease",
-          position: "relative",
-          overflow: "hidden"
-        }}
+      <Card
+        className="glass-card flex flex-col h-full transition-all duration-300 border-none shadow-none p-5 hover-glow-gold hover-scale hover-border-gold overflow-hidden"
       >
         {/* Image Container with masked fade */}
         <div
+          className="relative w-full aspect-square rounded-sm mb-6 flex items-center justify-center border border-[var(--glass-border)] overflow-hidden"
           style={{
-            width: "100%",
-            aspectRatio: "1/1",
             background: isLight ? "rgba(0, 0, 0, 0.03)" : "rgba(0, 0, 0, 0.2)",
-            borderRadius: "4px",
-            marginBottom: "24px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            border: "1px solid var(--glass-border)",
-            position: "relative",
-            overflow: "hidden"
           }}
         >
           {officer.image ? (
@@ -118,118 +101,82 @@ export function OfficersPage() {
               <img 
                 src={officer.image} 
                 alt={officer.name} 
-                style={{ 
-                  width: "100%", 
-                  height: "100%", 
-                  objectFit: "cover",
-                  transition: "transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)"
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
-                onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                className="w-full h-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-105"
               />
               
               {/* Bottom Gradient Fade - Softer in Light Mode */}
               <div 
+                className="absolute inset-0 pointer-events-none"
                 style={{ 
-                  position: "absolute", 
-                  inset: 0, 
                   background: isLight 
                     ? "linear-gradient(to bottom, transparent 80%, rgba(248, 250, 252, 0.5) 100%)"
                     : "linear-gradient(to bottom, transparent 60%, rgba(10, 10, 12, 0.9) 100%)",
-                  pointerEvents: "none"
                 }} 
               />
 
               {/* Subtle Inner Shadow - Much lighter in Light Mode */}
               <div 
+                className="absolute inset-0 pointer-events-none"
                 style={{ 
-                  position: "absolute", 
-                  inset: 0, 
                   boxShadow: isLight 
                     ? "inset 0 0 20px rgba(0,0,0,0.03)" 
                     : "inset 0 0 40px rgba(0,0,0,0.2)",
-                  pointerEvents: "none"
                 }} 
               />
 
-              {/* Stylized Tech Accents - More prominent */}
-              <div style={{ position: "absolute", top: "10px", left: "10px", width: "16px", height: "16px", borderTop: "2px solid var(--electric-blue)", borderLeft: "2px solid var(--electric-blue)", opacity: 0.8, zIndex: 2 }} />
-              <div style={{ position: "absolute", bottom: "10px", right: "10px", width: "16px", height: "16px", borderBottom: "2px solid var(--cyber-gold)", borderRight: "2px solid var(--cyber-gold)", opacity: 0.8, zIndex: 2 }} />
+              {/* Stylized Tech Accents */}
+              <div className="absolute top-2.5 left-2.5 w-4 h-4 border-t-2 border-l-2 border-[var(--electric-blue)] opacity-80 z-10" />
+              <div className="absolute bottom-2.5 right-2.5 w-4 h-4 border-b-2 border-r-2 border-[var(--cyber-gold)] opacity-80 z-10" />
             </>
           ) : (
-            <User size={48} style={{ color: "var(--text-muted)", opacity: 0.3 }} />
+            <User size={48} className="text-[var(--text-muted)] opacity-30" />
           )}
         </div>
 
-        <div style={{ marginBottom: "20px" }}>
+        <div className="mb-5">
           <h3
-            style={{
-              fontFamily: "var(--font-headline)",
-              fontSize: "20px",
-              fontWeight: 600,
-              color: "var(--text-primary)",
-              marginBottom: "6px",
-            }}
+            className="font-headline text-xl font-semibold text-[var(--text-primary)] mb-1.5"
           >
             {officer.name}
           </h3>
           <div
-            style={{
-              display: "inline-block",
-              padding: "3px 10px",
-              background: "rgba(0, 98, 155, 0.1)",
-              border: "1px solid var(--glass-border)",
-              borderRadius: "2px",
-              color: "var(--electric-blue)",
-              fontSize: "11px",
-              fontWeight: 600,
-              textTransform: "uppercase",
-              letterSpacing: "0.08em",
-            }}
+            className="inline-block px-2.5 py-1 bg-[var(--electric-blue)]/10 border border-[var(--glass-border)] rounded-sm text-[var(--electric-blue)] text-[11px] font-semibold uppercase tracking-wider"
           >
             {officer.role}
           </div>
         </div>
 
-        <div style={{ flexGrow: 1, display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div className="flex-1 flex flex-col gap-4">
           {officer.committees && (
-            <div style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}>
-              <Users size={15} style={{ color: "var(--cyber-gold)", marginTop: "3px", flexShrink: 0 }} />
+            <div className="flex gap-3 items-start">
+              <Users size={15} className="text-[var(--cyber-gold)] shrink-0 mt-1" />
               <div>
-                <p style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--text-muted)", marginBottom: "2px", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                <p className="font-mono text-[10px] text-[var(--text-muted)] uppercase tracking-widest mb-0.5">
                   Committees
                 </p>
-                <p style={{ fontFamily: "var(--font-body)", fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.5 }}>
+                <p className="font-body text-xs text-[var(--text-secondary)] leading-relaxed">
                   {officer.committees}
                 </p>
               </div>
             </div>
           )}
 
-          <div style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}>
-            <Mail size={15} style={{ color: "var(--electric-blue)", marginTop: "3px", flexShrink: 0 }} />
+          <div className="flex gap-3 items-start">
+            <Mail size={15} className="text-[var(--electric-blue)] shrink-0 mt-1" />
             <div>
-              <p style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--text-muted)", marginBottom: "2px", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+              <p className="font-mono text-[10px] text-[var(--text-muted)] uppercase tracking-widest mb-0.5">
                 Contact
               </p>
-              <a
+              <a 
                 href={`mailto:${officer.email}`}
-                style={{
-                  fontFamily: "var(--font-body)",
-                  fontSize: "13px",
-                  color: "var(--text-secondary)",
-                  textDecoration: "none",
-                  transition: "color 0.2s ease",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "var(--electric-blue)")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-secondary)")}
+                className="font-mono text-xs text-[var(--text-secondary)] no-underline transition-colors duration-200 hover:text-[var(--electric-blue)]"
               >
                 {officer.email}
               </a>
             </div>
           </div>
         </div>
-      </div>
+      </Card>
     </MagneticWrapper>
   );
 
@@ -270,77 +217,79 @@ export function OfficersPage() {
         </div>
 
         {isMobile ? (
-          <Accordion.Root type="multiple" className="AccordionRoot" defaultValue={["executive"]}>
+          <Accordion type="multiple" className="flex flex-col gap-4">
             {categories.map((cat) => {
               const sectionLeaders = getOrderedLeaders(cat.id);
               if (!loading && sectionLeaders.length === 0) return null;
 
               return (
-                <Accordion.Item key={cat.id} value={cat.id} className="AccordionItem" style={{ borderBottom: "1px solid var(--glass-border)", marginBottom: "12px" }}>
-                  <Accordion.Header className="AccordionHeader">
-                    <Accordion.Trigger className="AccordionTrigger" style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 0", background: "none", border: "none", color: "var(--text-primary)", cursor: "pointer" }}>
-                      <span style={{ fontFamily: "var(--font-headline)", fontSize: "20px", fontWeight: 600 }}>{cat.name}</span>
-                      <ChevronDown className="AccordionChevron" aria-hidden />
-                    </Accordion.Trigger>
-                  </Accordion.Header>
-                  <Accordion.Content className="AccordionContent">
-                    <p style={{ fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--text-muted)", marginBottom: "24px" }}>{cat.description}</p>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "24px", paddingBottom: "32px" }}>
-                      {loading ? skeletonCards.map((_, i) => <div key={i} className="glass-card"><Skeleton style={{ width: "100%", aspectRatio: "1/1" }} /></div>) : sectionLeaders.map(renderOfficerCard)}
+                <AccordionItem 
+                  key={cat.id} 
+                  value={cat.id} 
+                  className="glass-card border-none px-6 py-1"
+                >
+                  <AccordionTrigger className="hover:no-underline py-6">
+                    <div className="flex flex-col items-start text-left">
+                      <h3 className="font-headline text-xl font-bold text-[var(--text-primary)]">
+                        {cat.name}
+                      </h3>
+                      <p className="font-body text-xs text-[var(--text-muted)] mt-1">
+                        {categoryLeaders.length} Members
+                      </p>
                     </div>
-                  </Accordion.Content>
-                </Accordion.Item>
+                  </AccordionTrigger>
+                  <AccordionContent className="pb-8">
+                    <p className="font-body text-[14px] text-[var(--text-muted)] mb-6">
+                      {cat.description}
+                    </p>
+                    <div className="flex flex-col gap-6 mt-4">
+                      {loading ? (
+                        skeletonCards.map((_, i) => (
+                          <div key={i} className="glass-card h-[400px] animate-pulse bg-white/5" />
+                        ))
+                      ) : (
+                        sectionLeaders.map(renderOfficerCard)
+                      )}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
               );
             })}
-          </Accordion.Root>
+          </Accordion>
         ) : (
           categories.map((cat) => {
             const sectionLeaders = getOrderedLeaders(cat.id);
             if (!loading && sectionLeaders.length === 0) return null;
 
             return (
-              <div key={cat.id} style={{ marginBottom: "80px" }}>
-                <div style={{ marginBottom: "32px" }}>
-                  <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "28px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "8px", display: "flex", alignItems: "center", gap: "12px" }}>
-                    <span style={{ color: cat.id === "executive" ? "var(--cyber-gold)" : "var(--electric-blue)" }}>//</span>
-                    {cat.name}
-                  </h3>
-                  <p style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--text-muted)", maxWidth: "800px" }}>{cat.description}</p>
+              <div key={cat.id} className="mb-20">
+                <div className="flex items-center gap-6 mb-10">
+                  <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[var(--glass-border)]" />
+                  <div className="text-center max-w-[600px]">
+                    <h2 className="font-headline text-3xl font-bold text-[var(--text-primary)] mb-3">
+                      {cat.name}
+                    </h2>
+                    <p className="font-body text-[var(--text-secondary)] text-sm leading-relaxed">
+                      {cat.description}
+                    </p>
+                  </div>
+                  <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[var(--glass-border)]" />
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "24px" }}>
-                  {loading ? skeletonCards.map((_, i) => <div key={i} className="glass-card" style={{ padding: "20px" }}><Skeleton style={{ width: "100%", aspectRatio: "1/1" }} /></div>) : sectionLeaders.map(renderOfficerCard)}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {loading ? (
+                    skeletonCards.map((_, i) => (
+                      <div key={i} className="glass-card h-[450px] animate-pulse bg-white/5" />
+                    ))
+                  ) : (
+                    sectionLeaders.map(renderOfficerCard)
+                  )}
                 </div>
               </div>
             );
           })
         )}
       </div>
-      <style>{`
-        .AccordionTrigger[data-state='open'] .AccordionChevron {
-          transform: rotate(180deg);
-        }
-        .AccordionChevron {
-          transition: transform 300ms cubic-bezier(0.87, 0, 0.13, 1);
-          color: var(--electric-blue);
-        }
-        .AccordionContent {
-          overflow: hidden;
-        }
-        .AccordionContent[data-state='open'] {
-          animation: slideDown 300ms cubic-bezier(0.87, 0, 0.13, 1);
-        }
-        .AccordionContent[data-state='closed'] {
-          animation: slideUp 300ms cubic-bezier(0.87, 0, 0.13, 1);
-        }
-        @keyframes slideDown {
-          from { height: 0; }
-          to { height: var(--radix-accordion-content-height); }
-        }
-        @keyframes slideUp {
-          from { height: var(--radix-accordion-content-height); }
-          to { height: 0; }
-        }
-      `}</style>
     </section>
   );
 }

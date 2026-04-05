@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import { motion } from "motion/react";
 import { useTheme } from "next-themes";
 import { ExternalLink, Mail, Award, Rocket, Shield, Cpu } from "lucide-react";
+import { Card, CardContent } from "../components/ui/card";
+import { Button } from "../components/ui/button";
 
 const partners = [
   { name: "Texas Instruments", domain: "ti.com", tier: "Gold" },
@@ -52,15 +54,19 @@ export function PartnersPage() {
               Our partners provide the resources, mentorship, and opportunities that allow our members to push the boundaries of what's possible in engineering.
             </p>
             
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
-              <a href="mailto:industry@purdueieee.org" className="btn-primary" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "8px" }}>
-                <Mail size={18} />
-                Become a Partner
-              </a>
-              <a href="/documents/constitution/Constitution_of_IEEE.pdf" target="_blank" className="btn-ghost" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "8px" }}>
-                Download Prospectus
-                <ExternalLink size={16} />
-              </a>
+            <div className="flex flex-wrap gap-4">
+              <Button asChild className="gap-2 px-6 py-6 text-base">
+                <a href="mailto:industry@purdueieee.org" className="no-underline">
+                  <Mail size={18} />
+                  Become a Partner
+                </a>
+              </Button>
+              <Button asChild variant="outline" className="gap-2 px-6 py-6 text-base border-[var(--glass-border)] hover:bg-white/5">
+                <a href="/documents/constitution/Constitution_of_IEEE.pdf" target="_blank" className="no-underline">
+                  Download Prospectus
+                  <ExternalLink size={16} />
+                </a>
+              </Button>
             </div>
           </motion.div>
         </div>
@@ -119,16 +125,18 @@ export function PartnersPage() {
       </section>
 
       {/* CTA Section */}
-      <section style={{ padding: "100px 0", background: "rgba(0, 98, 155, 0.03)", borderTop: "1px solid var(--glass-border)" }}>
-        <div style={{ maxWidth: "800px", margin: "0 auto", padding: "0 32px", textAlign: "center" }}>
-          <Rocket size={48} style={{ color: "var(--electric-blue)", marginBottom: "24px" }} />
-          <h2 className="text-heading-2" style={{ marginBottom: "16px" }}>Interested in partnering with us?</h2>
-          <p style={{ color: "var(--text-secondary)", marginBottom: "32px", lineHeight: 1.6 }}>
+      <section className="py-24 bg-[var(--electric-blue)]/5 border-t border-[var(--glass-border)]">
+        <div className="max-w-3xl mx-auto px-8 text-center">
+          <Rocket size={48} className="text-[var(--electric-blue)] mx-auto mb-6" />
+          <h2 className="text-3xl font-headline font-bold text-[var(--text-primary)] mb-4">Interested in partnering with us?</h2>
+          <p className="text-[var(--text-secondary)] mb-8 leading-relaxed">
             Partnering with Purdue IEEE gives you direct access to over 400+ motivated engineering students through tech talks, recruitment events, and project sponsorships.
           </p>
-          <a href="mailto:industry@purdueieee.org" className="btn-primary" style={{ textDecoration: "none" }}>
-            Contact Industrial Relations
-          </a>
+          <Button asChild className="px-8 py-6 text-base">
+            <a href="mailto:industry@purdueieee.org" className="no-underline">
+              Contact Industrial Relations
+            </a>
+          </Button>
         </div>
       </section>
     </div>
@@ -138,41 +146,32 @@ export function PartnersPage() {
 function PartnerCard({ partner, isLight }: { partner: any, isLight: boolean }) {
   return (
     <motion.div 
-      className="glass-card" 
       whileHover={{ y: -5 }}
-      style={{ 
-        padding: "32px", 
-        display: "flex", 
-        flexDirection: "column", 
-        alignItems: "center", 
-        justifyContent: "center",
-        gap: "16px",
-        background: isLight ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.02)",
-        height: "100%",
-        minHeight: partner.tier === "Gold" ? "180px" : "140px"
-      }}
+      className="h-full"
     >
-      <img 
-        src={`https://logo.clearbit.com/${partner.domain}`} 
-        alt={partner.name}
-        loading="lazy"
+      <Card 
+        className="glass-card h-full flex flex-col items-center justify-center gap-4 border-none shadow-none p-8"
         style={{ 
-          maxHeight: partner.tier === "Gold" ? "60px" : "40px", 
-          maxWidth: "80%", 
-          filter: isLight ? "none" : "brightness(0) invert(1) opacity(0.9)",
-          objectFit: "contain"
-        }} 
-      />
-      <span style={{ 
-        fontFamily: "var(--font-mono)", 
-        fontSize: "0.7rem", 
-        color: "var(--text-muted)", 
-        textTransform: "uppercase",
-        letterSpacing: "0.1em",
-        textAlign: "center"
-      }}>
-        {partner.name}
-      </span>
+          background: isLight ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.02)",
+          minHeight: partner.tier === "Gold" ? "180px" : "140px"
+        }}
+      >
+        <CardContent className="p-0 flex flex-col items-center gap-4 w-full">
+          <img 
+            src={`https://logo.clearbit.com/${partner.domain}`} 
+            alt={partner.name}
+            loading="lazy"
+            className="max-w-[80%] object-contain"
+            style={{ 
+              maxHeight: partner.tier === "Gold" ? "60px" : "40px", 
+              filter: isLight ? "none" : "brightness(0) invert(1) opacity(0.9)",
+            }} 
+          />
+          <span className="font-mono text-[0.7rem] text-[var(--text-muted)] uppercase tracking-widest text-center">
+            {partner.name}
+          </span>
+        </CardContent>
+      </Card>
     </motion.div>
   );
 }

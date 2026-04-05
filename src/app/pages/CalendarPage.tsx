@@ -1,6 +1,8 @@
 import { ChevronLeft, Calendar as CalendarIcon, ExternalLink, Info } from "lucide-react";
 import { Link } from "react-router";
 import { useTheme } from "next-themes";
+import { Card } from "../components/ui/card";
+import { Button } from "../components/ui/button";
 
 export function CalendarPage() {
   const { theme } = useTheme();
@@ -101,127 +103,96 @@ export function CalendarPage() {
             Events <span style={{ color: "var(--electric-blue)" }}>Calendar</span>
           </h2>
           
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "24px" }}>
+          <div className="flex justify-between items-end flex-wrap gap-6">
             <p
-              style={{
-                fontFamily: "var(--font-body)",
-                fontSize: "18px",
-                color: "var(--text-secondary)",
-                lineHeight: 1.6,
-                maxWidth: "700px",
-              }}
+              className="font-body text-lg text-[var(--text-secondary)] leading-relaxed max-w-2xl"
             >
               Interactive month and week views of all Purdue IEEE activities. 
               Click on an event to see more details and add it to your own calendar.
             </p>
 
-            <a
-              href="https://calendar.google.com/calendar/u/0/r?cid=7e80819a448e91ef81721772e0c6d9236076b45ad51343474265c1b7d4a363f1@group.calendar.google.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-primary"
-              style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }}
-            >
-              <ExternalLink size={16} />
-              Subscribe to Calendar
-            </a>
+            <Button asChild className="gap-2.5 px-6 py-6">
+              <a
+                href="https://calendar.google.com/calendar/u/0/r?cid=7e80819a448e91ef81721772e0c6d9236076b45ad51343474265c1b7d4a363f1@group.calendar.google.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="no-underline"
+              >
+                <ExternalLink size={16} />
+                Subscribe to Calendar
+              </a>
+            </Button>
           </div>
         </div>
 
         {/* Main Calendar View (Month View) */}
-        <div 
-          className="glass-card" 
+        <Card 
+          className="glass-card p-2 border-[var(--glass-border)] shadow-none mb-16 overflow-x-auto"
           style={{ 
-            padding: "8px", 
             background: isDark ? "rgba(0, 0, 0, 0.2)" : "rgba(128, 128, 128, 0.05)",
-            borderColor: "var(--glass-border)",
-            marginBottom: "64px",
-            overflowX: "auto"
           }}
         >
-          <div style={{ 
-            borderRadius: "4px", 
-            overflow: "hidden", 
-            background: isDark ? "#111" : "#fff", 
-            minWidth: "600px",
-            transition: "all 0.4s ease"
-          }}>
+          <div className="rounded-sm overflow-hidden min-w-[600px] transition-all duration-400"
+               style={{ background: isDark ? "#111" : "#fff" }}>
             <iframe
               src={`${calendarBaseUrl}&mode=MONTH&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=1&showCalendars=0&showTz=0`}
+              className="w-full border-0 transition-all duration-400"
               style={{ 
-                border: 0, 
-                width: "100%", 
                 height: "clamp(500px, 70vh, 800px)",
                 filter: isDark ? darkCalendarFilter : "none",
-                transition: "filter 0.4s ease"
               }}
               frameBorder="0"
               scrolling="no"
             ></iframe>
           </div>
-        </div>
+        </Card>
 
         {/* Quarterly / 3-Month Overview Header */}
-        <div style={{ marginBottom: "32px", borderTop: "1px solid var(--glass-border)", paddingTop: "64px" }}>
-           <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px" }}>
-             <CalendarIcon size={20} style={{ color: "var(--electric-blue)" }} />
-             <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "24px", fontWeight: 600, color: "var(--text-primary)" }}>
-               Upcoming <span style={{ color: "var(--electric-blue)" }}>Overview</span>
+        <div className="mb-8 border-t border-[var(--glass-border)] pt-16">
+           <div className="flex items-center gap-3 mb-3">
+             <CalendarIcon size={20} className="text-[var(--electric-blue)]" />
+             <h3 className="font-headline text-2xl font-semibold text-[var(--text-primary)]">
+               Upcoming <span className="text-[var(--electric-blue)]">Overview</span>
              </h3>
            </div>
-           <p style={{ color: "var(--text-muted)", fontSize: "14px" }}>
+           <p className="text-[var(--text-muted)] text-sm">
              A high-level list of upcoming events for the next few months.
            </p>
         </div>
 
         {/* Agenda View */}
-        <div 
-          className="glass-card" 
+        <Card 
+          className="glass-card p-2 border-[var(--glass-border)] shadow-none"
           style={{ 
-            padding: "8px", 
             background: isDark ? "rgba(0, 0, 0, 0.2)" : "rgba(128, 128, 128, 0.05)",
-            borderColor: "var(--glass-border)"
           }}
         >
-          <div style={{ 
-            borderRadius: "4px", 
-            overflow: "hidden", 
-            background: isDark ? "#111" : "#fff",
-            transition: "all 0.4s ease"
-          }}>
+          <div className="rounded-sm overflow-hidden transition-all duration-400"
+               style={{ background: isDark ? "#111" : "#fff" }}>
             <iframe
               src={`${calendarBaseUrl}&mode=AGENDA&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=0&showCalendars=0&showTz=0`}
+              className="w-full border-0 transition-all duration-400"
               style={{ 
-                border: 0, 
-                width: "100%", 
                 height: "500px",
                 filter: isDark ? darkCalendarFilter : "none",
-                transition: "filter 0.4s ease"
               }}
               frameBorder="0"
               scrolling="no"
             ></iframe>
           </div>
-        </div>
+        </Card>
 
         {/* Info Box */}
-        <div 
-          style={{ 
-            marginTop: "48px", 
-            padding: "20px", 
-            background: "rgba(235, 211, 169, 0.05)", 
-            border: "1px solid var(--glass-border)",
-            borderRadius: "4px",
-            display: "flex",
-            gap: "16px",
-            alignItems: "flex-start"
-          }}
+        <Card 
+          className="mt-12 border-none shadow-none bg-[rgba(235,211,169,0.05)] border-l-4 border-[var(--cyber-gold)]"
         >
-          <Info size={20} style={{ color: "var(--cyber-gold)", flexShrink: 0, marginTop: "2px" }} />
-          <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.6 }}>
-            The calendar above is synced directly with Google Calendar. Use the tabs at the top of the calendar to switch between <strong>Month</strong>, <strong>Week</strong>, and <strong>Agenda</strong> views. If you are a committee chair and need to add events, please contact the Infrastructure chair.
-          </p>
-        </div>
+          <CardContent className="flex gap-4 p-5 items-start">
+            <Info size={20} className="text-[var(--cyber-gold)] shrink-0 mt-0.5" />
+            <p className="text-[var(--text-secondary)] text-[13px] leading-relaxed font-body">
+              The calendar above is synced directly with Google Calendar. Use the tabs at the top of the calendar to switch between <strong>Month</strong>, <strong>Week</strong>, and <strong>Agenda</strong> views. If you are a committee chair and need to add events, please contact the Infrastructure chair.
+            </p>
+          </CardContent>
+        </Card>
       </div>
     </section>
   );
