@@ -209,7 +209,7 @@ export function Committees() {
             <p className="section-eyebrow" style={{ marginBottom: "12px" }}>
               // Project Committees
             </p>
-            <h2
+            <h1
               style={{
                 fontFamily: "var(--font-headline)",
                 fontSize: "clamp(28px, 4vw, 44px)",
@@ -222,7 +222,7 @@ export function Committees() {
               Active{" "}
               <span style={{ color: "var(--cyber-gold)" }}>Engineering</span>{" "}
               Teams
-            </h2>
+            </h1>
           </div>
 
           <div
@@ -239,7 +239,6 @@ export function Committees() {
                 letterSpacing: "0.15em",
                 color: "var(--text-muted)",
                 textTransform: "uppercase",
-                opacity: isLight ? 1 : 0.8
               }}
             >
               sys.committees.count
