@@ -28,7 +28,7 @@ test.describe('Purdue IEEE Core Flows', () => {
     await expect(page.getByRole('heading', { name: /Active Engineering Teams/i })).toBeVisible();
     
     // Check if at least one committee card is present
-    const cards = page.locator('[data-slot="card"]');
+    const cards = page.locator('.glass-card');
     await expect(cards.first()).toBeVisible();
     
     // Go to a specific committee page to test the back link
