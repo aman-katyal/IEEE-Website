@@ -2,7 +2,7 @@ import { ArrowUpRight, Users, Trophy, Cpu, Globe, Loader2 } from "lucide-react";
 import { Link } from "react-router";
 import { useTheme } from "next-themes";
 import { useCommittees } from "../../hooks/useSanityData";
-import { Skeleton } from "./ui/skeleton";
+import { Skeleton } from "boneyard-js/react";
 import { MagneticWrapper } from "./ui/MagneticWrapper";
 import type { Committee } from "../../data/committees/types";
 
@@ -354,21 +354,9 @@ export function Committees() {
           </div>
         </div>
 
-        <div className="ieee-grid-3">
-          {loading ? (
-            Array.from({ length: 6 }).map((_, i) => (
-              <div key={`skeleton-${i}`} className="glass-card" style={{ height: "450px" }}>
-                <Skeleton style={{ height: "180px", width: "100%", background: "rgba(255,255,255,0.05)" }} />
-                <div style={{ padding: "24px" }}>
-                  <Skeleton style={{ height: "24px", width: "60%", marginBottom: "12px", background: "rgba(255,255,255,0.05)" }} />
-                  <Skeleton style={{ height: "16px", width: "40%", marginBottom: "20px", background: "rgba(255,255,255,0.05)" }} />
-                  <Skeleton style={{ height: "80px", width: "100%", marginBottom: "24px", background: "rgba(255,255,255,0.05)" }} />
-                  <Skeleton style={{ height: "40px", width: "100%", background: "rgba(255,255,255,0.05)" }} />
-                </div>
-              </div>
-            ))
-          ) : (
-            committees.map((c, index) => (
+        <Skeleton name="committees-grid" loading={loading} color={isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}>
+          <div className="ieee-grid-3">
+            {committees.map((c, index) => (
               <div 
                 key={c.id} 
                 className={`animate-fade-in-up opacity-0-init`}
@@ -376,9 +364,9 @@ export function Committees() {
               >
                 <CommitteeCard c={c} />
               </div>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        </Skeleton>
       </div>
     </section>
   );

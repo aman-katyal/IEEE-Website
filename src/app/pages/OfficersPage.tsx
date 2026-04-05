@@ -1,7 +1,7 @@
 import { Mail, Users, User, ChevronDown } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useLeaders, useOfficersConfig } from "../../hooks/useSanityData";
-import { Skeleton } from "../components/ui/skeleton";
+import { Skeleton } from "boneyard-js/react";
 import { MagneticWrapper } from "../components/ui/MagneticWrapper";
 import { Leader } from "../../data/leadership";
 import { useIsMobile } from "../components/ui/use-mobile";
@@ -269,51 +269,53 @@ export function OfficersPage() {
           </p>
         </div>
 
-        {isMobile ? (
-          <Accordion.Root type="multiple" className="AccordionRoot" defaultValue={["executive"]}>
-            {categories.map((cat) => {
+        <Skeleton name="officers-list" loading={loading} color={isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}>
+          {isMobile ? (
+            <Accordion.Root type="multiple" className="AccordionRoot" defaultValue={["executive"]}>
+              {categories.map((cat) => {
+                const sectionLeaders = getOrderedLeaders(cat.id);
+                if (sectionLeaders.length === 0) return null;
+
+                return (
+                  <Accordion.Item key={cat.id} value={cat.id} className="AccordionItem" style={{ borderBottom: "1px solid var(--glass-border)", marginBottom: "12px" }}>
+                    <Accordion.Header className="AccordionHeader">
+                      <Accordion.Trigger className="AccordionTrigger" style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 0", background: "none", border: "none", color: "var(--text-primary)", cursor: "pointer" }}>
+                        <span style={{ fontFamily: "var(--font-headline)", fontSize: "20px", fontWeight: 600 }}>{cat.name}</span>
+                        <ChevronDown className="AccordionChevron" aria-hidden />
+                      </Accordion.Trigger>
+                    </Accordion.Header>
+                    <Accordion.Content className="AccordionContent">
+                      <p style={{ fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--text-muted)", marginBottom: "24px" }}>{cat.description}</p>
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "24px", paddingBottom: "32px" }}>
+                        {sectionLeaders.map(renderOfficerCard)}
+                      </div>
+                    </Accordion.Content>
+                  </Accordion.Item>
+                );
+              })}
+            </Accordion.Root>
+          ) : (
+            categories.map((cat) => {
               const sectionLeaders = getOrderedLeaders(cat.id);
-              if (!loading && sectionLeaders.length === 0) return null;
+              if (sectionLeaders.length === 0) return null;
 
               return (
-                <Accordion.Item key={cat.id} value={cat.id} className="AccordionItem" style={{ borderBottom: "1px solid var(--glass-border)", marginBottom: "12px" }}>
-                  <Accordion.Header className="AccordionHeader">
-                    <Accordion.Trigger className="AccordionTrigger" style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 0", background: "none", border: "none", color: "var(--text-primary)", cursor: "pointer" }}>
-                      <span style={{ fontFamily: "var(--font-headline)", fontSize: "20px", fontWeight: 600 }}>{cat.name}</span>
-                      <ChevronDown className="AccordionChevron" aria-hidden />
-                    </Accordion.Trigger>
-                  </Accordion.Header>
-                  <Accordion.Content className="AccordionContent">
-                    <p style={{ fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--text-muted)", marginBottom: "24px" }}>{cat.description}</p>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "24px", paddingBottom: "32px" }}>
-                      {loading ? skeletonCards.map((_, i) => <div key={i} className="glass-card"><Skeleton style={{ width: "100%", aspectRatio: "1/1" }} /></div>) : sectionLeaders.map(renderOfficerCard)}
-                    </div>
-                  </Accordion.Content>
-                </Accordion.Item>
+                <div key={cat.id} style={{ marginBottom: "80px" }}>
+                  <div style={{ marginBottom: "32px" }}>
+                    <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "28px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "8px", display: "flex", alignItems: "center", gap: "12px" }}>
+                      <span style={{ color: cat.id === "executive" ? "var(--cyber-gold)" : "var(--electric-blue)" }}>//</span>
+                      {cat.name}
+                    </h3>
+                    <p style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--text-muted)", maxWidth: "800px" }}>{cat.description}</p>
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "24px" }}>
+                    {sectionLeaders.map(renderOfficerCard)}
+                  </div>
+                </div>
               );
-            })}
-          </Accordion.Root>
-        ) : (
-          categories.map((cat) => {
-            const sectionLeaders = getOrderedLeaders(cat.id);
-            if (!loading && sectionLeaders.length === 0) return null;
-
-            return (
-              <div key={cat.id} style={{ marginBottom: "80px" }}>
-                <div style={{ marginBottom: "32px" }}>
-                  <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "28px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "8px", display: "flex", alignItems: "center", gap: "12px" }}>
-                    <span style={{ color: cat.id === "executive" ? "var(--cyber-gold)" : "var(--electric-blue)" }}>//</span>
-                    {cat.name}
-                  </h3>
-                  <p style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--text-muted)", maxWidth: "800px" }}>{cat.description}</p>
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "24px" }}>
-                  {loading ? skeletonCards.map((_, i) => <div key={i} className="glass-card" style={{ padding: "20px" }}><Skeleton style={{ width: "100%", aspectRatio: "1/1" }} /></div>) : sectionLeaders.map(renderOfficerCard)}
-                </div>
-              </div>
-            );
-          })
-        )}
+            })
+          )}
+        </Skeleton>
       </div>
       <style>{`
         .AccordionTrigger[data-state='open'] .AccordionChevron {

@@ -3,6 +3,7 @@
   import { BrowserRouter } from "react-router";
   import App from "./app/App.tsx";
   import "./styles/index.css";
+  import "./bones/registry";
 
   createRoot(document.getElementById("root")!).render(
     <BrowserRouter>
