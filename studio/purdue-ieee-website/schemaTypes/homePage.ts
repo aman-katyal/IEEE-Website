@@ -54,6 +54,14 @@ export const homePage = defineType({
       initialValue: 'Established & Innovating',
     }),
     defineField({
+      name: 'aboutImage',
+      title: 'About Section Image (Replaces 1903)',
+      type: 'image',
+      options: {
+        hotspot: true,
+      },
+    }),
+    defineField({
       name: 'stats',
       title: 'Key Statistics',
       type: 'array',

@@ -144,7 +144,8 @@ export function useOfficersConfig() {
 export function useHomePage() {
   const query = groq`*[_type == "homePage"][0]{
     ...,
-    "heroImage": heroImage.asset->url
+    "heroImage": heroImage.asset->url,
+    "aboutImage": aboutImage.asset->url
   }`
   const { data, loading, error } = useDataFetching<any>(query);
   return { data, loading, error };

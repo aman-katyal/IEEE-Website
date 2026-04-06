@@ -78,25 +78,35 @@ export function About() {
                 color: "var(--text-secondary)",
                 lineHeight: 1.75,
                 marginBottom: "32px",
-              }}
-            >
-              {aboutContent}
-            </p>
-            <button
-              className="btn-primary"
-              onClick={() => navigate("/about")}
-              style={{ display: "flex", alignItems: "center", gap: "10px" }}
-            >
-              Learn More About Us
-              <ChevronRight size={18} />
-            </button>
-          </div>
-          <div className="glass-card" style={{ padding: "48px", background: "rgba(0, 98, 155, 0.05)", textAlign: "center" }}>
-             <div style={{ fontSize: "64px", fontWeight: 700, color: "var(--electric-blue)", fontFamily: "var(--font-headline)", marginBottom: "8px" }}>{aboutStatsValue}</div>
-             <p style={{ color: "var(--cyber-gold)", textTransform: "uppercase", letterSpacing: "0.2em", fontSize: "12px", fontFamily: "var(--font-mono)" }}>{aboutStatsLabel}</p>
-          </div>
-        </motion.div>
-      </div>
-    </section>
-  );
-}
+              return (
+                <section
+                  id="about"
+              ...
+                        <button
+                          className="btn-primary"
+                          onClick={() => navigate("/about")}
+                          style={{ display: "flex", alignItems: "center", gap: "10px" }}
+                        >
+                          Learn More About Us
+                          <ChevronRight size={18} />
+                        </button>
+                      </div>
+                      <div className="glass-card" style={{ padding: "48px", background: "rgba(0, 98, 155, 0.05)", textAlign: "center", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                         {data?.aboutImage ? (
+                           <img 
+                             src={data.aboutImage} 
+                             alt="IEEE Heritage" 
+                             style={{ width: "100%", height: "auto", borderRadius: "4px", filter: isLight ? "none" : "brightness(0.8) contrast(1.1)" }} 
+                           />
+                         ) : (
+                           <div>
+                             <div style={{ fontSize: "64px", fontWeight: 700, color: "var(--electric-blue)", fontFamily: "var(--font-headline)", marginBottom: "8px" }}>{aboutStatsValue}</div>
+                             <p style={{ color: "var(--cyber-gold)", textTransform: "uppercase", letterSpacing: "0.2em", fontSize: "12px", fontFamily: "var(--font-mono)" }}>{aboutStatsLabel}</p>
+                           </div>
+                         )}
+                      </div>
+                    </motion.div>
+                  </div>
+                </section>
+              );
+              }
