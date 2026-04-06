@@ -51,41 +51,41 @@ export function Hero() {
         overflow: "hidden",
       }}
     >
-      {/* Background Lab Image - Increased Visibility */}
+      {/* Background Photo - High Visibility for group photo */}
       <div
         style={{
           position: "absolute",
           inset: 0,
           backgroundImage: `url('${heroImage}')`,
           backgroundSize: "cover",
-          backgroundPosition: "center 30%",
-          opacity: isLight ? 0.6 : 0.45, // Much higher opacity
+          backgroundPosition: "center 25%", // Adjusted to keep faces in view
+          opacity: isLight ? 0.85 : 0.7, // High opacity to see everyone clearly
           transition: "background-image 0.8s ease-in-out",
         }}
       />
 
-      {/* Optimized Gradient - Less intrusive to keep image main */}
+      {/* Subtle Gradient - Only at the very bottom to transition to content */}
       <div
         style={{
           position: "absolute",
           inset: 0,
           background: isLight 
-            ? "linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.2) 40%, rgba(248,250,252,0.9) 90%, var(--boiler-black) 100%)"
-            : "linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.85) 90%, var(--boiler-black) 100%)",
+            ? "linear-gradient(to bottom, rgba(255,255,255,0) 60%, rgba(248,250,252,0.95) 100%)"
+            : "linear-gradient(to bottom, rgba(0,0,0,0) 60%, rgba(0,0,0,0.9) 100%)",
         }}
       />
 
-      {/* 32px Grid Overlay - Reduced opacity to let image shine */}
+      {/* Grid Overlay - Very faint to avoid obscuring faces */}
       <div
         className="ieee-grid-bg"
         style={{
           position: "absolute",
           inset: 0,
-          opacity: 0.4,
+          opacity: 0.15,
         }}
       />
 
-      {/* Content - Centered */}
+      {/* Content Container */}
       <motion.div
         initial="hidden"
         whileInView="visible"
@@ -93,7 +93,8 @@ export function Hero() {
         variants={{
           visible: {
             transition: {
-              staggerChildren: 0.1
+              staggerChildren: 0.1,
+              delayChildren: 0.3
             }
           }
         }}
@@ -103,7 +104,7 @@ export function Hero() {
           maxWidth: "1280px",
           margin: "0 auto",
           padding: "0 32px",
-          paddingTop: "100px",
+          paddingTop: "25vh", // Pushed down further so group photo is clear
           width: "100%",
           display: "flex",
           flexDirection: "column",
@@ -111,7 +112,7 @@ export function Hero() {
           textAlign: "center",
         }}
       >
-        {/* Eyebrow Tag */}
+        {/* Eyebrow Tags */}
         <motion.div
           variants={itemVariants}
           style={{
@@ -119,8 +120,8 @@ export function Hero() {
             flexWrap: "wrap",
             alignItems: "center",
             justifyContent: "center",
-            gap: "16px",
-            marginBottom: "40px",
+            gap: "12px",
+            marginBottom: "32px",
           }}
         >
           <div
@@ -128,35 +129,35 @@ export function Hero() {
               display: "flex",
               alignItems: "center",
               gap: "6px",
-              background: isLight ? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.4)",
-              backdropFilter: "blur(8px)",
+              background: isLight ? "rgba(255,255,255,0.9)" : "rgba(0,0,0,0.6)",
+              backdropFilter: "blur(12px)",
               border: "1px solid var(--glass-border)",
-              borderRadius: "2px",
-              padding: "6px 14px 6px 10px",
+              borderRadius: "4px",
+              padding: "6px 12px",
             }}
           >
             <Zap size={12} style={{ color: "var(--electric-blue)", fill: "var(--electric-blue)" }} />
             <span
               style={{
                 fontFamily: "var(--font-mono)",
-                fontSize: "0.6rem",
-                letterSpacing: "0.15em",
+                fontSize: "0.58rem",
+                letterSpacing: "0.1em",
                 textTransform: "uppercase",
                 color: "var(--electric-blue)",
+                fontWeight: 600
               }}
             >
-              Purdue University · West Lafayette, IN
+              Purdue University
             </span>
           </div>
 
-          {/* Status indicator */}
-          <div style={{ display: "flex", alignItems: "center", gap: "6px", background: isLight ? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.4)", backdropFilter: "blur(8px)", border: "1px solid var(--glass-border)", borderRadius: "2px", padding: "6px 14px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", background: isLight ? "rgba(255,255,255,0.9)" : "rgba(0,0,0,0.6)", backdropFilter: "blur(12px)", border: "1px solid var(--glass-border)", borderRadius: "4px", padding: "6px 12px" }}>
             <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: sysUptime === "ACTIVE" ? "#00C853" : "#FF5252", animation: "pulse-dot 2s ease-in-out infinite" }} />
             <span
               style={{
                 fontFamily: "var(--font-mono)",
-                fontSize: "0.6rem",
-                letterSpacing: "0.15em",
+                fontSize: "0.58rem",
+                letterSpacing: "0.1em",
                 color: "var(--text-muted)",
                 textTransform: "uppercase",
               }}
@@ -166,25 +167,26 @@ export function Hero() {
           </div>
         </motion.div>
 
-        {/* Main Headline - Way Smaller & Centered */}
+        {/* Headline / Quote - High Contrast Shadow for Readability */}
         <motion.h1
           variants={itemVariants}
           style={{
             fontFamily: "var(--font-headline)",
-            fontSize: "clamp(24px, 3.5vw, 42px)", // Reduced from 72px
+            fontSize: "clamp(22px, 3vw, 38px)",
             fontWeight: 700,
-            lineHeight: 1.3,
-            color: "var(--text-primary)",
-            maxWidth: "800px",
-            marginBottom: "24px",
-            letterSpacing: "-0.01em",
+            lineHeight: 1.4,
+            color: "#FFFFFF", // Force white for contrast on photo
+            textShadow: "0 2px 20px rgba(0,0,0,0.8), 0 4px 40px rgba(0,0,0,0.4)",
+            maxWidth: "750px",
+            marginBottom: "20px",
+            letterSpacing: "0.01em",
             fontStyle: "italic",
           }}
         >
           {heroTitle.includes("innovation") ? (
             <>
               {heroTitle.split("innovation")[0]}
-              <span style={{ color: "var(--electric-blue)", textShadow: isLight ? "none" : "0 0 20px rgba(0,98,155,0.3)" }}>
+              <span style={{ color: "var(--cyber-gold)" }}>
                 innovation
               </span>
               {heroTitle.split("innovation")[1]}
@@ -196,8 +198,9 @@ export function Hero() {
           variants={itemVariants}
           style={{
             fontFamily: "var(--font-mono)",
-            fontSize: "0.7rem",
-            color: "var(--text-muted)",
+            fontSize: "0.65rem",
+            color: "rgba(255,255,255,0.8)",
+            textShadow: "0 2px 10px rgba(0,0,0,0.5)",
             letterSpacing: "0.2em",
             textTransform: "uppercase",
             marginBottom: "48px"
@@ -206,7 +209,7 @@ export function Hero() {
           {heroSubtitle}
         </motion.p>
 
-        {/* CTA Buttons - Centered */}
+        {/* CTA Buttons */}
         <motion.div
           variants={itemVariants}
           style={{
@@ -217,12 +220,21 @@ export function Hero() {
             marginBottom: "80px",
           }}
         >
-          <MagneticButton variant="primary" onClick={() => navigate("/committees")} style={{ width: "auto", minWidth: "200px", padding: "16px 32px" }}>
+          <MagneticButton 
+            variant="primary" 
+            onClick={() => navigate("/committees")} 
+            style={{ 
+              width: "auto", 
+              minWidth: "200px", 
+              padding: "16px 32px",
+              boxShadow: "0 10px 30px rgba(0,0,0,0.3)"
+            }}
+          >
             Explore Committees
           </MagneticButton>
         </motion.div>
 
-        {/* Technical Committee Tags - Centered */}
+        {/* Committee Tags - Highly legible background */}
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -231,9 +243,9 @@ export function Hero() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            gap: "8px 12px",
+            gap: "8px 10px",
             flexWrap: "wrap",
-            maxWidth: "1000px",
+            maxWidth: "900px",
             margin: "0 auto"
           }}
         >
@@ -247,17 +259,19 @@ export function Hero() {
                 textDecoration: "none", 
                 cursor: "pointer", 
                 transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
-                padding: "4px 12px",
-                fontSize: "0.62rem",
+                padding: "5px 12px",
+                fontSize: "0.6rem",
                 display: "flex",
                 alignItems: "center",
                 gap: "6px",
-                background: isLight ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.2)",
-                backdropFilter: "blur(4px)"
+                background: "rgba(0,0,0,0.6)",
+                backdropFilter: "blur(8px)",
+                color: "#FFFFFF",
+                border: "1px solid rgba(255,255,255,0.15)"
               }}
-              whileHover={{ y: -2, backgroundColor: "rgba(0, 98, 155, 0.05)", borderColor: "var(--electric-blue)", color: "var(--electric-blue)" }}
+              whileHover={{ y: -2, backgroundColor: "var(--electric-blue)", borderColor: "var(--electric-blue)" }}
             >
-              <div style={{ width: "3px", height: "3px", borderRadius: "50%", background: "currentColor", opacity: 0.5 }} />
+              <div style={{ width: "3px", height: "3px", borderRadius: "50%", background: "var(--cyber-gold)", opacity: 0.8 }} />
               {c.shortName}
             </MotionLink>
           ))}
