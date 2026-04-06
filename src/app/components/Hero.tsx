@@ -51,37 +51,37 @@ export function Hero() {
         overflow: "hidden",
       }}
     >
-      {/* Background Photo - High Visibility for group photo */}
+      {/* Background Photo */}
       <div
         style={{
           position: "absolute",
           inset: 0,
           backgroundImage: `url('${heroImage}')`,
           backgroundSize: "cover",
-          backgroundPosition: "center 25%", // Adjusted to keep faces in view
-          opacity: isLight ? 0.85 : 0.7, // High opacity to see everyone clearly
+          backgroundPosition: "center 25%",
+          opacity: isLight ? 0.5 : 0.35, // Balanced opacity
           transition: "background-image 0.8s ease-in-out",
         }}
       />
 
-      {/* Subtle Gradient - Only at the very bottom to transition to content */}
+      {/* Standardized Gradients for legibility */}
       <div
         style={{
           position: "absolute",
           inset: 0,
           background: isLight 
-            ? "linear-gradient(to bottom, rgba(255,255,255,0) 60%, rgba(248,250,252,0.95) 100%)"
-            : "linear-gradient(to bottom, rgba(0,0,0,0) 60%, rgba(0,0,0,0.9) 100%)",
+            ? "linear-gradient(to bottom, rgba(248,250,252,0.9) 0%, rgba(248,250,252,0.2) 30%, rgba(248,250,252,0.2) 70%, rgba(248,250,252,1) 100%)"
+            : "linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.1) 30%, rgba(0,0,0,0.1) 70%, var(--boiler-black) 100%)",
         }}
       />
 
-      {/* Grid Overlay - Very faint to avoid obscuring faces */}
+      {/* Grid Overlay */}
       <div
         className="ieee-grid-bg"
         style={{
           position: "absolute",
           inset: 0,
-          opacity: 0.15,
+          opacity: 0.3,
         }}
       />
 
@@ -104,7 +104,7 @@ export function Hero() {
           maxWidth: "1280px",
           margin: "0 auto",
           padding: "0 32px",
-          paddingTop: "25vh", // Pushed down further so group photo is clear
+          paddingTop: "80px",
           width: "100%",
           display: "flex",
           flexDirection: "column",
@@ -129,8 +129,7 @@ export function Hero() {
               display: "flex",
               alignItems: "center",
               gap: "6px",
-              background: isLight ? "rgba(255,255,255,0.9)" : "rgba(0,0,0,0.6)",
-              backdropFilter: "blur(12px)",
+              background: isLight ? "rgba(255,255,255,0.8)" : "rgba(26,26,27,0.8)",
               border: "1px solid var(--glass-border)",
               borderRadius: "4px",
               padding: "6px 12px",
@@ -140,7 +139,7 @@ export function Hero() {
             <span
               style={{
                 fontFamily: "var(--font-mono)",
-                fontSize: "0.58rem",
+                fontSize: "0.6rem",
                 letterSpacing: "0.1em",
                 textTransform: "uppercase",
                 color: "var(--electric-blue)",
@@ -151,12 +150,12 @@ export function Hero() {
             </span>
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "6px", background: isLight ? "rgba(255,255,255,0.9)" : "rgba(0,0,0,0.6)", backdropFilter: "blur(12px)", border: "1px solid var(--glass-border)", borderRadius: "4px", padding: "6px 12px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", background: isLight ? "rgba(255,255,255,0.8)" : "rgba(26,26,27,0.8)", border: "1px solid var(--glass-border)", borderRadius: "4px", padding: "6px 12px" }}>
             <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: sysUptime === "ACTIVE" ? "#00C853" : "#FF5252", animation: "pulse-dot 2s ease-in-out infinite" }} />
             <span
               style={{
                 fontFamily: "var(--font-mono)",
-                fontSize: "0.58rem",
+                fontSize: "0.6rem",
                 letterSpacing: "0.1em",
                 color: "var(--text-muted)",
                 textTransform: "uppercase",
@@ -167,26 +166,24 @@ export function Hero() {
           </div>
         </motion.div>
 
-        {/* Headline / Quote - High Contrast Shadow for Readability */}
+        {/* Headline / Quote - Standardized Design System Shadows */}
         <motion.h1
           variants={itemVariants}
           style={{
             fontFamily: "var(--font-headline)",
-            fontSize: "clamp(22px, 3vw, 38px)",
+            fontSize: "clamp(24px, 4.5vw, 48px)",
             fontWeight: 700,
-            lineHeight: 1.4,
-            color: "#FFFFFF", // Force white for contrast on photo
-            textShadow: "0 2px 20px rgba(0,0,0,0.8), 0 4px 40px rgba(0,0,0,0.4)",
-            maxWidth: "750px",
-            marginBottom: "20px",
-            letterSpacing: "0.01em",
-            fontStyle: "italic",
+            lineHeight: 1.2,
+            color: "var(--text-primary)",
+            maxWidth: "900px",
+            marginBottom: "24px",
+            letterSpacing: "-0.02em",
           }}
         >
           {heroTitle.includes("innovation") ? (
             <>
               {heroTitle.split("innovation")[0]}
-              <span style={{ color: "var(--cyber-gold)" }}>
+              <span style={{ color: "var(--electric-blue)" }}>
                 innovation
               </span>
               {heroTitle.split("innovation")[1]}
@@ -198,12 +195,11 @@ export function Hero() {
           variants={itemVariants}
           style={{
             fontFamily: "var(--font-mono)",
-            fontSize: "0.65rem",
-            color: "rgba(255,255,255,0.8)",
-            textShadow: "0 2px 10px rgba(0,0,0,0.5)",
-            letterSpacing: "0.2em",
+            fontSize: "0.75rem",
+            color: "var(--text-muted)",
+            letterSpacing: "0.15em",
             textTransform: "uppercase",
-            marginBottom: "48px"
+            marginBottom: "56px"
           }}
         >
           {heroSubtitle}
@@ -217,7 +213,7 @@ export function Hero() {
             justifyContent: "center",
             gap: "16px",
             alignItems: "center",
-            marginBottom: "80px",
+            marginBottom: "88px",
           }}
         >
           <MagneticButton 
@@ -227,14 +223,13 @@ export function Hero() {
               width: "auto", 
               minWidth: "200px", 
               padding: "16px 32px",
-              boxShadow: "0 10px 30px rgba(0,0,0,0.3)"
             }}
           >
             Explore Committees
           </MagneticButton>
         </motion.div>
 
-        {/* Committee Tags - Highly legible background */}
+        {/* Committee Tags - Reverted to Standard glass style */}
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -243,9 +238,9 @@ export function Hero() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            gap: "8px 10px",
+            gap: "8px 12px",
             flexWrap: "wrap",
-            maxWidth: "900px",
+            maxWidth: "1000px",
             margin: "0 auto"
           }}
         >
@@ -259,19 +254,18 @@ export function Hero() {
                 textDecoration: "none", 
                 cursor: "pointer", 
                 transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
-                padding: "5px 12px",
-                fontSize: "0.6rem",
+                padding: "6px 14px",
+                fontSize: "0.65rem",
                 display: "flex",
                 alignItems: "center",
                 gap: "6px",
-                background: "rgba(0,0,0,0.6)",
-                backdropFilter: "blur(8px)",
-                color: "#FFFFFF",
-                border: "1px solid rgba(255,255,255,0.15)"
+                background: "var(--glass-bg)",
+                borderColor: "var(--glass-border)",
+                color: "var(--text-secondary)"
               }}
-              whileHover={{ y: -2, backgroundColor: "var(--electric-blue)", borderColor: "var(--electric-blue)" }}
+              whileHover={{ y: -2, backgroundColor: "rgba(0, 98, 155, 0.05)", borderColor: "var(--electric-blue)", color: "var(--text-primary)" }}
             >
-              <div style={{ width: "3px", height: "3px", borderRadius: "50%", background: "var(--cyber-gold)", opacity: 0.8 }} />
+              <div style={{ width: "4px", height: "4px", borderRadius: "50%", background: "var(--electric-blue)", opacity: 0.5 }} />
               {c.shortName}
             </MotionLink>
           ))}
