@@ -4,15 +4,20 @@ import { useHomePage } from "../../hooks/useSanityData";
 
 const FALLBACK_STATS = [
   { value: 11, suffix: "", label: "Committees", sublabel: "Technical & support" },
-  { value: 1903, suffix: "", label: "Founded", sublabel: "Legacy of innovation" },
+  { value: 123, suffix: "", label: "Years Old", sublabel: "Legacy of innovation" },
   { value: 750, suffix: "+", label: "Members", sublabel: "Across all disciplines" },
   { value: 50000, suffix: "", prefix: "$", label: "Raised Annually", sublabel: "Project funding" },
 ];
 
 function useCountUp(target: number, duration = 1800, start = false) {
   const [count, setCount] = useState(0);
+  
   useEffect(() => {
-    if (!start) return;
+    if (!start || !target) {
+      if (start && target === 0) setCount(0);
+      return;
+    }
+    
     let startTime: number | null = null;
     const step = (timestamp: number) => {
       if (!startTime) startTime = timestamp;
@@ -24,6 +29,7 @@ function useCountUp(target: number, duration = 1800, start = false) {
     };
     requestAnimationFrame(step);
   }, [target, duration, start]);
+  
   return count;
 }
 
@@ -38,14 +44,14 @@ function StatItem({ value, suffix, prefix = "", label, sublabel, delay, isLight 
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
-  const count = useCountUp(value, 1800, visible);
+  const count = useCountUp(Number(value) || 0, 1800, visible);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) setVisible(true);
       },
-      { threshold: 0.5 }
+      { threshold: 0.1 } // More sensitive intersection
     );
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
@@ -53,6 +59,7 @@ function StatItem({ value, suffix, prefix = "", label, sublabel, delay, isLight 
 
   return (
     <div
+      ref={ref}
       style={{
         display: "flex",
         flexDirection: "column",
@@ -84,7 +91,7 @@ function StatItem({ value, suffix, prefix = "", label, sublabel, delay, isLight 
         }}
       >
         <span style={{ color: "var(--cyber-gold)", fontSize: "0.6em" }}>{prefix}</span>
-        {label === "Founded" ? count : count.toLocaleString()}
+        {label === "Founded" || label === "Years Old" ? count : count.toLocaleString()}
         <span style={{ color: "var(--cyber-gold)", fontSize: "0.6em" }}>{suffix}</span>
       </div>
 
@@ -121,12 +128,21 @@ function StatItem({ value, suffix, prefix = "", label, sublabel, delay, isLight 
 
 export function Stats() {
   const { theme } = useTheme();
-  const { data } = useHomePage();
+  const { data, loading } = useHomePage();
   const isLight = theme === "light";
 
-  const stats = data?.stats || FALLBACK_STATS;
+  // Better fallback logic: if data is loaded but stats is empty or invalid, use FALLBACK_STATS
+  const stats = (data?.stats && data.stats.length > 0) ? data.stats : FALLBACK_STATS;
   const sysUptime = data?.sysUptime || "ACTIVE";
   const semester = data?.semester || "SP_2026";
+
+  if (loading && !data) {
+    return (
+      <section style={{ height: "200px", background: "var(--boiler-black)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ color: "var(--text-muted)", fontFamily: "var(--font-mono)", fontSize: "0.8rem" }}>LOADING_SYSTEM_METRICS...</div>
+      </section>
+    );
+  }
 
   return (
     <section
@@ -223,7 +239,7 @@ export function Stats() {
         {/* Stats grid */}
         <div className="ieee-grid-4">
           {stats.map((s: any, i: number) => (
-            <StatItem key={s.label} {...s} delay={i * 100} isLight={isLight} />
+            <StatItem key={s.label || i} {...s} delay={i * 100} isLight={isLight} />
           ))}
         </div>
       </div>
