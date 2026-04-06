@@ -5,7 +5,7 @@ const client = createClient({
   dataset: 'production',
   useCdn: false,
   apiVersion: '2024-03-16',
-  token: 'SK_YOUR_TOKEN_HERE' // You will need to provide a token with write access
+  token: 'SK_REMOVED_FOR_SECURITY' // You will need to provide a token with write access
 });
 
 const homePage = {
