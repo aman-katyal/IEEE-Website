@@ -4,15 +4,17 @@ import { useTheme } from "next-themes";
 import { motion } from "motion/react";
 import { committees as committeeData } from "../../data/committees";
 import { MagneticButton } from "./MagneticButton";
+import { useHomePage } from "../../hooks/useSanityData";
 
-const LAB_IMAGE =
+const FALLBACK_LAB_IMAGE =
   "https://images.unsplash.com/photo-1619834043185-acbe47811e6a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlbmdpbmVlcmluZyUyMHJlc2VhcmNoJTIwbGFiJTIwZGFyayUyMGhpZ2glMjB0ZWNofGVufDF8fHx8MTc3MzE4NjE2N3ww&ixlib=rb-4.1.0&q=80&w=1080";
 
-const MotionLink = motion(Link);
+const MotionLink = motion.create(Link);
 
 export function Hero() {
   const navigate = useNavigate();
   const { theme } = useTheme();
+  const { data } = useHomePage();
 
   const handleScroll = () => {
     const el = document.querySelector("#about");
@@ -20,6 +22,12 @@ export function Hero() {
   };
 
   const isLight = theme === "light";
+
+  const heroImage = data?.heroImage || FALLBACK_LAB_IMAGE;
+  const heroTitle = data?.heroTitle || "“Fostering technological innovation and excellence for the benefit of humanity.”";
+  const heroSubtitle = data?.heroSubtitle || "— IEEE Mission Statement";
+  const sysUptime = data?.sysUptime || "ACTIVE";
+  const semester = data?.semester || "SP_2026";
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -58,10 +66,11 @@ export function Hero() {
         style={{
           position: "absolute",
           inset: 0,
-          backgroundImage: `url('${LAB_IMAGE}')`,
+          backgroundImage: `url('${heroImage}')`,
           backgroundSize: "cover",
           backgroundPosition: "center 30%",
           opacity: isLight ? 0.3 : 0.25,
+          transition: "background-image 0.8s ease-in-out",
         }}
       />
 
@@ -162,7 +171,7 @@ export function Hero() {
 
           {/* Status indicator */}
           <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#00C853", animation: "pulse-dot 2s ease-in-out infinite" }} />
+            <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: sysUptime === "ACTIVE" ? "#00C853" : "#FF5252", animation: "pulse-dot 2s ease-in-out infinite" }} />
             <span
               style={{
                 fontFamily: "var(--font-mono)",
@@ -172,7 +181,7 @@ export function Hero() {
                 textTransform: "uppercase",
               }}
             >
-              Spring 2026 Active
+              {semester.replace('_', ' ')} {sysUptime}
             </span>
           </div>
         </motion.div>
@@ -191,12 +200,15 @@ export function Hero() {
             letterSpacing: "-0.02em",
           }}
         >
-          “Fostering technological{" "}
-          <span style={{ color: "var(--electric-blue)", textShadow: isLight ? "none" : "0 0 40px rgba(0,98,155,0.3)" }}>
-            innovation
-          </span>{" "}
-          and excellence for the benefit of{" "}
-          <span style={{ color: "var(--cyber-gold)" }}>humanity.</span>”
+          {heroTitle.includes("innovation") ? (
+            <>
+              {heroTitle.split("innovation")[0]}
+              <span style={{ color: "var(--electric-blue)", textShadow: isLight ? "none" : "0 0 40px rgba(0,98,155,0.3)" }}>
+                innovation
+              </span>
+              {heroTitle.split("innovation")[1]}
+            </>
+          ) : heroTitle}
         </motion.h1>
 
         <motion.p
@@ -210,7 +222,7 @@ export function Hero() {
             marginBottom: "48px"
           }}
         >
-          — IEEE Mission Statement
+          {heroSubtitle}
         </motion.p>
 
         {/* CTA Buttons */}

@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useTheme } from "next-themes";
+import { useHomePage } from "../../hooks/useSanityData";
 
-const stats = [
+const FALLBACK_STATS = [
   { value: 11, suffix: "", label: "Committees", sublabel: "Technical & support" },
   { value: 1903, suffix: "", label: "Founded", sublabel: "Legacy of innovation" },
   { value: 750, suffix: "+", label: "Members", sublabel: "Across all disciplines" },
@@ -52,7 +53,6 @@ function StatItem({ value, suffix, prefix = "", label, sublabel, delay, isLight 
 
   return (
     <div
-      ref={ref}
       style={{
         display: "flex",
         flexDirection: "column",
@@ -121,7 +121,12 @@ function StatItem({ value, suffix, prefix = "", label, sublabel, delay, isLight 
 
 export function Stats() {
   const { theme } = useTheme();
+  const { data } = useHomePage();
   const isLight = theme === "light";
+
+  const stats = data?.stats || FALLBACK_STATS;
+  const sysUptime = data?.sysUptime || "ACTIVE";
+  const semester = data?.semester || "SP_2026";
 
   return (
     <section
@@ -194,8 +199,8 @@ export function Stats() {
           }}
         >
           {[
-            "sys.uptime = ACTIVE",
-            "semester = SP_2026",
+            `sys.uptime = ${sysUptime}`,
+            `semester = ${semester}`,
             "members.online = 312",
             "competitions.upcoming = 4",
           ].map((item) => (
@@ -217,7 +222,7 @@ export function Stats() {
 
         {/* Stats grid */}
         <div className="ieee-grid-4">
-          {stats.map((s, i) => (
+          {stats.map((s: any, i: number) => (
             <StatItem key={s.label} {...s} delay={i * 100} isLight={isLight} />
           ))}
         </div>

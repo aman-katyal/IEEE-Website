@@ -140,3 +140,18 @@ export function useOfficersConfig() {
   const { data, loading, error } = useDataFetching<any>(query);
   return { config: data, loading, error };
 }
+
+export function useHomePage() {
+  const query = groq`*[_type == "homePage"][0]{
+    ...,
+    "heroImage": heroImage.asset->url
+  }`
+  const { data, loading, error } = useDataFetching<any>(query);
+  return { data, loading, error };
+}
+
+export function useAboutPage() {
+  const query = groq`*[_type == "aboutPage"][0]`
+  const { data, loading, error } = useDataFetching<any>(query);
+  return { data, loading, error };
+}

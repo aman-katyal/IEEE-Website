@@ -2,11 +2,19 @@ import { ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router";
 import { motion } from "motion/react";
 import { useTheme } from "next-themes";
+import { useHomePage } from "../../hooks/useSanityData";
 
 export function About() {
   const navigate = useNavigate();
   const { theme } = useTheme();
+  const { data } = useHomePage();
   const isLight = theme === "light";
+
+  const aboutEyebrow = data?.aboutEyebrow || "// Overview";
+  const aboutTitle = data?.aboutTitle || "At Purdue, we strive to be the best";
+  const aboutContent = data?.aboutContent || "Whether creating drones, designing radio transmitters, or pioneering next-gen biotech, Purdue engineers excel. Purdue IEEE is the university's largest technical organization, where students from all backgrounds work on real-world problems and advance their engineering skills.";
+  const aboutStatsValue = data?.aboutStatsValue || "1903";
+  const aboutStatsLabel = data?.aboutStatsLabel || "Established & Innovating";
 
   return (
     <section
@@ -42,7 +50,7 @@ export function About() {
         >
           <div>
             <p className="section-eyebrow" style={{ marginBottom: "16px" }}>
-              // Overview
+              {aboutEyebrow}
             </p>
             <h2
               style={{
@@ -55,7 +63,13 @@ export function About() {
                 marginBottom: "24px",
               }}
             >
-              At Purdue, we strive to be the <span style={{ color: "var(--electric-blue)" }}>best</span>
+              {aboutTitle.includes("best") ? (
+                <>
+                  {aboutTitle.split("best")[0]}
+                  <span style={{ color: "var(--electric-blue)" }}>best</span>
+                  {aboutTitle.split("best")[1]}
+                </>
+              ) : aboutTitle}
             </h2>
             <p
               style={{
@@ -66,9 +80,7 @@ export function About() {
                 marginBottom: "32px",
               }}
             >
-              Whether creating drones, designing radio transmitters, or pioneering next-gen biotech, Purdue engineers excel. 
-              Purdue IEEE is the university's largest technical organization, where students from all backgrounds 
-              work on real-world problems and advance their engineering skills.
+              {aboutContent}
             </p>
             <button
               className="btn-primary"
@@ -80,8 +92,8 @@ export function About() {
             </button>
           </div>
           <div className="glass-card" style={{ padding: "48px", background: "rgba(0, 98, 155, 0.05)", textAlign: "center" }}>
-             <div style={{ fontSize: "64px", fontWeight: 700, color: "var(--electric-blue)", fontFamily: "var(--font-headline)", marginBottom: "8px" }}>1903</div>
-             <p style={{ color: "var(--cyber-gold)", textTransform: "uppercase", letterSpacing: "0.2em", fontSize: "12px", fontFamily: "var(--font-mono)" }}>Established & Innovating</p>
+             <div style={{ fontSize: "64px", fontWeight: 700, color: "var(--electric-blue)", fontFamily: "var(--font-headline)", marginBottom: "8px" }}>{aboutStatsValue}</div>
+             <p style={{ color: "var(--cyber-gold)", textTransform: "uppercase", letterSpacing: "0.2em", fontSize: "12px", fontFamily: "var(--font-mono)" }}>{aboutStatsLabel}</p>
           </div>
         </motion.div>
       </div>
