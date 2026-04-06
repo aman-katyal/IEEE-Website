@@ -29,17 +29,6 @@ export function Hero() {
   const sysUptime = data?.sysUptime || "ACTIVE";
   const semester = data?.semester || "SP_2026";
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.05,
-        delayChildren: 0.6
-      }
-    }
-  };
-
   const itemVariants = {
     hidden: { opacity: 0, y: 15 },
     visible: { 
@@ -58,10 +47,11 @@ export function Hero() {
         background: "var(--boiler-black)",
         display: "flex",
         alignItems: "center",
+        justifyContent: "center",
         overflow: "hidden",
       }}
     >
-      {/* Background Lab Image */}
+      {/* Background Lab Image - Increased Visibility */}
       <div
         style={{
           position: "absolute",
@@ -69,48 +59,33 @@ export function Hero() {
           backgroundImage: `url('${heroImage}')`,
           backgroundSize: "cover",
           backgroundPosition: "center 30%",
-          opacity: isLight ? 0.3 : 0.25,
+          opacity: isLight ? 0.6 : 0.45, // Much higher opacity
           transition: "background-image 0.8s ease-in-out",
         }}
       />
 
-      {/* Bottom Gradient Fade */}
+      {/* Optimized Gradient - Less intrusive to keep image main */}
       <div
         style={{
           position: "absolute",
           inset: 0,
           background: isLight 
-            ? "linear-gradient(to bottom, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 40%, rgba(248,250,252,0.8) 85%, var(--boiler-black) 100%)"
-            : "linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.8) 85%, var(--boiler-black) 100%)",
+            ? "linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.2) 40%, rgba(248,250,252,0.9) 90%, var(--boiler-black) 100%)"
+            : "linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.85) 90%, var(--boiler-black) 100%)",
         }}
       />
 
-      {/* 32px Grid Overlay */}
+      {/* 32px Grid Overlay - Reduced opacity to let image shine */}
       <div
         className="ieee-grid-bg"
         style={{
           position: "absolute",
           inset: 0,
-          opacity: 1,
+          opacity: 0.4,
         }}
       />
 
-      {/* Electric Glow Orbs */}
-      <div
-        className="electric-glow-orb animate-glow-pulse"
-        style={{
-          width: "min(700px, 90vw)",
-          height: "min(700px, 90vw)",
-          top: "-100px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          background: isLight
-            ? "radial-gradient(circle, rgba(0,98,155,0.08) 0%, transparent 65%)"
-            : "radial-gradient(circle, rgba(0,98,155,0.22) 0%, transparent 65%)",
-        }}
-      />
-
-      {/* Content */}
+      {/* Content - Centered */}
       <motion.div
         initial="hidden"
         whileInView="visible"
@@ -128,9 +103,12 @@ export function Hero() {
           maxWidth: "1280px",
           margin: "0 auto",
           padding: "0 32px",
-          paddingTop: "max(120px, 15vh)",
-          paddingBottom: "80px",
+          paddingTop: "100px",
           width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          textAlign: "center",
         }}
       >
         {/* Eyebrow Tag */}
@@ -140,8 +118,9 @@ export function Hero() {
             display: "flex",
             flexWrap: "wrap",
             alignItems: "center",
+            justifyContent: "center",
             gap: "16px",
-            marginBottom: "32px",
+            marginBottom: "40px",
           }}
         >
           <div
@@ -149,8 +128,9 @@ export function Hero() {
               display: "flex",
               alignItems: "center",
               gap: "6px",
-              background: isLight ? "rgba(0,90,135,0.08)" : "rgba(0,98,155,0.15)",
-              border: isLight ? "1px solid rgba(0,90,135,0.2)" : "1px solid rgba(0,98,155,0.4)",
+              background: isLight ? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.4)",
+              backdropFilter: "blur(8px)",
+              border: "1px solid var(--glass-border)",
               borderRadius: "2px",
               padding: "6px 14px 6px 10px",
             }}
@@ -159,7 +139,7 @@ export function Hero() {
             <span
               style={{
                 fontFamily: "var(--font-mono)",
-                fontSize: "clamp(0.55rem, 1.5vw, 0.65rem)",
+                fontSize: "0.6rem",
                 letterSpacing: "0.15em",
                 textTransform: "uppercase",
                 color: "var(--electric-blue)",
@@ -170,12 +150,12 @@ export function Hero() {
           </div>
 
           {/* Status indicator */}
-          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", background: isLight ? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.4)", backdropFilter: "blur(8px)", border: "1px solid var(--glass-border)", borderRadius: "2px", padding: "6px 14px" }}>
             <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: sysUptime === "ACTIVE" ? "#00C853" : "#FF5252", animation: "pulse-dot 2s ease-in-out infinite" }} />
             <span
               style={{
                 fontFamily: "var(--font-mono)",
-                fontSize: "clamp(0.55rem, 1.5vw, 0.62rem)",
+                fontSize: "0.6rem",
                 letterSpacing: "0.15em",
                 color: "var(--text-muted)",
                 textTransform: "uppercase",
@@ -186,24 +166,25 @@ export function Hero() {
           </div>
         </motion.div>
 
-        {/* Main Headline */}
+        {/* Main Headline - Way Smaller & Centered */}
         <motion.h1
           variants={itemVariants}
           style={{
             fontFamily: "var(--font-headline)",
-            fontSize: "clamp(34px, 5.5vw, 72px)",
+            fontSize: "clamp(24px, 3.5vw, 42px)", // Reduced from 72px
             fontWeight: 700,
-            lineHeight: 1.1,
+            lineHeight: 1.3,
             color: "var(--text-primary)",
-            maxWidth: "1000px",
-            marginBottom: "32px",
-            letterSpacing: "-0.02em",
+            maxWidth: "800px",
+            marginBottom: "24px",
+            letterSpacing: "-0.01em",
+            fontStyle: "italic",
           }}
         >
           {heroTitle.includes("innovation") ? (
             <>
               {heroTitle.split("innovation")[0]}
-              <span style={{ color: "var(--electric-blue)", textShadow: isLight ? "none" : "0 0 40px rgba(0,98,155,0.3)" }}>
+              <span style={{ color: "var(--electric-blue)", textShadow: isLight ? "none" : "0 0 20px rgba(0,98,155,0.3)" }}>
                 innovation
               </span>
               {heroTitle.split("innovation")[1]}
@@ -215,7 +196,7 @@ export function Hero() {
           variants={itemVariants}
           style={{
             fontFamily: "var(--font-mono)",
-            fontSize: "clamp(0.7rem, 1.5vw, 0.85rem)",
+            fontSize: "0.7rem",
             color: "var(--text-muted)",
             letterSpacing: "0.2em",
             textTransform: "uppercase",
@@ -225,25 +206,24 @@ export function Hero() {
           {heroSubtitle}
         </motion.p>
 
-        {/* CTA Buttons */}
+        {/* CTA Buttons - Centered */}
         <motion.div
           variants={itemVariants}
           style={{
             display: "flex",
-            flexWrap: "wrap",
+            justifyContent: "center",
             gap: "16px",
             alignItems: "center",
-            marginBottom: "72px",
+            marginBottom: "80px",
           }}
         >
-          <MagneticButton variant="primary" onClick={() => navigate("/committees")} style={{ width: "auto", minWidth: "180px", padding: "16px 32px" }}>
+          <MagneticButton variant="primary" onClick={() => navigate("/committees")} style={{ width: "auto", minWidth: "200px", padding: "16px 32px" }}>
             Explore Committees
           </MagneticButton>
         </motion.div>
 
-        {/* Bottom Meta Bar (Technical Committee Tags) */}
+        {/* Technical Committee Tags - Centered */}
         <motion.div
-          variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
@@ -251,9 +231,9 @@ export function Hero() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            gap: "10px 16px",
+            gap: "8px 12px",
             flexWrap: "wrap",
-            maxWidth: "900px",
+            maxWidth: "1000px",
             margin: "0 auto"
           }}
         >
@@ -267,15 +247,17 @@ export function Hero() {
                 textDecoration: "none", 
                 cursor: "pointer", 
                 transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
-                padding: "6px 14px",
-                fontSize: "0.68rem",
+                padding: "4px 12px",
+                fontSize: "0.62rem",
                 display: "flex",
                 alignItems: "center",
-                gap: "6px"
+                gap: "6px",
+                background: isLight ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.2)",
+                backdropFilter: "blur(4px)"
               }}
               whileHover={{ y: -2, backgroundColor: "rgba(0, 98, 155, 0.05)", borderColor: "var(--electric-blue)", color: "var(--electric-blue)" }}
             >
-              <div style={{ width: "4px", height: "4px", borderRadius: "50%", background: "currentColor", opacity: 0.5 }} />
+              <div style={{ width: "3px", height: "3px", borderRadius: "50%", background: "currentColor", opacity: 0.5 }} />
               {c.shortName}
             </MotionLink>
           ))}
