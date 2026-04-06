@@ -89,7 +89,7 @@ export function JoinCTA() {
           margin: "0 auto",
           padding: "0 32px",
         }}
-        className="ieee-grid-join"
+        className="ieee-grid-sidebar"
       >
         {/* Left content */}
         <div>
@@ -190,19 +190,18 @@ export function JoinCTA() {
           </div>
         </div>
 
-        {/* Right — Sign-up Discord */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+        {/* Right — Sign-up Discord (Aligned with Next Event sidebar) */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
           <div
             className="glass-card"
             style={{ 
-              padding: "48px", 
+              padding: "clamp(24px, 5vw, 32px)", 
               textAlign: "center",
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
               gap: "24px",
               width: "100%",
-              maxWidth: "440px"
             }}
           >
             <div
