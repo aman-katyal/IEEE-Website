@@ -16,7 +16,7 @@ export default defineConfig({
     visionTool(),
     presentationTool({
       previewUrl: {
-        origin: (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+        origin: (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
           ? 'http://localhost:5173' 
           : 'https://ieee-website-9ix.pages.dev',
         previewMode: {
