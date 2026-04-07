@@ -196,7 +196,7 @@ function CommitteeCard({ c }: { c: Committee }) {
               marginBottom: "20px",
             }}
           >
-            {c.tags.slice(0, 3).map((tag) => (
+            {c.tags?.slice(0, 3).map((tag) => (
               <span key={tag} className="tech-tag">
                 {tag}
               </span>

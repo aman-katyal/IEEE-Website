@@ -101,7 +101,7 @@ export function AboutUsPage() {
               <div style={{ order: section.layout === "reversed" ? 2 : 1 }}>
                 <p className="section-eyebrow" style={{ marginBottom: "16px" }}>{section.eyebrow}</p>
                 <h2 style={{ fontFamily: "var(--font-headline)", fontSize: "clamp(28px, 4vw, 44px)", fontWeight: 700, color: "var(--text-primary)", lineHeight: 1.15, letterSpacing: "-0.02em", marginBottom: "24px" }}>
-                  {section.title.split(' ').map((word: string, i: number, arr: string[]) => {
+                  {(section.title || "").split(' ').map((word: string, i: number, arr: string[]) => {
                     const isLast = i === arr.length - 1;
                     const highlightColor = section.colorTheme === "gold" ? "var(--cyber-gold)" : "var(--electric-blue)";
                     return <span key={i}>{isLast ? <span style={{ color: highlightColor }}>{word}</span> : word}{' '}</span>

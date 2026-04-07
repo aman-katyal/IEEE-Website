@@ -139,7 +139,7 @@ export function CommitteePage() {
           <div key={index} style={{ marginBottom: "64px" }}>
             <p className="section-eyebrow" style={{ marginBottom: "20px" }}>// {section.title || "Projects"}</p>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "24px" }}>
-              {section.items.map((p, i) => (
+              {section.items?.map((p, i) => (
                 <div key={i} className="glass-card" style={{ display: "flex", flexDirection: "column", overflow: "hidden" }}>
                   {p.image && <div style={{ height: "180px", width: "100%", borderBottom: "1px solid var(--glass-border)" }}><img src={p.image} alt={p.name} style={{ width: "100%", height: "100%", objectFit: projCrop ? "cover" : "contain", background: "rgba(0,0,0,0.05)" }} /></div>}
                   <div style={{ padding: "24px" }}><h3 style={{ fontFamily: "var(--font-headline)", fontSize: "17px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "10px" }}>{p.name}</h3><div style={{ fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.65 }}><ReactMarkdown>{p.description}</ReactMarkdown></div></div>
@@ -165,7 +165,7 @@ export function CommitteePage() {
           <div key={index} style={{ marginBottom: "64px" }}>
             <p className="section-eyebrow" style={{ marginBottom: "20px" }}>// {section.title || "Gallery"}</p>
             <div style={{ columns: "2 300px", columnGap: "16px" }}>
-              {section.items.map((img: any, i) => (
+              {section.items?.map((img: any, i) => (
                 <div key={i} style={{ breakInside: "avoid", marginBottom: "16px", position: "relative", borderRadius: "8px", overflow: "hidden", border: "1px solid var(--glass-border)", cursor: "pointer" }} className="gallery-item-container">
                   <img src={img.image || img.src} alt={img.caption} style={{ width: "100%", height: "auto", display: "block", transition: "transform 0.6s ease", filter: isLight ? "brightness(1)" : "brightness(0.85)" }} />
                   {img.caption && <div className="caption-overlay" style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "linear-gradient(transparent, rgba(0,0,0,0.9))", padding: "24px 16px 12px", fontFamily: "var(--font-mono)", fontSize: "0.65rem", color: "#FFFFFF", letterSpacing: "0.06em", opacity: 0, transform: "translateY(10px)", transition: "all 0.3s ease" }}>{img.caption}</div>}
@@ -180,7 +180,7 @@ export function CommitteePage() {
           <div key={index} style={{ marginBottom: "64px" }}>
             <p className="section-eyebrow" style={{ marginBottom: "20px" }}>// {section.title || "FAQ"}</p>
             <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-              {section.items.map((faq, i) => (
+              {section.items?.map((faq, i) => (
                 <div key={i} className="glass-card" style={{ padding: "24px 32px" }}>
                   <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginBottom: "10px" }}><MessageCircle size={16} style={{ color: "var(--electric-blue)", flexShrink: 0, marginTop: "2px" }} /><h4 style={{ fontFamily: "var(--font-headline)", fontSize: "15px", fontWeight: 600, color: "var(--text-primary)", lineHeight: 1.45 }}>{faq.question}</h4></div>
                   <div style={{ fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.7, paddingLeft: "28px" }}><ReactMarkdown>{faq.answer}</ReactMarkdown></div>
@@ -228,7 +228,7 @@ export function CommitteePage() {
 
                 {/* Tags */}
                 <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "64px" }}>
-                  {committee?.tags.map((tag) => <span key={tag} className="tech-tag" style={{ opacity: isLight ? 1 : 0.9, padding: "6px 12px" }}>{tag}</span>)}
+                  {committee?.tags?.map((tag) => <span key={tag} className="tech-tag" style={{ opacity: isLight ? 1 : 0.9, padding: "6px 12px" }}>{tag}</span>)}
                 </div>
               </Skeleton>
             </div>

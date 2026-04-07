@@ -64,7 +64,7 @@ export function OfficersPage() {
     if (!orderArray || orderArray.length === 0) return categoryLeaders;
 
     // Map _id from orderArray
-    const orderedIds = orderArray.map((ref: any) => ref._id);
+    const orderedIds = orderArray?.map((ref: any) => ref._id) || [];
     
     // Sort categoryLeaders based on orderedIds
     const sorted = [...categoryLeaders].sort((a, b) => {
