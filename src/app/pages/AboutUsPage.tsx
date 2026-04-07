@@ -24,22 +24,22 @@ export function AboutUsPage() {
       eyebrow: "// Excellence",
       title: "At Purdue, we strive to be the best",
       content: "Whether creating drones, designing radio transmitters, or pioneering next-gen biotech, Purdue engineers excel. Purdue IEEE (Eye-Triple-E) is no different. Founded in 1903, we are the largest technical organization with students of every academic background. Our members work on real-world problems and advance their engineering skills.",
-      image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=1000",
+      image: "",
       layout: "normal"
     },
     {
       eyebrow: "// Technical Growth",
       title: "Applying academics to extracurriculars",
-      content: "Purdue IEEE continually strives to further our goals of technical and professional growth. We help our members enter their professional careers, learn engineering software and skills, and socialize with others to form lasting connections inside and outside of this organization.\n\nOur teams apply the knowledge and create real-world, practical solutions to complex engineering projects.",
-      image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=1000",
+      content: "Purdue IEEE continually strives to further our goals of technical and professional growth. We help our members enter their professional careers, learn engineering software and skills, and socialize with others to form lasting connections inside and outside of this organization.\\n\\nOur teams apply the knowledge and create real-world, practical solutions to complex engineering projects.",
+      image: "",
       colorTheme: "gold",
       layout: "reversed"
     },
     {
       eyebrow: "// Professional Success",
       title: "Connecting industry partners to talented engineers",
-      content: "Our alumni go on to utilize the skills they learn at some of the world's largest companies. We have alumni working in every sector of every industry, helping shape the future of technology.\n\nWe host regular professional networking events and company recruiting sessions - just for our members. We also host resume reviews, alumni panels, and professor talks.",
-      image: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&q=80&w=1000",
+      content: "Our alumni go on to utilize the skills they learn at some of the world's largest companies. We have alumni working in every sector of every industry, helping shape the future of technology.\\n\\nWe host regular professional networking events and company recruiting sessions - just for our members. We also host resume reviews, alumni panels, and professor talks.",
+      image: "",
       layout: "normal"
     }
   ];
@@ -91,10 +91,12 @@ export function AboutUsPage() {
           {sections.map((section: any, idx: number) => (
             <motion.div
               key={idx}
-              className="ieee-grid-2"
+              className={section.image ? "ieee-grid-2" : ""}
               style={{
                 marginBottom: idx === sections.length - 1 ? "0" : "120px",
-                alignItems: "center"
+                alignItems: "center",
+                maxWidth: section.image ? "none" : "800px",
+                margin: section.image ? "0 auto 120px" : "0 auto 120px"
               }}
               {...revealProps}
             >
@@ -111,16 +113,18 @@ export function AboutUsPage() {
                   {section.content}
                 </div>
               </div>
-              <div style={{ order: section.layout === "reversed" ? 1 : 2 }}>
-                <div style={{ position: "relative", borderRadius: "8px", overflow: "hidden", boxShadow: "0 20px 40px rgba(0,0,0,0.3)" }}>
-                  <img 
-                    src={section.image} 
-                    alt={section.title} 
-                    style={{ width: "100%", height: "auto", display: "block", filter: isLight ? "none" : "brightness(0.8) contrast(1.1)" }} 
-                  />
-                  <div style={{ position: "absolute", inset: 0, border: "1px solid var(--glass-border)", borderRadius: "8px" }} />
+              {section.image && (
+                <div style={{ order: section.layout === "reversed" ? 1 : 2 }}>
+                  <div style={{ position: "relative", borderRadius: "8px", overflow: "hidden", boxShadow: "0 20px 40px rgba(0,0,0,0.3)" }}>
+                    <img 
+                      src={section.image} 
+                      alt={section.title} 
+                      style={{ width: "100%", height: "auto", display: "block", filter: isLight ? "none" : "brightness(0.8) contrast(1.1)" }} 
+                    />
+                    <div style={{ position: "absolute", inset: 0, border: "1px solid var(--glass-border)", borderRadius: "8px" }} />
+                  </div>
                 </div>
-              </div>
+              )}
             </motion.div>
           ))}
         </div>
