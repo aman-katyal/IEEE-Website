@@ -1,3 +1,2 @@
-# Single Page Application routing
-/admin/*    /admin/index.html   200
-/*          /index.html         200
+# Single Page Application routing for Cloudflare Pages
+/*    /index.html   200

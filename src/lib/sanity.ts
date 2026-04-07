@@ -8,6 +8,12 @@ const studioUrl = 'https://purdue-ieee-website.sanity.studio'
 
 if (!projectId) {
   console.warn('[Sanity Client] VITE_SANITY_PROJECT_ID is missing. Sanity features will be disabled. Set this variable in your deployment environment.');
+  console.log('[Sanity Debug] Env:', { 
+    hasProjectId: !!projectId,
+    dataset: dataset,
+    isDev: import.meta.env.DEV,
+    mode: import.meta.env.MODE 
+  });
 }
 
 // Check if we should enable stega based on URL or environment

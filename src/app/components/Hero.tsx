@@ -5,6 +5,7 @@ import { motion } from "motion/react";
 import { committees as committeeData } from "../../data/committees";
 import { MagneticButton } from "./MagneticButton";
 import { useHomePage } from "../../hooks/useSanityData";
+import { client } from "../../lib/sanity";
 
 const FALLBACK_LAB_IMAGE =
   "https://images.unsplash.com/photo-1619834043185-acbe47811e6a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlbmdpbmVlcmluZyUyMHJlc2VhcmNoJTIwbGFiJTIwZGFyayUyMGhpZ2glMjB0ZWNofGVufDF8fHx8MTc3MzE4NjE2N3ww&ixlib=rb-4.1.0&q=80&w=1080";
@@ -24,9 +25,9 @@ export function Hero() {
   const isLight = theme === "light";
 
   const heroImage = data?.heroImage || FALLBACK_LAB_IMAGE;
-  const heroTitle = data?.heroTitle || "“Fostering technological innovation and excellence for the benefit of humanity.”";
+  const heroTitle = data?.heroTitle || "Fostering technological innovation and excellence for the benefit of humanity.";
   const heroSubtitle = data?.heroSubtitle || "— IEEE Mission Statement";
-  const sysUptime = data?.sysUptime || "ACTIVE";
+  const sysUptime = data?.sysUptime || (client ? "OFFLINE" : "LOCAL");
   const semester = data?.semester || "SP_2026";
 
   const itemVariants = {
