@@ -1,14 +1,19 @@
 import { createClient } from '@sanity/client'
 import imageUrlBuilder from '@sanity/image-url'
 
-const projectId = import.meta.env.VITE_SANITY_PROJECT_ID
-const dataset = import.meta.env.VITE_SANITY_DATASET || 'production'
+// Last-resort fallbacks for Cloudflare environment issues
+const FALLBACK_PROJECT_ID = 'vq0v7yv4'
+const FALLBACK_DATASET = 'production'
+
+const projectId = import.meta.env.VITE_SANITY_PROJECT_ID || FALLBACK_PROJECT_ID
+const dataset = import.meta.env.VITE_SANITY_DATASET || FALLBACK_DATASET
 
 console.log('[Sanity Debug Init]', { 
-  rawProjectId: projectId,
-  hasProjectId: !!projectId,
-  projectIdType: typeof projectId,
-  allEnvKeys: Object.keys(import.meta.env).filter(k => k.startsWith('VITE_'))
+  projectId,
+  isFallback: !import.meta.env.VITE_SANITY_PROJECT_ID,
+  dataset,
+  allViteKeys: Object.keys(import.meta.env).filter(k => k.startsWith('VITE_')),
+  mode: import.meta.env.MODE
 });
 
 const apiVersion = '2024-03-16'
