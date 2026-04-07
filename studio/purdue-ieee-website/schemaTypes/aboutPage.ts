@@ -17,6 +17,12 @@ export const aboutPage = defineType({
             { name: 'eyebrow', type: 'string', title: 'Eyebrow' },
             { name: 'title', type: 'string', title: 'Title' },
             { name: 'content', type: 'text', title: 'Content' },
+            {
+              name: 'image',
+              title: 'Section Image',
+              type: 'image',
+              options: { hotspot: true }
+            },
             { name: 'cardTitle', type: 'string', title: 'Card Title/Value' },
             { name: 'cardContent', type: 'text', title: 'Card Content/List' },
             { 

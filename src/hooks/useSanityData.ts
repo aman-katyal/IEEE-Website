@@ -152,7 +152,13 @@ export function useHomePage() {
 }
 
 export function useAboutPage() {
-  const query = groq`*[_type == "aboutPage"][0]`
+  const query = groq`*[_type == "aboutPage"][0]{
+    ...,
+    sections[]{
+      ...,
+      "image": image.asset->url
+    }
+  }`
   const { data, loading, error } = useDataFetching<any>(query);
   return { data, loading, error };
 }
