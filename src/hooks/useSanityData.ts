@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react'
 import { client, previewClient } from '../lib/sanity'
 import groq from 'groq'
 import type { Committee, CornerstoneCommittee } from '../data/committees/types'
+import { committees as staticCommittees, cornerstoneCommittees as staticCornerstone } from '../data/committees'
+import { leaders as staticLeaders } from '../data/leadership'
 
 const SECTION_PROJECTION = `
   sections[]{
@@ -46,8 +48,8 @@ export async function prefetchData(query: string, params?: any) {
   if (cache[cacheKey]) return cache[cacheKey];
 
   try {
-    const data = await client.fetch(query, params);
-    cache[cacheKey] = data;
+    const data = await client?.fetch(query, params);
+    if (data) cache[cacheKey] = data;
     return data;
   } catch (error) {
     console.error('Prefetch failed:', error);
@@ -55,8 +57,8 @@ export async function prefetchData(query: string, params?: any) {
   }
 }
 
-function useDataFetching<T>(query: string, params?: any) {
-  const [data, setData] = useState<T | null>(null)
+function useDataFetching<T>(query: string, params?: any, fallbackData?: T) {
+  const [data, setData] = useState<T | null>(fallbackData || null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
 
@@ -66,7 +68,8 @@ function useDataFetching<T>(query: string, params?: any) {
 
   const fetchData = useCallback(async (ignoreCache = false) => {
     if (!activeClient) {
-      console.warn('[useDataFetching] Sanity client not initialized. Query:', query);
+      console.warn('[useDataFetching] Sanity client not initialized. Falling back to local data. Query:', query);
+      if (fallbackData) setData(fallbackData);
       setLoading(false);
       return;
     }
@@ -80,13 +83,21 @@ function useDataFetching<T>(query: string, params?: any) {
     try {
       const result = await activeClient.fetch(query, params);
       if (!isPreview) cache[cacheKey] = result;
-      setData(result);
+      
+      // If Sanity returns null/empty array but we have fallback, use fallback
+      if ((result === null || (Array.isArray(result) && result.length === 0)) && fallbackData) {
+        setData(fallbackData);
+      } else {
+        setData(result);
+      }
       setLoading(false);
     } catch (err) {
+      console.warn('[useDataFetching] Fetch failed. Falling back to local data:', err);
+      if (fallbackData) setData(fallbackData);
       setError(err as Error);
       setLoading(false);
     }
-  }, [query, JSON.stringify(params), isPreview, activeClient, cacheKey]);
+  }, [query, JSON.stringify(params), isPreview, activeClient, cacheKey, fallbackData]);
 
   useEffect(() => {
     fetchData();
@@ -102,7 +113,7 @@ export function useCommittees() {
     "image": coalesce(image.asset->url, image),
     ${SECTION_PROJECTION}
   }`
-  const { data, loading, error } = useDataFetching<Committee[]>(query);
+  const { data, loading, error } = useDataFetching<Committee[]>(query, {}, staticCommittees);
   return { committees: data || [], loading, error };
 }
 
@@ -113,7 +124,9 @@ export function useCommittee(id: string) {
     "image": coalesce(image.asset->url, image),
     ${SECTION_PROJECTION}
   }`
-  const { data, loading, error } = useDataFetching<Committee>(query, { id });
+  
+  const fallback = staticCommittees.find(c => c.id.toLowerCase() === id.toLowerCase());
+  const { data, loading, error } = useDataFetching<Committee>(query, { id: id.toLowerCase() }, fallback);
   return { committee: data, loading, error };
 }
 
@@ -122,7 +135,7 @@ export function useCornerstoneCommittees() {
     ...,
     "id": id.current
   }`
-  const { data, loading, error } = useDataFetching<CornerstoneCommittee[]>(query);
+  const { data, loading, error } = useDataFetching<CornerstoneCommittee[]>(query, {}, staticCornerstone);
   return { committees: data || [], loading, error };
 }
 
@@ -131,7 +144,7 @@ export function useLeaders() {
     ...,
     "image": coalesce(image.asset->url, image)
   }`
-  const { data, loading, error } = useDataFetching<any[]>(query);
+  const { data, loading, error } = useDataFetching<any[]>(query, {}, staticLeaders);
   return { leaders: data || [], loading, error };
 }
 
