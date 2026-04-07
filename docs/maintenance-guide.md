@@ -17,9 +17,12 @@ If configuring from scratch in the Cloudflare Dashboard:
 - **Node.js Version:** `18+`
 
 ### 🔑 Environment Variables
-The following must be set in the Cloudflare dashboard (`Settings > Functions > Variables`):
+The following must be set in the Cloudflare dashboard under **Settings > Environment variables** (Variables and Secrets) for the **Production** and **Preview** environments. Ensure you add them to the **Build time** section if applicable.
+
 - `VITE_SANITY_PROJECT_ID`: `vq0v7yv4`
 - `VITE_SANITY_DATASET`: `production`
+- `VITE_GOOGLE_CALENDAR_API_KEY`: (Obtain from Google Cloud Console)
+- `VITE_SANITY_API_TOKEN`: (Only needed for previewing draft content)
 
 ---
 

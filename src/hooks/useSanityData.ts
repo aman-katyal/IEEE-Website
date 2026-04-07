@@ -65,6 +65,12 @@ function useDataFetching<T>(query: string, params?: any) {
   const cacheKey = getCacheKey(query, params);
 
   const fetchData = useCallback(async (ignoreCache = false) => {
+    if (!activeClient) {
+      console.warn('[useDataFetching] Sanity client not initialized. Query:', query);
+      setLoading(false);
+      return;
+    }
+
     if (!ignoreCache && !isPreview && cache[cacheKey]) {
       setData(cache[cacheKey]);
       setLoading(false);
