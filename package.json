@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
+    "prebuild": "echo \"--- Build Time Env Check ---\" && echo \"VITE_SANITY_PROJECT_ID presence:\" && (if [ -n \"$VITE_SANITY_PROJECT_ID\" ]; then echo \"Found\"; else echo \"MISSING\"; fi) && echo \"---------------------------\"",
     "build": "vite build",
     "dev": "vite",
     "test": "vitest",

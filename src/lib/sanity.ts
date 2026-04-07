@@ -3,6 +3,14 @@ import imageUrlBuilder from '@sanity/image-url'
 
 const projectId = import.meta.env.VITE_SANITY_PROJECT_ID
 const dataset = import.meta.env.VITE_SANITY_DATASET || 'production'
+
+console.log('[Sanity Debug Init]', { 
+  rawProjectId: projectId,
+  hasProjectId: !!projectId,
+  projectIdType: typeof projectId,
+  allEnvKeys: Object.keys(import.meta.env).filter(k => k.startsWith('VITE_'))
+});
+
 const apiVersion = '2024-03-16'
 const studioUrl = 'https://purdue-ieee-website.sanity.studio'
 
