@@ -5,5 +5,15 @@ import { officersConfig } from './officersConfig'
 import { siteSettings } from './siteSettings'
 import { homePage } from './homePage'
 import { aboutPage } from './aboutPage'
+import { partner } from './partner'
 
-export const schemaTypes = [committee, leader, cornerstone, officersConfig, siteSettings, homePage, aboutPage]
+export const schemaTypes = [
+  committee,
+  leader,
+  cornerstone,
+  officersConfig,
+  siteSettings,
+  homePage,
+  aboutPage,
+  partner,
+]
