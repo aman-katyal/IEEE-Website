@@ -194,6 +194,9 @@ export interface SiteSettings {
   paymentUrl?: string;
   calendarUrl?: string;
   calendarId?: string;
+  partnersHeroTitle?: string;
+  partnersHeroSubtitle?: string;
+  partnersProspectusUrl?: string;
   branchConstitution?: {
     name: string;
     description: string;
@@ -215,8 +218,26 @@ export function useSiteSettings() {
     committeeBylaws[]{
       ...,
       "pdfUrl": pdfFile.asset->url
-    }
+    },
+    "partnersProspectusUrl": partnersProspectusFile.asset->url
   }`;
   const { data, loading, error } = useDataFetching<SiteSettings>(query);
   return { settings: data, loading, error };
+}
+
+export interface Partner {
+  name: string;
+  domain?: string;
+  tier: 'Gold' | 'Silver' | 'Bronze';
+  logoUrl?: string;
+  order?: number;
+}
+
+export function usePartners() {
+  const query = groq`*[_type == "partner"] | order(order asc){
+    ...,
+    "logoUrl": logo.asset->url
+  }`;
+  const { data, loading, error } = useDataFetching<Partner[]>(query);
+  return { partners: data || [], loading, error };
 }
