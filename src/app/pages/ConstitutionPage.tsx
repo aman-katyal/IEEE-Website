@@ -1,27 +1,33 @@
 import { FileText, Shield, Download, ExternalLink } from "lucide-react";
 import { useEffect } from "react";
 import { useTheme } from "next-themes";
+import { useSiteSettings } from "../../hooks/useSanityData";
 
 export function ConstitutionPage() {
   const { theme } = useTheme();
   const isLight = theme === "light";
+  const { settings, loading } = useSiteSettings();
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  const coreDocs = [
-    { name: "Purdue IEEE Constitution", description: "The foundational governing document of the Purdue IEEE Student Branch.", link: "/documents/constitution/Constitution_of_IEEE.pdf" },
+  if (loading) {
+    return <div style={{ minHeight: "100vh", display: "flex", justifyContent: "center", alignItems: "center", background: "var(--boiler-black)", color: "var(--text-primary)" }}>Loading...</div>;
+  }
+
+  const coreDocs = settings?.branchConstitution ? [settings.branchConstitution] : [
+    { name: "Purdue IEEE Constitution", description: "The foundational governing document of the Purdue IEEE Student Branch.", pdfUrl: "/documents/constitution/Constitution_of_IEEE.pdf" },
   ];
 
-  const committeeBylaws = [
-    { name: "CSociety Bylaws", link: "/documents/constitution/csociety_bylaws.pdf" },
-    { name: "EMBS Bylaws", link: "/documents/constitution/embs_bylaws.pdf" },
-    { name: "MTT-S Bylaws", link: "/documents/constitution/mtt-s_bylaws.pdf" },
-    { name: "SMC Bylaws", link: "/documents/constitution/IEEE_ByLaws_SMC_at_Purdue.pdf" },
-    { name: "Racing Bylaws", link: "/documents/constitution/racing_bylaws.pdf" },
-    { name: "ROV Bylaws", link: "/documents/constitution/rov_bylaws.pdf" },
-    { name: "Software Saturdays Bylaws", link: "/documents/constitution/swsat_bylaws.pdf" },
+  const committeeBylaws = settings?.committeeBylaws || [
+    { name: "CSociety Bylaws", pdfUrl: "/documents/constitution/csociety_bylaws.pdf" },
+    { name: "EMBS Bylaws", pdfUrl: "/documents/constitution/embs_bylaws.pdf" },
+    { name: "MTT-S Bylaws", pdfUrl: "/documents/constitution/mtt-s_bylaws.pdf" },
+    { name: "SMC Bylaws", pdfUrl: "/documents/constitution/IEEE_ByLaws_SMC_at_Purdue.pdf" },
+    { name: "Racing Bylaws", pdfUrl: "/documents/constitution/racing_bylaws.pdf" },
+    { name: "ROV Bylaws", pdfUrl: "/documents/constitution/rov_bylaws.pdf" },
+    { name: "Software Saturdays Bylaws", pdfUrl: "/documents/constitution/swsat_bylaws.pdf" },
   ];
 
   return (
@@ -92,7 +98,7 @@ export function ConstitutionPage() {
                   <h4 style={{ fontFamily: "var(--font-headline)", fontSize: "20px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "8px" }}>{doc.name}</h4>
                   <p style={{ fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.5 }}>{doc.description}</p>
                 </div>
-                <a href={doc.link} className="btn-primary" style={{ display: "flex", alignItems: "center", gap: "8px", textDecoration: "none", flexShrink: 0 }}>
+                <a href={doc.pdfUrl} className="btn-primary" style={{ display: "flex", alignItems: "center", gap: "8px", textDecoration: "none", flexShrink: 0 }}>
                   <Download size={16} />
                   View PDF
                 </a>
@@ -110,7 +116,7 @@ export function ConstitutionPage() {
               {committeeBylaws.map((doc) => (
                 <a 
                   key={doc.name} 
-                  href={doc.link} 
+                  href={doc.pdfUrl} 
                   className="glass-card" 
                   style={{ 
                     padding: "20px 24px", 
