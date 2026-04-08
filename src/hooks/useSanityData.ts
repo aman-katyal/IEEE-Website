@@ -192,11 +192,31 @@ export interface SiteSettings {
     price: string;
   }[];
   paymentUrl?: string;
+  calendarUrl?: string;
+  calendarId?: string;
+  branchConstitution?: {
+    name: string;
+    description: string;
+    pdfUrl: string;
+  };
+  committeeBylaws?: {
+    name: string;
+    pdfUrl: string;
+  }[];
 }
 
 export function useSiteSettings() {
-  const query = groq`*[_type == "siteSettings"][0]`;
+  const query = groq`*[_type == "siteSettings"][0]{
+    ...,
+    branchConstitution{
+      ...,
+      "pdfUrl": pdfFile.asset->url
+    },
+    committeeBylaws[]{
+      ...,
+      "pdfUrl": pdfFile.asset->url
+    }
+  }`;
   const { data, loading, error } = useDataFetching<SiteSettings>(query);
   return { settings: data, loading, error };
 }
-
