@@ -1,21 +1,37 @@
 import { MessageCircle, CreditCard, Users, CheckCircle2, ExternalLink } from "lucide-react";
 import { useEffect } from "react";
 import { useTheme } from "next-themes";
+import { useSiteSettings } from "../../hooks/useSanityData";
 
 export function JoinPage() {
   const { theme } = useTheme();
   const isLight = theme === "light";
+  const { settings, loading } = useSiteSettings();
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  const duesBenefits = [
+  const defaultDuesBenefits = [
     "Access to industry networks and exclusive company info sessions",
     "Trip expense coverage for committee competitions and social events",
     "Free food at General Assemblies",
     "Recognition for contributed work with final projects",
   ];
+
+  const duesBenefits = settings?.duesBenefits || defaultDuesBenefits;
+  const discordUrl = settings?.discordUrl || "https://discord.gg/sPPQequ9ws";
+  const paymentUrl = settings?.paymentUrl || "https://www.toocoolpurdue.com/TooCOOLPurdueWL/vECItemCatalogOrganizationItems/OrganizationItemsGallery.aspx";
+  const duesDescription = settings?.duesDescription || "Purdue IEEE Student Branch requires payment of dues for membership. To pay, follow the link below and search for \"IEEE\" in the catalog search box. Payment gives access to:";
+  const defaultOptions = [
+    { name: "Standard Membership", subtitle: "Local dues only", price: "$10" },
+    { name: "Membership + Shirt", subtitle: "Support the branch & gear up", price: "$15" }
+  ];
+  const duesOptions = settings?.duesOptions || defaultOptions;
+
+  if (loading) {
+    return <div style={{ minHeight: "100vh", display: "flex", justifyContent: "center", alignItems: "center", background: "var(--boiler-black)", color: "var(--text-primary)" }}>Loading...</div>;
+  }
 
   return (
     <section
@@ -106,7 +122,7 @@ export function JoinPage() {
                   Join Purdue IEEE today and start connecting with fellow members on Discord. Stay engaged with all committee updates and event announcements.
                 </p>
                 <a
-                  href="https://discord.gg/sPPQequ9ws"
+                  href={discordUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn-primary"
@@ -141,7 +157,7 @@ export function JoinPage() {
             <div className="ieee-grid-2" style={{ gap: "32px" }}>
               <div>
                 <p style={{ fontFamily: "var(--font-body)", fontSize: "16px", color: "var(--text-secondary)", lineHeight: 1.7, marginBottom: "24px" }}>
-                  Purdue IEEE Student Branch requires payment of dues for membership. To pay, follow the link below and <strong>search for "IEEE"</strong> in the catalog search box. Payment gives access to:
+                  {duesDescription}
                 </p>
                 <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                   {duesBenefits.map((benefit) => (
@@ -158,24 +174,19 @@ export function JoinPage() {
                   2025-26 Options
                 </h4>
                 <div style={{ display: "flex", flexDirection: "column", gap: "24px", marginBottom: "32px" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--glass-border)", paddingBottom: "16px" }}>
-                    <div>
-                      <span style={{ display: "block", color: "var(--text-primary)", fontWeight: 600 }}>Standard Membership</span>
-                      <span style={{ fontSize: "12px", color: "var(--text-muted)", opacity: isLight ? 1 : 0.8 }}>Local dues only</span>
+                  {duesOptions.map((option, idx) => (
+                    <div key={idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--glass-border)", paddingBottom: "16px" }}>
+                      <div>
+                        <span style={{ display: "block", color: "var(--text-primary)", fontWeight: 600 }}>{option.name}</span>
+                        <span style={{ fontSize: "12px", color: "var(--text-muted)", opacity: isLight ? 1 : 0.8 }}>{option.subtitle}</span>
+                      </div>
+                      <span style={{ fontSize: "24px", fontWeight: 700, color: "var(--electric-blue)" }}>{option.price}</span>
                     </div>
-                    <span style={{ fontSize: "24px", fontWeight: 700, color: "var(--electric-blue)" }}>$10</span>
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--glass-border)", paddingBottom: "16px" }}>
-                    <div>
-                      <span style={{ display: "block", color: "var(--text-primary)", fontWeight: 600 }}>Membership + Shirt</span>
-                      <span style={{ fontSize: "12px", color: "var(--text-muted)", opacity: isLight ? 1 : 0.8 }}>Support the branch & gear up</span>
-                    </div>
-                    <span style={{ fontSize: "24px", fontWeight: 700, color: "var(--electric-blue)" }}>$15</span>
-                  </div>
+                  ))}
                 </div>
 
                 <a 
-                  href="https://www.toocoolpurdue.com/TooCOOLPurdueWL/vECItemCatalogOrganizationItems/OrganizationItemsGallery.aspx"
+                  href={paymentUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn-gold" 
