@@ -181,3 +181,22 @@ export function useAboutPage() {
   const { data, loading, error } = useDataFetching<any>(query);
   return { data, loading, error };
 }
+
+export interface SiteSettings {
+  discordUrl?: string;
+  duesDescription?: string;
+  duesBenefits?: string[];
+  duesOptions?: {
+    name: string;
+    subtitle: string;
+    price: string;
+  }[];
+  paymentUrl?: string;
+}
+
+export function useSiteSettings() {
+  const query = groq`*[_type == "siteSettings"][0]`;
+  const { data, loading, error } = useDataFetching<SiteSettings>(query);
+  return { settings: data, loading, error };
+}
+
