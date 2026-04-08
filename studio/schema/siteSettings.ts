@@ -42,5 +42,43 @@ export const siteSettings = defineType({
       title: 'TooCool Payment URL',
       type: 'url',
     }),
+    // Calendar Data
+    defineField({
+      name: 'calendarUrl',
+      title: 'Google Calendar Embed URL',
+      type: 'url',
+      description: 'The URL for the Google Calendar embed.',
+    }),
+    defineField({
+      name: 'calendarId',
+      title: 'Google Calendar ID',
+      type: 'string',
+      description: 'The direct Google Calendar ID (used in the subscribe link).',
+    }),
+    // Constitution Data
+    defineField({
+      name: 'branchConstitution',
+      title: 'Branch Constitution',
+      type: 'object',
+      fields: [
+        { name: 'name', title: 'Name', type: 'string' },
+        { name: 'description', title: 'Description', type: 'text' },
+        { name: 'pdfFile', title: 'PDF File', type: 'file' },
+      ],
+    }),
+    defineField({
+      name: 'committeeBylaws',
+      title: 'Committee Bylaws',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            { name: 'name', title: 'Name', type: 'string' },
+            { name: 'pdfFile', title: 'PDF File', type: 'file' },
+          ],
+        },
+      ],
+    }),
   ],
 })
