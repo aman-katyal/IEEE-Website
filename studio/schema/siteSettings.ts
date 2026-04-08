@@ -80,5 +80,21 @@ export const siteSettings = defineType({
         },
       ],
     }),
+    // Partners Page Content
+    defineField({
+      name: 'partnersHeroTitle',
+      title: 'Partners Hero Title',
+      type: 'string',
+    }),
+    defineField({
+      name: 'partnersHeroSubtitle',
+      title: 'Partners Hero Subtitle',
+      type: 'text',
+    }),
+    defineField({
+      name: 'partnersProspectusFile',
+      title: 'Partners Prospectus PDF',
+      type: 'file',
+    }),
   ],
 })

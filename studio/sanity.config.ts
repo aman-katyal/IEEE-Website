@@ -57,6 +57,7 @@ export default defineConfig({
             S.documentTypeListItem("committee").title("Committees"),
             S.documentTypeListItem("cornerstone").title("Cornerstone Committees"),
             S.documentTypeListItem("leader").title("Leaders"),
+            S.documentTypeListItem("partner").title("Partners"),
           ]),
     }),
     presentationTool({
