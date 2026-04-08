@@ -1,18 +1,25 @@
 import { ChevronLeft, Calendar as CalendarIcon, ExternalLink, Info } from "lucide-react";
 import { Link } from "react-router";
 import { useTheme } from "next-themes";
+import { useSiteSettings } from "../../hooks/useSanityData";
 
 export function CalendarPage() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
+  const { settings, loading } = useSiteSettings();
   
   // Official IEEE Blue for the calendar accents
   const calendarColor = "00629B";
-  const calendarBaseUrl = `https://calendar.google.com/calendar/embed?src=7e80819a448e91ef81721772e0c6d9236076b45ad51343474265c1b7d4a363f1%40group.calendar.google.com&ctz=America%2FIndiana%2FIndianapolis&color=%23${calendarColor}`;
+  const calendarId = settings?.calendarId || "7e80819a448e91ef81721772e0c6d9236076b45ad51343474265c1b7d4a363f1%40group.calendar.google.com";
+  const calendarBaseUrl = settings?.calendarUrl || `https://calendar.google.com/calendar/embed?src=${calendarId}&ctz=America%2FIndiana%2FIndianapolis&color=%23${calendarColor}`;
+  const subscribeUrl = `https://calendar.google.com/calendar/u/0/r?cid=${calendarId}`;
 
   // CSS Filter to make Google Calendar look dark
-  // We invert it, then rotate hue to keep the blues blue, then adjust contrast/brightness
   const darkCalendarFilter = "invert(90%) hue-rotate(180deg) brightness(1.1) contrast(90%)";
+
+  if (loading) {
+    return <div style={{ minHeight: "100vh", display: "flex", justifyContent: "center", alignItems: "center", background: "var(--boiler-black)", color: "var(--text-primary)" }}>Loading...</div>;
+  }
 
   return (
     <section
@@ -116,7 +123,7 @@ export function CalendarPage() {
             </p>
 
             <a
-              href="https://calendar.google.com/calendar/u/0/r?cid=7e80819a448e91ef81721772e0c6d9236076b45ad51343474265c1b7d4a363f1@group.calendar.google.com"
+              href={subscribeUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="btn-primary"
