@@ -242,14 +242,6 @@
 }
 
 .light .glass-card:hover {
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-}
-
-.light .glass-card {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-}
-
-.light .glass-card:hover {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
 }
 
@@ -310,10 +302,6 @@
 
 .light .electric-glow-orb {
   display: none;
-}
-
-.light .glass-card:hover {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
 }
 
 /* ─── Stat Number ──────────────────────────────────── */
@@ -422,8 +410,8 @@
 @media (max-width: 640px) {
   .ieee-grid-2 { grid-template-columns: 1fr; gap: 32px; }
   .ieee-grid-3 { grid-template-columns: 1fr; }
-  .ieee-grid-4 { grid-template-columns: 1fr 1fr; }
-  .ieee-grid-4-gap { grid-template-columns: 1fr 1fr; }
+  .ieee-grid-4 { grid-template-columns: 1fr; }
+  .ieee-grid-4-gap { grid-template-columns: 1fr; }
   .ieee-grid-sidebar { grid-template-columns: 1fr; }
   .ieee-grid-footer { grid-template-columns: 1fr 1fr; gap: 24px; }
   .ieee-grid-join { grid-template-columns: 1fr; gap: 40px; }
