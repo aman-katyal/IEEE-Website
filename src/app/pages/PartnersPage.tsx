@@ -2,8 +2,9 @@ import { useEffect } from "react";
 import { motion } from "motion/react";
 import { useTheme } from "next-themes";
 import { ExternalLink, Mail, Award, Rocket, Shield, Cpu } from "lucide-react";
+import { usePartners, useSiteSettings } from "../../hooks/useSanityData";
 
-const partners = [
+const staticPartners = [
   { name: "Texas Instruments", domain: "ti.com", tier: "Gold" },
   { name: "Qualcomm", domain: "qualcomm.com", tier: "Gold" },
   { name: "SpaceX", domain: "spacex.com", tier: "Gold" },
@@ -24,10 +25,40 @@ const partners = [
 export function PartnersPage() {
   const { theme } = useTheme();
   const isLight = theme === "light";
+  const { settings, loading: settingsLoading } = useSiteSettings();
+  const { partners: sanityPartners, loading: partnersLoading } = usePartners();
+
+  const loading = settingsLoading || partnersLoading;
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  if (loading) {
+    return (
+      <div style={{ 
+        minHeight: "100vh", 
+        display: "flex", 
+        justifyContent: "center", 
+        alignItems: "center", 
+        background: "var(--boiler-black)", 
+        color: "var(--text-primary)" 
+      }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "16px" }}>
+          <div className="animate-spin" style={{ width: "40px", height: "40px", border: "3px solid var(--electric-blue)", borderTopColor: "transparent", borderRadius: "50%" }} />
+          <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.9rem", color: "var(--text-secondary)" }}>Loading Partners...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Use dynamic content from settings or fall back to current hardcoded values
+  const heroTitle = settings?.partnersHeroTitle || "Empowering the next generation of innovators";
+  const heroSubtitle = settings?.partnersHeroSubtitle || "Our partners provide the resources, mentorship, and opportunities that allow our members to push the boundaries of what's possible in engineering.";
+  const prospectusUrl = settings?.partnersProspectusUrl || "/documents/constitution/Constitution_of_IEEE.pdf";
+
+  // If Sanity returns partners, use them; otherwise, use the static list.
+  const partners = sanityPartners.length > 0 ? sanityPartners : staticPartners;
 
   const revealProps = {
     initial: { opacity: 0, y: 20 },
@@ -46,10 +77,15 @@ export function PartnersPage() {
           <motion.div {...revealProps}>
             <p className="section-eyebrow" style={{ marginBottom: "16px" }}>// Corporate Relations</p>
             <h1 className="text-heading-1" style={{ marginBottom: "24px", maxWidth: "800px" }}>
-              Empowering the next generation of <span style={{ color: "var(--electric-blue)" }}>innovators</span>
+              {heroTitle.split("innovators").map((part, i, arr) => (
+                <span key={i}>
+                  {part}
+                  {i < arr.length - 1 && <span style={{ color: "var(--electric-blue)" }}>innovators</span>}
+                </span>
+              ))}
             </h1>
             <p style={{ color: "var(--text-secondary)", fontSize: "1.1rem", maxWidth: "700px", lineHeight: 1.6, marginBottom: "40px" }}>
-              Our partners provide the resources, mentorship, and opportunities that allow our members to push the boundaries of what's possible in engineering.
+              {heroSubtitle}
             </p>
             
             <div style={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
@@ -57,7 +93,7 @@ export function PartnersPage() {
                 <Mail size={18} />
                 Become a Partner
               </a>
-              <a href="/documents/constitution/Constitution_of_IEEE.pdf" target="_blank" className="btn-ghost" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "8px" }}>
+              <a href={prospectusUrl} target="_blank" className="btn-ghost" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "8px" }}>
                 Download Prospectus
                 <ExternalLink size={16} />
               </a>
@@ -80,7 +116,7 @@ export function PartnersPage() {
             
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "24px" }}>
               {partners.filter(p => p.tier === "Gold").map(p => (
-                <PartnerCard key={p.domain} partner={p} isLight={isLight} />
+                <PartnerCard key={p.domain || p.name} partner={p} isLight={isLight} />
               ))}
             </div>
           </div>
@@ -95,7 +131,7 @@ export function PartnersPage() {
             
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "20px" }}>
               {partners.filter(p => p.tier === "Silver").map(p => (
-                <PartnerCard key={p.domain} partner={p} isLight={isLight} />
+                <PartnerCard key={p.domain || p.name} partner={p} isLight={isLight} />
               ))}
             </div>
           </div>
@@ -110,7 +146,7 @@ export function PartnersPage() {
             
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "16px" }}>
               {partners.filter(p => p.tier === "Bronze").map(p => (
-                <PartnerCard key={p.domain} partner={p} isLight={isLight} />
+                <PartnerCard key={p.domain || p.name} partner={p} isLight={isLight} />
               ))}
             </div>
           </div>
@@ -136,6 +172,9 @@ export function PartnersPage() {
 }
 
 function PartnerCard({ partner, isLight }: { partner: any, isLight: boolean }) {
+  // Use Sanity logo if available, else Clearbit
+  const logoSrc = partner.logoUrl || (partner.domain ? `https://logo.clearbit.com/${partner.domain}` : null);
+
   return (
     <motion.div 
       className="glass-card" 
@@ -152,17 +191,31 @@ function PartnerCard({ partner, isLight }: { partner: any, isLight: boolean }) {
         minHeight: partner.tier === "Gold" ? "180px" : "140px"
       }}
     >
-      <img 
-        src={`https://logo.clearbit.com/${partner.domain}`} 
-        alt={partner.name}
-        loading="lazy"
-        style={{ 
-          maxHeight: partner.tier === "Gold" ? "60px" : "40px", 
-          maxWidth: "80%", 
-          filter: isLight ? "none" : "brightness(0) invert(1) opacity(0.9)",
-          objectFit: "contain"
-        }} 
-      />
+      {logoSrc ? (
+        <img 
+          src={logoSrc} 
+          alt={partner.name}
+          loading="lazy"
+          style={{ 
+            maxHeight: partner.tier === "Gold" ? "60px" : "40px", 
+            maxWidth: "80%", 
+            filter: isLight || partner.logoUrl ? "none" : "brightness(0) invert(1) opacity(0.9)",
+            objectFit: "contain"
+          }} 
+        />
+      ) : (
+        <div style={{ 
+          width: "100%", 
+          height: partner.tier === "Gold" ? "60px" : "40px", 
+          display: "flex", 
+          alignItems: "center", 
+          justifyContent: "center",
+          fontWeight: "bold",
+          color: "var(--text-secondary)"
+        }}>
+          {partner.name}
+        </div>
+      )}
       <span style={{ 
         fontFamily: "var(--font-mono)", 
         fontSize: "0.7rem", 
