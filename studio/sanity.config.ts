@@ -3,6 +3,10 @@ import { deskTool } from 'sanity/desk'
 import { presentationTool } from 'sanity/presentation'
 import { schemaTypes } from './schema'
 
+// Define the singleton document types
+const singletonActions = new Set(["publish", "discardChanges", "restore"])
+const singletonTypes = new Set(["officersConfig", "siteSettings"])
+
 export default defineConfig({
   name: 'default',
   title: 'Purdue IEEE CMS',
@@ -11,7 +15,34 @@ export default defineConfig({
   dataset: 'production',
 
   plugins: [
-    deskTool(),
+    deskTool({
+      structure: (S) =>
+        S.list()
+          .title("Content")
+          .items([
+            // Our singleton type has a list item with a custom child
+            S.listItem()
+              .title("Site Settings")
+              .id("siteSettings")
+              .child(
+                S.document()
+                  .schemaType("siteSettings")
+                  .documentId("siteSettings")
+              ),
+            S.listItem()
+              .title("Officers Config")
+              .id("officersConfig")
+              .child(
+                S.document()
+                  .schemaType("officersConfig")
+                  .documentId("officersConfig")
+              ),
+            // Regular document types
+            S.documentTypeListItem("committee").title("Committees"),
+            S.documentTypeListItem("cornerstone").title("Cornerstone Committees"),
+            S.documentTypeListItem("leader").title("Leaders"),
+          ]),
+    }),
     presentationTool({
       previewUrl: {
         origin: (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
@@ -26,5 +57,17 @@ export default defineConfig({
 
   schema: {
     types: schemaTypes,
+    // Filter out singleton types from the global "New document" menu options
+    templates: (templates) =>
+      templates.filter(({ schemaType }) => !singletonTypes.has(schemaType)),
+  },
+
+  document: {
+    // For singleton types, filter out actions that are not explicitly included
+    // in the `singletonActions` list defined above
+    actions: (input, context) =>
+      singletonTypes.has(context.schemaType)
+        ? input.filter(({ action }) => action && singletonActions.has(action))
+        : input,
   },
 })
