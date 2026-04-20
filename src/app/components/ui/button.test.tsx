@@ -1,4 +1,5 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi } from "vitest";
 import { Button } from "./button";
 
@@ -8,10 +9,11 @@ describe("Button", () => {
     expect(screen.getByRole("button", { name: /click me/i })).toBeInTheDocument();
   });
 
-  it("handles click events", () => {
+  it("handles click events", async () => {
+    const user = userEvent.setup();
     const handleClick = vi.fn();
     render(<Button onClick={handleClick}>Click me</Button>);
-    fireEvent.click(screen.getByRole("button", { name: /click me/i }));
+    await user.click(screen.getByRole("button", { name: /click me/i }));
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
