@@ -1,11 +1,26 @@
 const { createClient } = require('@sanity/client');
 
+// --- CONFIGURATION ---
+const SANITY_PROJECT_ID = process.env.VITE_SANITY_PROJECT_ID;
+const SANITY_TOKEN = process.env.VITE_SANITY_API_TOKEN;
+const DATASET = process.env.VITE_SANITY_DATASET || 'production';
+
+if (!SANITY_PROJECT_ID) {
+  console.error('Error: VITE_SANITY_PROJECT_ID is missing in environment variables.');
+  process.exit(1);
+}
+
+if (!SANITY_TOKEN) {
+  console.error('Error: VITE_SANITY_API_TOKEN is missing in environment variables.');
+  process.exit(1);
+}
+
 const client = createClient({
-  projectId: 'vq0v7yv4',
-  dataset: 'production',
+  projectId: SANITY_PROJECT_ID,
+  dataset: DATASET,
   useCdn: false,
   apiVersion: '2024-03-16',
-  token: 'SK_REMOVED_FOR_SECURITY' // You will need to provide a token with write access
+  token: SANITY_TOKEN
 });
 
 const homePage = {

@@ -5,7 +5,7 @@ const path = require('path');
 // --- CONFIGURATION ---
 const SANITY_PROJECT_ID = process.env.VITE_SANITY_PROJECT_ID;
 const SANITY_TOKEN = process.env.VITE_SANITY_API_TOKEN;
-const DATASET = 'production';
+const DATASET = process.env.VITE_SANITY_DATASET || 'production';
 
 if (!SANITY_PROJECT_ID) {
   console.error('Error: VITE_SANITY_PROJECT_ID is missing in environment variables.');
