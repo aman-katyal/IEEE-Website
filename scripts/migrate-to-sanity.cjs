@@ -3,9 +3,19 @@ const fs = require('fs');
 const path = require('path');
 
 // --- CONFIGURATION ---
-const SANITY_PROJECT_ID = process.env.VITE_SANITY_PROJECT_ID || 'vq0v7yv4';
-const SANITY_TOKEN = process.env.VITE_SANITY_API_TOKEN || 'sk8wOO1dQJyLuz5JVMg3EmV06Rb3FzVO4PzvrCpnFMggVYg2hLkAvvSrAhj45eXzjolC265tX4kNBovQXikBztv5ewb4j9RXZjr747gX1tCZE3lnaxvrCrO3Mn0QToR9fb3qbCJHXwZsYZtJfJX84uHqqlbDuxfyVcr0ABE8wu4Wbo9kGDog';
+const SANITY_PROJECT_ID = process.env.VITE_SANITY_PROJECT_ID;
+const SANITY_TOKEN = process.env.VITE_SANITY_API_TOKEN;
 const DATASET = 'production';
+
+if (!SANITY_PROJECT_ID) {
+  console.error('Error: VITE_SANITY_PROJECT_ID is missing in environment variables.');
+  process.exit(1);
+}
+
+if (!SANITY_TOKEN) {
+  console.error('Error: VITE_SANITY_API_TOKEN is missing in environment variables.');
+  process.exit(1);
+}
 
 const client = createClient({
   projectId: SANITY_PROJECT_ID,
