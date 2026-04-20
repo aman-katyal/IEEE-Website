@@ -2,8 +2,6 @@ import { useState, useEffect, useCallback } from 'react'
 import { client, previewClient } from '../lib/sanity'
 import groq from 'groq'
 import type { Committee, CornerstoneCommittee } from '../data/committees/types'
-import { committees as staticCommittees, cornerstoneCommittees as staticCornerstone } from '../data/committees'
-import { leaders as staticLeaders } from '../data/leadership'
 
 const SECTION_PROJECTION = `
   sections[]{
@@ -57,8 +55,8 @@ export async function prefetchData(query: string, params?: any) {
   }
 }
 
-function useDataFetching<T>(query: string, params?: any, fallbackData?: T) {
-  const [data, setData] = useState<T | null>(fallbackData || null)
+function useDataFetching<T>(query: string, params?: any) {
+  const [data, setData] = useState<T | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
 
@@ -68,8 +66,7 @@ function useDataFetching<T>(query: string, params?: any, fallbackData?: T) {
 
   const fetchData = useCallback(async (ignoreCache = false) => {
     if (!activeClient) {
-      console.warn('[useDataFetching] Sanity client not initialized. Falling back to local data. Query:', query);
-      if (fallbackData) setData(fallbackData);
+      console.warn('[useDataFetching] Sanity client not initialized. Query:', query);
       setLoading(false);
       return;
     }
@@ -83,21 +80,14 @@ function useDataFetching<T>(query: string, params?: any, fallbackData?: T) {
     try {
       const result = await activeClient.fetch(query, params);
       if (!isPreview) cache[cacheKey] = result;
-      
-      // If Sanity returns null/empty array but we have fallback, use fallback
-      if ((result === null || (Array.isArray(result) && result.length === 0)) && fallbackData) {
-        setData(fallbackData);
-      } else {
-        setData(result);
-      }
+      setData(result);
       setLoading(false);
     } catch (err) {
-      console.warn('[useDataFetching] Fetch failed. Falling back to local data:', err);
-      if (fallbackData) setData(fallbackData);
+      console.warn('[useDataFetching] Fetch failed:', err);
       setError(err as Error);
       setLoading(false);
     }
-  }, [query, JSON.stringify(params), isPreview, activeClient, cacheKey, fallbackData]);
+  }, [query, JSON.stringify(params), isPreview, activeClient, cacheKey]);
 
   useEffect(() => {
     fetchData();
@@ -113,7 +103,7 @@ export function useCommittees() {
     "image": coalesce(image.asset->url, image),
     ${SECTION_PROJECTION}
   }`
-  const { data, loading, error } = useDataFetching<Committee[]>(query, {}, staticCommittees);
+  const { data, loading, error } = useDataFetching<Committee[]>(query, {});
   return { committees: data || [], loading, error };
 }
 
@@ -125,8 +115,7 @@ export function useCommittee(id: string) {
     ${SECTION_PROJECTION}
   }`
   
-  const fallback = staticCommittees.find(c => c.id.toLowerCase() === id.toLowerCase());
-  const { data, loading, error } = useDataFetching<Committee>(query, { id: id.toLowerCase() }, fallback);
+  const { data, loading, error } = useDataFetching<Committee>(query, { id: id.toLowerCase() });
   return { committee: data, loading, error };
 }
 
@@ -135,7 +124,7 @@ export function useCornerstoneCommittees() {
     ...,
     "id": id.current
   }`
-  const { data, loading, error } = useDataFetching<CornerstoneCommittee[]>(query, {}, staticCornerstone);
+  const { data, loading, error } = useDataFetching<CornerstoneCommittee[]>(query, {});
   return { committees: data || [], loading, error };
 }
 
@@ -144,7 +133,7 @@ export function useLeaders() {
     ...,
     "image": coalesce(image.asset->url, image)
   }`
-  const { data, loading, error } = useDataFetching<any[]>(query, {}, staticLeaders);
+  const { data, loading, error } = useDataFetching<any[]>(query, {});
   return { leaders: data || [], loading, error };
 }
 
@@ -197,6 +186,11 @@ export interface SiteSettings {
   partnersHeroTitle?: string;
   partnersHeroSubtitle?: string;
   partnersProspectusUrl?: string;
+  socialLinks?: {
+    platform: string;
+    url: string;
+  }[];
+  ctaBenefits?: string[];
   branchConstitution?: {
     name: string;
     description: string;

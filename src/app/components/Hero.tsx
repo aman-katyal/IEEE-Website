@@ -2,9 +2,8 @@ import { ChevronDown, Zap } from "lucide-react";
 import { Link, useNavigate } from "react-router";
 import { useTheme } from "next-themes";
 import { motion } from "motion/react";
-import { committees as committeeData } from "../../data/committees";
 import { MagneticButton } from "./MagneticButton";
-import { useHomePage } from "../../hooks/useSanityData";
+import { useHomePage, useCommittees } from "../../hooks/useSanityData";
 import { client } from "../../lib/sanity";
 import { Skeleton } from "boneyard-js/react";
 
@@ -16,7 +15,10 @@ const MotionLink = motion.create(Link);
 export function Hero() {
   const navigate = useNavigate();
   const { theme } = useTheme();
-  const { data, loading } = useHomePage();
+  const { data, loading: homeLoading } = useHomePage();
+  const { committees: committeeData, loading: committeesLoading } = useCommittees();
+
+  const loading = homeLoading || committeesLoading;
 
   const handleScroll = () => {
     const el = document.querySelector("#about");

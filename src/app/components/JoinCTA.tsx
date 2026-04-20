@@ -1,19 +1,24 @@
 import { ExternalLink, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router";
-import { committees } from "../../data/committees";
 import { MagneticButton } from "./MagneticButton";
-
-const benefits = [
-  `Access to ${committees.length} technical committees`,
-  "Industry networking & recruitment events",
-  "Hands-on workshops & training",
-  "National competition opportunities",
-  "Research lab access & mentorship",
-  "IEEE Student Membership discount",
-];
+import { useSiteSettings, useCommittees } from "../../hooks/useSanityData";
 
 export function JoinCTA() {
   const navigate = useNavigate();
+  const { settings } = useSiteSettings();
+  const { committees } = useCommittees();
+
+  const fallbackBenefits = [
+    `Access to ${committees.length} technical committees`,
+    "Industry networking & recruitment events",
+    "Hands-on workshops & training",
+    "National competition opportunities",
+    "Research lab access & mentorship",
+    "IEEE Student Membership discount",
+  ];
+
+  const benefits = settings?.ctaBenefits || fallbackBenefits;
+  const discordUrl = settings?.discordUrl || "https://discord.gg/sPPQequ9ws";
   
   return (
     <section
@@ -253,7 +258,7 @@ export function JoinCTA() {
             </div>
 
             <a
-              href="https://discord.gg/sPPQequ9ws"
+              href={discordUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="btn-primary"
