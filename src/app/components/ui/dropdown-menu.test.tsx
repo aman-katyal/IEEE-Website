@@ -10,19 +10,6 @@ import {
   DropdownMenuTrigger,
 } from "./dropdown-menu";
 
-// Mock PointerEvent if needed
-if (typeof window.PointerEvent === 'undefined') {
-  class PointerEvent extends MouseEvent {
-    constructor(type: string, props: PointerEventInit = {}) {
-      super(type, props);
-    }
-  }
-  Object.defineProperty(window, 'PointerEvent', {
-    value: PointerEvent,
-    configurable: true,
-  });
-}
-
 describe("DropdownMenu", () => {
   it("renders correctly with trigger", () => {
     render(
@@ -121,5 +108,3 @@ describe("DropdownMenu", () => {
     });
   });
 });
-
-import { vi } from "vitest";

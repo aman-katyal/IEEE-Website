@@ -55,3 +55,14 @@ Object.defineProperty(window, 'scrollTo', {
   writable: true,
   value: vi.fn(),
 });
+
+// Mock PointerEvent for Radix UI
+if (!global.PointerEvent) {
+  class PointerEvent extends MouseEvent {
+    constructor(type: string, params: PointerEventInit = {}) {
+      super(type, params);
+    }
+  }
+  // @ts-ignore - ignore PointerEvent typing in global
+  global.PointerEvent = PointerEvent;
+}

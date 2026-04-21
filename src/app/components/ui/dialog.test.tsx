@@ -10,20 +10,6 @@ import {
   DialogTrigger,
 } from "./dialog";
 
-// Radix Dialog components can be tricky because of portals and animations.
-// We might need to mock PointerEvent if it causes issues.
-if (typeof window.PointerEvent === 'undefined') {
-  class PointerEvent extends MouseEvent {
-    constructor(type: string, props: PointerEventInit = {}) {
-      super(type, props);
-    }
-  }
-  Object.defineProperty(window, 'PointerEvent', {
-    value: PointerEvent,
-    configurable: true,
-  });
-}
-
 describe("Dialog", () => {
   it("renders correctly with trigger", () => {
     render(
