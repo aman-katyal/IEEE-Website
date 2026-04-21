@@ -4,29 +4,11 @@ import { useTheme } from "next-themes";
 import { ExternalLink, Mail, Award, Rocket, Shield, Cpu } from "lucide-react";
 import { usePartners, useSiteSettings } from "../../hooks/useSanityData";
 
-const staticPartners = [
-  { name: "Texas Instruments", domain: "ti.com", tier: "Gold" },
-  { name: "Qualcomm", domain: "qualcomm.com", tier: "Gold" },
-  { name: "SpaceX", domain: "spacex.com", tier: "Gold" },
-  { name: "Intel", domain: "intel.com", tier: "Gold" },
-  { name: "NVIDIA", domain: "nvidia.com", tier: "Gold" },
-  { name: "Lockheed Martin", domain: "lockheedmartin.com", tier: "Silver" },
-  { name: "Raytheon Technologies", domain: "rtx.com", tier: "Silver" },
-  { name: "Northrop Grumman", domain: "northropgrumman.com", tier: "Silver" },
-  { name: "Boeing", domain: "boeing.com", tier: "Silver" },
-  { name: "L3Harris", domain: "l3harris.com", tier: "Silver" },
-  { name: "AMD", domain: "amd.com", tier: "Bronze" },
-  { name: "Apple", domain: "apple.com", tier: "Bronze" },
-  { name: "Cisco", domain: "cisco.com", tier: "Bronze" },
-  { name: "Honeywell", domain: "honeywell.com", tier: "Bronze" },
-  { name: "Caterpillar", domain: "caterpillar.com", tier: "Bronze" },
-];
-
 export function PartnersPage() {
   const { theme } = useTheme();
   const isLight = theme === "light";
   const { settings, loading: settingsLoading } = useSiteSettings();
-  const { partners: sanityPartners, loading: partnersLoading } = usePartners();
+  const { partners, loading: partnersLoading } = usePartners();
 
   const loading = settingsLoading || partnersLoading;
 
@@ -56,9 +38,6 @@ export function PartnersPage() {
   const heroTitle = settings?.partnersHeroTitle || "Empowering the next generation of innovators";
   const heroSubtitle = settings?.partnersHeroSubtitle || "Our partners provide the resources, mentorship, and opportunities that allow our members to push the boundaries of what's possible in engineering.";
   const prospectusUrl = settings?.partnersProspectusUrl || "/documents/constitution/Constitution_of_IEEE.pdf";
-
-  // If Sanity returns partners, use them; otherwise, use the static list.
-  const partners = sanityPartners.length > 0 ? sanityPartners : staticPartners;
 
   const revealProps = {
     initial: { opacity: 0, y: 20 },
@@ -172,8 +151,8 @@ export function PartnersPage() {
 }
 
 function PartnerCard({ partner, isLight }: { partner: any, isLight: boolean }) {
-  // Use Sanity logo if available, else Clearbit
-  const logoSrc = partner.logoUrl || (partner.domain ? `https://logo.clearbit.com/${partner.domain}` : null);
+  // Use Sanity logo if available, else Hunter.io (Clearbit is sunsetting)
+  const logoSrc = partner.logoUrl || (partner.domain ? `https://hunter.io/api/logo?domain=${partner.domain}` : null);
 
   return (
     <motion.div 

@@ -17,20 +17,6 @@ vi.mock('../../hooks/useGoogleCalendarEvents', () => ({
   useGoogleCalendarEvents: vi.fn(),
 }));
 
-// Mock Framer Motion to avoid animation issues in tests
-vi.mock('motion/react', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    h1: ({ children, ...props }: any) => <h1 {...props}>{children}</h1>,
-    p: ({ children, ...props }: any) => <p {...props}>{children}</p>,
-    button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
-    create: (Component: any) => Component,
-  },
-  useMotionValue: vi.fn(() => ({ set: vi.fn(), get: vi.fn() })),
-  useSpring: vi.fn((val) => val),
-  AnimatePresence: ({ children }: any) => children,
-}));
-
 describe('HomePage', () => {
   const mockHomeData = {
     heroTitle: 'Fostering innovation and excellence',

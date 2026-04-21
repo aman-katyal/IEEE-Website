@@ -7,7 +7,13 @@ import { homePage } from './homePage'
 import { aboutPage } from './aboutPage'
 import { partner } from './partner'
 
+// Shared Objects
+import { socialLink, metric, imageStyle } from './objects/common'
+import { textSection, projectsSection, faqSection, gallerySection } from './objects/sections'
+import { aboutPageSection } from './objects/aboutPageSection'
+
 export const schemaTypes = [
+  // Documents
   committee,
   leader,
   cornerstone,
@@ -16,4 +22,14 @@ export const schemaTypes = [
   homePage,
   aboutPage,
   partner,
+
+  // Objects
+  socialLink,
+  metric,
+  imageStyle,
+  textSection,
+  projectsSection,
+  faqSection,
+  gallerySection,
+  aboutPageSection,
 ]

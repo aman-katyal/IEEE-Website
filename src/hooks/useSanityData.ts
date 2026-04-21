@@ -25,6 +25,13 @@ const SECTION_PROJECTION = `
 // Simple in-memory cache
 const cache: Record<string, any> = {};
 
+/**
+ * Clears the in-memory data cache.
+ */
+export function clearCache() {
+  Object.keys(cache).forEach(key => delete cache[key]);
+}
+
 // Helper to generate a cache key from query and params
 const getCacheKey = (query: string, params?: any) => {
   return `${query}-${JSON.stringify(params || {})}`;
@@ -129,7 +136,7 @@ export function useCornerstoneCommittees() {
 }
 
 export function useLeaders() {
-  const query = groq`*[_type == "leader"] | order(order asc){
+  const query = groq`*[_type == "leader"]{
     ...,
     "image": coalesce(image.asset->url, image)
   }`

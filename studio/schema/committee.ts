@@ -1,101 +1,120 @@
 import { defineField, defineType } from 'sanity'
+import { Users, Info, Image as ImageIcon, Contact, ShieldCheck, Share2, BarChart3 } from 'lucide-react'
 
 export const committee = defineType({
   name: 'committee',
   title: 'Committee',
   type: 'document',
+  icon: Users,
+  groups: [
+    { name: 'info', title: 'General Info', icon: Info, default: true },
+    { name: 'media', title: 'Media', icon: ImageIcon },
+    { name: 'status', title: 'Status & Badges', icon: ShieldCheck },
+    { name: 'content', title: 'Page Content', icon: BarChart3 },
+    { name: 'contact', title: 'Contact & Social', icon: Contact },
+    { name: 'social', title: 'Social Links', icon: Share2 },
+  ],
   fields: [
+    // --- INFO GROUP ---
     defineField({
       name: 'id',
       title: 'ID (URL Slug)',
       type: 'slug',
+      group: 'info',
       options: {
         source: 'name',
         maxLength: 96,
       },
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'name',
       title: 'Full Name',
       type: 'string',
+      group: 'info',
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'shortName',
       title: 'Short Name',
       type: 'string',
+      group: 'info',
     }),
     defineField({
       name: 'tagline',
       title: 'Tagline',
       type: 'string',
+      group: 'info',
     }),
     defineField({
       name: 'description',
       title: 'Short Description',
       type: 'text',
+      group: 'info',
+      rows: 3,
     }),
     defineField({
       name: 'longDescription',
       title: 'Long Description',
       type: 'text',
+      group: 'info',
+      rows: 5,
     }),
+
+    // --- STATUS GROUP ---
     defineField({
       name: 'status',
-      title: 'Status',
+      title: 'Status Label',
       type: 'string',
+      group: 'status',
+      initialValue: 'Active',
     }),
     defineField({
       name: 'statusColor',
-      title: 'Status Color (Hex)',
+      title: 'Status Text Color (Hex)',
       type: 'string',
+      group: 'status',
+      description: 'e.g., #FFFFFF',
     }),
     defineField({
       name: 'statusBg',
       title: 'Status Background (RGBA)',
       type: 'string',
+      group: 'status',
+      description: 'e.g., rgba(0, 200, 83, 0.2)',
     }),
+
+    // --- MEDIA GROUP ---
     defineField({
       name: 'image',
       title: 'Hero Image',
       type: 'image',
+      group: 'media',
       options: {
         hotspot: true,
       },
     }),
+
+    // --- CONTENT GROUP ---
     defineField({
       name: 'metrics',
       title: 'Key Metrics',
       type: 'array',
-      of: [
-        {
-          type: 'object',
-          fields: [
-            { name: 'label', type: 'string', title: 'Label' },
-            { name: 'value', type: 'string', title: 'Value' },
-          ],
-        },
-      ],
+      group: 'content',
+      of: [{ type: 'metric' }],
     }),
     defineField({
       name: 'tags',
       title: 'Tags',
       type: 'array',
+      group: 'content',
       of: [{ type: 'string' }],
-    }),
-    defineField({
-      name: 'chair',
-      title: 'Chair Name',
-      type: 'string',
-    }),
-    defineField({
-      name: 'email',
-      title: 'Contact Email',
-      type: 'string',
     }),
     defineField({
       name: 'joinConfig',
       title: 'Join Configuration',
       type: 'object',
+      group: 'content',
       fields: [
         {
           name: 'type',
@@ -108,6 +127,7 @@ export const committee = defineType({
               { title: 'Display Message', value: 'message' },
             ],
           },
+          initialValue: 'default',
         },
         { name: 'buttonText', type: 'string', title: 'Button Text' },
         { name: 'url', type: 'string', title: 'Custom URL' },
@@ -118,135 +138,41 @@ export const committee = defineType({
       name: 'sections',
       title: 'Content Sections',
       type: 'array',
+      group: 'content',
       of: [
-        {
-          type: 'object',
-          name: 'textSection',
-          title: 'Text Content',
-          fields: [
-            { name: 'title', type: 'string', title: 'Title' },
-            { name: 'content', type: 'text', title: 'Content (Markdown support)' },
-            { name: 'image', type: 'image', title: 'Image', options: { hotspot: true } },
-            defineField({
-              name: 'imageStyle',
-              type: 'object',
-              title: 'Image Style',
-              fields: [
-                { 
-                  name: 'crop', 
-                  type: 'boolean', 
-                  title: 'Crop (Cover)', 
-                  description: 'If true, image will cover the area. If false, it will be contained.' 
-                },
-                { 
-                  name: 'size', 
-                  type: 'string', 
-                  title: 'Image Size', 
-                  options: { list: ['small', 'medium', 'large', 'full'] } 
-                },
-              ],
-            }),
-            { 
-              name: 'layout', 
-              type: 'string', 
-              title: 'Layout', 
-              options: { list: ['top', 'left', 'right'] } 
-            },
-          ],
-        },
-        {
-          type: 'object',
-          name: 'projectsSection',
-          title: 'Projects Grid',
-          fields: [
-            { name: 'title', type: 'string', title: 'Title' },
-            defineField({
-              name: 'imageStyle',
-              type: 'object',
-              title: 'Image Style',
-              fields: [
-                { name: 'crop', type: 'boolean', title: 'Crop (Cover)' },
-                { 
-                  name: 'size', 
-                  type: 'string', 
-                  title: 'Image Size', 
-                  options: { list: ['small', 'medium', 'large', 'full'] } 
-                },
-              ],
-            }),
-            {
-              name: 'items',
-              type: 'array',
-              of: [
-                {
-                  type: 'object',
-                  fields: [
-                    { name: 'name', type: 'string', title: 'Project Name' },
-                    { name: 'description', type: 'text', title: 'Project Description' },
-                    { name: 'image', type: 'image', title: 'Project Image', options: { hotspot: true } },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-        {
-          type: 'object',
-          name: 'faqSection',
-          title: 'FAQ Accordion',
-          fields: [
-            { name: 'title', type: 'string', title: 'Title' },
-            {
-              name: 'items',
-              type: 'array',
-              of: [
-                {
-                  type: 'object',
-                  fields: [
-                    { name: 'question', type: 'string', title: 'Question' },
-                    { name: 'answer', type: 'text', title: 'Answer' },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-        {
-          type: 'object',
-          name: 'gallerySection',
-          title: 'Image Gallery',
-          fields: [
-            { name: 'title', type: 'string', title: 'Title' },
-            {
-              name: 'items',
-              type: 'array',
-              of: [
-                {
-                  type: 'object',
-                  fields: [
-                    { name: 'image', type: 'image', title: 'Image', options: { hotspot: true } },
-                    { name: 'caption', type: 'string', title: 'Caption' },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
+        { type: 'textSection' },
+        { type: 'projectsSection' },
+        { type: 'faqSection' },
+        { type: 'gallerySection' },
       ],
+    }),
+
+    // --- CONTACT & SOCIAL GROUP ---
+    defineField({
+      name: 'chair',
+      title: 'Chair Name',
+      type: 'string',
+      group: 'contact',
+    }),
+    defineField({
+      name: 'email',
+      title: 'Contact Email',
+      type: 'string',
+      group: 'contact',
     }),
     defineField({
       name: 'socialLinks',
       title: 'Social Links',
       type: 'array',
-      of: [
-        {
-          type: 'object',
-          fields: [
-            { name: 'platform', type: 'string', title: 'Platform' },
-            { name: 'url', type: 'string', title: 'URL' },
-          ],
-        },
-      ],
+      group: 'social',
+      of: [{ type: 'socialLink' }],
     }),
   ],
+  preview: {
+    select: {
+      title: 'name',
+      subtitle: 'tagline',
+      media: 'image',
+    },
+  },
 })

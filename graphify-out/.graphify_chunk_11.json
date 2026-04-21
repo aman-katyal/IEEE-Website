@@ -1,0 +1,259 @@
+{
+  "nodes": [
+    {
+      "id": "pages_calendarpage",
+      "label": "CalendarPage",
+      "file_type": "code",
+      "source_file": "src/app/pages/CalendarPage.tsx"
+    },
+    {
+      "id": "pages_committeepage",
+      "label": "CommitteePage",
+      "file_type": "code",
+      "source_file": "src/app/pages/CommitteePage.tsx"
+    },
+    {
+      "id": "pages_committeespage",
+      "label": "CommitteesPage",
+      "file_type": "code",
+      "source_file": "src/app/pages/CommitteesPage.tsx"
+    },
+    {
+      "id": "pages_constitutionpage",
+      "label": "ConstitutionPage",
+      "file_type": "code",
+      "source_file": "src/app/pages/ConstitutionPage.tsx"
+    },
+    {
+      "id": "pages_homepage",
+      "label": "HomePage",
+      "file_type": "code",
+      "source_file": "src/app/pages/HomePage.tsx"
+    },
+    {
+      "id": "pages_joinpage",
+      "label": "JoinPage",
+      "file_type": "code",
+      "source_file": "src/app/pages/JoinPage.tsx"
+    },
+    {
+      "id": "pages_officerspage",
+      "label": "OfficersPage",
+      "file_type": "code",
+      "source_file": "src/app/pages/OfficersPage.tsx"
+    },
+    {
+      "id": "pages_partnerspage",
+      "label": "PartnersPage",
+      "file_type": "code",
+      "source_file": "src/app/pages/PartnersPage.tsx"
+    },
+    {
+      "id": "data_calendarconfig",
+      "label": "CALENDAR_CONFIG",
+      "file_type": "code",
+      "source_file": "src/data/calendarConfig.ts"
+    },
+    {
+      "id": "data_leadership_leaders",
+      "label": "Leaders Data",
+      "file_type": "code",
+      "source_file": "src/data/leadership.ts"
+    },
+    {
+      "id": "data_committees_index",
+      "label": "Committee Data Barrel",
+      "file_type": "code",
+      "source_file": "src/data/committees/index.ts"
+    },
+    {
+      "id": "data_committees_types",
+      "label": "Committee Types",
+      "file_type": "code",
+      "source_file": "src/data/committees/types.ts"
+    },
+    {
+      "id": "hooks_usegooglecalendarevents",
+      "label": "useGoogleCalendarEvents",
+      "file_type": "code",
+      "source_file": "src/hooks/useGoogleCalendarEvents.ts"
+    },
+    {
+      "id": "hooks_usesanitydata",
+      "label": "useSanityData",
+      "file_type": "code",
+      "source_file": "src/hooks/useSanityData.ts"
+    },
+    {
+      "id": "lib_sanity",
+      "label": "Sanity Client Config",
+      "file_type": "code",
+      "source_file": "src/lib/sanity.ts"
+    },
+    {
+      "id": "bones_registry",
+      "label": "Bones Registry",
+      "file_type": "code",
+      "source_file": "src/bones/registry.js"
+    },
+    {
+      "id": "concept_sanity_fallback_pattern",
+      "label": "Sanity Fallback Pattern",
+      "file_type": "document",
+      "source_file": "src/hooks/useSanityData.ts"
+    }
+  ],
+  "edges": [
+    {
+      "source": "pages_calendarpage",
+      "target": "hooks_usesanitydata",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/app/pages/CalendarPage.tsx"
+    },
+    {
+      "source": "pages_committeepage",
+      "target": "hooks_usesanitydata",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/app/pages/CommitteePage.tsx"
+    },
+    {
+      "source": "pages_constitutionpage",
+      "target": "hooks_usesanitydata",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/app/pages/ConstitutionPage.tsx"
+    },
+    {
+      "source": "pages_joinpage",
+      "target": "hooks_usesanitydata",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/app/pages/JoinPage.tsx"
+    },
+    {
+      "source": "pages_officerspage",
+      "target": "hooks_usesanitydata",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/app/pages/OfficersPage.tsx"
+    },
+    {
+      "source": "pages_partnerspage",
+      "target": "hooks_usesanitydata",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/app/pages/PartnersPage.tsx"
+    },
+    {
+      "source": "hooks_usesanitydata",
+      "target": "lib_sanity",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/hooks/useSanityData.ts"
+    },
+    {
+      "source": "hooks_usesanitydata",
+      "target": "data_committees_index",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/hooks/useSanityData.ts"
+    },
+    {
+      "source": "hooks_usesanitydata",
+      "target": "data_leadership_leaders",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/hooks/useSanityData.ts"
+    },
+    {
+      "source": "hooks_usegooglecalendarevents",
+      "target": "data_calendarconfig",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/hooks/useGoogleCalendarEvents.ts"
+    },
+    {
+      "source": "concept_sanity_fallback_pattern",
+      "target": "hooks_usesanitydata",
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "src/hooks/useSanityData.ts"
+    },
+    {
+      "source": "pages_calendarpage",
+      "target": "data_calendarconfig",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "src/app/pages/CalendarPage.tsx"
+    },
+    {
+      "source": "pages_committeepage",
+      "target": "data_committees_types",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/app/pages/CommitteePage.tsx"
+    },
+    {
+      "source": "data_committees_index",
+      "target": "data_committees_types",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/data/committees/index.ts"
+    },
+    {
+      "source": "pages_homepage",
+      "target": "hooks_usesanitydata",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "src/app/pages/HomePage.tsx"
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "sanity_data_fetching_flow",
+      "label": "Sanity Data Fetching Flow",
+      "nodes": ["lib_sanity", "hooks_usesanitydata", "pages_officerspage", "pages_partnerspage", "pages_joinpage"],
+      "relation": "implement",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/hooks/useSanityData.ts"
+    },
+    {
+      "id": "committee_management_pattern",
+      "label": "Committee Management Pattern",
+      "nodes": ["data_committees_types", "data_committees_index", "pages_committeepage", "pages_committeespage"],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/data/committees/index.ts"
+    },
+    {
+      "id": "global_site_settings_distribution",
+      "label": "Global Site Settings Distribution",
+      "nodes": ["hooks_usesanitydata", "pages_calendarpage", "pages_constitutionpage", "pages_joinpage", "pages_partnerspage"],
+      "relation": "participate_in",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "src/hooks/useSanityData.ts"
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

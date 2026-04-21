@@ -1,0 +1,1 @@
+{"nodes": [{"id": "pages_partnerspage", "label": "PartnersPage", "file_type": "code", "source_file": "src/app/pages/PartnersPage.tsx"}], "edges": [{"source": "pages_partnerspage", "target": "hooks_usesanitydata", "relation": "references", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "src/app/pages/PartnersPage.tsx"}], "hyperedges": []}

@@ -1,26 +1,30 @@
 import { useTheme } from "next-themes";
-
-const partners = [
-  { name: "Texas Instruments", domain: "ti.com" },
-  { name: "Qualcomm", domain: "qualcomm.com" },
-  { name: "SpaceX", domain: "spacex.com" },
-  { name: "Intel", domain: "intel.com" },
-  { name: "NVIDIA", domain: "nvidia.com" },
-  { name: "Lockheed Martin", domain: "lockheedmartin.com" },
-  { name: "Raytheon Technologies", domain: "rtx.com" },
-  { name: "Northrop Grumman", domain: "northropgrumman.com" },
-  { name: "Boeing", domain: "boeing.com" },
-  { name: "L3Harris", domain: "l3harris.com" },
-  { name: "AMD", domain: "amd.com" },
-  { name: "Apple", domain: "apple.com" },
-  { name: "Cisco", domain: "cisco.com" },
-  { name: "Honeywell", domain: "honeywell.com" },
-  { name: "Caterpillar", domain: "caterpillar.com" },
-];
+import { usePartners } from "../../hooks/useSanityData";
 
 export function TechMarquee() {
   const { theme } = useTheme();
+  const { partners: sanityPartners } = usePartners();
   const isLight = theme === "light";
+
+  const staticPartners = [
+    { name: "Texas Instruments", domain: "ti.com" },
+    { name: "Qualcomm", domain: "qualcomm.com" },
+    { name: "SpaceX", domain: "spacex.com" },
+    { name: "Intel", domain: "intel.com" },
+    { name: "NVIDIA", domain: "nvidia.com" },
+    { name: "Lockheed Martin", domain: "lockheedmartin.com" },
+    { name: "Raytheon Technologies", domain: "rtx.com" },
+    { name: "Northrop Grumman", domain: "northropgrumman.com" },
+    { name: "Boeing", domain: "boeing.com" },
+    { name: "L3Harris", domain: "l3harris.com" },
+    { name: "AMD", domain: "amd.com" },
+    { name: "Apple", domain: "apple.com" },
+    { name: "Cisco", domain: "cisco.com" },
+    { name: "Honeywell", domain: "honeywell.com" },
+    { name: "Caterpillar", domain: "caterpillar.com" },
+  ];
+
+  const partners = sanityPartners.length > 0 ? sanityPartners : staticPartners;
 
   return (
     <div
@@ -65,7 +69,7 @@ export function TechMarquee() {
       <div className="marquee-track" style={{ willChange: "transform" }}>
         {[...partners, ...partners].map((p, i) => (
           <div
-            key={`${p.domain}-${i}`}
+            key={`${p.domain || p.name}-${i}`}
             style={{
               display: "flex",
               alignItems: "center",
@@ -76,7 +80,7 @@ export function TechMarquee() {
           >
             <div style={{ position: "relative", height: "32px", display: "flex", alignItems: "center" }}>
               <img 
-                src={`https://logo.clearbit.com/${p.domain}`} 
+                src={p.logoUrl || (p.domain ? `https://hunter.io/api/logo?domain=${p.domain}` : "")} 
                 alt={p.name} 
                 loading="lazy"
                 style={{ 

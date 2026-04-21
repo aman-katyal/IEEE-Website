@@ -1,0 +1,1 @@
+{"nodes": [{"id": "officersconfig", "label": "officersConfig.ts", "file_type": "code", "source_file": "studio\\schema\\officersConfig.ts", "source_location": "L1"}], "edges": [{"source": "officersconfig", "target": "sanity", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "studio\\schema\\officersConfig.ts", "source_location": "L1", "weight": 1.0}]}

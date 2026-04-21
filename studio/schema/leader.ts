@@ -1,14 +1,17 @@
 import { defineField, defineType } from 'sanity'
+import { User } from 'lucide-react'
 
 export const leader = defineType({
   name: 'leader',
   title: 'Officer',
   type: 'document',
+  icon: User,
   fields: [
     defineField({
       name: 'name',
       title: 'Full Name',
       type: 'string',
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'role',
@@ -48,10 +51,12 @@ export const leader = defineType({
       },
       validation: (Rule) => Rule.required(),
     }),
-    defineField({
-      name: 'order',
-      title: 'Display Order',
-      type: 'number',
-    }),
   ],
+  preview: {
+    select: {
+      title: 'name',
+      subtitle: 'role',
+      media: 'image',
+    },
+  },
 })

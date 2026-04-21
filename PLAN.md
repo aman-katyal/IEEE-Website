@@ -1,39 +1,81 @@
-# Implementation Plan: Performance, Security, and Deployment
+# Task 4: Remove Static Data & Fallbacks Implementation Plan
 
-This plan addresses performance bottlenecks, security gaps (specifically for the CMS), and deployment automation.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-## Phase 1: Performance Optimization
-- **Task 1.1: Image Optimization Pipeline**
-  - Install `vite-plugin-image-optimizer`.
-  - Update `vite.config.ts` to optimize `public/images/`.
-  - Goal: Reduce initial page load by optimizing assets > 500KB.
-- **Task 1.2: Build-time Chunking**
-  - Update `rollupOptions` in `vite.config.ts` to split vendor libraries (Radix, MUI, Framer Motion) into separate chunks.
-- **Task 1.3: Nginx Compression & Caching**
-  - Enhance `nginx.conf` gzip configuration.
-  - Set `immutable` cache headers for hashed assets.
+**Goal:** Remove all static JSON data and fallbacks, switching the application to be entirely driven by Sanity CMS.
 
-## Phase 2: Security & CMS Protection
-- **Task 2.1: CMS Password Protection**
-  - Implement Nginx Basic Authentication for the `/admin` route.
-  - Generate a secure password hash for the `admin` user.
-  - Goal: Prevent unauthorized access to the Decap CMS dashboard.
-- **Task 2.2: Hardening Nginx Headers**
-  - Add `Content-Security-Policy` (CSP) to mitigate XSS risks.
-  - Add `X-Frame-Options`, `X-Content-Type-Options`, and `Referrer-Policy`.
-- **Task 2.3: Production Environment Lock**
-  - Ensure `local_backend: false` in `public/admin/config.yml` for production builds.
-  - Update `nginx.conf` to ensure HTTPS is enforced (if SSL is handled at the Nginx level).
+**Architecture:** Refactor the `useDataFetching` hook to remove fallback support, update barrel files to remove static data exports, and update components that still rely on static data to use hooks.
 
-## Phase 3: Deployment Automation
-- **Task 3.1: GitHub Actions CI/CD**
-  - Create `.github/workflows/production-deploy.yml`.
-  - Implement a build-and-push workflow using Docker and GitHub Packages (GHCR).
-- **Task 3.2: Easy Local Onboarding**
-  - Create `docker-compose.yml` to allow developers to run the full production stack locally with one command.
-  - Create `.env.example` for required build-time variables.
+**Tech Stack:** React, TypeScript, Sanity CMS (GROQ).
 
-## Success Criteria
-1. Lighthouse performance score increases (target > 90).
-2. `/admin` route is password-protected.
-3. Automated Docker builds trigger on every push to `main`.
+---
+
+### Task 1: Refactor `useSanityData.ts`
+
+**Files:**
+- Modify: `src/hooks/useSanityData.ts`
+
+- [ ] **Step 1: Remove static imports**
+Remove the following imports:
+```typescript
+import { committees as staticCommittees, cornerstoneCommittees as staticCornerstone } from '../data/committees'
+import { leaders as staticLeaders } from '../data/leadership'
+```
+
+- [ ] **Step 2: Update `useDataFetching` to remove `fallbackData`**
+Remove `fallbackData` from parameter list and all logic inside `useDataFetching`.
+
+- [ ] **Step 3: Update all hooks to remove fallback arguments**
+Remove fallbacks from `useCommittees`, `useCommittee`, `useCornerstoneCommittees`, and `useLeaders`.
+
+### Task 2: Update Components still using Static Data
+
+**Files:**
+- Modify: `src/app/components/Hero.tsx`
+- Modify: `src/app/components/JoinCTA.tsx`
+
+- [ ] **Step 1: Update `Hero.tsx` to use `useCommittees()`**
+Remove `import { committees as committeeData } from "../../data/committees";` and use the hook instead.
+
+- [ ] **Step 2: Update `JoinCTA.tsx` to use `useCommittees()`**
+Remove `import { committees } from "../../data/committees";` and use the hook instead.
+
+### Task 3: Cleanup Barrel Files
+
+**Files:**
+- Modify: `src/data/committees/index.ts`
+- Modify: `src/data/leadership.ts`
+
+- [ ] **Step 1: Cleanup `src/data/committees/index.ts`**
+Remove all JSON imports and the exports of `committees`, `cornerstoneCommittees`, and `getCommitteeById`. Keep the `export type` if any.
+
+- [ ] **Step 2: Cleanup `src/data/leadership.ts`**
+Remove the JSON import and the `leaders` constant export. Keep the `Leader` interface.
+
+### Task 4: Delete Redundant Files
+
+- [ ] **Step 1: Delete JSON files**
+Delete:
+- `src/data/leadership.json`
+- `src/data/content/committees/` (entire directory)
+- `src/data/content/cornerstone.json`
+
+### Task 5: Verification
+
+- [ ] **Step 1: Run tests**
+Run: `npm test`
+Expected: PASS
+
+- [ ] **Step 2: Run build**
+Run: `npm run build`
+Expected: SUCCESS
+
+### Task 6: Commit Changes
+
+- [ ] **Step 1: Commit**
+```bash
+git add src/hooks/useSanityData.ts src/app/components/Hero.tsx src/app/components/JoinCTA.tsx src/data/committees/index.ts src/data/leadership.ts
+git rm src/data/leadership.json src/data/content/cornerstone.json
+git rm -r src/data/content/committees
+git commit -m "refactor(data): remove static JSON files after successful CMS migration"
+```

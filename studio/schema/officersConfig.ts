@@ -1,9 +1,11 @@
 import { defineField, defineType } from 'sanity'
+import { ListOrdered } from 'lucide-react'
 
 export const officersConfig = defineType({
   name: 'officersConfig',
   title: 'Officers Configuration',
   type: 'document',
+  icon: ListOrdered,
   fields: [
     defineField({
       name: 'executiveOrder',

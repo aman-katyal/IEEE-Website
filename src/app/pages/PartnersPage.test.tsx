@@ -10,17 +10,6 @@ vi.mock('../../hooks/useSanityData', () => ({
   useSiteSettings: vi.fn(),
 }));
 
-// Mock Framer Motion to avoid animation issues in tests
-vi.mock('motion/react', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    h1: ({ children, ...props }: any) => <h1 {...props}>{children}</h1>,
-    p: ({ children, ...props }: any) => <p {...props}>{children}</p>,
-    create: (Component: any) => Component,
-  },
-  AnimatePresence: ({ children }: any) => children,
-}));
-
 describe('PartnersPage', () => {
   const mockPartners = [
     { name: 'Gold Partner 1', tier: 'Gold', domain: 'gold1.com' },

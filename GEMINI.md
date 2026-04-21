@@ -9,7 +9,7 @@ This is the official website for the **Purdue University IEEE Student Branch**, 
 
 ## 🚀 Tech Stack
 
-- **Framework:** React 18 with Vite
+- **Framework:** React 19 with Vite
 - **Language:** TypeScript
 - **Routing:** React Router 7 (Client-side routing)
 - **Styling:** 
@@ -18,7 +18,7 @@ This is the official website for the **Purdue University IEEE Student Branch**, 
   - **Radix UI** primitives for accessible components.
 - **Animations:** **Framer Motion** (`motion/react`) for page transitions and interactive elements.
 - **Theme Management:** `next-themes` for Dark/Light mode support.
-- **Icons:** `lucide-react` and `@mui/icons-material`.
+- **Icons:** `lucide-react`.
 
 ## 📂 Project Structure
 

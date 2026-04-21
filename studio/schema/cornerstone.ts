@@ -1,9 +1,11 @@
 import { defineField, defineType } from 'sanity'
+import { Puzzle } from 'lucide-react'
 
 export const cornerstone = defineType({
   name: 'cornerstone',
   title: 'Cornerstone Committee',
   type: 'document',
+  icon: Puzzle,
   fields: [
     defineField({
       name: 'id',

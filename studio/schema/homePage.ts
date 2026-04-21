@@ -1,35 +1,83 @@
 import { defineField, defineType } from 'sanity'
+import { Home, Image as ImageIcon, BarChart, Info, Activity } from 'lucide-react'
 
 export const homePage = defineType({
   name: 'homePage',
   title: 'Home Page',
   type: 'document',
+  icon: Home,
+  groups: [
+    { name: 'hero', title: 'Hero Section', icon: ImageIcon, default: true },
+    { name: 'about', title: 'About Section', icon: Info },
+    { name: 'stats', title: 'Statistics', icon: BarChart },
+    { name: 'system', title: 'System Info', icon: Activity },
+  ],
   fields: [
+    // --- HERO GROUP ---
     defineField({
       name: 'heroTitle',
       title: 'Hero Title',
       type: 'string',
+      group: 'hero',
     }),
     defineField({
       name: 'heroSubtitle',
       title: 'Hero Subtitle',
       type: 'string',
+      group: 'hero',
     }),
     defineField({
       name: 'heroImage',
       title: 'Hero Image',
       type: 'image',
+      group: 'hero',
       options: { hotspot: true },
     }),
+
+    // --- ABOUT GROUP ---
     defineField({
-      name: 'semester',
-      title: 'Semester',
+      name: 'aboutEyebrow',
+      title: 'About Eyebrow',
       type: 'string',
+      group: 'about',
     }),
     defineField({
+      name: 'aboutTitle',
+      title: 'About Title',
+      type: 'string',
+      group: 'about',
+    }),
+    defineField({
+      name: 'aboutContent',
+      title: 'About Content',
+      type: 'text',
+      group: 'about',
+    }),
+    defineField({
+      name: 'aboutImage',
+      title: 'About Image',
+      type: 'image',
+      group: 'about',
+    }),
+    defineField({
+      name: 'aboutStatsValue',
+      title: 'About Stats Value',
+      type: 'string',
+      group: 'about',
+    }),
+    defineField({
+      name: 'aboutStatsLabel',
+      title: 'About Stats Label',
+      type: 'string',
+      group: 'about',
+    }),
+
+    // --- STATS GROUP ---
+    defineField({
       name: 'stats',
-      title: 'Statistics',
+      title: 'Statistics Cards',
       type: 'array',
+      group: 'stats',
       of: [
         {
           type: 'object',
@@ -43,40 +91,21 @@ export const homePage = defineType({
         },
       ],
     }),
+
+    // --- SYSTEM GROUP ---
     defineField({
-      name: 'aboutEyebrow',
-      title: 'About Eyebrow',
+      name: 'semester',
+      title: 'Active Semester',
       type: 'string',
-    }),
-    defineField({
-      name: 'aboutTitle',
-      title: 'About Title',
-      type: 'string',
-    }),
-    defineField({
-      name: 'aboutContent',
-      title: 'About Content',
-      type: 'text',
-    }),
-    defineField({
-      name: 'aboutImage',
-      title: 'About Image',
-      type: 'image',
-    }),
-    defineField({
-      name: 'aboutStatsValue',
-      title: 'About Stats Value',
-      type: 'string',
-    }),
-    defineField({
-      name: 'aboutStatsLabel',
-      title: 'About Stats Label',
-      type: 'string',
+      group: 'system',
+      description: 'e.g., SP_2026',
     }),
     defineField({
       name: 'sysUptime',
       title: 'System Uptime Status',
       type: 'string',
+      group: 'system',
+      description: 'e.g., ACTIVE, OFFLINE',
     }),
   ],
 })

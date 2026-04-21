@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router";
 import { useTheme } from "next-themes";
 import { ThemeToggle } from "./ThemeToggle";
 import { IeeePurdueLogo } from "./IeeePurdueLogo";
-import { useCommittees, prefetchData } from "../../hooks/useSanityData";
+import { useCommittees, prefetchData, useSiteSettings } from "../../hooks/useSanityData";
 import { MagneticWrapper } from "./ui/MagneticWrapper";
 import { MagneticButton } from "./MagneticButton";
 import groq from "groq";
@@ -17,6 +17,7 @@ const DiscordIcon = ({ size = 16 }: { size?: number }) => (
 
 export function Navigation() {
   const { committees } = useCommittees();
+  const { settings } = useSiteSettings();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -27,6 +28,8 @@ export function Navigation() {
   const { theme } = useTheme();
   const isLight = theme === "light";
   const isHome = location.pathname === "/";
+
+  const discordUrl = settings?.discordUrl || "https://discord.gg/sPPQequ9ws";
 
   const navLinks = [
     { 
@@ -337,7 +340,7 @@ export function Navigation() {
 
             <MagneticWrapper strength={0.1}>
               <a
-                href="https://discord.gg/sPPQequ9ws"
+                href={discordUrl}
                 target="_blank"
                 rel="noreferrer"
                 className="btn-ghost hover-glow-gold"
@@ -480,7 +483,7 @@ export function Navigation() {
             <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "32px" }}>
               <MagneticWrapper strength={0.1} className="w-full">
                 <a
-                  href="https://discord.gg/sPPQequ9ws"
+                  href={discordUrl}
                   target="_blank"
                   rel="noreferrer"
                   className="btn-ghost hover-glow-gold w-full"

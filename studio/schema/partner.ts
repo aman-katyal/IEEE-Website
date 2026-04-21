@@ -1,9 +1,11 @@
 import { defineField, defineType } from 'sanity'
+import { Building2 } from 'lucide-react'
 
 export const partner = defineType({
   name: 'partner',
   title: 'Partner',
   type: 'document',
+  icon: Building2,
   fields: [
     defineField({
       name: 'name',
@@ -43,4 +45,11 @@ export const partner = defineType({
       description: 'Lower numbers appear first within their tier.',
     }),
   ],
+  preview: {
+    select: {
+      title: 'name',
+      subtitle: 'tier',
+      media: 'logo',
+    },
+  },
 })

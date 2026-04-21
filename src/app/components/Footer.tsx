@@ -1,7 +1,7 @@
 import { Github, Linkedin, Instagram, Twitter, ExternalLink } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { useTheme } from "next-themes";
-import { useCommittees } from "../../hooks/useSanityData";
+import { useCommittees, useSiteSettings } from "../../hooks/useSanityData";
 import { IeeePurdueLogo } from "./IeeePurdueLogo";
 import { MagneticWrapper } from "./ui/MagneticWrapper";
 
@@ -33,11 +33,52 @@ const socials = [
 
 export function Footer() {
   const { committees } = useCommittees();
+  const { settings } = useSiteSettings();
   const location = useLocation();
   const navigate = useNavigate();
   const { theme } = useTheme();
   const isLight = theme === "light";
   const isHome = location.pathname === "/";
+
+  const discordUrl = settings?.discordUrl || "https://discord.gg/sPPQequ9ws";
+
+  const footerLinks = {
+    Organization: [
+      { label: "About Us", href: "/about" },
+      { label: "Officers", href: "/officers" },
+      { label: "Constitution", href: "/constitution" },
+      { label: "Corporate Partners", href: "/partners" },
+    ],
+    Resources: [
+      { label: "IEEE.org", href: "https://ieee.org", external: true },
+      { label: "Event Calendar", href: "/calendar" },
+      { label: "Member Benefits", href: "https://www.ieee.org/membership/benefits/index.html", external: true },
+    ],
+    Connect: [
+      { label: "Join Purdue IEEE", href: "/join" },
+      { label: "Contact Us", href: "mailto:ieee@purdue.edu", external: true },
+      { label: "Community Discord", href: discordUrl, external: true },
+    ],
+  };
+
+  const platformIcons: Record<string, any> = {
+    github: Github,
+    linkedin: Linkedin,
+    instagram: Instagram,
+    twitter: Twitter,
+    x: Twitter,
+  };
+
+  const fallbackSocials = [
+    { platform: "github", url: "https://github.com/PurdueIEEE" },
+    { platform: "linkedin", url: "https://linkedin.com/company/purdue-ieee" },
+    { platform: "instagram", url: "https://instagram.com/purdueieee" },
+    { platform: "twitter", url: "https://twitter.com/purdueieee" },
+  ];
+
+  const socials = (settings?.socialLinks && settings.socialLinks.length > 0) 
+    ? settings.socialLinks 
+    : fallbackSocials;
 
   const footerCommitteeLinks = committees.map((c) => ({
     label: c.shortName,
@@ -160,43 +201,46 @@ export function Footer() {
               Find us online
             </div>
             <div style={{ display: "flex", gap: "8px" }}>
-              {socials.map(({ Icon, label, href }) => (
-                <MagneticWrapper key={label} strength={0.15}>
-                  <a
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={label}
-                    className="hover-glow-blue"
-                    style={{
-                      width: "36px",
-                      height: "36px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      border: "1px solid var(--glass-border)",
-                      borderRadius: "4px",
-                      color: "var(--text-secondary)",
-                      textDecoration: "none",
-                      transition: "all 0.25s ease",
-                    }}
-                    onMouseEnter={(e) => {
-                      const el = e.currentTarget;
-                      el.style.borderColor = "var(--electric-blue)";
-                      el.style.color = "var(--electric-blue)";
-                      el.style.background = "rgba(0,98,155,0.08)";
-                    }}
-                    onMouseLeave={(e) => {
-                      const el = e.currentTarget;
-                      el.style.borderColor = "var(--glass-border)";
-                      el.style.color = "var(--text-secondary)";
-                      el.style.background = "transparent";
-                    }}
-                  >
-                    <Icon size={15} />
-                  </a>
-                </MagneticWrapper>
-              ))}
+              {socials.map((social: any) => {
+                const Icon = platformIcons[social.platform.toLowerCase()] || ExternalLink;
+                return (
+                  <MagneticWrapper key={social.platform} strength={0.15}>
+                    <a
+                      href={social.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={social.platform}
+                      className="hover-glow-blue"
+                      style={{
+                        width: "36px",
+                        height: "36px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        border: "1px solid var(--glass-border)",
+                        borderRadius: "4px",
+                        color: "var(--text-secondary)",
+                        textDecoration: "none",
+                        transition: "all 0.25s ease",
+                      }}
+                      onMouseEnter={(e) => {
+                        const el = e.currentTarget;
+                        el.style.borderColor = "var(--electric-blue)";
+                        el.style.color = "var(--electric-blue)";
+                        el.style.background = "rgba(0,98,155,0.08)";
+                      }}
+                      onMouseLeave={(e) => {
+                        const el = e.currentTarget;
+                        el.style.borderColor = "var(--glass-border)";
+                        el.style.color = "var(--text-secondary)";
+                        el.style.background = "transparent";
+                      }}
+                    >
+                      <Icon size={15} />
+                    </a>
+                  </MagneticWrapper>
+                );
+              })}
             </div>
           </div>
         </div>
