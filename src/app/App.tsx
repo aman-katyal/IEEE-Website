@@ -13,7 +13,6 @@ import { JoinPage } from "./pages/JoinPage";
 import { AboutUsPage } from "./pages/AboutUsPage";
 import { PartnersPage } from "./pages/PartnersPage";
 import { ConstitutionPage } from "./pages/ConstitutionPage";
-import { UXEffects } from "./components/UXEffects";
 import { BackToTop } from "./components/BackToTop";
 import { PageTransition } from "./components/PageTransition";
 
@@ -44,7 +43,6 @@ export default function App() {
 
   return (
     <ThemeProvider attribute="class" defaultTheme="dark">
-      <UXEffects />
       <BackToTop />
       
       <AnimatePresence mode="wait">

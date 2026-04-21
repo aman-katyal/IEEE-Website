@@ -202,9 +202,63 @@ export function CommitteePage() {
           <div style={{ position: "absolute", inset: 0, background: isLight ? "linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 30%, rgba(248,250,252,0.85) 80%, var(--boiler-black) 100%)" : "linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0.85) 80%, var(--boiler-black) 100%)" }} />
           <div className="ieee-grid-bg" style={{ position: "absolute", inset: 0, opacity: isLight ? 0.4 : 0.6 }} />
           <div style={{ position: "relative", zIndex: 5, maxWidth: "1280px", margin: "0 auto", padding: "0 32px 48px", width: "100%" }}>
-            <Link to="/committees" style={{ display: "inline-flex", alignItems: "center", gap: "8px", color: "var(--text-secondary)", textDecoration: "none", fontFamily: "var(--font-mono)", fontSize: "0.7rem", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "32px", transition: "color 0.2s ease", opacity: isLight ? 1 : 0.8 }}><ArrowLeft size={14} /> Home / Committees</Link>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "32px", gap: "40px" }}>
+              <Link 
+                to="/committees" 
+                style={{ 
+                  display: "inline-flex", 
+                  alignItems: "center", 
+                  gap: "10px", 
+                  color: "var(--text-secondary)", 
+                  textDecoration: "none", 
+                  fontFamily: "var(--font-mono)", 
+                  fontSize: "0.65rem", 
+                  letterSpacing: "0.12em", 
+                  textTransform: "uppercase", 
+                  transition: "all 0.2s ease", 
+                  opacity: isLight ? 1 : 0.75,
+                  height: "28px", 
+                  lineHeight: "28px"
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = "var(--electric-blue)"; e.currentTarget.style.opacity = "1"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-secondary)"; e.currentTarget.style.opacity = isLight ? "1" : "0.75"; }}
+              >
+                <ArrowLeft size={14} style={{ position: "relative", top: "-1px" }} /> Home / Committees
+              </Link>
+
+              <div 
+                className="status-badge" 
+                style={{ 
+                  background: committee?.statusBg || "rgba(0, 98, 155, 0.1)", 
+                  color: committee?.statusColor || "var(--electric-blue)", 
+                  backdropFilter: "blur(12px)", 
+                  margin: 0,
+                  display: "inline-flex",
+                  padding: "0 14px",
+                  fontSize: "0.6rem",
+                  fontWeight: 700,
+                  borderRadius: "100px",
+                  border: "1px solid rgba(255,255,255,0.12)",
+                  alignItems: "center",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.08em",
+                  height: "28px",
+                  lineHeight: "28px"
+                }}
+              >
+                <div style={{ 
+                  width: "6px", 
+                  height: "6px", 
+                  borderRadius: "50%", 
+                  marginRight: "10px", 
+                  background: "currentColor",
+                  boxShadow: "0 0 10px currentColor",
+                  flexShrink: 0
+                }} />
+                {committee?.status || "Active"}
+              </div>
+            </div>
             
-            <div className="status-badge" style={{ background: committee?.statusBg, color: committee?.statusColor, backdropFilter: "blur(6px)", marginBottom: "20px" }}><span className="dot" />{committee?.status}</div>
             <h1 style={{ fontFamily: "var(--font-headline)", fontSize: "clamp(32px, 5vw, 64px)", fontWeight: 700, color: "var(--text-primary)", lineHeight: 1.1, letterSpacing: "-0.02em", marginBottom: "12px", maxWidth: "800px" }}>{committee?.name}</h1>
             <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.85rem", color: "var(--cyber-gold)", letterSpacing: "0.12em", textTransform: "uppercase", opacity: isLight ? 1 : 0.8, fontWeight: isLight ? 600 : 400 }}>{committee?.tagline}</p>
           </div>

@@ -206,9 +206,8 @@ export function Hero() {
               color: "var(--text-muted)",
               letterSpacing: "0.15em",
               textTransform: "uppercase",
-              marginBottom: "160px"
+              marginBottom: "120px"
             }}
-
           >
             {heroSubtitle}
           </motion.p>
@@ -221,7 +220,7 @@ export function Hero() {
               justifyContent: "center",
               gap: "16px",
               alignItems: "center",
-              marginBottom: "100px",
+              marginBottom: "80px",
             }}
           >
             <MagneticButton 
@@ -237,11 +236,8 @@ export function Hero() {
             </MagneticButton>
           </motion.div>
 
-          {/* Committee Tags - Reverted to Standard glass style */}
+          {/* Committee Tags - Inherits stagger from parent */}
           <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
             style={{
               display: "flex",
               alignItems: "center",
@@ -249,7 +245,9 @@ export function Hero() {
               gap: "8px 12px",
               flexWrap: "wrap",
               maxWidth: "1000px",
-              margin: "0 auto"
+              margin: "0 auto",
+              marginTop: "20px",
+              paddingBottom: "120px" // Increased space for scroll button
             }}
           >
             {committeeData.map((c) => (
@@ -260,20 +258,25 @@ export function Hero() {
                 className="tech-tag"
                 style={{ 
                   textDecoration: "none", 
-                  cursor: "pointer", 
-                  transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
-                  padding: "6px 14px",
-                  fontSize: "0.65rem",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
+                  cursor: "pointer",
                   background: "var(--glass-bg)",
-                  borderColor: "var(--glass-border)",
-                  color: "var(--text-secondary)"
+                  border: "1px solid var(--glass-border)",
+                  color: "var(--text-secondary)",
+                  padding: "6px 14px",
+                  borderRadius: "4px",
+                  fontSize: "0.65rem",
+                  display: "inline-flex",
+                  alignItems: "center"
                 }}
-                whileHover={{ y: -2, backgroundColor: "rgba(0, 98, 155, 0.05)", borderColor: "var(--electric-blue)", color: "var(--text-primary)" }}
+                whileHover={{ 
+                  backgroundColor: "rgba(0, 98, 155, 0.1)", 
+                  borderColor: "var(--electric-blue)",
+                  color: "var(--text-primary)",
+                  y: -3
+                }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: 0.2 }}
               >
-                <div style={{ width: "4px", height: "4px", borderRadius: "50%", background: "var(--electric-blue)", opacity: 0.5 }} />
                 {c.shortName}
               </MotionLink>
             ))}

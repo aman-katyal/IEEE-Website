@@ -551,6 +551,14 @@
   border-color: var(--cyber-gold);
 }
 
+.learn-more-link {
+  transition: color 0.3s ease, gap 0.3s ease;
+}
+
+.glass-card:hover .learn-more-link {
+  color: var(--cyber-gold) !important;
+}
+
 /* Ensure elements are hidden before animation starts */
 .opacity-0-init {
   opacity: 0;

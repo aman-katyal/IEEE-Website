@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, ArrowUpRight } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { useTheme } from "next-themes";
 import { ThemeToggle } from "./ThemeToggle";
@@ -235,11 +235,14 @@ export function Navigation() {
                       display: "flex",
                       alignItems: "center",
                       gap: "4px",
-                      background: "none",
+                      background: openDropdown === link.label ? (isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)") : "none",
                       border: "none",
                       cursor: "pointer",
-                      padding: "24px 0",
+                      padding: "8px 16px",
+                      margin: "16px -16px",
+                      borderRadius: "4px",
                       textDecoration: "none",
+                      transition: "all 0.3s ease",
                       color: location.pathname.startsWith(link.href) || (link.label === "About" && location.pathname === "/constitution")
                         ? "var(--text-primary)"
                         : "var(--text-secondary)",
@@ -268,6 +271,33 @@ export function Navigation() {
                       }}
                     >
                       <div style={{ position: "absolute", top: "-20px", left: 0, right: 0, height: "20px" }} />
+                      
+                      {link.label === "Committees" && (
+                        <>
+                          <a
+                            href="/committees"
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              padding: "12px 20px",
+                              color: "var(--electric-blue)",
+                              textDecoration: "none",
+                              fontSize: "0.85rem",
+                              fontFamily: "var(--font-mono)",
+                              fontWeight: 700,
+                              textTransform: "uppercase",
+                              letterSpacing: "0.05em",
+                              borderBottom: "1px solid var(--glass-border)",
+                              background: isLight ? "rgba(0, 90, 135, 0.05)" : "rgba(0, 98, 155, 0.08)",
+                            }}
+                            onClick={(e) => { e.preventDefault(); handleNav("/committees"); }}
+                          >
+                            View All Teams
+                            <ArrowUpRight size={14} />
+                          </a>
+                        </>
+                      )}
                       
                       {link.dropdown.map((subItem: any) => (
                         <a

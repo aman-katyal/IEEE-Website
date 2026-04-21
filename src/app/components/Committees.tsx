@@ -20,7 +20,7 @@ function CommitteeCard({ c }: { c: Committee }) {
         style={{ textDecoration: "none", color: "inherit" }}
       >
         <div
-          className="glass-card hover-glow-blue hover-scale hover-border-blue"
+          className="glass-card hover-glow-blue hover-scale hover-border-blue group relative"
           style={{
             display: "flex",
             flexDirection: "column",
@@ -208,36 +208,49 @@ function CommitteeCard({ c }: { c: Committee }) {
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
+              marginTop: "auto",
+              paddingTop: "12px"
             }}
           >
             <span
+              className="learn-more-link"
               style={{
                 fontFamily: "var(--font-body)",
-                fontSize: "0.8rem",
-                fontWeight: 500,
+                fontSize: "0.85rem",
+                fontWeight: 600,
                 color: "var(--electric-blue)",
-                letterSpacing: "0.08em",
+                letterSpacing: "0.05em",
                 textTransform: "uppercase",
                 display: "flex",
                 alignItems: "center",
-                gap: "6px",
+                gap: "8px",
+                transition: "gap 0.3s ease, color 0.3s ease"
               }}
             >
-              Learn More
-              <ArrowUpRight size={14} />
+              Explore Committee
+              <ArrowUpRight size={16} className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
             </span>
 
             <div
               style={{
-                width: "4px",
-                height: "4px",
+                width: "6px",
+                height: "6px",
                 borderRadius: "50%",
                 background: "var(--cyber-gold)",
-                opacity: isLight ? 1 : 0.5
+                opacity: isLight ? 1 : 0.5,
+                boxShadow: isLight ? "none" : "0 0 10px var(--cyber-gold)"
               }}
             />
           </div>
         </div>
+        
+        {/* Hover overlay effect */}
+        <div 
+          className="absolute inset-0 opacity-0 group-hover:opacity-10 pointer-events-none transition-opacity duration-500"
+          style={{ 
+            background: "linear-gradient(45deg, var(--electric-blue), transparent)" 
+          }} 
+        />
       </div>
     </Link>
     </MagneticWrapper>

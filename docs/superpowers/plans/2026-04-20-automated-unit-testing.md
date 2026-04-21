@@ -66,11 +66,11 @@ Ensure hooks handle network failures and initial fetch correctly.
 - Create: `src/app/pages/JoinPage.test.tsx`
 - Create: `src/app/pages/PartnersPage.test.tsx`
 
-- [ ] **Step 1: Test HomePage structure**
+- [x] **Step 1: Test HomePage structure**
 Verify Hero, About, and Stats sections render correctly.
-- [ ] **Step 2: Test JoinPage form interaction**
+- [x] **Step 2: Test JoinPage form interaction**
 Verify dues info and redirect logic (if any).
-- [ ] **Step 3: Test PartnersPage rendering**
+- [x] **Step 3: Test PartnersPage rendering** [b379787]
 Verify Gold/Silver/Bronze tiers render based on dynamic data.
 
 ### Task 5: Final Coverage Push & CI Integration
@@ -79,6 +79,6 @@ Verify Gold/Silver/Bronze tiers render based on dynamic data.
 Identify remaining "red" files with < 85% coverage.
 - [ ] **Step 2: Add missing "edge case" tests**
 Focus on complex logic in `Events.tsx` or `Navigation.tsx`.
-- [ ] **Step 3: Final validation**
+- [x] **Step 3: Final validation** [aca45a6]
 Run: `npm run coverage`
 Expected: Total coverage > 85%.

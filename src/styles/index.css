@@ -36,9 +36,3 @@
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(235, 211, 169, 0.4);
 }
-
-/* Hide default cursor for elements with custom cursor */
-.custom-cursor-active, 
-.custom-cursor-active * {
-  cursor: none !important;
-}
