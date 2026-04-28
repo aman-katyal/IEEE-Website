@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "figma-my-make-file",
+  "name": "purdue-ieee-website",
   "compatibility_date": "2026-04-28",
   "observability": {
     "enabled": true
@@ -10,5 +10,9 @@
   },
   "compatibility_flags": [
     "nodejs_compat"
-  ]
+  ],
+  "vars": {
+    "VITE_SANITY_PROJECT_ID": "vq0v7yv4",
+    "VITE_SANITY_DATASET": "production"
+  }
 }
