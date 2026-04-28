@@ -8,7 +8,9 @@
     "build": "vite build",
     "dev": "vite",
     "test": "vitest",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "deploy": "npm run build && wrangler deploy",
+    "preview": "npm run build && wrangler dev"
   },
   "dependencies": {
     "@popperjs/core": "2.11.8",
@@ -72,6 +74,7 @@
     "vaul": "1.1.2"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.33.2",
     "@playwright/test": "^1.59.1",
     "@tailwindcss/vite": "4.1.12",
     "@testing-library/dom": "^10.4.1",
@@ -89,7 +92,8 @@
     "vite": "^8.0.2",
     "vite-plugin-image-optimizer": "^2.0.3",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^4.1.4"
+    "vitest": "^4.1.4",
+    "wrangler": "^4.85.0"
   },
   "pnpm": {
     "overrides": {
