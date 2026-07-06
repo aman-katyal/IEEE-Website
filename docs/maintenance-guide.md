@@ -68,17 +68,3 @@ For those not using specialized AI tools (like Conductor), follow this standard 
    - `fix(...)`: Bug fixes
    - `docs(...)`: Documentation changes
 6. **Push & PR:** Push your branch and open a Pull Request on GitHub.
-
----
-
-## 🐳 Docker (Optional Local Testing)
-
-To test the site in a containerized environment similar to our production Nginx setup:
-```bash
-# Build the image
-docker build -t ieee-website .
-
-# Run the container
-docker run -p 8080:80 ieee-website
-```
-The site will be available at `http://localhost:8080`.

@@ -18,7 +18,7 @@ Detailed guides for various users and tasks:
 - **Animations:** Framer Motion
 - **Icons:** Lucide React
 - **Routing:** React Router 7
-- **Deployment:** Docker and Nginx (configured for Single Page Application routing)
+- **Deployment:** Cloudflare Pages (configured for Single Page Application routing via wrangler.jsonc)
 
 ## Project Structure
 
@@ -48,26 +48,18 @@ npm run build
 ```
 The compiled output is located in the `dist` directory.
 
-### Docker Environment
-To run the website within a production-ready Nginx container:
-```bash
-docker build -t ieee-website .
-docker run -p 8080:80 ieee-website
-```
+### Cloudflare Pages Deployment
+To deploy the application to Cloudflare Pages:
+1. Make a production build:
+   ```bash
+   npm run build
+   ```
+2. Deploy the assets via Wrangler:
+   ```bash
+   npx wrangler deploy
+   ```
 
-### Production Testing (Local)
-To test the production-ready environment (with Nginx security headers and CMS protection) locally:
-```bash
-docker-compose up --build
-```
-The site will be available at `http://localhost:8080`.
-The CMS admin at `/admin` will require basic authentication (default: `admin` / see `.htpasswd`).
-
-## Deployment Considerations
-This application utilizes client-side routing. When deploying to services such as Render or AWS Amplify, a rewrite rule must be configured:
-- **Source:** `/*`
-- **Destination:** `/index.html`
-- **Action:** `Rewrite`
+The files in the `dist/` directory will be uploaded automatically.
 
 ## Copyright
 © 2026 Purdue IEEE Student Branch. All rights reserved.

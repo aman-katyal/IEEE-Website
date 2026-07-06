@@ -20,5 +20,3 @@
 
 ## Deployment & Infrastructure
 - **Cloudflare Pages:** Primary hosting platform for the production frontend, providing high availability and edge caching.
-- **Docker:** Containerization for consistent development and production environments.
-- **Nginx:** Efficient web server for serving the static frontend assets and handling SPA routing.

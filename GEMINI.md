@@ -47,13 +47,15 @@ To generate a production build:
 npm run build
 ```
 The output will be in the `dist` directory.
+### Cloudflare Pages Deployment
+The project is configured for serverless deployment on **Cloudflare Pages**.
 
-### Docker
-The project includes a `Dockerfile` for Nginx-based deployment:
-```bash
-docker build -t ieee-website .
-docker run -p 8080:80 ieee-website
-```
+To deploy to Cloudflare Pages:
+1. Deploy the compiled assets:
+   ```bash
+   npx wrangler deploy
+   ```
+2. The deployment directory (`dist/`) is read and uploaded automatically.
 
 ## 📜 Development Conventions
 
