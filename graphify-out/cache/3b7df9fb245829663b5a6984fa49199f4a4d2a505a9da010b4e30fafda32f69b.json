@@ -1,1 +1,0 @@
-{"nodes": [{"id": "stats", "label": "Stats", "file_type": "code", "source_file": "src/app/components/Stats.tsx"}], "edges": [{"source": "stats", "target": "use_count_up", "relation": "calls", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "src/app/components/Stats.tsx"}], "hyperedges": []}

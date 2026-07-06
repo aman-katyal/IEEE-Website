@@ -1,1 +1,0 @@
-{"nodes": [{"id": "pages_constitutionpage", "label": "ConstitutionPage", "file_type": "code", "source_file": "src/app/pages/ConstitutionPage.tsx"}], "edges": [{"source": "pages_constitutionpage", "target": "hooks_usesanitydata", "relation": "references", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "src/app/pages/ConstitutionPage.tsx"}], "hyperedges": []}

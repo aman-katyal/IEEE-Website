@@ -1,1 +1,0 @@
-{"nodes": [{"id": "magnetic_button", "label": "MagneticButton", "file_type": "code", "source_file": "src/app/components/MagneticButton.tsx"}], "edges": [{"source": "magnetic_button", "target": "magnetic_wrapper", "relation": "semantically_similar_to", "confidence": "INFERRED", "confidence_score": 0.9, "source_file": "src/app/components/MagneticButton.tsx"}], "hyperedges": []}

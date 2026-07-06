@@ -127,59 +127,7 @@ export function Hero() {
             textAlign: "center",
           }}
         >
-          {/* Eyebrow Tags */}
-          <motion.div
-            variants={itemVariants}
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "12px",
-              marginBottom: "32px",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-                background: isLight ? "rgba(255,255,255,0.8)" : "rgba(26,26,27,0.8)",
-                border: "1px solid var(--glass-border)",
-                borderRadius: "4px",
-                padding: "6px 12px",
-              }}
-            >
-              <Zap size={12} style={{ color: "var(--electric-blue)", fill: "var(--electric-blue)" }} />
-              <span
-                style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: "0.6rem",
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  color: "var(--electric-blue)",
-                  fontWeight: 600
-                }}
-              >
-                Purdue University
-              </span>
-            </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: "6px", background: isLight ? "rgba(255,255,255,0.8)" : "rgba(26,26,27,0.8)", border: "1px solid var(--glass-border)", borderRadius: "4px", padding: "6px 12px" }}>
-              <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: sysUptime === "ACTIVE" ? "#00C853" : "#FF5252", animation: "pulse-dot 2s ease-in-out infinite" }} />
-              <span
-                style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: "0.6rem",
-                  letterSpacing: "0.1em",
-                  color: "var(--text-muted)",
-                  textTransform: "uppercase",
-                }}
-              >
-                {semester.replace('_', ' ')} {sysUptime}
-              </span>
-            </div>
-          </motion.div>
 
           {/* Headline / Quote - Standardized Design System Shadows */}
           <motion.h1
