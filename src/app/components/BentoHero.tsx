@@ -115,50 +115,65 @@ function CyclingStat({ stats, isLight }: { stats: any[]; isLight: boolean }) {
   );
 }
 
-// ─── PCB Interactive Modules Data ────────────────────────────────────
-interface PCBModule {
+// ─── Lab Rack Ticker Data ────────────────────────────────────────────
+interface RackSlot {
   id: string;
+  tag: string;
+  status: string;
+  load: string;
+  indicator: string;
   title: string;
-  icon: any;
-  committee: string;
   description: string;
+  meeting: string;
   link: string;
 }
 
-const PCB_MODULES: Record<string, PCBModule> = {
-  mcu: {
-    id: "mcu",
-    title: "Microcontroller Unit (MCU)",
-    icon: Cpu,
-    committee: "Computer Society & Software Saturdays",
-    description: "Designs central computational systems, high-speed software architectures, and automated testing rigs.",
+const RACK_SLOTS: RackSlot[] = [
+  {
+    id: "rov",
+    tag: "ROV-01",
+    status: "THRUSTER_PID_LKD",
+    load: "96%",
+    indicator: "RUNNING",
+    title: "Remotely Operated Vehicles (ROV)",
+    description: "Designs and pilots autonomous underwater vehicles (AUVs) for marine exploration and international MATE competitions.",
+    meeting: "Tuesdays 7:00 PM in Lab B",
+    link: "/committee/rov"
+  },
+  {
+    id: "cs",
+    tag: "CS-02",
+    status: "PORTAL_API_OK",
+    load: "92%",
+    indicator: "STABLE",
+    title: "IEEE Computer Society",
+    description: "Builds high-performance web systems, custom API integrations, software tools, and hosts coding hackathons.",
+    meeting: "Wednesdays 6:00 PM in EE 224",
     link: "/committee/csociety"
   },
-  rf: {
-    id: "rf",
-    title: "RF & Transceiver Array",
-    icon: Radio,
-    committee: "MTT-S (Microwave Theory)",
-    description: "Develops wireless systems, microwave communication layers, and antenna circuitry for high-speed tracking.",
-    link: "/committee/mtts"
-  },
-  power: {
-    id: "power",
-    title: "Power Distribution Network",
-    icon: ShieldAlert,
-    committee: "AESC (Aerial Robotics / Power)",
-    description: "Engineers solar arrays, battery regulation safety blocks, and remote power telemetry grids.",
+  {
+    id: "aesc",
+    tag: "AESC-03",
+    status: "AVIONICS_TX_OK",
+    load: "88%",
+    indicator: "ACTIVE",
+    title: "Aerial Robotics & Solar (AESC)",
+    description: "Engineers solar tracking systems, heavy-lift flight frames, telemetry systems, and remote energy collection arrays.",
+    meeting: "Thursdays 6:30 PM in Lab C",
     link: "/committee/aesc"
   },
-  sensors: {
-    id: "sensors",
-    title: "Sensor Fusion Array",
-    icon: SensorIcon,
-    committee: "ROV (Underwater Robotics)",
-    description: "Combines IMU, depth, and hydrophone vectors into precise PID thruster velocity controllers.",
-    link: "/committee/rov"
+  {
+    id: "swsat",
+    tag: "SWSAT-04",
+    status: "BOOTCAMP_READY",
+    load: "100%",
+    indicator: "ONLINE",
+    title: "Software Saturdays",
+    description: "Teaches introductory web development, Git flow, and software engineering foundations to students of all majors.",
+    meeting: "Saturdays 10:00 AM in EE 129",
+    link: "/committee/csociety"
   }
-};
+];
 
 const FALLBACK_STATS = [
   { value: 750, suffix: "+", label: "Active Members", sublabel: "Across all disciplines" },
@@ -173,7 +188,7 @@ export function BentoHero() {
   const { data: homeData, loading: homeLoading } = useHomePage();
   const { committees, loading: committeesLoading } = useCommittees();
   
-  const [hoveredModule, setHoveredModule] = useState<PCBModule | null>(null);
+  const [hoveredSlot, setHoveredSlot] = useState<RackSlot | null>(null);
   
   const isLight = theme === "light";
   const loading = homeLoading || committeesLoading;
@@ -379,7 +394,7 @@ export function BentoHero() {
             {/* 3. Core Stats (1x1 span) */}
             <CyclingStat stats={stats} isLight={isLight} />
 
-            {/* 4. Interactive PCB Schematic (2x2 span) */}
+            {/* 4. Lab Status Rack (2x2 span) */}
             <div
               className="glass-card pcb-bento-tile"
               style={{
@@ -387,7 +402,7 @@ export function BentoHero() {
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
-                background: "rgba(0, 30, 60, 0.05)",
+                background: "rgba(0, 30, 60, 0.03)",
                 borderColor: isLight ? "rgba(0, 90, 135, 0.15)" : "rgba(0, 98, 155, 0.2)",
               }}
             >
@@ -403,207 +418,56 @@ export function BentoHero() {
                     marginBottom: "16px",
                   }}
                 >
-                  // Interactive Schematic
+                  // Lab Status Rack
                 </div>
                 
-                {/* SVG Blueprint Board */}
-                <div
-                  style={{
-                    width: "100%",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    position: "relative",
-                    marginBottom: "20px",
-                  }}
-                >
-                  <svg
-                    viewBox="0 0 320 180"
-                    width="100%"
-                    height="100%"
-                    style={{
-                      maxHeight: "150px",
-                      overflow: "visible",
-                    }}
-                  >
-                    {/* PCB Outlines */}
-                    <rect
-                      x="5"
-                      y="5"
-                      width="310"
-                      height="170"
-                      rx="8"
-                      fill="none"
-                      stroke={isLight ? "rgba(0,90,135,0.15)" : "rgba(255,255,255,0.06)"}
-                      strokeWidth="1.5"
-                    />
-                    <rect
-                      x="10"
-                      y="10"
-                      width="300"
-                      height="160"
-                      rx="6"
-                      fill="none"
-                      stroke={isLight ? "rgba(0,90,135,0.2)" : "rgba(0,98,155,0.15)"}
-                      strokeWidth="1"
-                      strokeDasharray="4 2"
-                    />
-
-                    {/* Corner Mounting Holes */}
-                    {[
-                      { cx: 16, cy: 16 },
-                      { cx: 304, cy: 16 },
-                      { cx: 16, cy: 154 },
-                      { cx: 304, cy: 154 }
-                    ].map((pt, idx) => (
-                      <circle
-                        key={idx}
-                        cx={pt.cx}
-                        cy={pt.cy}
-                        r="4"
-                        fill="none"
-                        stroke={isLight ? "rgba(0,90,135,0.3)" : "rgba(0,98,155,0.4)"}
-                        strokeWidth="1"
-                      />
-                    ))}
-
-                    {/* PCB Schematic Traces (Lines) */}
-                    <path
-                      d="M 50 90 L 120 90 M 120 90 L 120 40 M 120 90 L 120 140 M 175 90 L 250 90 M 250 90 L 250 120 M 140 115 L 140 140"
-                      fill="none"
-                      stroke={isLight ? "rgba(0,90,135,0.15)" : "rgba(0,98,155,0.25)"}
-                      strokeWidth="1"
-                    />
-
-                    {/* MCU module hover path trace */}
-                    <path
-                      d="M 120 90 L 140 90"
-                      fill="none"
-                      stroke={hoveredModule?.id === "mcu" ? "var(--cyber-gold)" : (isLight ? "rgba(0,90,135,0.2)" : "rgba(0,98,155,0.3)")}
-                      strokeWidth="1.5"
-                    />
-
-                    {/* Module 1: MCU Chip */}
-                    <g
-                      onMouseEnter={() => setHoveredModule(PCB_MODULES.mcu)}
-                      style={{ cursor: "pointer" }}
-                    >
-                      <rect
-                        x="115"
-                        y="65"
-                        width="50"
-                        height="50"
-                        rx="4"
-                        fill={hoveredModule?.id === "mcu" ? "rgba(0, 98, 155, 0.15)" : "rgba(128,128,128,0.05)"}
-                        stroke={hoveredModule?.id === "mcu" ? "var(--cyber-gold)" : "var(--electric-blue)"}
-                        strokeWidth={hoveredModule?.id === "mcu" ? "1.5" : "1"}
-                        style={{ transition: "all 0.3s ease" }}
-                      />
-                      <text
-                        x="140"
-                        y="94"
-                        textAnchor="middle"
-                        fill="var(--text-primary)"
-                        style={{ fontFamily: "var(--font-mono)", fontSize: "7px", fontWeight: 700, pointerEvents: "none" }}
+                {/* Visual Server/Equipment Rack Layout */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "20px" }}>
+                  {RACK_SLOTS.map((slot) => {
+                    const isHovered = hoveredSlot?.id === slot.id;
+                    return (
+                      <div
+                        key={slot.id}
+                        onMouseEnter={() => setHoveredSlot(slot)}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          padding: "12px 16px",
+                          border: `1px solid ${isHovered ? "var(--cyber-gold)" : "var(--glass-border)"}`,
+                          borderRadius: "4px",
+                          background: isHovered ? "rgba(0, 98, 155, 0.08)" : "rgba(10, 10, 12, 0.2)",
+                          cursor: "pointer",
+                          transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "0.7rem",
+                        }}
                       >
-                        MCU
-                      </text>
-                      {/* Chip Pins */}
-                      {[-8, -4, 0, 4, 8].map((offset) => (
-                        <g key={offset} style={{ pointerEvents: "none" }}>
-                          <line x1="110" y1={90 + offset} x2="115" y2={90 + offset} stroke="var(--electric-blue)" strokeWidth="0.8" />
-                          <line x1="165" y1={90 + offset} x2="170" y2={90 + offset} stroke="var(--electric-blue)" strokeWidth="0.8" />
-                          <line x1={140 + offset} y1="60" x2={140 + offset} y2="65" stroke="var(--electric-blue)" strokeWidth="0.8" />
-                          <line x1={140 + offset} y1="115" x2={140 + offset} y2="120" stroke="var(--electric-blue)" strokeWidth="0.8" />
-                        </g>
-                      ))}
-                    </g>
+                        {/* Tag identifier */}
+                        <span style={{ color: isHovered ? "var(--cyber-gold)" : "var(--electric-blue)", fontWeight: 700 }}>
+                          [{slot.tag}]
+                        </span>
+                        
+                        {/* Status ticker */}
+                        <span style={{ color: "var(--text-secondary)", flex: 1, paddingLeft: "16px", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
+                          {slot.status}
+                        </span>
+                        
+                        {/* Load bar */}
+                        <span className="hidden sm:inline" style={{ color: "var(--text-muted)", marginRight: "16px" }}>
+                          ||||| {slot.load}
+                        </span>
 
-                    {/* Module 2: RF Transceiver */}
-                    <g
-                      onMouseEnter={() => setHoveredModule(PCB_MODULES.rf)}
-                      style={{ cursor: "pointer" }}
-                    >
-                      <rect
-                        x="230"
-                        y="20"
-                        width="40"
-                        height="40"
-                        rx="2"
-                        fill={hoveredModule?.id === "rf" ? "rgba(0, 98, 155, 0.15)" : "rgba(128,128,128,0.05)"}
-                        stroke={hoveredModule?.id === "rf" ? "var(--cyber-gold)" : "var(--electric-blue)"}
-                        strokeWidth={hoveredModule?.id === "rf" ? "1.5" : "1"}
-                        style={{ transition: "all 0.3s ease" }}
-                      />
-                      <text
-                        x="250"
-                        y="44"
-                        textAnchor="middle"
-                        fill="var(--text-primary)"
-                        style={{ fontFamily: "var(--font-mono)", fontSize: "6.5px", pointerEvents: "none" }}
-                      >
-                        RF_ARR
-                      </text>
-                      {/* Antenna trace lines */}
-                      <path d="M 270 30 Q 285 20 285 10 T 300 0" fill="none" stroke="var(--electric-blue)" strokeWidth="0.8" />
-                    </g>
-
-                    {/* Module 3: Power Distribution block */}
-                    <g
-                      onMouseEnter={() => setHoveredModule(PCB_MODULES.power)}
-                      style={{ cursor: "pointer" }}
-                    >
-                      <rect
-                        x="30"
-                        y="100"
-                        width="45"
-                        height="40"
-                        rx="2"
-                        fill={hoveredModule?.id === "power" ? "rgba(0, 98, 155, 0.15)" : "rgba(128,128,128,0.05)"}
-                        stroke={hoveredModule?.id === "power" ? "var(--cyber-gold)" : "var(--electric-blue)"}
-                        strokeWidth={hoveredModule?.id === "power" ? "1.5" : "1"}
-                        style={{ transition: "all 0.3s ease" }}
-                      />
-                      <text
-                        x="52.5"
-                        y="124"
-                        textAnchor="middle"
-                        fill="var(--text-primary)"
-                        style={{ fontFamily: "var(--font-mono)", fontSize: "6.5px", pointerEvents: "none" }}
-                      >
-                        PWR_MNG
-                      </text>
-                      <line x1="20" y1="120" x2="30" y2="120" stroke="var(--electric-blue)" strokeWidth="0.8" />
-                    </g>
-
-                    {/* Module 4: Sensor Array */}
-                    <g
-                      onMouseEnter={() => setHoveredModule(PCB_MODULES.sensors)}
-                      style={{ cursor: "pointer" }}
-                    >
-                      <rect
-                        x="230"
-                        y="105"
-                        width="40"
-                        height="40"
-                        rx="2"
-                        fill={hoveredModule?.id === "sensors" ? "rgba(0, 98, 155, 0.15)" : "rgba(128,128,128,0.05)"}
-                        stroke={hoveredModule?.id === "sensors" ? "var(--cyber-gold)" : "var(--electric-blue)"}
-                        strokeWidth={hoveredModule?.id === "sensors" ? "1.5" : "1"}
-                        style={{ transition: "all 0.3s ease" }}
-                      />
-                      <text
-                        x="250"
-                        y="129"
-                        textAnchor="middle"
-                        fill="var(--text-primary)"
-                        style={{ fontFamily: "var(--font-mono)", fontSize: "6.5px", pointerEvents: "none" }}
-                      >
-                        SEN_FUS
-                      </text>
-                      <circle cx="250" cy="115" r="2" fill="none" stroke="var(--electric-blue)" strokeWidth="0.8" />
-                    </g>
-                  </svg>
+                        {/* Indicator Status Light */}
+                        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                          <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: isHovered ? "var(--cyber-gold)" : "#00C853", boxShadow: isHovered ? "0 0 6px var(--cyber-gold)" : "0 0 6px #00C853" }} />
+                          <span style={{ fontSize: "0.6rem", color: "var(--text-primary)" }}>
+                            {slot.indicator}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -614,7 +478,7 @@ export function BentoHero() {
                   border: "1px solid var(--glass-border)",
                   borderRadius: "4px",
                   padding: "16px",
-                  minHeight: "100px",
+                  minHeight: "110px",
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "center",
@@ -622,9 +486,9 @@ export function BentoHero() {
                 }}
               >
                 <AnimatePresence mode="wait">
-                  {hoveredModule ? (
+                  {hoveredSlot ? (
                     <motion.div
-                      key={hoveredModule.id}
+                      key={hoveredSlot.id}
                       initial={{ opacity: 0, y: 5 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -5 }}
@@ -646,10 +510,10 @@ export function BentoHero() {
                             color: "var(--cyber-gold)",
                           }}
                         >
-                          {hoveredModule.title}
+                          {hoveredSlot.title}
                         </h4>
                         <Link
-                          to={hoveredModule.link}
+                          to={hoveredSlot.link}
                           style={{
                             display: "inline-flex",
                             alignItems: "center",
@@ -667,6 +531,21 @@ export function BentoHero() {
                           <ArrowUpRight size={10} />
                         </Link>
                       </div>
+
+                      {/* Schedule info */}
+                      <div
+                        style={{
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "0.6rem",
+                          color: "var(--electric-blue)",
+                          marginBottom: "8px",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.02em",
+                        }}
+                      >
+                        Schedule: {hoveredSlot.meeting}
+                      </div>
+
                       <div
                         style={{
                           fontFamily: "var(--font-body)",
@@ -675,7 +554,7 @@ export function BentoHero() {
                           lineHeight: 1.4,
                         }}
                       >
-                        {hoveredModule.description}
+                        {hoveredSlot.description}
                       </div>
                     </motion.div>
                   ) : (
@@ -693,7 +572,7 @@ export function BentoHero() {
                         textTransform: "uppercase",
                       }}
                     >
-                      Hover over any PCB module above to inspect its corresponding technical committee.
+                      Hover over any status slot above to inspect the technical committee's active telemetry.
                     </motion.div>
                   )}
                 </AnimatePresence>
