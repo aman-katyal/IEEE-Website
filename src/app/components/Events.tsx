@@ -90,7 +90,7 @@ export function Events() {
   const { events: liveEvents, loading } = useGoogleCalendarEvents();
   const { theme } = useTheme();
   const isLight = theme === "light";
-  const events = liveEvents.length > 0 ? liveEvents : fallbackEvents;
+  const events = liveEvents;
   const isLive = liveEvents.length > 0;
   
   // Limit to 4 events for the home page
