@@ -44,3 +44,9 @@ commit_message.txt
 .dev.vars*
 !.dev.vars.example
 !.env.example
+
+# Antigravity agent configurations & design system files
+.agents/
+design-system/
+graphify-out/
+**/graphify-out/
