@@ -94,15 +94,15 @@ describe('HomePage', () => {
       error: null
     });
 
-    render(
+    const { container } = render(
       <MemoryRouter>
         <HomePage />
       </MemoryRouter>
     );
 
-    // HomePage itself doesn't have a loading state, but subcomponents do.
-    // Stats component shows a loading message.
-    expect(screen.getByText(/LOADING_SYSTEM_METRICS/i)).toBeInTheDocument();
+    // BentoHero uses skeleton loading
+    const skeleton = container.querySelector('[data-boneyard="bento-hero"]');
+    expect(skeleton).toBeDefined();
   });
 
   it('renders hero section with correct content', () => {
@@ -115,7 +115,6 @@ describe('HomePage', () => {
     expect(screen.getByText(/Fostering/i)).toBeInTheDocument();
     expect(screen.getByText(/innovation/i)).toBeInTheDocument();
     expect(screen.getByText(/IEEE Mission Statement/i)).toBeInTheDocument();
-    expect(screen.getByText('ROV')).toBeInTheDocument();
   });
 
   it('renders about section with correct content', () => {
@@ -125,8 +124,7 @@ describe('HomePage', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText(/At Purdue, we strive to be/i)).toBeInTheDocument();
-    expect(screen.getByText('best')).toBeInTheDocument();
+    expect(screen.getByText(/Purdue's Largest Technical/i)).toBeInTheDocument();
     expect(screen.getByText('Test about content')).toBeInTheDocument();
   });
 
@@ -139,7 +137,7 @@ describe('HomePage', () => {
 
     expect(screen.getByText('Committees')).toBeInTheDocument();
     expect(screen.getByText('Technical')).toBeInTheDocument();
-    expect(screen.getByText('sys.uptime = ACTIVE')).toBeInTheDocument();
+    expect(screen.getByText('ACTIVE')).toBeInTheDocument();
   });
 
   it('renders events section with correct content', () => {

@@ -1,17 +1,13 @@
-import { Hero } from "../components/Hero";
+import { BentoHero } from "../components/BentoHero";
 import { TechMarquee } from "../components/TechMarquee";
-import { About } from "../components/About";
-import { Stats } from "../components/Stats";
 import { Events } from "../components/Events";
 import { JoinCTA } from "../components/JoinCTA";
 
 export function HomePage() {
   return (
     <>
-      <Hero />
+      <BentoHero />
       <TechMarquee />
-      <About />
-      <Stats />
       <Events />
       <JoinCTA />
     </>
