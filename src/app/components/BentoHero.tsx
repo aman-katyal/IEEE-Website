@@ -422,6 +422,15 @@ export function BentoHero() {
                 >
                   {activeSlots.map((slot) => {
                     const isHovered = hoveredSlot?.id === slot.id;
+
+                    // Color-code by indicator status
+                    const statusColor =
+                      slot.indicator === "RUNNING" ? "#4FC3F7" :
+                      slot.indicator === "STABLE"  ? "#00C853" :
+                      slot.indicator === "ACTIVE"  ? "#EBD3A9" :
+                      slot.indicator === "ONLINE"  ? "#69F0AE" :
+                                                     "#00C853";
+
                     return (
                       <div
                         key={slot.id}
@@ -429,63 +438,70 @@ export function BentoHero() {
                         style={{
                           display: "flex",
                           alignItems: "center",
-                          justifyContent: "space-between",
-                          padding: "8px 10px",
-                          border: `1px solid ${isHovered ? "var(--cyber-gold)" : "var(--glass-border)"}`,
-                          borderRadius: "4px",
-                          background: isHovered ? "rgba(0, 98, 155, 0.08)" : "rgba(10, 10, 12, 0.2)",
+                          gap: "10px",
+                          padding: "10px 12px",
+                          borderRadius: "6px",
+                          border: `1px solid ${isHovered ? statusColor : "rgba(255,255,255,0.06)"}`,
+                          borderLeft: `3px solid ${isHovered ? statusColor : "rgba(255,255,255,0.12)"}`,
+                          background: isHovered
+                            ? `rgba(${slot.indicator === "RUNNING" ? "79,195,247" : "0,200,83"},0.06)`
+                            : "rgba(255,255,255,0.02)",
                           cursor: "pointer",
-                          transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-                          fontFamily: "var(--font-mono)",
-                          fontSize: "0.62rem",
+                          transition: "all 0.18s cubic-bezier(0.16, 1, 0.3, 1)",
                           overflow: "hidden",
-                          width: "100%",
-                          boxSizing: "border-box"
+                          boxSizing: "border-box",
                         }}
                       >
-                        {/* Tag identifier - Label explicitly as COMMITTEE */}
-                        <span style={{ 
-                          color: isHovered ? "var(--cyber-gold)" : "var(--electric-blue)", 
-                          fontWeight: 700,
+                        {/* Pill tag badge */}
+                        <span style={{
+                          display: "inline-flex",
+                          alignItems: "center",
                           flexShrink: 0,
-                          whiteSpace: "nowrap"
+                          background: isHovered
+                            ? `${statusColor}22`
+                            : "rgba(0, 98, 155, 0.18)",
+                          border: `1px solid ${isHovered ? statusColor : "rgba(0,98,155,0.4)"}`,
+                          borderRadius: "4px",
+                          padding: "2px 7px",
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "0.58rem",
+                          fontWeight: 700,
+                          letterSpacing: "0.06em",
+                          color: isHovered ? statusColor : "var(--electric-blue)",
+                          whiteSpace: "nowrap",
+                          transition: "all 0.18s ease",
                         }}>
-                          [CMTE//{slot.tag}]
+                          {slot.tag}
                         </span>
 
                         {/* Committee Name */}
-                        <span style={{ 
-                          color: "var(--text-secondary)", 
-                          flex: 1, 
-                          paddingLeft: "10px", 
-                          paddingRight: "10px",
-                          textOverflow: "ellipsis", 
-                          overflow: "hidden", 
-                          whiteSpace: "nowrap",
+                        <span style={{
+                          flex: 1,
                           minWidth: 0,
-                          textAlign: "left",
-                          fontWeight: 500
+                          fontFamily: "var(--font-body)",
+                          fontSize: "0.75rem",
+                          fontWeight: 600,
+                          color: isHovered ? "var(--text-primary)" : "rgba(248,249,250,0.75)",
+                          textOverflow: "ellipsis",
+                          overflow: "hidden",
+                          whiteSpace: "nowrap",
+                          letterSpacing: "0.01em",
+                          transition: "color 0.18s ease",
                         }}>
                           {slot.displayTitle}
                         </span>
 
-                        {/* Indicator Status Light */}
+                        {/* Status indicator dot */}
                         <div style={{ display: "flex", alignItems: "center", gap: "5px", flexShrink: 0 }}>
-                          <div style={{ 
-                            width: "5px", 
-                            height: "5px", 
-                            borderRadius: "50%", 
-                            background: isHovered ? "var(--cyber-gold)" : "#00C853", 
-                            boxShadow: isHovered ? "0 0 5px var(--cyber-gold)" : "0 0 5px #00C853",
-                            flexShrink: 0
+                          <div style={{
+                            width: "6px",
+                            height: "6px",
+                            borderRadius: "50%",
+                            background: statusColor,
+                            boxShadow: `0 0 ${isHovered ? "8px" : "4px"} ${statusColor}`,
+                            transition: "box-shadow 0.18s ease",
+                            animation: "pulse-dot 2.5s ease-in-out infinite",
                           }} />
-                          <span style={{ 
-                            fontSize: "0.55rem", 
-                            color: "var(--text-primary)",
-                            whiteSpace: "nowrap"
-                          }}>
-                            {slot.indicator}
-                          </span>
                         </div>
                       </div>
                     );
