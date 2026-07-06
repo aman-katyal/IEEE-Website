@@ -1,16 +1,8 @@
 import { createClient } from '@sanity/client'
 import { createImageUrlBuilder } from '@sanity/image-url'
 
-const projectId = import.meta.env.VITE_SANITY_PROJECT_ID
-const dataset = import.meta.env.VITE_SANITY_DATASET
-
-if (!projectId) {
-  throw new Error('VITE_SANITY_PROJECT_ID is missing. Sanity configuration is required.');
-}
-
-if (!dataset) {
-  throw new Error('VITE_SANITY_DATASET is missing. Sanity configuration is required.');
-}
+const projectId = import.meta.env.VITE_SANITY_PROJECT_ID || 'vq0v7yv4'
+const dataset = import.meta.env.VITE_SANITY_DATASET || 'production'
 
 const apiVersion = '2024-03-16'
 const studioUrl = 'https://purdue-ieee-website.sanity.studio'
