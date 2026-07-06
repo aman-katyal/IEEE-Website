@@ -523,35 +523,60 @@ export function BentoHero() {
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "space-between",
-                          padding: "8px 12px",
+                          padding: "8px 10px",
                           border: `1px solid ${isHovered ? "var(--cyber-gold)" : "var(--glass-border)"}`,
                           borderRadius: "4px",
                           background: isHovered ? "rgba(0, 98, 155, 0.08)" : "rgba(10, 10, 12, 0.2)",
                           cursor: "pointer",
                           transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
                           fontFamily: "var(--font-mono)",
-                          fontSize: "0.65rem",
+                          fontSize: "0.62rem",
+                          overflow: "hidden",
+                          width: "100%",
+                          boxSizing: "border-box"
                         }}
                       >
                         {/* Tag identifier - Label explicitly as COMMITTEE */}
-                        <span style={{ color: isHovered ? "var(--cyber-gold)" : "var(--electric-blue)", fontWeight: 700 }}>
+                        <span style={{ 
+                          color: isHovered ? "var(--cyber-gold)" : "var(--electric-blue)", 
+                          fontWeight: 700,
+                          flexShrink: 0,
+                          whiteSpace: "nowrap"
+                        }}>
                           [CMTE//{slot.tag}]
                         </span>
-                        
-                        {/* Status ticker */}
-                        <span className="hidden md:inline" style={{ color: "var(--text-secondary)", flex: 1, paddingLeft: "10px", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
-                          {slot.status}
-                        </span>
-                        
-                        {/* Load bar */}
-                        <span className="hidden xl:inline" style={{ color: "var(--text-muted)", marginRight: "12px" }}>
-                          ||||| {slot.load}
+
+                        {/* Committee Name */}
+                        <span style={{ 
+                          color: "var(--text-secondary)", 
+                          flex: 1, 
+                          paddingLeft: "10px", 
+                          paddingRight: "10px",
+                          textOverflow: "ellipsis", 
+                          overflow: "hidden", 
+                          whiteSpace: "nowrap",
+                          minWidth: 0,
+                          textAlign: "left",
+                          fontWeight: 500
+                        }}>
+                          {slot.title.replace(/\(.*\)/, "").trim()}
                         </span>
 
                         {/* Indicator Status Light */}
-                        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                          <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: isHovered ? "var(--cyber-gold)" : "#00C853", boxShadow: isHovered ? "0 0 6px var(--cyber-gold)" : "0 0 6px #00C853" }} />
-                          <span style={{ fontSize: "0.58rem", color: "var(--text-primary)" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "5px", flexShrink: 0 }}>
+                          <div style={{ 
+                            width: "5px", 
+                            height: "5px", 
+                            borderRadius: "50%", 
+                            background: isHovered ? "var(--cyber-gold)" : "#00C853", 
+                            boxShadow: isHovered ? "0 0 5px var(--cyber-gold)" : "0 0 5px #00C853",
+                            flexShrink: 0
+                          }} />
+                          <span style={{ 
+                            fontSize: "0.55rem", 
+                            color: "var(--text-primary)",
+                            whiteSpace: "nowrap"
+                          }}>
                             {slot.indicator}
                           </span>
                         </div>
@@ -791,7 +816,7 @@ export function BentoHero() {
         }
         @media (min-width: 640px) {
           .rack-slots-grid {
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(2, minmax(0, 1fr));
           }
         }
 
