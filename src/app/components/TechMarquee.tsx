@@ -6,7 +6,7 @@ export function TechMarquee() {
   const { partners: sanityPartners } = usePartners();
   const isLight = theme === "light";
 
-  const staticPartners = [
+  const staticPartners: { name: string; domain: string; logoUrl?: string }[] = [
     { name: "Texas Instruments", domain: "ti.com" },
     { name: "Qualcomm", domain: "qualcomm.com" },
     { name: "SpaceX", domain: "spacex.com" },
@@ -79,32 +79,44 @@ export function TechMarquee() {
             }}
           >
             <div style={{ position: "relative", height: "32px", display: "flex", alignItems: "center" }}>
-              <img 
-                src={p.logoUrl || (p.domain ? `https://hunter.io/api/logo?domain=${p.domain}` : "")} 
-                alt={p.name} 
-                loading="lazy"
-                style={{ 
-                  height: "32px", 
-                  width: "auto", 
-                  maxWidth: "140px",
-                  filter: isLight 
-                    ? "grayscale(1) opacity(0.6)" 
-                    : "grayscale(1) invert(1) brightness(1.5) opacity(0.5)",
-                  transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
-                  cursor: "pointer",
-                  willChange: "transform, filter",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.filter = "grayscale(0) opacity(1)";
-                  e.currentTarget.style.transform = "scale(1.05)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.filter = isLight 
-                    ? "grayscale(1) opacity(0.6)" 
-                    : "grayscale(1) invert(1) brightness(1.5) opacity(0.5)";
-                  e.currentTarget.style.transform = "scale(1)";
-                }}
-              />
+              {p.logoUrl || p.domain ? (
+                <img 
+                  src={p.logoUrl || `https://hunter.io/api/logo?domain=${p.domain}`} 
+                  alt={p.name} 
+                  loading="lazy"
+                  style={{ 
+                    height: "32px", 
+                    width: "auto", 
+                    maxWidth: "140px",
+                    filter: isLight 
+                      ? "grayscale(1) opacity(0.6)" 
+                      : "grayscale(1) invert(1) brightness(1.5) opacity(0.5)",
+                    transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+                    cursor: "pointer",
+                    willChange: "transform, filter",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.filter = "grayscale(0) opacity(1)";
+                    e.currentTarget.style.transform = "scale(1.05)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.filter = isLight 
+                      ? "grayscale(1) opacity(0.6)" 
+                      : "grayscale(1) invert(1) brightness(1.5) opacity(0.5)";
+                    e.currentTarget.style.transform = "scale(1)";
+                  }}
+                />
+              ) : (
+                <span style={{ 
+                  fontSize: "14px", 
+                  fontWeight: 600, 
+                  color: isLight ? "var(--text-secondary)" : "rgba(255, 255, 255, 0.5)",
+                  fontFamily: "var(--font-headline)",
+                  letterSpacing: "0.05em",
+                }}>
+                  {p.name}
+                </span>
+              )}
             </div>
             
             <div

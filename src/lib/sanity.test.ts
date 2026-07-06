@@ -12,7 +12,7 @@ vi.mock('@sanity/client', () => ({
 
 // Mock @sanity/image-url
 vi.mock('@sanity/image-url', () => ({
-  default: vi.fn(() => ({
+  createImageUrlBuilder: vi.fn(() => ({
     image: vi.fn(() => ({
       url: () => 'mock-url'
     })),
@@ -46,7 +46,7 @@ describe('Sanity Client', () => {
       expect(previewClient).toBeDefined();
       const config = (previewClient as any).config();
       expect(config.token).toBe(import.meta.env.VITE_SANITY_API_TOKEN);
-      expect(config.perspective).toBe('previewDrafts');
+      expect(config.perspective).toBe('drafts');
     } else {
       expect(previewClient).toBeNull();
     }

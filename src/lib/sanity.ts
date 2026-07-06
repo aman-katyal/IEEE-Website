@@ -1,5 +1,5 @@
 import { createClient } from '@sanity/client'
-import imageUrlBuilder from '@sanity/image-url'
+import { createImageUrlBuilder } from '@sanity/image-url'
 
 const projectId = import.meta.env.VITE_SANITY_PROJECT_ID
 const dataset = import.meta.env.VITE_SANITY_DATASET
@@ -32,7 +32,7 @@ export const client = createClient({
 });
 
 // Image URL builder
-const builder = imageUrlBuilder(client);
+const builder = createImageUrlBuilder(client);
 
 export function urlFor(source: any) {
   return builder.image(source);
@@ -45,7 +45,8 @@ export const previewClient = import.meta.env.VITE_SANITY_API_TOKEN ? createClien
   useCdn: false,
   apiVersion,
   token: import.meta.env.VITE_SANITY_API_TOKEN,
-  perspective: 'previewDrafts',
+  perspective: 'drafts',
+  ignoreBrowserTokenWarning: true,
   stega: {
     enabled: isStegaEnabled,
     studioUrl,

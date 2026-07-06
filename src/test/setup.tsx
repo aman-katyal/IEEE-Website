@@ -68,16 +68,30 @@ if (!global.PointerEvent) {
 }
 
 // Mock Framer Motion (motion/react)
+const stripMotionProps = ({
+  initial,
+  animate,
+  exit,
+  variants,
+  transition,
+  whileHover,
+  whileTap,
+  whileInView,
+  viewport,
+  layout,
+  ...props
+}: any) => props;
+
 vi.mock('motion/react', () => ({
   motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
-    h1: ({ children, ...props }: any) => <h1 {...props}>{children}</h1>,
-    h2: ({ children, ...props }: any) => <h2 {...props}>{children}</h2>,
-    p: ({ children, ...props }: any) => <p {...props}>{children}</p>,
-    span: ({ children, ...props }: any) => <span {...props}>{children}</span>,
-    a: ({ children, ...props }: any) => <a {...props}>{children}</a>,
-    section: ({ children, ...props }: any) => <section {...props}>{children}</section>,
+    div: ({ children, ...props }: any) => <div {...stripMotionProps(props)}>{children}</div>,
+    button: ({ children, ...props }: any) => <button {...stripMotionProps(props)}>{children}</button>,
+    h1: ({ children, ...props }: any) => <h1 {...stripMotionProps(props)}>{children}</h1>,
+    h2: ({ children, ...props }: any) => <h2 {...stripMotionProps(props)}>{children}</h2>,
+    p: ({ children, ...props }: any) => <p {...stripMotionProps(props)}>{children}</p>,
+    span: ({ children, ...props }: any) => <span {...stripMotionProps(props)}>{children}</span>,
+    a: ({ children, ...props }: any) => <a {...stripMotionProps(props)}>{children}</a>,
+    section: ({ children, ...props }: any) => <section {...stripMotionProps(props)}>{children}</section>,
     create: (component: any) => component,
   },
   AnimatePresence: ({ children }: any) => <>{children}</>,

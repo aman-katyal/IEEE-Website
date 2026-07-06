@@ -32,7 +32,7 @@ export default function App() {
           console.log("Sanity Visual Editing: Content published");
           window.location.reload();
         }
-      });
+      } as any);
 
       return () => {
         console.log("Sanity Visual Editing: Disabling handshake");

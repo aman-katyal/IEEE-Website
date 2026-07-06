@@ -2,7 +2,8 @@ import { ArrowUpRight, Users, Trophy, Cpu, Globe, Loader2 } from "lucide-react";
 import { Link } from "react-router";
 import { useTheme } from "next-themes";
 import { useCommittees } from "../../hooks/useSanityData";
-import { Skeleton } from "boneyard-js/react";
+import { Skeleton as BoneyardSkeleton } from "boneyard-js/react";
+import { Skeleton } from "./ui/skeleton";
 import { MagneticWrapper } from "./ui/MagneticWrapper";
 import type { Committee } from "../../data/committees/types";
 
@@ -367,7 +368,7 @@ export function Committees() {
           </div>
         </div>
 
-        <Skeleton name="committees-grid" loading={loading} color={isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}>
+        <BoneyardSkeleton name="committees-grid" loading={loading} color={isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}>
           <div className="ieee-grid-3">
             {committees.map((c, index) => (
               <div 
@@ -379,7 +380,7 @@ export function Committees() {
               </div>
             ))}
           </div>
-        </Skeleton>
+        </BoneyardSkeleton>
       </div>
     </section>
   );

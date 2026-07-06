@@ -1,5 +1,5 @@
 import { ChevronDown, Zap } from "lucide-react";
-import { Link, useNavigate } from "react-router";
+import { Link, LinkProps, useNavigate } from "react-router";
 import { useTheme } from "next-themes";
 import { motion } from "motion/react";
 import { MagneticButton } from "./MagneticButton";
@@ -7,10 +7,18 @@ import { useHomePage, useCommittees } from "../../hooks/useSanityData";
 import { client } from "../../lib/sanity";
 import { Skeleton } from "boneyard-js/react";
 
+import { forwardRef } from "react";
+
 const FALLBACK_LAB_IMAGE =
   "https://images.unsplash.com/photo-1619834043185-acbe47811e6a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlbmdpbmVlcmluZyUyMHJlc2VhcmNoJTIwbGFiJTIwZGFyayUyMGhpZ2glMjB0ZWNofGVufDF8fHx8MTc3MzE4NjE2N3ww&ixlib=rb-4.1.0&q=80&w=1080";
 
-const MotionLink = motion.create(Link);
+const MotionLink = motion.create(
+  forwardRef<HTMLAnchorElement, LinkProps & { whileHover?: any; whileTap?: any; transition?: any; variants?: any }>(
+    ({ whileHover, whileTap, transition, variants, ...props }, ref) => (
+      <Link ref={ref} {...props} />
+    )
+  )
+);
 
 export function Hero() {
   const navigate = useNavigate();
@@ -38,7 +46,7 @@ export function Hero() {
     visible: { 
       opacity: 1, 
       y: 0,
-      transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] }
+      transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const }
     }
   };
 

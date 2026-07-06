@@ -1,7 +1,7 @@
 import { useRef, ReactNode } from "react";
 import { motion, useMotionValue, useSpring } from "motion/react";
 
-interface MagneticButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface MagneticButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "onDrag" | "onDragStart" | "onDragEnd" | "onAnimationStart" | "style"> {
   children: ReactNode;
   variant?: "primary" | "ghost" | "gold";
   strength?: number;
