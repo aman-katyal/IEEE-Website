@@ -291,6 +291,8 @@ export function BentoHero() {
       })
     : FALLBACK_RACK_SLOTS;
 
+  const heroImage = homeData?.heroImage || "/images/general IEEE pictures/ieee whole team photo.webp";
+
   return (
     <section
       id="hero-bento"
@@ -304,6 +306,22 @@ export function BentoHero() {
         overflow: "hidden",
       }}
     >
+      {/* Background Photo */}
+      {heroImage && (
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage: `url('${heroImage}')`,
+            backgroundSize: "cover",
+            backgroundPosition: "center 25%",
+            opacity: isLight ? 0.35 : 0.22,
+            transition: "background-image 0.8s ease-in-out",
+            zIndex: 1,
+          }}
+        />
+      )}
+
       {/* Background Graphic Grid */}
       <div
         className="ieee-grid-bg"
@@ -311,7 +329,7 @@ export function BentoHero() {
           position: "absolute",
           inset: 0,
           opacity: isLight ? 0.3 : 0.25,
-          zIndex: 1,
+          zIndex: 2,
         }}
       />
       
@@ -705,9 +723,8 @@ export function BentoHero() {
                 background: "rgba(10, 10, 12, 0.2)",
               }}
             >
-              <div className="about-content-wrapper">
-                {/* Left section: Title heading */}
-                <div style={{ flex: 1 }}>
+              <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                <div>
                   <div
                     style={{
                       fontFamily: "var(--font-mono)",
@@ -724,46 +741,44 @@ export function BentoHero() {
                   <h3
                     style={{
                       fontFamily: "var(--font-headline)",
-                      fontSize: "24px",
+                      fontSize: "20px",
                       fontWeight: 700,
                       color: "var(--text-primary)",
                       lineHeight: 1.2,
+                      marginBottom: "12px",
                       letterSpacing: "-0.01em",
                     }}
                   >
                     Purdue's Largest Technical <span style={{ color: "var(--electric-blue)" }}>Student Organization</span>
                   </h3>
-                </div>
-
-                {/* Right section: Paragraph and CTA button */}
-                <div style={{ flex: 1.2, display: "flex", flexDirection: "column", justifyContent: "space-between", gap: "16px" }}>
                   <p
                     style={{
                       fontFamily: "var(--font-body)",
-                      fontSize: "14px",
+                      fontSize: "13px",
                       color: "var(--text-secondary)",
-                      lineHeight: 1.6,
+                      lineHeight: 1.55,
+                      marginBottom: "20px",
                     }}
                   >
                     {aboutContent}
                   </p>
-                  <div>
-                    <Link
-                      to="/about"
-                      className="btn-gold hover-glow-gold"
-                      style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "8px",
-                        textDecoration: "none",
-                        padding: "8px 18px",
-                        fontSize: "0.75rem",
-                      }}
-                    >
-                      Read Our Heritage
-                      <ChevronRight size={14} />
-                    </Link>
-                  </div>
+                </div>
+                <div>
+                  <Link
+                    to="/about"
+                    className="btn-gold hover-glow-gold"
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      textDecoration: "none",
+                      padding: "8px 18px",
+                      fontSize: "0.75rem",
+                    }}
+                  >
+                    Read Our Heritage
+                    <ChevronRight size={14} />
+                  </Link>
                 </div>
               </div>
             </div>
@@ -792,11 +807,11 @@ export function BentoHero() {
             grid-row: span 2;
           }
           .pcb-bento-tile {
-            grid-column: span 2;
+            grid-column: span 3;
             grid-row: span 2;
           }
           .about-bento-tile {
-            grid-column: span 2;
+            grid-column: span 1;
             grid-row: span 2;
           }
         }
@@ -833,22 +848,6 @@ export function BentoHero() {
         }
         .custom-terminal-scrollbar::-webkit-scrollbar-thumb:hover {
           background: var(--cyber-gold);
-        }
-
-        /* About Us Content Horizontal Wrapper */
-        .about-content-wrapper {
-          display: flex;
-          flex-direction: column;
-          gap: 20px;
-          height: 100%;
-          justify-content: space-between;
-        }
-        @media (min-width: 768px) {
-          .about-content-wrapper {
-            flex-direction: row;
-            align-items: center;
-            gap: 32px;
-          }
         }
       `}</style>
     </section>
