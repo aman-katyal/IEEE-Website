@@ -513,16 +513,7 @@ export function BentoHero() {
                 
                 {/* Visual Server/Equipment Rack Layout */}
                 <div 
-                  style={{ 
-                    display: "flex", 
-                    flexDirection: "column", 
-                    gap: "10px", 
-                    maxHeight: "220px", 
-                    overflowY: "auto", 
-                    paddingRight: "8px",
-                    marginBottom: "20px" 
-                  }} 
-                  className="custom-terminal-scrollbar"
+                  className="rack-slots-grid"
                 >
                   {activeSlots.map((slot) => {
                     const isHovered = hoveredSlot?.id === slot.id;
@@ -682,7 +673,7 @@ export function BentoHero() {
 
             {/* 5. About Us (2x2 span) */}
             <div
-              className="glass-card"
+              className="glass-card about-bento-tile"
               style={{
                 padding: "24px",
                 display: "flex",
@@ -777,12 +768,29 @@ export function BentoHero() {
             grid-column: span 2;
             grid-row: span 2;
           }
+          .about-bento-tile {
+            grid-column: span 2;
+            grid-row: span 2;
+          }
         }
 
         /* pulse dot animation fallback keyframe in case it is not globally present */
         @keyframes pulse-dot {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.4; }
+        }
+
+        /* Rack Slots Responsive Grid Layout */
+        .rack-slots-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 10px;
+          margin-bottom: 20px;
+        }
+        @media (min-width: 640px) {
+          .rack-slots-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
         }
 
         /* Custom Terminal Scrollbar */
