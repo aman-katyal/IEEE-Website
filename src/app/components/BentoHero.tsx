@@ -135,160 +135,59 @@ interface RackSlot {
   link: string;
 }
 
-const COMMITTEE_STATUS_METADATA: Record<string, { tag: string; status: string; load: string; indicator: string }> = {
-  rov: { tag: "ROV", status: "THRUSTER_PID_LKD", load: "96%", indicator: "RUNNING" },
-  csociety: { tag: "CS", status: "PORTAL_API_OK", load: "92%", indicator: "STABLE" },
-  aesc: { tag: "AESC", status: "AVIONICS_TX_OK", load: "88%", indicator: "ACTIVE" },
-  "software-saturdays": { tag: "SWSAT", status: "BOOTCAMP_READY", load: "100%", indicator: "ONLINE" },
-  racing: { tag: "RACING", status: "LIDAR_PATH_CALC", load: "94%", indicator: "RUNNING" },
-  mtts: { tag: "MTTS", status: "RF_TX_STABLE", load: "85%", indicator: "ONLINE" },
-  embs: { tag: "EMBS", status: "BIOMETRIC_SIG_OK", load: "90%", indicator: "STABLE" },
-  eds: { tag: "EDS", status: "SEMI_FAB_STABLE", load: "80%", indicator: "ACTIVE" },
-  smc: { tag: "SMC", status: "CYBERNETIC_SYS_OK", load: "87%", indicator: "RUNNING" },
+const COMMITTEE_STATUS_METADATA: Record<string, { tag: string; indicator: string }> = {
+  rov:                  { tag: "ROV",    indicator: "RUNNING" },
+  csociety:             { tag: "CS",     indicator: "STABLE"  },
+  aesc:                 { tag: "AESC",   indicator: "ACTIVE"  },
+  "software-saturdays": { tag: "SWSAT",  indicator: "ONLINE"  },
+  racing:               { tag: "RACING", indicator: "RUNNING" },
+  mtts:                 { tag: "MTTS",   indicator: "ONLINE"  },
+  embs:                 { tag: "EMBS",   indicator: "STABLE"  },
+  eds:                  { tag: "EDS",    indicator: "ACTIVE"  },
+  smc:                  { tag: "SMC",    indicator: "RUNNING" },
 };
 
 function makeDisplayTitle(title: string) {
   return title.replace(/\(.*\)/, "").trim();
 }
 
-const FALLBACK_RACK_SLOTS: RackSlot[] = [
-  {
-    id: "rov",
-    tag: "ROV",
-    indicator: "RUNNING",
-    title: "Remotely Operated Vehicles (ROV)",
-    displayTitle: "Remotely Operated Vehicles",
-    description: "Designs and pilots autonomous underwater vehicles (AUVs) for marine exploration and international MATE competitions.",
-    meeting: "Tuesdays 7:00 PM in Lab B",
-    link: "/committee/rov"
-  },
-  {
-    id: "csociety",
-    tag: "CS",
-    indicator: "STABLE",
-    title: "IEEE Computer Society",
-    displayTitle: "IEEE Computer Society",
-    description: "Builds high-performance web systems, custom API integrations, software tools, and hosts coding hackathons.",
-    meeting: "Wednesdays 6:00 PM in EE 224",
-    link: "/committee/csociety"
-  },
-  {
-    id: "aesc",
-    tag: "AESC",
-    indicator: "ACTIVE",
-    title: "Aerial Robotics & Solar (AESC)",
-    displayTitle: "Aerial Robotics & Solar",
-    description: "Engineers solar tracking systems, heavy-lift flight frames, telemetry systems, and remote energy collection arrays.",
-    meeting: "Thursdays 6:30 PM in Lab C",
-    link: "/committee/aesc"
-  },
-  {
-    id: "software-saturdays",
-    tag: "SWSAT",
-    indicator: "ONLINE",
-    title: "Software Saturdays",
-    displayTitle: "Software Saturdays",
-    description: "Teaches introductory web development, Git flow, and software engineering foundations to students of all majors.",
-    meeting: "Saturdays 10:00 AM in EE 129",
-    link: "/committee/software-saturdays"
-  },
-  {
-    id: "racing",
-    tag: "RACING",
-    indicator: "RUNNING",
-    title: "Autonomous Racing",
-    displayTitle: "Autonomous Racing",
-    description: "Builds scale autonomous racing vehicles, deploying path planning and computer vision algorithms.",
-    meeting: "Mondays 6:30 PM in EE 224",
-    link: "/committee/racing"
-  },
-  {
-    id: "mtts",
-    tag: "MTTS",
-    indicator: "ONLINE",
-    title: "Microwave Theory and Technology (MTT-S)",
-    displayTitle: "Microwave Theory & Technology",
-    description: "Designs radio frequency circuits, microstrip patch antennas, and wireless telemetry transceivers.",
-    meeting: "Wednesdays 7:00 PM in Lab C",
-    link: "/committee/mtts"
-  },
-  {
-    id: "embs",
-    tag: "EMBS",
-    indicator: "STABLE",
-    title: "Engineering in Medicine and Biology (EMBS)",
-    displayTitle: "Engineering in Medicine & Biology",
-    description: "Focuses on biomedical devices, signal processing of muscle impulses (EMG/EEG), and health tracking sensors.",
-    meeting: "Thursdays 7:00 PM in EE 117",
-    link: "/committee/embs"
-  },
-  {
-    id: "eds",
-    tag: "EDS",
-    indicator: "ACTIVE",
-    title: "Electron Devices Society (EDS)",
-    displayTitle: "Electron Devices Society",
-    description: "Studies semiconductor physics, microelectronics design, and wafer fabrication processes.",
-    meeting: "Mondays 7:00 PM in EE 115",
-    link: "/committee/eds"
-  },
-  {
-    id: "smc",
-    tag: "SMC",
-    indicator: "RUNNING",
-    title: "Systems, Man, and Cybernetics (SMC)",
-    displayTitle: "Systems, Man & Cybernetics",
-    description: "Explores human-machine interfaces, adaptive system control, and cybernetic architectures.",
-    meeting: "Tuesdays 6:00 PM in EE 129",
-    link: "/committee/smc"
-  }
-];
-
-const FALLBACK_STATS: StatItem[] = [
-  { value: 750, suffix: "+", label: "Active Members", sublabel: "Across all disciplines" },
-  { value: 9, suffix: "", label: "Technical Teams", sublabel: "Project committees" },
-  { value: 1903, suffix: "", label: "Established", sublabel: "Legacy of engineering" },
-  { value: 50000, prefix: "$", suffix: "", label: "Raised Annually", sublabel: "Corporate funding" },
-];
-
 export function BentoHero() {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const { data: homeData, loading: homeLoading } = useHomePage();
   const { committees, loading: committeesLoading } = useCommittees();
-  
+
   const [hoveredSlot, setHoveredSlot] = useState<RackSlot | null>(null);
-  
+
   const isLight = theme === "light";
   const loading = homeLoading || committeesLoading;
 
-  const heroTitle = homeData?.heroTitle || "Fostering technological innovation and excellence for the benefit of humanity.";
-  const heroSubtitle = homeData?.heroSubtitle || "— IEEE Mission Statement";
-  const stats = (homeData?.stats && homeData.stats.length > 0) ? homeData.stats : FALLBACK_STATS;
+  // All content comes directly from Sanity — no hardcoded fallbacks
+  const heroTitle    = homeData?.heroTitle    ?? null;
+  const heroSubtitle = homeData?.heroSubtitle ?? null;
+  const heroImage    = homeData?.heroImage    ?? null;
+  const aboutContent = homeData?.aboutContent ?? null;
+  const stats: StatItem[] = (homeData?.stats && homeData.stats.length > 0) ? homeData.stats : [];
 
-  const aboutContent = homeData?.aboutContent || "Purdue IEEE is the university's largest technical organization. We engineer drones, design radio transmitters, program intelligent robots, and lead hands-on student projects.";
-
-  // Dynamically resolve slots from Sanity committees, falling back to all 9 standard committees
+  // Resolve committee slots from Sanity only
   const activeSlots: RackSlot[] = (committees && committees.length > 0)
     ? committees.map((c) => {
-        const meta = COMMITTEE_STATUS_METADATA[c.id.toLowerCase()] || {
+        const meta = COMMITTEE_STATUS_METADATA[c.id.toLowerCase()] ?? {
           tag: c.shortName,
           indicator: "ONLINE",
         };
         return {
           id: c.id,
-          tag: meta.tag || c.shortName,
-          indicator: c.status || meta.indicator,
+          tag: meta.tag ?? c.shortName,
+          indicator: c.status ?? meta.indicator,
           title: c.name,
           displayTitle: makeDisplayTitle(c.name),
-          description: c.description || c.tagline || "",
-          meeting: c.meetingSchedule || "Check Discord for schedule",
+          description: c.description ?? c.tagline ?? "",
+          meeting: c.meetingSchedule ?? "Check Discord for schedule",
           link: `/committee/${c.id}`,
         };
       })
-    : FALLBACK_RACK_SLOTS;
-
-  const heroImage = homeData?.heroImage || "/images/general IEEE pictures/ieee whole team photo.webp";
+    : [];
 
   return (
     <section
@@ -365,45 +264,49 @@ export function BentoHero() {
                 justifyContent: "center",
                 position: "relative",
                 overflow: "hidden",
-                backgroundImage: `linear-gradient(to right, rgba(10, 10, 12, 0.92) 0%, rgba(10, 10, 12, 0.55) 38%, rgba(10, 10, 12, 0.35) 58%, rgba(10, 10, 12, 0.88) 100%), linear-gradient(to bottom, rgba(10, 10, 12, 0.15) 0%, transparent 30%, transparent 65%, rgba(10, 10, 12, 0.75) 100%), url('${heroImage}')`,
+                backgroundImage: heroImage
+                  ? `linear-gradient(to right, rgba(10, 10, 12, 0.92) 0%, rgba(10, 10, 12, 0.55) 38%, rgba(10, 10, 12, 0.35) 58%, rgba(10, 10, 12, 0.88) 100%), linear-gradient(to bottom, rgba(10, 10, 12, 0.15) 0%, transparent 30%, transparent 65%, rgba(10, 10, 12, 0.75) 100%), url('${heroImage}')`
+                  : undefined,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
               }}
             >
-              <h1
-                style={{
-                  fontFamily: "var(--font-headline)",
-                  fontSize: "clamp(28px, 4.5vw, 46px)",
-                  fontWeight: 700,
-                  lineHeight: 1.15,
-                  color: "var(--text-primary)",
-                  letterSpacing: "-0.02em",
-                  marginBottom: "16px",
-                }}
-              >
-                {heroTitle.includes("innovation") ? (
-                  <>
-                    {heroTitle.split("innovation")[0]}
-                    <span style={{ color: "var(--electric-blue)" }}>
-                      innovation
-                    </span>
-                    {heroTitle.split("innovation")[1]}
-                  </>
-                ) : heroTitle}
-              </h1>
+              {heroTitle && (
+                <h1
+                  style={{
+                    fontFamily: "var(--font-headline)",
+                    fontSize: "clamp(28px, 4.5vw, 46px)",
+                    fontWeight: 700,
+                    lineHeight: 1.15,
+                    color: "var(--text-primary)",
+                    letterSpacing: "-0.02em",
+                    marginBottom: "16px",
+                  }}
+                >
+                  {heroTitle.includes("innovation") ? (
+                    <>
+                      {heroTitle.split("innovation")[0]}
+                      <span style={{ color: "var(--electric-blue)" }}>innovation</span>
+                      {heroTitle.split("innovation")[1]}
+                    </>
+                  ) : heroTitle}
+                </h1>
+              )}
               
-              <p
-                style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: "0.75rem",
-                  color: "var(--text-muted)",
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  marginBottom: "32px",
-                }}
-              >
-                {heroSubtitle}
-              </p>
+              {heroSubtitle && (
+                <p
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: "0.75rem",
+                    color: "var(--text-muted)",
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                    marginBottom: "32px",
+                  }}
+                >
+                  {heroSubtitle}
+                </p>
+              )}
 
               <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
                 <MagneticButton
@@ -737,17 +640,19 @@ export function BentoHero() {
                   >
                     Purdue's Largest Technical <span style={{ color: "var(--electric-blue)" }}>Student Organization</span>
                   </h3>
-                  <p
-                    style={{
-                      fontFamily: "var(--font-body)",
-                      fontSize: "13px",
-                      color: "var(--text-secondary)",
-                      lineHeight: 1.55,
-                      marginBottom: "20px",
-                    }}
-                  >
-                    {aboutContent}
-                  </p>
+                  {aboutContent && (
+                    <p
+                      style={{
+                        fontFamily: "var(--font-body)",
+                        fontSize: "13px",
+                        color: "var(--text-secondary)",
+                        lineHeight: 1.55,
+                        marginBottom: "20px",
+                      }}
+                    >
+                      {aboutContent}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <Link

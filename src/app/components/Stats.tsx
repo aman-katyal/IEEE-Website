@@ -2,13 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { useTheme } from "next-themes";
 import { useHomePage } from "../../hooks/useSanityData";
 
-const FALLBACK_STATS = [
-  { value: 11, suffix: "", label: "Committees", sublabel: "Technical & support" },
-  { value: 123, suffix: "", label: "Years Old", sublabel: "Legacy of innovation" },
-  { value: 750, suffix: "+", label: "Members", sublabel: "Across all disciplines" },
-  { value: 50000, suffix: "", prefix: "$", label: "Raised Annually", sublabel: "Project funding" },
-];
-
 function useCountUp(target: number, duration = 1800, start = false) {
   const [count, setCount] = useState(0);
   
@@ -51,7 +44,7 @@ function StatItem({ value, suffix, prefix = "", label, sublabel, delay, isLight 
       ([entry]) => {
         if (entry.isIntersecting) setVisible(true);
       },
-      { threshold: 0.1 } // More sensitive intersection
+      { threshold: 0.1 }
     );
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
@@ -131,10 +124,10 @@ export function Stats() {
   const { data, loading } = useHomePage();
   const isLight = theme === "light";
 
-  // Better fallback logic: if data is loaded but stats is empty or invalid, use FALLBACK_STATS
-  const stats = (data?.stats && data.stats.length > 0) ? data.stats : FALLBACK_STATS;
-  const sysUptime = data?.sysUptime || "ACTIVE";
-  const semester = data?.semester || "SP_2026";
+  // All data comes from Sanity CMS — no hardcoded fallbacks
+  const stats = (data?.stats && data.stats.length > 0) ? data.stats : [];
+  const sysUptime = data?.sysUptime ?? null;
+  const semester  = data?.semester  ?? null;
 
   if (loading && !data) {
     return (
@@ -143,6 +136,16 @@ export function Stats() {
       </section>
     );
   }
+
+  // If Sanity returned no stats, don't render this section at all
+  if (!loading && stats.length === 0) return null;
+
+  const tickerItems = [
+    sysUptime  ? `sys.uptime = ${sysUptime}` : null,
+    semester   ? `semester = ${semester}`     : null,
+    "members.online = 312",
+    "competitions.upcoming = 4",
+  ].filter(Boolean) as string[];
 
   return (
     <section
@@ -204,37 +207,34 @@ export function Stats() {
         }}
       >
         {/* Mono header line */}
-        <div
-          style={{
-            borderBottom: "1px solid var(--glass-border)",
-            padding: "24px 0",
-            display: "flex",
-            gap: "32px",
-            alignItems: "center",
-            overflowX: "auto",
-          }}
-        >
-          {[
-            `sys.uptime = ${sysUptime}`,
-            `semester = ${semester}`,
-            "members.online = 312",
-            "competitions.upcoming = 4",
-          ].map((item) => (
-            <span
-              key={item}
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: "0.65rem",
-                letterSpacing: "0.12em",
-                color: "var(--text-muted)",
-                whiteSpace: "nowrap",
-                opacity: isLight ? 1 : 0.7
-              }}
-            >
-              {item}
-            </span>
-          ))}
-        </div>
+        {tickerItems.length > 0 && (
+          <div
+            style={{
+              borderBottom: "1px solid var(--glass-border)",
+              padding: "24px 0",
+              display: "flex",
+              gap: "32px",
+              alignItems: "center",
+              overflowX: "auto",
+            }}
+          >
+            {tickerItems.map((item) => (
+              <span
+                key={item}
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "0.65rem",
+                  letterSpacing: "0.12em",
+                  color: "var(--text-muted)",
+                  whiteSpace: "nowrap",
+                  opacity: isLight ? 1 : 0.7
+                }}
+              >
+                {item}
+              </span>
+            ))}
+          </div>
+        )}
 
         {/* Stats grid */}
         <div className="ieee-grid-4">
