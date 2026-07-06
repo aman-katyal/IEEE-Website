@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { useTheme } from "next-themes";
 import { motion, AnimatePresence } from "motion/react";
-import { ChevronRight, Cpu, Radio, ShieldAlert, Cpu as SensorIcon, ArrowUpRight } from "lucide-react";
+import { ChevronRight, ArrowUpRight } from "lucide-react";
 import { useHomePage, useCommittees } from "../../hooks/useSanityData";
 import { MagneticButton } from "./MagneticButton";
 import { Skeleton } from "boneyard-js/react";
@@ -33,7 +33,15 @@ function useCountUp(target: number, duration = 1800, start = false) {
 }
 
 // ─── Stat Item (Component) ───────────────────────────────────────────
-function CyclingStat({ stats, isLight }: { stats: any[]; isLight: boolean }) {
+interface StatItem {
+  value: number;
+  suffix: string;
+  label: string;
+  sublabel: string;
+  prefix?: string;
+}
+
+function CyclingStat({ stats, isLight }: { stats: StatItem[]; isLight: boolean }) {
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -119,10 +127,9 @@ function CyclingStat({ stats, isLight }: { stats: any[]; isLight: boolean }) {
 interface RackSlot {
   id: string;
   tag: string;
-  status: string;
-  load: string;
   indicator: string;
   title: string;
+  displayTitle: string; // Pre-computed: title with parenthetical suffix stripped
   description: string;
   meeting: string;
   link: string;
@@ -140,14 +147,17 @@ const COMMITTEE_STATUS_METADATA: Record<string, { tag: string; status: string; l
   smc: { tag: "SMC", status: "CYBERNETIC_SYS_OK", load: "87%", indicator: "RUNNING" },
 };
 
+function makeDisplayTitle(title: string) {
+  return title.replace(/\(.*\)/, "").trim();
+}
+
 const FALLBACK_RACK_SLOTS: RackSlot[] = [
   {
     id: "rov",
     tag: "ROV",
-    status: "THRUSTER_PID_LKD",
-    load: "96%",
     indicator: "RUNNING",
     title: "Remotely Operated Vehicles (ROV)",
+    displayTitle: "Remotely Operated Vehicles",
     description: "Designs and pilots autonomous underwater vehicles (AUVs) for marine exploration and international MATE competitions.",
     meeting: "Tuesdays 7:00 PM in Lab B",
     link: "/committee/rov"
@@ -155,10 +165,9 @@ const FALLBACK_RACK_SLOTS: RackSlot[] = [
   {
     id: "csociety",
     tag: "CS",
-    status: "PORTAL_API_OK",
-    load: "92%",
     indicator: "STABLE",
     title: "IEEE Computer Society",
+    displayTitle: "IEEE Computer Society",
     description: "Builds high-performance web systems, custom API integrations, software tools, and hosts coding hackathons.",
     meeting: "Wednesdays 6:00 PM in EE 224",
     link: "/committee/csociety"
@@ -166,10 +175,9 @@ const FALLBACK_RACK_SLOTS: RackSlot[] = [
   {
     id: "aesc",
     tag: "AESC",
-    status: "AVIONICS_TX_OK",
-    load: "88%",
     indicator: "ACTIVE",
     title: "Aerial Robotics & Solar (AESC)",
+    displayTitle: "Aerial Robotics & Solar",
     description: "Engineers solar tracking systems, heavy-lift flight frames, telemetry systems, and remote energy collection arrays.",
     meeting: "Thursdays 6:30 PM in Lab C",
     link: "/committee/aesc"
@@ -177,21 +185,19 @@ const FALLBACK_RACK_SLOTS: RackSlot[] = [
   {
     id: "software-saturdays",
     tag: "SWSAT",
-    status: "BOOTCAMP_READY",
-    load: "100%",
     indicator: "ONLINE",
     title: "Software Saturdays",
+    displayTitle: "Software Saturdays",
     description: "Teaches introductory web development, Git flow, and software engineering foundations to students of all majors.",
     meeting: "Saturdays 10:00 AM in EE 129",
-    link: "/committee/csociety"
+    link: "/committee/software-saturdays"
   },
   {
     id: "racing",
     tag: "RACING",
-    status: "LIDAR_PATH_CALC",
-    load: "94%",
     indicator: "RUNNING",
     title: "Autonomous Racing",
+    displayTitle: "Autonomous Racing",
     description: "Builds scale autonomous racing vehicles, deploying path planning and computer vision algorithms.",
     meeting: "Mondays 6:30 PM in EE 224",
     link: "/committee/racing"
@@ -199,10 +205,9 @@ const FALLBACK_RACK_SLOTS: RackSlot[] = [
   {
     id: "mtts",
     tag: "MTTS",
-    status: "RF_TX_STABLE",
-    load: "85%",
     indicator: "ONLINE",
     title: "Microwave Theory and Technology (MTT-S)",
+    displayTitle: "Microwave Theory & Technology",
     description: "Designs radio frequency circuits, microstrip patch antennas, and wireless telemetry transceivers.",
     meeting: "Wednesdays 7:00 PM in Lab C",
     link: "/committee/mtts"
@@ -210,10 +215,9 @@ const FALLBACK_RACK_SLOTS: RackSlot[] = [
   {
     id: "embs",
     tag: "EMBS",
-    status: "BIOMETRIC_SIG_OK",
-    load: "90%",
     indicator: "STABLE",
     title: "Engineering in Medicine and Biology (EMBS)",
+    displayTitle: "Engineering in Medicine & Biology",
     description: "Focuses on biomedical devices, signal processing of muscle impulses (EMG/EEG), and health tracking sensors.",
     meeting: "Thursdays 7:00 PM in EE 117",
     link: "/committee/embs"
@@ -221,10 +225,9 @@ const FALLBACK_RACK_SLOTS: RackSlot[] = [
   {
     id: "eds",
     tag: "EDS",
-    status: "SEMI_FAB_STABLE",
-    load: "80%",
     indicator: "ACTIVE",
     title: "Electron Devices Society (EDS)",
+    displayTitle: "Electron Devices Society",
     description: "Studies semiconductor physics, microelectronics design, and wafer fabrication processes.",
     meeting: "Mondays 7:00 PM in EE 115",
     link: "/committee/eds"
@@ -232,19 +235,18 @@ const FALLBACK_RACK_SLOTS: RackSlot[] = [
   {
     id: "smc",
     tag: "SMC",
-    status: "CYBERNETIC_SYS_OK",
-    load: "87%",
     indicator: "RUNNING",
     title: "Systems, Man, and Cybernetics (SMC)",
+    displayTitle: "Systems, Man & Cybernetics",
     description: "Explores human-machine interfaces, adaptive system control, and cybernetic architectures.",
     meeting: "Tuesdays 6:00 PM in EE 129",
     link: "/committee/smc"
   }
 ];
 
-const FALLBACK_STATS = [
+const FALLBACK_STATS: StatItem[] = [
   { value: 750, suffix: "+", label: "Active Members", sublabel: "Across all disciplines" },
-  { value: 11, suffix: "", label: "Technical Teams", sublabel: "Project committees" },
+  { value: 9, suffix: "", label: "Technical Teams", sublabel: "Project committees" },
   { value: 1903, suffix: "", label: "Established", sublabel: "Legacy of engineering" },
   { value: 50000, prefix: "$", suffix: "", label: "Raised Annually", sublabel: "Corporate funding" },
 ];
@@ -262,8 +264,6 @@ export function BentoHero() {
 
   const heroTitle = homeData?.heroTitle || "Fostering technological innovation and excellence for the benefit of humanity.";
   const heroSubtitle = homeData?.heroSubtitle || "— IEEE Mission Statement";
-  const sysUptime = homeData?.sysUptime || "ACTIVE";
-  const semester = homeData?.semester || "SP_2026";
   const stats = (homeData?.stats && homeData.stats.length > 0) ? homeData.stats : FALLBACK_STATS;
 
   const aboutContent = homeData?.aboutContent || "Purdue IEEE is the university's largest technical organization. We engineer drones, design radio transmitters, program intelligent robots, and lead hands-on student projects.";
@@ -273,17 +273,14 @@ export function BentoHero() {
     ? committees.map((c) => {
         const meta = COMMITTEE_STATUS_METADATA[c.id.toLowerCase()] || {
           tag: c.shortName,
-          status: "SYSTEMS_ACTIVE",
-          load: "90%",
           indicator: "ONLINE",
         };
         return {
           id: c.id,
           tag: meta.tag || c.shortName,
-          status: meta.status,
-          load: meta.load,
           indicator: c.status || meta.indicator,
           title: c.name,
+          displayTitle: makeDisplayTitle(c.name),
           description: c.description || c.tagline || "",
           meeting: c.meetingSchedule || "Check Discord for schedule",
           link: `/committee/${c.id}`,
@@ -306,22 +303,6 @@ export function BentoHero() {
         overflow: "hidden",
       }}
     >
-      {/* Background Photo */}
-      {heroImage && (
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            backgroundImage: `url('${heroImage}')`,
-            backgroundSize: "cover",
-            backgroundPosition: "center 25%",
-            opacity: isLight ? 0.35 : 0.22,
-            transition: "background-image 0.8s ease-in-out",
-            zIndex: 1,
-          }}
-        />
-      )}
-
       {/* Background Graphic Grid */}
       <div
         className="ieee-grid-bg"
@@ -329,7 +310,7 @@ export function BentoHero() {
           position: "absolute",
           inset: 0,
           opacity: isLight ? 0.3 : 0.25,
-          zIndex: 2,
+          zIndex: 1,
         }}
       />
       
@@ -382,7 +363,11 @@ export function BentoHero() {
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "center",
-                background: "rgba(10, 10, 12, 0.2)",
+                position: "relative",
+                overflow: "hidden",
+                backgroundImage: `linear-gradient(to right, rgba(10, 10, 12, 0.95) 0%, rgba(10, 10, 12, 0.8) 45%, rgba(10, 10, 12, 0.15) 100%), url('${heroImage}')`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
               }}
             >
               <h1
@@ -528,8 +513,9 @@ export function BentoHero() {
                 </div>
                 
                 {/* Visual Server/Equipment Rack Layout */}
-                <div 
+                <div
                   className="rack-slots-grid"
+                  onMouseLeave={() => setHoveredSlot(null)}
                 >
                   {activeSlots.map((slot) => {
                     const isHovered = hoveredSlot?.id === slot.id;
@@ -577,7 +563,7 @@ export function BentoHero() {
                           textAlign: "left",
                           fontWeight: 500
                         }}>
-                          {slot.title.replace(/\(.*\)/, "").trim()}
+                          {slot.displayTitle}
                         </span>
 
                         {/* Indicator Status Light */}
@@ -787,69 +773,7 @@ export function BentoHero() {
         </Skeleton>
       </div>
 
-      <style>{`
-        /* Bento Grid Layout Setup */
-        .bento-grid {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 24px;
-          width: 100%;
-        }
 
-        /* Desktop specific grids */
-        @media (min-width: 1024px) {
-          .bento-grid {
-            grid-template-columns: repeat(4, 1fr);
-            grid-auto-rows: minmax(220px, auto);
-          }
-          .hero-bento-tile {
-            grid-column: span 3;
-            grid-row: span 2;
-          }
-          .pcb-bento-tile {
-            grid-column: span 3;
-            grid-row: span 2;
-          }
-          .about-bento-tile {
-            grid-column: span 1;
-            grid-row: span 2;
-          }
-        }
-
-        /* pulse dot animation fallback keyframe in case it is not globally present */
-        @keyframes pulse-dot {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.4; }
-        }
-
-        /* Rack Slots Responsive Grid Layout */
-        .rack-slots-grid {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 10px;
-          margin-bottom: 20px;
-        }
-        @media (min-width: 640px) {
-          .rack-slots-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-          }
-        }
-
-        /* Custom Terminal Scrollbar */
-        .custom-terminal-scrollbar::-webkit-scrollbar {
-          width: 4px;
-        }
-        .custom-terminal-scrollbar::-webkit-scrollbar-track {
-          background: rgba(10, 10, 12, 0.1);
-        }
-        .custom-terminal-scrollbar::-webkit-scrollbar-thumb {
-          background: var(--electric-blue);
-          border-radius: 2px;
-        }
-        .custom-terminal-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: var(--cyber-gold);
-        }
-      `}</style>
     </section>
   );
 }

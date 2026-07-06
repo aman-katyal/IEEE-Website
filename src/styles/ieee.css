@@ -605,3 +605,64 @@
 .opacity-0-init {
   opacity: 0;
 }
+
+/* ─── BentoHero Layout ────────────────────────────────────────── */
+.bento-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .bento-grid {
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: minmax(220px, auto);
+  }
+  .hero-bento-tile {
+    grid-column: span 3;
+    grid-row: span 2;
+  }
+  .pcb-bento-tile {
+    grid-column: span 3;
+    grid-row: span 2;
+  }
+  .about-bento-tile {
+    grid-column: span 1;
+    grid-row: span 2;
+  }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Rack Slots Responsive Grid Layout */
+.rack-slots-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+@media (min-width: 640px) {
+  .rack-slots-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Custom Terminal Scrollbar */
+.custom-terminal-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-terminal-scrollbar::-webkit-scrollbar-track {
+  background: rgba(10, 10, 12, 0.1);
+}
+.custom-terminal-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--electric-blue);
+  border-radius: 2px;
+}
+.custom-terminal-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--cyber-gold);
+}
