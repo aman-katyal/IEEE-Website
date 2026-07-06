@@ -365,7 +365,7 @@ export function BentoHero() {
                 justifyContent: "center",
                 position: "relative",
                 overflow: "hidden",
-                backgroundImage: `linear-gradient(to right, rgba(10, 10, 12, 0.95) 0%, rgba(10, 10, 12, 0.8) 45%, rgba(10, 10, 12, 0.15) 100%), url('${heroImage}')`,
+                backgroundImage: `linear-gradient(to right, rgba(10, 10, 12, 0.92) 0%, rgba(10, 10, 12, 0.55) 38%, rgba(10, 10, 12, 0.35) 58%, rgba(10, 10, 12, 0.88) 100%), linear-gradient(to bottom, rgba(10, 10, 12, 0.15) 0%, transparent 30%, transparent 65%, rgba(10, 10, 12, 0.75) 100%), url('${heroImage}')`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
               }}
