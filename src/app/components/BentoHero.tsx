@@ -426,7 +426,7 @@ export function BentoHero() {
               </div>
             </div>
 
-            {/* 2. System Telemetry Console (1x1 span) */}
+            {/* 2. Branch Telemetry Console (1x1 span) */}
             <div
               className="glass-card"
               style={{
@@ -449,26 +449,24 @@ export function BentoHero() {
                     marginBottom: "16px",
                   }}
                 >
-                  // System telemetry
+                  // Branch Telemetry
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "0.7rem", color: "var(--text-secondary)" }}>
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span style={{ color: "var(--text-muted)" }}>Uptime:</span>
-                    <span style={{ color: sysUptime === "ACTIVE" ? "#00C853" : "#FF5252", fontWeight: 700 }}>
-                      {sysUptime}
-                    </span>
+                    <span style={{ color: "var(--text-muted)" }}>HQ Location:</span>
+                    <span>EE 115 / EE 224</span>
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span style={{ color: "var(--text-muted)" }}>Term:</span>
-                    <span>{semester.replace("_", " ")}</span>
+                    <span style={{ color: "var(--text-muted)" }}>Active Projects:</span>
+                    <span>14 Teams</span>
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span style={{ color: "var(--text-muted)" }}>Socket:</span>
-                    <span>312_ONLINE</span>
+                    <span style={{ color: "var(--text-muted)" }}>Dues Rate:</span>
+                    <span>$15 / semester</span>
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span style={{ color: "var(--text-muted)" }}>Telemetry:</span>
-                    <span>REST_API_OK</span>
+                    <span style={{ color: "var(--text-muted)" }}>Discord Hub:</span>
+                    <span style={{ color: "var(--cyber-gold)" }}>1,200+ Members</span>
                   </div>
                 </div>
               </div>
@@ -476,7 +474,7 @@ export function BentoHero() {
               <div style={{ display: "flex", alignItems: "center", gap: "8px", borderTop: "1px solid var(--glass-border)", paddingTop: "12px", marginTop: "12px" }}>
                 <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#00C853", animation: "pulse-dot 2s ease-in-out infinite" }} />
                 <span style={{ fontSize: "0.55rem", color: "var(--text-muted)", letterSpacing: "0.08em" }}>
-                  Live Core Link
+                  Purdue West Lafayette
                 </span>
               </div>
             </div>
@@ -525,35 +523,35 @@ export function BentoHero() {
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "space-between",
-                          padding: "10px 14px",
+                          padding: "8px 12px",
                           border: `1px solid ${isHovered ? "var(--cyber-gold)" : "var(--glass-border)"}`,
                           borderRadius: "4px",
                           background: isHovered ? "rgba(0, 98, 155, 0.08)" : "rgba(10, 10, 12, 0.2)",
                           cursor: "pointer",
                           transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
                           fontFamily: "var(--font-mono)",
-                          fontSize: "0.68rem",
+                          fontSize: "0.65rem",
                         }}
                       >
                         {/* Tag identifier - Label explicitly as COMMITTEE */}
                         <span style={{ color: isHovered ? "var(--cyber-gold)" : "var(--electric-blue)", fontWeight: 700 }}>
-                          [COMMITTEE//{slot.tag}]
+                          [CMTE//{slot.tag}]
                         </span>
                         
                         {/* Status ticker */}
-                        <span className="hidden md:inline" style={{ color: "var(--text-secondary)", flex: 1, paddingLeft: "16px", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
+                        <span className="hidden md:inline" style={{ color: "var(--text-secondary)", flex: 1, paddingLeft: "10px", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
                           {slot.status}
                         </span>
                         
                         {/* Load bar */}
-                        <span className="hidden lg:inline" style={{ color: "var(--text-muted)", marginRight: "16px" }}>
+                        <span className="hidden xl:inline" style={{ color: "var(--text-muted)", marginRight: "12px" }}>
                           ||||| {slot.load}
                         </span>
 
                         {/* Indicator Status Light */}
                         <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                           <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: isHovered ? "var(--cyber-gold)" : "#00C853", boxShadow: isHovered ? "0 0 6px var(--cyber-gold)" : "0 0 6px #00C853" }} />
-                          <span style={{ fontSize: "0.6rem", color: "var(--text-primary)" }}>
+                          <span style={{ fontSize: "0.58rem", color: "var(--text-primary)" }}>
                             {slot.indicator}
                           </span>
                         </div>
@@ -570,7 +568,7 @@ export function BentoHero() {
                   border: "1px solid var(--glass-border)",
                   borderRadius: "4px",
                   padding: "16px",
-                  minHeight: "110px",
+                  minHeight: "90px",
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "center",
@@ -682,62 +680,66 @@ export function BentoHero() {
                 background: "rgba(10, 10, 12, 0.2)",
               }}
             >
-              <div>
-                <div
-                  style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: "0.6rem",
-                    letterSpacing: "0.15em",
-                    color: "var(--electric-blue)",
-                    textTransform: "uppercase",
-                    fontWeight: 700,
-                    marginBottom: "16px",
-                  }}
-                >
-                  // Who we are
+              <div className="about-content-wrapper">
+                {/* Left section: Title heading */}
+                <div style={{ flex: 1 }}>
+                  <div
+                    style={{
+                      fontFamily: "var(--font-mono)",
+                      fontSize: "0.6rem",
+                      letterSpacing: "0.15em",
+                      color: "var(--electric-blue)",
+                      textTransform: "uppercase",
+                      fontWeight: 700,
+                      marginBottom: "12px",
+                    }}
+                  >
+                    // Who we are
+                  </div>
+                  <h3
+                    style={{
+                      fontFamily: "var(--font-headline)",
+                      fontSize: "24px",
+                      fontWeight: 700,
+                      color: "var(--text-primary)",
+                      lineHeight: 1.2,
+                      letterSpacing: "-0.01em",
+                    }}
+                  >
+                    Purdue's Largest Technical <span style={{ color: "var(--electric-blue)" }}>Student Organization</span>
+                  </h3>
                 </div>
-                <h3
-                  style={{
-                    fontFamily: "var(--font-headline)",
-                    fontSize: "24px",
-                    fontWeight: 700,
-                    color: "var(--text-primary)",
-                    lineHeight: 1.2,
-                    marginBottom: "16px",
-                    letterSpacing: "-0.01em",
-                  }}
-                >
-                  Purdue's Largest Technical <span style={{ color: "var(--electric-blue)" }}>Student Organization</span>
-                </h3>
-                <p
-                  style={{
-                    fontFamily: "var(--font-body)",
-                    fontSize: "14px",
-                    color: "var(--text-secondary)",
-                    lineHeight: 1.6,
-                    marginBottom: "24px",
-                  }}
-                >
-                  {aboutContent}
-                </p>
-              </div>
 
-              <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <Link
-                  to="/about"
-                  className="btn-gold hover-glow-gold"
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    textDecoration: "none",
-                    padding: "8px 18px",
-                    fontSize: "0.75rem",
-                  }}
-                >
-                  Read Our Heritage
-                  <ChevronRight size={14} />
-                </Link>
+                {/* Right section: Paragraph and CTA button */}
+                <div style={{ flex: 1.2, display: "flex", flexDirection: "column", justifyContent: "space-between", gap: "16px" }}>
+                  <p
+                    style={{
+                      fontFamily: "var(--font-body)",
+                      fontSize: "14px",
+                      color: "var(--text-secondary)",
+                      lineHeight: 1.6,
+                    }}
+                  >
+                    {aboutContent}
+                  </p>
+                  <div>
+                    <Link
+                      to="/about"
+                      className="btn-gold hover-glow-gold"
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        textDecoration: "none",
+                        padding: "8px 18px",
+                        fontSize: "0.75rem",
+                      }}
+                    >
+                      Read Our Heritage
+                      <ChevronRight size={14} />
+                    </Link>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -758,7 +760,7 @@ export function BentoHero() {
         @media (min-width: 1024px) {
           .bento-grid {
             grid-template-columns: repeat(4, 1fr);
-            grid-auto-rows: 230px;
+            grid-auto-rows: minmax(220px, auto);
           }
           .hero-bento-tile {
             grid-column: span 3;
@@ -806,6 +808,22 @@ export function BentoHero() {
         }
         .custom-terminal-scrollbar::-webkit-scrollbar-thumb:hover {
           background: var(--cyber-gold);
+        }
+
+        /* About Us Content Horizontal Wrapper */
+        .about-content-wrapper {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+          height: 100%;
+          justify-content: space-between;
+        }
+        @media (min-width: 768px) {
+          .about-content-wrapper {
+            flex-direction: row;
+            align-items: center;
+            gap: 32px;
+          }
         }
       `}</style>
     </section>

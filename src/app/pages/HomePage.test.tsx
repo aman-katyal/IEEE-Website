@@ -137,7 +137,7 @@ describe('HomePage', () => {
 
     expect(screen.getByText('Committees')).toBeInTheDocument();
     expect(screen.getByText('Technical')).toBeInTheDocument();
-    expect(screen.getAllByText('ACTIVE').length).toBeGreaterThan(0);
+    expect(screen.getByText('HQ Location:')).toBeInTheDocument();
   });
 
   it('renders events section with correct content', () => {
