@@ -128,10 +128,22 @@ interface RackSlot {
   link: string;
 }
 
-const RACK_SLOTS: RackSlot[] = [
+const COMMITTEE_STATUS_METADATA: Record<string, { tag: string; status: string; load: string; indicator: string }> = {
+  rov: { tag: "ROV", status: "THRUSTER_PID_LKD", load: "96%", indicator: "RUNNING" },
+  csociety: { tag: "CS", status: "PORTAL_API_OK", load: "92%", indicator: "STABLE" },
+  aesc: { tag: "AESC", status: "AVIONICS_TX_OK", load: "88%", indicator: "ACTIVE" },
+  "software-saturdays": { tag: "SWSAT", status: "BOOTCAMP_READY", load: "100%", indicator: "ONLINE" },
+  racing: { tag: "RACING", status: "LIDAR_PATH_CALC", load: "94%", indicator: "RUNNING" },
+  mtts: { tag: "MTTS", status: "RF_TX_STABLE", load: "85%", indicator: "ONLINE" },
+  embs: { tag: "EMBS", status: "BIOMETRIC_SIG_OK", load: "90%", indicator: "STABLE" },
+  eds: { tag: "EDS", status: "SEMI_FAB_STABLE", load: "80%", indicator: "ACTIVE" },
+  smc: { tag: "SMC", status: "CYBERNETIC_SYS_OK", load: "87%", indicator: "RUNNING" },
+};
+
+const FALLBACK_RACK_SLOTS: RackSlot[] = [
   {
     id: "rov",
-    tag: "ROV-01",
+    tag: "ROV",
     status: "THRUSTER_PID_LKD",
     load: "96%",
     indicator: "RUNNING",
@@ -141,8 +153,8 @@ const RACK_SLOTS: RackSlot[] = [
     link: "/committee/rov"
   },
   {
-    id: "cs",
-    tag: "CS-02",
+    id: "csociety",
+    tag: "CS",
     status: "PORTAL_API_OK",
     load: "92%",
     indicator: "STABLE",
@@ -153,7 +165,7 @@ const RACK_SLOTS: RackSlot[] = [
   },
   {
     id: "aesc",
-    tag: "AESC-03",
+    tag: "AESC",
     status: "AVIONICS_TX_OK",
     load: "88%",
     indicator: "ACTIVE",
@@ -163,8 +175,8 @@ const RACK_SLOTS: RackSlot[] = [
     link: "/committee/aesc"
   },
   {
-    id: "swsat",
-    tag: "SWSAT-04",
+    id: "software-saturdays",
+    tag: "SWSAT",
     status: "BOOTCAMP_READY",
     load: "100%",
     indicator: "ONLINE",
@@ -172,6 +184,61 @@ const RACK_SLOTS: RackSlot[] = [
     description: "Teaches introductory web development, Git flow, and software engineering foundations to students of all majors.",
     meeting: "Saturdays 10:00 AM in EE 129",
     link: "/committee/csociety"
+  },
+  {
+    id: "racing",
+    tag: "RACING",
+    status: "LIDAR_PATH_CALC",
+    load: "94%",
+    indicator: "RUNNING",
+    title: "Autonomous Racing",
+    description: "Builds scale autonomous racing vehicles, deploying path planning and computer vision algorithms.",
+    meeting: "Mondays 6:30 PM in EE 224",
+    link: "/committee/racing"
+  },
+  {
+    id: "mtts",
+    tag: "MTTS",
+    status: "RF_TX_STABLE",
+    load: "85%",
+    indicator: "ONLINE",
+    title: "Microwave Theory and Technology (MTT-S)",
+    description: "Designs radio frequency circuits, microstrip patch antennas, and wireless telemetry transceivers.",
+    meeting: "Wednesdays 7:00 PM in Lab C",
+    link: "/committee/mtts"
+  },
+  {
+    id: "embs",
+    tag: "EMBS",
+    status: "BIOMETRIC_SIG_OK",
+    load: "90%",
+    indicator: "STABLE",
+    title: "Engineering in Medicine and Biology (EMBS)",
+    description: "Focuses on biomedical devices, signal processing of muscle impulses (EMG/EEG), and health tracking sensors.",
+    meeting: "Thursdays 7:00 PM in EE 117",
+    link: "/committee/embs"
+  },
+  {
+    id: "eds",
+    tag: "EDS",
+    status: "SEMI_FAB_STABLE",
+    load: "80%",
+    indicator: "ACTIVE",
+    title: "Electron Devices Society (EDS)",
+    description: "Studies semiconductor physics, microelectronics design, and wafer fabrication processes.",
+    meeting: "Mondays 7:00 PM in EE 115",
+    link: "/committee/eds"
+  },
+  {
+    id: "smc",
+    tag: "SMC",
+    status: "CYBERNETIC_SYS_OK",
+    load: "87%",
+    indicator: "RUNNING",
+    title: "Systems, Man, and Cybernetics (SMC)",
+    description: "Explores human-machine interfaces, adaptive system control, and cybernetic architectures.",
+    meeting: "Tuesdays 6:00 PM in EE 129",
+    link: "/committee/smc"
   }
 ];
 
@@ -200,6 +267,29 @@ export function BentoHero() {
   const stats = (homeData?.stats && homeData.stats.length > 0) ? homeData.stats : FALLBACK_STATS;
 
   const aboutContent = homeData?.aboutContent || "Purdue IEEE is the university's largest technical organization. We engineer drones, design radio transmitters, program intelligent robots, and lead hands-on student projects.";
+
+  // Dynamically resolve slots from Sanity committees, falling back to all 9 standard committees
+  const activeSlots: RackSlot[] = (committees && committees.length > 0)
+    ? committees.map((c) => {
+        const meta = COMMITTEE_STATUS_METADATA[c.id.toLowerCase()] || {
+          tag: c.shortName,
+          status: "SYSTEMS_ACTIVE",
+          load: "90%",
+          indicator: "ONLINE",
+        };
+        return {
+          id: c.id,
+          tag: meta.tag || c.shortName,
+          status: meta.status,
+          load: meta.load,
+          indicator: c.status || meta.indicator,
+          title: c.name,
+          description: c.description || c.tagline || "",
+          meeting: c.meetingSchedule || "Check Discord for schedule",
+          link: `/committee/${c.id}`,
+        };
+      })
+    : FALLBACK_RACK_SLOTS;
 
   return (
     <section
@@ -422,8 +512,19 @@ export function BentoHero() {
                 </div>
                 
                 {/* Visual Server/Equipment Rack Layout */}
-                <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "20px" }}>
-                  {RACK_SLOTS.map((slot) => {
+                <div 
+                  style={{ 
+                    display: "flex", 
+                    flexDirection: "column", 
+                    gap: "10px", 
+                    maxHeight: "220px", 
+                    overflowY: "auto", 
+                    paddingRight: "8px",
+                    marginBottom: "20px" 
+                  }} 
+                  className="custom-terminal-scrollbar"
+                >
+                  {activeSlots.map((slot) => {
                     const isHovered = hoveredSlot?.id === slot.id;
                     return (
                       <div
@@ -433,28 +534,28 @@ export function BentoHero() {
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "space-between",
-                          padding: "12px 16px",
+                          padding: "10px 14px",
                           border: `1px solid ${isHovered ? "var(--cyber-gold)" : "var(--glass-border)"}`,
                           borderRadius: "4px",
                           background: isHovered ? "rgba(0, 98, 155, 0.08)" : "rgba(10, 10, 12, 0.2)",
                           cursor: "pointer",
                           transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
                           fontFamily: "var(--font-mono)",
-                          fontSize: "0.7rem",
+                          fontSize: "0.68rem",
                         }}
                       >
-                        {/* Tag identifier */}
+                        {/* Tag identifier - Label explicitly as COMMITTEE */}
                         <span style={{ color: isHovered ? "var(--cyber-gold)" : "var(--electric-blue)", fontWeight: 700 }}>
-                          [{slot.tag}]
+                          [COMMITTEE//{slot.tag}]
                         </span>
                         
                         {/* Status ticker */}
-                        <span style={{ color: "var(--text-secondary)", flex: 1, paddingLeft: "16px", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
+                        <span className="hidden md:inline" style={{ color: "var(--text-secondary)", flex: 1, paddingLeft: "16px", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
                           {slot.status}
                         </span>
                         
                         {/* Load bar */}
-                        <span className="hidden sm:inline" style={{ color: "var(--text-muted)", marginRight: "16px" }}>
+                        <span className="hidden lg:inline" style={{ color: "var(--text-muted)", marginRight: "16px" }}>
                           ||||| {slot.load}
                         </span>
 
@@ -682,6 +783,21 @@ export function BentoHero() {
         @keyframes pulse-dot {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.4; }
+        }
+
+        /* Custom Terminal Scrollbar */
+        .custom-terminal-scrollbar::-webkit-scrollbar {
+          width: 4px;
+        }
+        .custom-terminal-scrollbar::-webkit-scrollbar-track {
+          background: rgba(10, 10, 12, 0.1);
+        }
+        .custom-terminal-scrollbar::-webkit-scrollbar-thumb {
+          background: var(--electric-blue);
+          border-radius: 2px;
+        }
+        .custom-terminal-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: var(--cyber-gold);
         }
       `}</style>
     </section>
