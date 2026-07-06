@@ -212,8 +212,8 @@ export function Footer() {
                       aria-label={social.platform}
                       className="hover-glow-blue"
                       style={{
-                        width: "36px",
-                        height: "36px",
+                        width: "44px",
+                        height: "44px",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",

@@ -403,6 +403,8 @@ export function Navigation() {
             <button
               className="nav-mobile-toggle"
               onClick={() => setMenuOpen(!menuOpen)}
+              aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
+              aria-expanded={menuOpen}
               style={{
                 background: isLight ? "rgba(0, 0, 0, 0.05)" : "rgba(128, 128, 128, 0.1)",
                 border: "1px solid var(--glass-border)",
@@ -553,7 +555,7 @@ export function Navigation() {
           display: flex;
         }
 
-        @media (min-width: 1280px) {
+        @media (min-width: 1024px) {
           .nav-desktop-container {
             display: flex;
           }

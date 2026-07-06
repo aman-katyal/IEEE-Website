@@ -11,7 +11,7 @@ export function ThemeToggle() {
     setVisible(true);
   }, []);
 
-  if (!mounted) return <div style={{ width: 40, height: 40 }} />;
+  if (!mounted) return <div style={{ width: 44, height: 44 }} />;
 
   return (
     <button
@@ -20,8 +20,8 @@ export function ThemeToggle() {
         background: "rgba(255, 255, 255, 0.05)",
         border: "1px solid var(--glass-border)",
         borderRadius: "50%",
-        width: "40px",
-        height: "40px",
+        width: "44px",
+        height: "44px",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
