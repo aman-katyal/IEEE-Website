@@ -31,7 +31,8 @@ export function urlFor(source: any) {
 }
 
 // Client for fetching draft content (requires a token)
-export const previewClient = import.meta.env.VITE_SANITY_API_TOKEN ? createClient({
+// SECURE CONFIGURATION: Only initialize previewClient in development to prevent VITE_SANITY_API_TOKEN from being baked into the production bundle.
+export const previewClient = (import.meta.env.DEV && import.meta.env.VITE_SANITY_API_TOKEN) ? createClient({
   projectId,
   dataset,
   useCdn: false,

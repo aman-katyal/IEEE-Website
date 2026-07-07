@@ -41,8 +41,8 @@ describe('Sanity Client', () => {
     expect(client).toBeDefined();
   });
 
-  it('should export a previewClient instance if token is provided', () => {
-    if (import.meta.env.VITE_SANITY_API_TOKEN) {
+  it('should export a previewClient instance if token is provided and in DEV mode', () => {
+    if (import.meta.env.DEV && import.meta.env.VITE_SANITY_API_TOKEN) {
       expect(previewClient).toBeDefined();
       const config = (previewClient as any).config();
       expect(config.token).toBe(import.meta.env.VITE_SANITY_API_TOKEN);
