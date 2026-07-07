@@ -4,8 +4,8 @@ import { Link, useLocation, useNavigate } from "react-router";
 import { useTheme } from "next-themes";
 import { ThemeToggle } from "./ThemeToggle";
 import { IeeePurdueLogo } from "./IeeePurdueLogo";
-import { useCommittees, prefetchData, useSiteSettings } from "../../hooks/useSanityData";
-import { MagneticWrapper } from "./ui/MagneticWrapper";
+import { useCommittees, prefetchData, useSiteSettings } from "../../../hooks/useSanityData";
+import { MagneticWrapper } from "../ui/MagneticWrapper";
 import { MagneticButton } from "./MagneticButton";
 import groq from "groq";
 

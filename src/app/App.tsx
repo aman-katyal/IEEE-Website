@@ -3,7 +3,7 @@ import { Routes, Route, useLocation } from "react-router";
 import { AnimatePresence } from "motion/react";
 import { ThemeProvider } from "next-themes";
 import { enableVisualEditing } from "@sanity/visual-editing";
-import { Layout } from "./components/Layout";
+import { Layout } from "./components/shared/Layout";
 import { HomePage } from "./pages/HomePage";
 import { CommitteePage } from "./pages/CommitteePage";
 import { CommitteesPage } from "./pages/CommitteesPage";
@@ -13,8 +13,8 @@ import { JoinPage } from "./pages/JoinPage";
 import { AboutUsPage } from "./pages/AboutUsPage";
 import { PartnersPage } from "./pages/PartnersPage";
 import { ConstitutionPage } from "./pages/ConstitutionPage";
-import { BackToTop } from "./components/BackToTop";
-import { PageTransition } from "./components/PageTransition";
+import { BackToTop } from "./components/shared/BackToTop";
+import { PageTransition } from "./components/shared/PageTransition";
 
 export default function App() {
   const location = useLocation();

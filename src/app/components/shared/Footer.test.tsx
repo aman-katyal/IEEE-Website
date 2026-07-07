@@ -2,12 +2,12 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Footer } from './Footer';
 import { MemoryRouter } from 'react-router';
-import * as useSanityData from '../../hooks/useSanityData';
+import * as useSanityData from '../../../hooks/useSanityData';
 import * as nextThemes from 'next-themes';
 import * as reactRouter from 'react-router';
 
 // Mock hooks
-vi.mock('../../hooks/useSanityData', () => ({
+vi.mock('../../../hooks/useSanityData', () => ({
   useCommittees: vi.fn(),
   useSiteSettings: vi.fn(),
 }));

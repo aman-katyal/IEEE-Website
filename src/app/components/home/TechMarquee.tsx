@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTheme } from "next-themes";
-import { usePartners } from "../../hooks/useSanityData";
+import { usePartners } from "../../../hooks/useSanityData";
 
 export function TechMarquee() {
   const { theme } = useTheme();

@@ -1,11 +1,11 @@
 import { ArrowUpRight, Users, Trophy, Cpu, Globe, Loader2 } from "lucide-react";
 import { Link } from "react-router";
 import { useTheme } from "next-themes";
-import { useCommittees } from "../../hooks/useSanityData";
+import { useCommittees } from "../../../hooks/useSanityData";
 import { Skeleton as BoneyardSkeleton } from "boneyard-js/react";
-import { Skeleton } from "./ui/skeleton";
-import { MagneticWrapper } from "./ui/MagneticWrapper";
-import type { Committee } from "../../data/committees/types";
+import { Skeleton } from "../ui/skeleton";
+import { MagneticWrapper } from "../ui/MagneticWrapper";
+import type { Committee } from "../../../data/committees/types";
 
 function CommitteeCard({ c }: { c: Committee }) {
   const { theme } = useTheme();

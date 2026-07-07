@@ -1,5 +1,5 @@
 import { Mail, Users, Layout, Loader2 } from "lucide-react";
-import { useCornerstoneCommittees } from "../../hooks/useSanityData";
+import { useCornerstoneCommittees } from "../../../hooks/useSanityData";
 import ReactMarkdown from "react-markdown";
 
 export function CornerstoneCommittees() {

@@ -1,9 +1,9 @@
 import { Github, Linkedin, Instagram, Twitter, ExternalLink } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { useTheme } from "next-themes";
-import { useCommittees, useSiteSettings } from "../../hooks/useSanityData";
+import { useCommittees, useSiteSettings } from "../../../hooks/useSanityData";
 import { IeeePurdueLogo } from "./IeeePurdueLogo";
-import { MagneticWrapper } from "./ui/MagneticWrapper";
+import { MagneticWrapper } from "../ui/MagneticWrapper";
 
 const footerLinks = {
   Organization: [

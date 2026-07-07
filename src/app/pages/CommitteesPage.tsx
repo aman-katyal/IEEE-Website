@@ -1,6 +1,6 @@
-import { Committees } from "../components/Committees";
-import { CornerstoneCommittees } from "../components/CornerstoneCommittees";
-import { JoinCTA } from "../components/JoinCTA";
+import { Committees } from "../components/committees/Committees";
+import { CornerstoneCommittees } from "../components/committees/CornerstoneCommittees";
+import { JoinCTA } from "../components/home/JoinCTA";
 import { useEffect } from "react";
 
 export function CommitteesPage() {

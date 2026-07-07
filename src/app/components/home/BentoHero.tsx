@@ -3,9 +3,9 @@ import { Link } from "react-router";
 import { useTheme } from "next-themes";
 import { motion, AnimatePresence } from "motion/react";
 import { ChevronRight, ArrowUpRight } from "lucide-react";
-import { useCommittees, useSiteSettings } from "../../hooks/useSanityData";
-import { useHomePageData } from "../../context/HomePageContext";
-import { MagneticButton } from "./MagneticButton";
+import { useCommittees, useSiteSettings } from "../../../hooks/useSanityData";
+import { useHomePageData } from "../../../context/HomePageContext";
+import { MagneticButton } from "../shared/MagneticButton";
 import { Skeleton } from "boneyard-js/react";
 
 // ─── CountUp animation hook ──────────────────────────────────────────
