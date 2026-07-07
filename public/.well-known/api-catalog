@@ -1,0 +1,21 @@
+{
+  "api-catalog": {
+    "version": "1.0",
+    "apis": [
+      {
+        "name": "Purdue IEEE CMS API",
+        "description": "Read-only access to Purdue IEEE website structured content (committees, officers, partners, events).",
+        "type": "sanity-groq",
+        "endpoint": "https://vq0v7yv4.api.sanity.io/v2024-03-16/data/query/production",
+        "documentation": "https://www.sanity.io/docs/http-queries"
+      },
+      {
+        "name": "Purdue IEEE Calendar API",
+        "description": "Public events calendar queries.",
+        "type": "google-calendar",
+        "endpoint": "https://www.googleapis.com/calendar/v3/calendars/purdueieee%40gmail.com/events",
+        "documentation": "https://developers.google.com/calendar/api/v3/reference/events"
+      }
+    ]
+  }
+}
