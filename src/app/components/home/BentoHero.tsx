@@ -167,12 +167,12 @@ export function BentoHero() {
   const heroTitle    = homeData?.heroTitle    ?? null;
   const heroSubtitle = homeData?.heroSubtitle ?? null;
   const rawHeroImage = homeData?.heroImage    ?? null;
-  const aboutTitle   = homeData?.aboutTitle   ?? "Purdue's Largest Technical Student Organization";
+  const aboutTitle   = homeData?.aboutTitle   ?? null;
   const aboutContent = homeData?.aboutContent ?? null;
   const stats: StatItem[] = (homeData?.stats && homeData.stats.length > 0) ? homeData.stats : [];
-  const hqLocation        = homeData?.hqLocation     ?? "EE 115 / EE 224";
-  const discordMembers    = homeData?.discordMembers ?? "1,200+ Members";
-  const campusLocation    = homeData?.campusLocation ?? "Purdue West Lafayette";
+  const hqLocation        = homeData?.hqLocation     ?? null;
+  const discordMembers    = homeData?.discordMembers ?? null;
+  const campusLocation    = homeData?.campusLocation ?? null;
 
   // Optimize image URL for responsive format & compression
   const heroImage = rawHeroImage ? `${rawHeroImage}?w=1400&auto=format&q=80` : null;
@@ -366,31 +366,41 @@ export function BentoHero() {
                   // Branch Telemetry
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "0.7rem", color: "var(--text-secondary)" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span style={{ color: "var(--text-muted)" }}>HQ Location:</span>
-                    <span>{hqLocation}</span>
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span style={{ color: "var(--text-muted)" }}>Active Projects:</span>
-                    <span>{committees && committees.length > 0 ? `${committees.length} Teams` : "9 Teams"}</span>
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span style={{ color: "var(--text-muted)" }}>Dues Rate:</span>
-                    <span>{siteSettings?.duesDescription || "$15 / semester"}</span>
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span style={{ color: "var(--text-muted)" }}>Discord Hub:</span>
-                    <span style={{ color: "var(--cyber-gold)" }}>{discordMembers}</span>
-                  </div>
+                  {hqLocation && (
+                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                      <span style={{ color: "var(--text-muted)" }}>HQ Location:</span>
+                      <span>{hqLocation}</span>
+                    </div>
+                  )}
+                  {committees && committees.length > 0 && (
+                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                      <span style={{ color: "var(--text-muted)" }}>Active Projects:</span>
+                      <span>{committees.length} Teams</span>
+                    </div>
+                  )}
+                  {siteSettings?.duesDescription && (
+                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                      <span style={{ color: "var(--text-muted)" }}>Dues Rate:</span>
+                      <span>{siteSettings.duesDescription}</span>
+                    </div>
+                  )}
+                  {discordMembers && (
+                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                      <span style={{ color: "var(--text-muted)" }}>Discord Hub:</span>
+                      <span style={{ color: "var(--cyber-gold)" }}>{discordMembers}</span>
+                    </div>
+                  )}
                 </div>
               </div>
               
-              <div style={{ display: "flex", alignItems: "center", gap: "8px", borderTop: "1px solid var(--glass-border)", paddingTop: "12px", marginTop: "12px" }}>
-                <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#00C853", animation: "pulse-dot 2s ease-in-out infinite" }} />
-                <span style={{ fontSize: "0.55rem", color: "var(--text-muted)", letterSpacing: "0.08em" }}>
-                  {campusLocation}
-                </span>
-              </div>
+              {campusLocation && (
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", borderTop: "1px solid var(--glass-border)", paddingTop: "12px", marginTop: "12px" }}>
+                  <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#00C853", animation: "pulse-dot 2s ease-in-out infinite" }} />
+                  <span style={{ fontSize: "0.55rem", color: "var(--text-muted)", letterSpacing: "0.08em" }}>
+                    {campusLocation}
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* 3. Core Stats (1x1 span) */}
@@ -679,13 +689,13 @@ export function BentoHero() {
                       letterSpacing: "-0.01em",
                     }}
                   >
-                    {aboutTitle.includes("Student Organization") ? (
+                    {aboutTitle && (aboutTitle.includes("Student Organization") ? (
                       <>
                         {aboutTitle.split("Student Organization")[0]}
                         <span style={{ color: "var(--electric-blue)" }}>Student Organization</span>
                         {aboutTitle.split("Student Organization")[1]}
                       </>
-                    ) : aboutTitle}
+                    ) : aboutTitle)}
                   </h3>
                   {aboutContent && (
                     <p

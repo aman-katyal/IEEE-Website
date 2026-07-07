@@ -27,7 +27,10 @@ describe('HomePage', () => {
       { value: 10, label: 'Committees', sublabel: 'Technical' }
     ],
     sysUptime: 'ACTIVE',
-    semester: 'SP_2026'
+    semester: 'SP_2026',
+    hqLocation: 'EE 115 / EE 224',
+    discordMembers: '1,200+ Members',
+    campusLocation: 'Purdue West Lafayette'
   };
 
   const mockCommittees = [
@@ -36,7 +39,8 @@ describe('HomePage', () => {
 
   const mockSettings = {
     discordUrl: 'https://discord.gg/test',
-    ctaBenefits: ['Benefit 1', 'Benefit 2']
+    ctaBenefits: ['Benefit 1', 'Benefit 2'],
+    duesDescription: '$15 / semester'
   };
 
   const mockPartners = [
