@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { useTheme } from "next-themes";
 import { ExternalLink, Mail, Award, Rocket, Shield, Cpu } from "lucide-react";
@@ -151,8 +151,12 @@ export function PartnersPage() {
 }
 
 function PartnerCard({ partner, isLight }: { partner: any, isLight: boolean }) {
-  // Use Sanity logo if available, else Hunter.io (Clearbit is sunsetting)
-  const logoSrc = partner.logoUrl || (partner.domain ? `https://hunter.io/api/logo?domain=${partner.domain}` : null);
+  const [logoError, setLogoError] = useState(false);
+  
+  // Use Sanity logo if available, else logo.clearbit.com
+  const logoSrc = partner.logoUrl || (partner.domain ? `https://logo.clearbit.com/${partner.domain}` : null);
+
+  const showLogo = logoSrc && !logoError;
 
   return (
     <motion.div 
@@ -170,11 +174,12 @@ function PartnerCard({ partner, isLight }: { partner: any, isLight: boolean }) {
         minHeight: partner.tier === "Gold" ? "180px" : "140px"
       }}
     >
-      {logoSrc ? (
+      {showLogo ? (
         <img 
           src={logoSrc} 
           alt={partner.name}
           loading="lazy"
+          onError={() => setLogoError(true)}
           style={{ 
             maxHeight: partner.tier === "Gold" ? "60px" : "40px", 
             maxWidth: "80%", 
@@ -190,21 +195,27 @@ function PartnerCard({ partner, isLight }: { partner: any, isLight: boolean }) {
           alignItems: "center", 
           justifyContent: "center",
           fontWeight: "bold",
-          color: "var(--text-secondary)"
+          fontSize: "1.15rem",
+          color: "var(--cyber-gold)",
+          textAlign: "center"
         }}>
           {partner.name}
         </div>
       )}
-      <span style={{ 
-        fontFamily: "var(--font-mono)", 
-        fontSize: "0.7rem", 
-        color: "var(--text-muted)", 
-        textTransform: "uppercase",
-        letterSpacing: "0.1em",
-        textAlign: "center"
-      }}>
-        {partner.name}
-      </span>
+      
+      {showLogo && (
+        <span style={{ 
+          fontFamily: "var(--font-mono)", 
+          fontSize: "0.7rem", 
+          color: "var(--text-muted)", 
+          textTransform: "uppercase",
+          letterSpacing: "0.1em",
+          textAlign: "center"
+        }}>
+          {partner.name}
+        </span>
+      )}
     </motion.div>
   );
 }
+
