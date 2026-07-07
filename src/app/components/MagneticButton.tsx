@@ -1,5 +1,6 @@
 import { useRef, ReactNode } from "react";
 import { motion, useMotionValue, useSpring } from "motion/react";
+import { Link } from "react-router";
 
 interface MagneticButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "onDrag" | "onDragStart" | "onDragEnd" | "onAnimationStart" | "style"> {
   children: ReactNode;
@@ -7,7 +8,10 @@ interface MagneticButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButton
   strength?: number;
   className?: string;
   style?: React.CSSProperties;
+  to?: string;
 }
+
+const MotionLink = motion.create(Link);
 
 export function MagneticButton({ 
   children, 
@@ -15,9 +19,10 @@ export function MagneticButton({
   strength = 0.2,
   className = "", 
   style,
+  to,
   ...props 
 }: MagneticButtonProps) {
-  const ref = useRef<HTMLButtonElement>(null);
+  const ref = useRef<HTMLButtonElement & HTMLAnchorElement>(null);
   
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -26,7 +31,7 @@ export function MagneticButton({
   const x = useSpring(mouseX, springConfig);
   const y = useSpring(mouseY, springConfig);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
     if (!ref.current) return;
     const { clientX, clientY } = e;
     const { left, top, width, height } = ref.current.getBoundingClientRect();
@@ -45,6 +50,22 @@ export function MagneticButton({
                        variant === "ghost" ? "btn-ghost hover-glow-gold" : 
                        "btn-gold hover-glow-gold";
 
+  if (to) {
+    return (
+      <MotionLink
+        to={to}
+        ref={ref}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        style={{ ...style, x, y }}
+        className={`${variantClass} ${className}`}
+        {...(props as any)}
+      >
+        {children}
+      </MotionLink>
+    );
+  }
+
   return (
     <motion.button
       ref={ref}
@@ -58,3 +79,4 @@ export function MagneticButton({
     </motion.button>
   );
 }
+

@@ -124,7 +124,7 @@ describe('HomePage', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText(/Purdue's Largest Technical/i)).toBeInTheDocument();
+    expect(screen.getByText(/strive to be the best/i)).toBeInTheDocument();
     expect(screen.getByText('Test about content')).toBeInTheDocument();
   });
 

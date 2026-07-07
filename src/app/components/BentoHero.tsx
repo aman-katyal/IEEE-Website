@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import { useTheme } from "next-themes";
 import { motion, AnimatePresence } from "motion/react";
 import { ChevronRight, ArrowUpRight } from "lucide-react";
-import { useHomePage, useCommittees } from "../../hooks/useSanityData";
+import { useCommittees, useSiteSettings } from "../../hooks/useSanityData";
+import { useHomePageData } from "../../context/HomePageContext";
 import { MagneticButton } from "./MagneticButton";
 import { Skeleton } from "boneyard-js/react";
 
@@ -152,22 +153,26 @@ function makeDisplayTitle(title: string) {
 }
 
 export function BentoHero() {
-  const navigate = useNavigate();
   const { theme } = useTheme();
-  const { data: homeData, loading: homeLoading } = useHomePage();
+  const { data: homeData, loading: homeLoading } = useHomePageData();
   const { committees, loading: committeesLoading } = useCommittees();
+  const { settings: siteSettings, loading: settingsLoading } = useSiteSettings();
 
   const [hoveredSlot, setHoveredSlot] = useState<RackSlot | null>(null);
 
   const isLight = theme === "light";
-  const loading = homeLoading || committeesLoading;
+  const loading = homeLoading || committeesLoading || settingsLoading;
 
   // All content comes directly from Sanity — no hardcoded fallbacks
   const heroTitle    = homeData?.heroTitle    ?? null;
   const heroSubtitle = homeData?.heroSubtitle ?? null;
-  const heroImage    = homeData?.heroImage    ?? null;
+  const rawHeroImage = homeData?.heroImage    ?? null;
+  const aboutTitle   = homeData?.aboutTitle   ?? "Purdue's Largest Technical Student Organization";
   const aboutContent = homeData?.aboutContent ?? null;
   const stats: StatItem[] = (homeData?.stats && homeData.stats.length > 0) ? homeData.stats : [];
+
+  // Optimize image URL for responsive format & compression
+  const heroImage = rawHeroImage ? `${rawHeroImage}?w=1400&auto=format&q=80` : null;
 
   // Resolve committee slots from Sanity only
   const activeSlots: RackSlot[] = (committees && committees.length > 0)
@@ -311,7 +316,7 @@ export function BentoHero() {
               <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
                 <MagneticButton
                   variant="primary"
-                  onClick={() => navigate("/committees")}
+                  to="/committees"
                   style={{ width: "auto" }}
                 >
                   Explore Committees
@@ -364,11 +369,11 @@ export function BentoHero() {
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <span style={{ color: "var(--text-muted)" }}>Active Projects:</span>
-                    <span>14 Teams</span>
+                    <span>{committees && committees.length > 0 ? `${committees.length} Teams` : "9 Teams"}</span>
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <span style={{ color: "var(--text-muted)" }}>Dues Rate:</span>
-                    <span>$15 / semester</span>
+                    <span>{siteSettings?.duesDescription || "$15 / semester"}</span>
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <span style={{ color: "var(--text-muted)" }}>Discord Hub:</span>
@@ -386,7 +391,9 @@ export function BentoHero() {
             </div>
 
             {/* 3. Core Stats (1x1 span) */}
-            <CyclingStat stats={stats} isLight={isLight} />
+            {stats.length > 0 ? (
+              <CyclingStat stats={stats} isLight={isLight} />
+            ) : null}
 
             {/* 4. Lab Status Rack (2x2 span) */}
             <div
@@ -420,92 +427,107 @@ export function BentoHero() {
                   className="rack-slots-grid"
                   onMouseLeave={() => setHoveredSlot(null)}
                 >
-                  {activeSlots.map((slot) => {
-                    const isHovered = hoveredSlot?.id === slot.id;
+                  {activeSlots.length > 0 ? (
+                    activeSlots.map((slot) => {
+                      const isHovered = hoveredSlot?.id === slot.id;
 
-                    // Color-code by indicator status
-                    const statusColor =
-                      slot.indicator === "RUNNING" ? "#4FC3F7" :
-                      slot.indicator === "STABLE"  ? "#00C853" :
-                      slot.indicator === "ACTIVE"  ? "#EBD3A9" :
-                      slot.indicator === "ONLINE"  ? "#69F0AE" :
-                                                     "#00C853";
+                      // Color-code by indicator status
+                      const statusColor =
+                        slot.indicator === "RUNNING" ? "#4FC3F7" :
+                        slot.indicator === "STABLE"  ? "#00C853" :
+                        slot.indicator === "ACTIVE"  ? "#EBD3A9" :
+                        slot.indicator === "ONLINE"  ? "#69F0AE" :
+                                                       "#00C853";
 
-                    return (
-                      <div
-                        key={slot.id}
-                        onMouseEnter={() => setHoveredSlot(slot)}
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "10px",
-                          padding: "10px 12px",
-                          borderRadius: "6px",
-                          border: `1px solid ${isHovered ? statusColor : "rgba(255,255,255,0.06)"}`,
-                          borderLeft: `3px solid ${isHovered ? statusColor : "rgba(255,255,255,0.12)"}`,
-                          background: isHovered
-                            ? `rgba(${slot.indicator === "RUNNING" ? "79,195,247" : "0,200,83"},0.06)`
-                            : "rgba(255,255,255,0.02)",
-                          cursor: "pointer",
-                          transition: "all 0.18s cubic-bezier(0.16, 1, 0.3, 1)",
-                          overflow: "hidden",
-                          boxSizing: "border-box",
-                        }}
-                      >
-                        {/* Pill tag badge */}
-                        <span style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          flexShrink: 0,
-                          background: isHovered
-                            ? `${statusColor}22`
-                            : "rgba(0, 98, 155, 0.18)",
-                          border: `1px solid ${isHovered ? statusColor : "rgba(0,98,155,0.4)"}`,
-                          borderRadius: "4px",
-                          padding: "2px 7px",
-                          fontFamily: "var(--font-mono)",
-                          fontSize: "0.58rem",
-                          fontWeight: 700,
-                          letterSpacing: "0.06em",
-                          color: isHovered ? statusColor : "var(--electric-blue)",
-                          whiteSpace: "nowrap",
-                          transition: "all 0.18s ease",
-                        }}>
-                          {slot.tag}
-                        </span>
+                      return (
+                        <div
+                          key={slot.id}
+                          role="button"
+                          tabIndex={0}
+                          aria-label={`Inspect telemetry for ${slot.displayTitle} committee`}
+                          onMouseEnter={() => setHoveredSlot(slot)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              setHoveredSlot(slot);
+                              e.preventDefault();
+                            }
+                          }}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "10px",
+                            padding: "10px 12px",
+                            borderRadius: "6px",
+                            border: `1px solid ${isHovered ? statusColor : "rgba(255,255,255,0.06)"}`,
+                            borderLeft: `3px solid ${isHovered ? statusColor : "rgba(255,255,255,0.12)"}`,
+                            background: isHovered
+                              ? `rgba(${slot.indicator === "RUNNING" ? "79,195,247" : "0,200,83"},0.06)`
+                              : "rgba(255,255,255,0.02)",
+                            cursor: "pointer",
+                            transition: "all 0.18s cubic-bezier(0.16, 1, 0.3, 1)",
+                            overflow: "hidden",
+                            boxSizing: "border-box",
+                          }}
+                        >
+                          {/* Pill tag badge */}
+                          <span style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            flexShrink: 0,
+                            background: isHovered
+                              ? `${statusColor}22`
+                              : "rgba(0, 98, 155, 0.18)",
+                            border: `1px solid ${isHovered ? statusColor : "rgba(0,98,155,0.4)"}`,
+                            borderRadius: "4px",
+                            padding: "2px 7px",
+                            fontFamily: "var(--font-mono)",
+                            fontSize: "0.58rem",
+                            fontWeight: 700,
+                            letterSpacing: "0.06em",
+                            color: isHovered ? statusColor : "var(--electric-blue)",
+                            whiteSpace: "nowrap",
+                            transition: "all 0.18s ease",
+                          }}>
+                            {slot.tag}
+                          </span>
 
-                        {/* Committee Name */}
-                        <span style={{
-                          flex: 1,
-                          minWidth: 0,
-                          fontFamily: "var(--font-body)",
-                          fontSize: "0.75rem",
-                          fontWeight: 600,
-                          color: isHovered ? "var(--text-primary)" : "rgba(248,249,250,0.75)",
-                          textOverflow: "ellipsis",
-                          overflow: "hidden",
-                          whiteSpace: "nowrap",
-                          letterSpacing: "0.01em",
-                          transition: "color 0.18s ease",
-                        }}>
-                          {slot.displayTitle}
-                        </span>
+                          {/* Committee Name */}
+                          <span style={{
+                            flex: 1,
+                            minWidth: 0,
+                            fontFamily: "var(--font-body)",
+                            fontSize: "0.75rem",
+                            fontWeight: 600,
+                            color: isHovered ? "var(--text-primary)" : "rgba(248,249,250,0.75)",
+                            textOverflow: "ellipsis",
+                            overflow: "hidden",
+                            whiteSpace: "nowrap",
+                            letterSpacing: "0.01em",
+                            transition: "color 0.18s ease",
+                          }}>
+                            {slot.displayTitle}
+                          </span>
 
-                        {/* Status indicator dot */}
-                        <div style={{ display: "flex", alignItems: "center", gap: "5px", flexShrink: 0 }}>
-                          <div style={{
-                            width: "6px",
-                            height: "6px",
-                            borderRadius: "50%",
-                            background: statusColor,
-                            boxShadow: `0 0 ${isHovered ? "8px" : "4px"} ${statusColor}`,
-                            transition: "box-shadow 0.18s ease",
-                            animation: "pulse-dot 2.5s ease-in-out infinite",
-                          }} />
+                          {/* Status indicator dot */}
+                          <div style={{ display: "flex", alignItems: "center", gap: "5px", flexShrink: 0 }}>
+                            <div style={{
+                              width: "6px",
+                              height: "6px",
+                              borderRadius: "50%",
+                              background: statusColor,
+                              boxShadow: `0 0 ${isHovered ? "8px" : "4px"} ${statusColor}`,
+                              transition: "box-shadow 0.18s ease",
+                              animation: "pulse-dot 2.5s ease-in-out infinite",
+                            }} />
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })
+                  ) : (
+                    <div style={{ fontFamily: "var(--font-mono)", color: "var(--text-muted)", fontSize: "0.65rem", textAlign: "center", padding: "24px 0" }}>
+                      // NO_COMMITTEES_FOUND — configure in Sanity Studio
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -646,7 +668,7 @@ export function BentoHero() {
                   <h3
                     style={{
                       fontFamily: "var(--font-headline)",
-                      fontSize: "20px",
+                      fontSize: "clamp(16px, 2.5vw, 20px)",
                       fontWeight: 700,
                       color: "var(--text-primary)",
                       lineHeight: 1.2,
@@ -654,7 +676,13 @@ export function BentoHero() {
                       letterSpacing: "-0.01em",
                     }}
                   >
-                    Purdue's Largest Technical <span style={{ color: "var(--electric-blue)" }}>Student Organization</span>
+                    {aboutTitle.includes("Student Organization") ? (
+                      <>
+                        {aboutTitle.split("Student Organization")[0]}
+                        <span style={{ color: "var(--electric-blue)" }}>Student Organization</span>
+                        {aboutTitle.split("Student Organization")[1]}
+                      </>
+                    ) : aboutTitle}
                   </h3>
                   {aboutContent && (
                     <p
