@@ -152,9 +152,25 @@ export function PartnersPage() {
 
 function PartnerCard({ partner, isLight }: { partner: any, isLight: boolean }) {
   const [logoError, setLogoError] = useState(false);
+  const [useFavicon, setUseFavicon] = useState(false);
   
-  // Use Sanity logo if available, else logo.clearbit.com
-  const logoSrc = partner.logoUrl || (partner.domain ? `https://logo.clearbit.com/${partner.domain}` : null);
+  // Resolve source: Sanity URL -> unavatar clearbit proxy (bypasses adblockers) -> Google S2 favicon
+  let logoSrc = partner.logoUrl;
+  if (!logoSrc && partner.domain) {
+    if (useFavicon) {
+      logoSrc = `https://www.google.com/s2/favicons?domain=${partner.domain}&sz=128`;
+    } else {
+      logoSrc = `https://unavatar.io/clearbit/${partner.domain}`;
+    }
+  }
+
+  const handleImageError = () => {
+    if (!useFavicon && partner.domain) {
+      setUseFavicon(true);
+    } else {
+      setLogoError(true);
+    }
+  };
 
   const showLogo = logoSrc && !logoError;
 
@@ -179,11 +195,11 @@ function PartnerCard({ partner, isLight }: { partner: any, isLight: boolean }) {
           src={logoSrc} 
           alt={partner.name}
           loading="lazy"
-          onError={() => setLogoError(true)}
+          onError={handleImageError}
           style={{ 
             maxHeight: partner.tier === "Gold" ? "60px" : "40px", 
             maxWidth: "80%", 
-            filter: isLight || partner.logoUrl ? "none" : "brightness(0) invert(1) opacity(0.9)",
+            filter: isLight || partner.logoUrl ? "none" : "brightness(0) invert(1) brightness(1.5) opacity(0.9)",
             objectFit: "contain"
           }} 
         />
@@ -218,4 +234,5 @@ function PartnerCard({ partner, isLight }: { partner: any, isLight: boolean }) {
     </motion.div>
   );
 }
+
 

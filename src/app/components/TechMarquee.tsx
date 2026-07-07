@@ -100,9 +100,26 @@ export function TechMarquee() {
 
 function MarqueeItem({ partner, isLight }: { partner: any; isLight: boolean }) {
   const [logoError, setLogoError] = useState(false);
+  const [useFavicon, setUseFavicon] = useState(false);
   
-  // Use Sanity logo if available, else logo.clearbit.com
-  const logoSrc = partner.logoUrl || (partner.domain ? `https://logo.clearbit.com/${partner.domain}` : null);
+  // Resolve source: Sanity URL -> unavatar clearbit proxy (bypasses adblockers) -> Google S2 favicon
+  let logoSrc = partner.logoUrl;
+  if (!logoSrc && partner.domain) {
+    if (useFavicon) {
+      logoSrc = `https://www.google.com/s2/favicons?domain=${partner.domain}&sz=128`;
+    } else {
+      logoSrc = `https://unavatar.io/clearbit/${partner.domain}`;
+    }
+  }
+
+  const handleImageError = () => {
+    if (!useFavicon && partner.domain) {
+      setUseFavicon(true);
+    } else {
+      setLogoError(true);
+    }
+  };
+
   const showLogo = logoSrc && !logoError;
 
   return (
@@ -112,7 +129,7 @@ function MarqueeItem({ partner, isLight }: { partner: any; isLight: boolean }) {
           src={logoSrc} 
           alt={partner.name} 
           loading="lazy"
-          onError={() => setLogoError(true)}
+          onError={handleImageError}
           style={{ 
             height: "32px", 
             width: "auto", 
@@ -149,4 +166,5 @@ function MarqueeItem({ partner, isLight }: { partner: any; isLight: boolean }) {
     </div>
   );
 }
+
 
