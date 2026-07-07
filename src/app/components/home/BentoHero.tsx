@@ -170,6 +170,9 @@ export function BentoHero() {
   const aboutTitle   = homeData?.aboutTitle   ?? "Purdue's Largest Technical Student Organization";
   const aboutContent = homeData?.aboutContent ?? null;
   const stats: StatItem[] = (homeData?.stats && homeData.stats.length > 0) ? homeData.stats : [];
+  const hqLocation        = homeData?.hqLocation     ?? "EE 115 / EE 224";
+  const discordMembers    = homeData?.discordMembers ?? "1,200+ Members";
+  const campusLocation    = homeData?.campusLocation ?? "Purdue West Lafayette";
 
   // Optimize image URL for responsive format & compression
   const heroImage = rawHeroImage ? `${rawHeroImage}?w=1400&auto=format&q=80` : null;
@@ -365,7 +368,7 @@ export function BentoHero() {
                 <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "0.7rem", color: "var(--text-secondary)" }}>
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <span style={{ color: "var(--text-muted)" }}>HQ Location:</span>
-                    <span>EE 115 / EE 224</span>
+                    <span>{hqLocation}</span>
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <span style={{ color: "var(--text-muted)" }}>Active Projects:</span>
@@ -377,7 +380,7 @@ export function BentoHero() {
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <span style={{ color: "var(--text-muted)" }}>Discord Hub:</span>
-                    <span style={{ color: "var(--cyber-gold)" }}>1,200+ Members</span>
+                    <span style={{ color: "var(--cyber-gold)" }}>{discordMembers}</span>
                   </div>
                 </div>
               </div>
@@ -385,7 +388,7 @@ export function BentoHero() {
               <div style={{ display: "flex", alignItems: "center", gap: "8px", borderTop: "1px solid var(--glass-border)", paddingTop: "12px", marginTop: "12px" }}>
                 <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#00C853", animation: "pulse-dot 2s ease-in-out infinite" }} />
                 <span style={{ fontSize: "0.55rem", color: "var(--text-muted)", letterSpacing: "0.08em" }}>
-                  Purdue West Lafayette
+                  {campusLocation}
                 </span>
               </div>
             </div>

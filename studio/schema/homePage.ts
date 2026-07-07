@@ -107,5 +107,29 @@ export const homePage = defineType({
       group: 'system',
       description: 'e.g., ACTIVE, OFFLINE',
     }),
+    defineField({
+      name: 'hqLocation',
+      title: 'HQ Location',
+      type: 'string',
+      group: 'system',
+      description: 'The physical location of Purdue IEEE HQ (e.g., EE 115 / EE 224).',
+      initialValue: 'EE 115 / EE 224'
+    }),
+    defineField({
+      name: 'discordMembers',
+      title: 'Discord Members Count',
+      type: 'string',
+      group: 'system',
+      description: 'The number of members in the Discord Hub (e.g., 1,200+ Members).',
+      initialValue: '1,200+ Members'
+    }),
+    defineField({
+      name: 'campusLocation',
+      title: 'Campus Location / Name',
+      type: 'string',
+      group: 'system',
+      description: 'The campus name displayed at the bottom of the telemetry console (e.g., Purdue West Lafayette).',
+      initialValue: 'Purdue West Lafayette'
+    }),
   ],
 })
