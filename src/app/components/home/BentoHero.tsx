@@ -453,18 +453,12 @@ export function BentoHero() {
                                                        "#00C853";
 
                       return (
-                        <div
+                        <Link
                           key={slot.id}
-                          role="button"
-                          tabIndex={0}
-                          aria-label={`Inspect telemetry for ${slot.displayTitle} committee`}
+                          to={slot.link}
+                          aria-label={`Inspect telemetry and view details for ${slot.displayTitle} committee`}
                           onMouseEnter={() => setHoveredSlot(slot)}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter" || e.key === " ") {
-                              setHoveredSlot(slot);
-                              e.preventDefault();
-                            }
-                          }}
+                          onFocus={() => setHoveredSlot(slot)}
                           style={{
                             display: "flex",
                             alignItems: "center",
@@ -480,6 +474,7 @@ export function BentoHero() {
                             transition: "all 0.18s cubic-bezier(0.16, 1, 0.3, 1)",
                             overflow: "hidden",
                             boxSizing: "border-box",
+                            textDecoration: "none",
                           }}
                         >
                           {/* Pill tag badge */}
@@ -533,7 +528,7 @@ export function BentoHero() {
                               animation: "pulse-dot 2.5s ease-in-out infinite",
                             }} />
                           </div>
-                        </div>
+                        </Link>
                       );
                     })
                   ) : (
