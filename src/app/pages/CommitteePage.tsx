@@ -40,39 +40,18 @@ export function CommitteePage() {
   const { theme } = useTheme();
   const isLight = theme === "light";
 
-  const availableTabs = useMemo(() => {
-    if (!committee) return [];
-    const tabs = [{ id: "overview", label: "Overview" }];
-
-    const hasProjects = committee.sections?.some(s => s.type === "projects");
-    if (hasProjects) {
-      tabs.push({ id: "projects", label: "Projects" });
+  const { textSections, projectsSections, gallerySections, faqSections, contactSections } = useMemo(() => {
+    if (!committee || !committee.sections) {
+      return { textSections: [], projectsSections: [], gallerySections: [], faqSections: [], contactSections: [] };
     }
-
-    const hasGallery = committee.sections?.some(s => s.type === "gallery");
-    if (hasGallery) {
-      tabs.push({ id: "media", label: "Media" });
-    }
-
-    const hasFAQ = committee.sections?.some(s => s.type === "faq");
-    const hasContact = committee.sections?.some(s => s.type === "contact");
-    if (hasFAQ || hasContact) {
-      tabs.push({ id: "faq", label: "FAQ & Contact" });
-    }
-
-    return tabs;
+    return {
+      textSections: committee.sections.filter(s => s.type === "text"),
+      projectsSections: committee.sections.filter(s => s.type === "projects"),
+      gallerySections: committee.sections.filter(s => s.type === "gallery"),
+      faqSections: committee.sections.filter(s => s.type === "faq"),
+      contactSections: committee.sections.filter(s => s.type === "contact")
+    };
   }, [committee]);
-
-  const [activeTab, setActiveTab] = useState("overview");
-
-  useEffect(() => {
-    if (availableTabs.length > 0) {
-      const exists = availableTabs.some(t => t.id === activeTab);
-      if (!exists) {
-        setActiveTab(availableTabs[0].id);
-      }
-    }
-  }, [availableTabs, activeTab]);
 
   if (error || (!loading && !committee)) {
     return (
@@ -233,7 +212,7 @@ export function CommitteePage() {
   return (
     <>
       <Skeleton name="committee-banner" loading={loading} color={isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}>
-        <section style={{ position: "relative", minHeight: "60vh", display: "flex", alignItems: "flex-end", overflow: "hidden" }}>
+        <section style={{ position: "relative", minHeight: "35vh", display: "flex", alignItems: "flex-end", overflow: "hidden" }}>
           <div style={{ position: "absolute", inset: 0, backgroundImage: `url('${committee?.image}')`, backgroundSize: "cover", backgroundPosition: "center 40%", filter: isLight ? "brightness(0.9) saturate(1.1)" : "brightness(0.35) saturate(0.7)" }} />
           <div style={{ position: "absolute", inset: 0, background: isLight ? "linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 30%, rgba(248,250,252,0.85) 80%, var(--boiler-black) 100%)" : "linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0.85) 80%, var(--boiler-black) 100%)" }} />
           <div className="ieee-grid-bg" style={{ position: "absolute", inset: 0, opacity: isLight ? 0.4 : 0.6 }} />
@@ -301,134 +280,109 @@ export function CommitteePage() {
         </section>
       </Skeleton>
 
-      <section style={{ background: "var(--boiler-black)", padding: "80px 0 120px", position: "relative" }}>
+      <section style={{ background: "var(--boiler-black)", padding: "56px 0 120px", position: "relative" }}>
         <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 32px" }}>
-          <div className="ieee-grid-sidebar" style={{ gap: "48px" }}>
-            <div>
-              <Skeleton name="committee-content" loading={loading} color={isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}>
-                {/* Tabs navigation */}
-                {availableTabs.length > 1 && (
-                  <div
-                    style={{
-                      borderBottom: "1px solid var(--glass-border)",
-                      marginBottom: "40px",
-                      display: "flex",
-                      gap: "8px",
-                      overflowX: "auto",
-                      paddingBottom: "1px",
-                    }}
-                  >
-                    {availableTabs.map((tab) => {
-                      const isActive = activeTab === tab.id;
-                      return (
-                        <button
-                          key={tab.id}
-                          onClick={() => setActiveTab(tab.id)}
-                          style={{
-                            position: "relative",
-                            padding: "12px 24px",
-                            fontFamily: "var(--font-mono)",
-                            fontSize: "11px",
-                            fontWeight: 600,
-                            textTransform: "uppercase",
-                            letterSpacing: "0.1em",
-                            border: "none",
-                            background: "transparent",
-                            color: isActive ? "var(--cyber-gold)" : "var(--text-muted)",
-                            cursor: "pointer",
-                            transition: "color 0.2s ease",
-                            whiteSpace: "nowrap",
-                          }}
-                        >
-                          {tab.label}
-                          {isActive && (
-                            <motion.div
-                              layoutId="activeDetailTabIndicator"
-                              style={{
-                                position: "absolute",
-                                bottom: "-1px",
-                                left: 0,
-                                right: 0,
-                                height: "2px",
-                                background: "var(--cyber-gold)",
-                              }}
-                              transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                            />
-                          )}
-                        </button>
-                      );
-                    })}
+          <div style={{ display: "flex", flexDirection: "column", gap: "56px" }}>
+            
+            {/* Row 1: About & Details Sidebar */}
+            <div 
+              style={{ 
+                display: "grid", 
+                gridTemplateColumns: "1fr 340px", 
+                gap: "40px", 
+                alignItems: "start" 
+              }}
+              className="ieee-grid-sidebar"
+            >
+              {/* Left Column: About & Text Sections */}
+              <div>
+                <Skeleton name="committee-content" loading={loading} color={isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}>
+                  <div style={{ marginBottom: "32px" }}>
+                    <p className="section-eyebrow" style={{ marginBottom: "16px" }}>// About This Committee</p>
+                    <div className="glass-card" style={{ padding: "24px" }}>
+                      <p style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--text-secondary)", lineHeight: 1.75 }}>{committee?.longDescription}</p>
+                    </div>
+                  </div>
+                  {textSections.map((section, i) => renderSection(section, i))}
+                  <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "20px" }}>
+                    {committee?.tags?.map((tag) => <span key={tag} className="tech-tag" style={{ opacity: isLight ? 1 : 0.9, padding: "5px 10px" }}>{tag}</span>)}
+                  </div>
+                </Skeleton>
+              </div>
+
+              {/* Right Column: Key Details & Join CTA */}
+              <aside>
+                <Skeleton name="committee-sidebar" loading={loading} color={isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}>
+                  <div className="glass-card" style={{ padding: "28px", position: "sticky", top: "112px" }}>
+                    <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.18em", color: "var(--electric-blue)", textTransform: "uppercase", marginBottom: "20px", opacity: isLight ? 1 : 0.9 }}>// Committee Details</div>
+                    
+                    {/* Metrics */}
+                    {committee?.metrics && committee.metrics.length > 0 && (
+                      <div style={{ display: "grid", gridTemplateColumns: `repeat(${committee.metrics.length}, 1fr)`, gap: "0", borderTop: "1px solid var(--glass-border)", borderBottom: "1px solid var(--glass-border)", padding: "16px 0", marginBottom: "24px" }}>
+                        {committee.metrics.map((m, i) => (
+                          <div key={m.label} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", borderRight: i < (committee.metrics?.length || 0) - 1 ? "1px solid var(--glass-border)" : "none" }}>
+                            <span style={{ fontFamily: "var(--font-mono)", fontSize: "17px", fontWeight: 600, color: "var(--electric-blue)", lineHeight: 1 }}>{m.value}</span>
+                            <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", color: "var(--text-muted)", letterSpacing: "0.1em", textTransform: "uppercase", opacity: isLight ? 1 : 0.8 }}>{m.label}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Chair */}
+                    <div style={{ marginBottom: "24px" }}>
+                      <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.12em", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: "8px" }}>Committee Chair</div>
+                      <div style={{ fontFamily: "var(--font-headline)", fontSize: "16px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "6px" }}>{committee?.chair}</div>
+                      <a href={`mailto:${committee?.email}`} style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontFamily: "var(--font-mono)", fontSize: "0.7rem", color: "var(--electric-blue)", textDecoration: "none" }}><Mail size={12} style={{ flexShrink: 0 }} /> {committee?.email}</a>
+                    </div>
+
+                    {renderJoinButton()}
+                  </div>
+                </Skeleton>
+              </aside>
+            </div>
+
+            {/* Row 2: Projects (Full Width) */}
+            {projectsSections.length > 0 && (
+              <div style={{ borderTop: "1px solid var(--glass-border)", paddingTop: "48px" }}>
+                <Skeleton name="committee-projects" loading={loading} color={isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}>
+                  {projectsSections.map((section, i) => renderSection(section, i))}
+                </Skeleton>
+              </div>
+            )}
+
+            {/* Row 3: Media & FAQ/Contact (Split Column Row) */}
+            {(gallerySections.length > 0 || faqSections.length > 0 || contactSections.length > 0) && (
+              <div 
+                style={{ 
+                  borderTop: "1px solid var(--glass-border)", 
+                  paddingTop: "48px",
+                  display: "grid",
+                  gridTemplateColumns: (gallerySections.length > 0 && (faqSections.length > 0 || contactSections.length > 0)) ? "1.2fr 0.8fr" : "1fr",
+                  gap: "48px"
+                }}
+                className="ieee-grid-sidebar"
+              >
+                {/* Left Column: Gallery/Media */}
+                {gallerySections.length > 0 && (
+                  <div>
+                    <Skeleton name="committee-gallery" loading={loading} color={isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}>
+                      {gallerySections.map((section, i) => renderSection(section, i))}
+                    </Skeleton>
                   </div>
                 )}
 
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={activeTab}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    {activeTab === "overview" && (
-                      <>
-                        <div style={{ marginBottom: "40px" }}>
-                          <p className="section-eyebrow" style={{ marginBottom: "20px" }}>// About This Committee</p>
-                          <div className="glass-card" style={{ padding: "32px" }}>
-                            <p style={{ fontFamily: "var(--font-body)", fontSize: "16px", color: "var(--text-secondary)", lineHeight: 1.85 }}>{committee?.longDescription}</p>
-                          </div>
-                        </div>
-                        {committee?.sections?.filter(s => s.type === "text").map((section, i) => renderSection(section, i))}
-                        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "24px", marginBottom: "64px" }}>
-                          {committee?.tags?.map((tag) => <span key={tag} className="tech-tag" style={{ opacity: isLight ? 1 : 0.9, padding: "6px 12px" }}>{tag}</span>)}
-                        </div>
-                      </>
-                    )}
-                    {activeTab === "projects" && (
-                      <div style={{ marginBottom: "64px" }}>
-                        {committee?.sections?.filter(s => s.type === "projects").map((section, i) => renderSection(section, i))}
-                      </div>
-                    )}
-                    {activeTab === "media" && (
-                      <div style={{ marginBottom: "64px" }}>
-                        {committee?.sections?.filter(s => s.type === "gallery").map((section, i) => renderSection(section, i))}
-                      </div>
-                    )}
-                    {activeTab === "faq" && (
-                      <div style={{ marginBottom: "64px" }}>
-                        {committee?.sections?.filter(s => s.type === "faq" || s.type === "contact").map((section, i) => renderSection(section, i))}
-                      </div>
-                    )}
-                  </motion.div>
-                </AnimatePresence>
-              </Skeleton>
-            </div>
-
-            <aside>
-              <Skeleton name="committee-sidebar" loading={loading} color={isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}>
-                <div className="glass-card" style={{ padding: "32px", position: "sticky", top: "112px" }}>
-                  <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.18em", color: "var(--electric-blue)", textTransform: "uppercase", marginBottom: "24px", opacity: isLight ? 1 : 0.9 }}>// Committee Details</div>
-                  
-                  {/* Metrics */}
-                  <div style={{ display: "grid", gridTemplateColumns: `repeat(3, 1fr)`, gap: "0", borderTop: "1px solid var(--glass-border)", borderBottom: "1px solid var(--glass-border)", padding: "20px 0", marginBottom: "32px" }}>
-                    {(committee?.metrics || []).map((m, i) => (
-                      <div key={m.label} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "6px", borderRight: i < (committee?.metrics?.length || 0) - 1 ? "1px solid var(--glass-border)" : "none" }}>
-                        <span style={{ fontFamily: "var(--font-mono)", fontSize: "19px", fontWeight: 600, color: "var(--electric-blue)", lineHeight: 1 }}>{m.value}</span>
-                        <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", color: "var(--text-muted)", letterSpacing: "0.12em", textTransform: "uppercase", opacity: isLight ? 1 : 0.8 }}>{m.label}</span>
-                      </div>
-                    ))}
+                {/* Right Column: FAQ & Contacts */}
+                {(faqSections.length > 0 || contactSections.length > 0) && (
+                  <div>
+                    <Skeleton name="committee-faq" loading={loading} color={isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}>
+                      {faqSections.map((section, i) => renderSection(section, i))}
+                      {contactSections.map((section, i) => renderSection(section, i))}
+                    </Skeleton>
                   </div>
+                )}
+              </div>
+            )}
 
-                  {/* Chair */}
-                  <div style={{ marginBottom: "32px" }}>
-                    <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.12em", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: "10px" }}>Committee Chair</div>
-                    <div style={{ fontFamily: "var(--font-headline)", fontSize: "18px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "8px" }}>{committee?.chair}</div>
-                    <a href={`mailto:${committee?.email}`} style={{ display: "inline-flex", alignItems: "center", gap: "8px", fontFamily: "var(--font-mono)", fontSize: "0.75rem", color: "var(--electric-blue)", textDecoration: "none" }}><Mail size={14} /> {committee?.email}</a>
-                  </div>
-
-                  {renderJoinButton()}
-                </div>
-              </Skeleton>
-            </aside>
           </div>
         </div>
       </section>
