@@ -212,11 +212,11 @@ export function CommitteePage() {
   return (
     <>
       <Skeleton name="committee-banner" loading={loading} color={isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}>
-        <section style={{ position: "relative", minHeight: "35vh", display: "flex", alignItems: "flex-end", overflow: "hidden" }}>
+        <section style={{ position: "relative", minHeight: "360px", display: "flex", alignItems: "flex-end", overflow: "hidden" }}>
           <div style={{ position: "absolute", inset: 0, backgroundImage: `url('${committee?.image}')`, backgroundSize: "cover", backgroundPosition: "center 40%", filter: isLight ? "brightness(0.9) saturate(1.1)" : "brightness(0.35) saturate(0.7)" }} />
           <div style={{ position: "absolute", inset: 0, background: isLight ? "linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 30%, rgba(248,250,252,0.85) 80%, var(--boiler-black) 100%)" : "linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0.85) 80%, var(--boiler-black) 100%)" }} />
           <div className="ieee-grid-bg" style={{ position: "absolute", inset: 0, opacity: isLight ? 0.4 : 0.6 }} />
-          <div style={{ position: "relative", zIndex: 5, maxWidth: "1280px", margin: "0 auto", padding: "0 32px 48px", width: "100%" }}>
+          <div style={{ position: "relative", zIndex: 5, maxWidth: "1280px", margin: "0 auto", padding: "120px 32px 24px", width: "100%" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "32px", gap: "40px" }}>
               <Link 
                 to="/committees" 
