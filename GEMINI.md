@@ -25,12 +25,13 @@ This is the official website for the **Purdue University IEEE Student Branch**, 
 - `src/app/pages/`: Contains full-page components (Home, Committees, About, etc.).
 - `src/app/components/`: Modular, reusable UI components.
 - `src/app/components/ui/`: Low-level, accessible UI primitives based on Radix UI.
-- `src/data/`: Centralized data management.
-  - `committees/`: Detailed data for each technical committee (AESC, CSociety, ROV, etc.).
-  - `leadership.ts`: List of officers and their roles.
+- `src/data/`: Centralized TypeScript interfaces, routes, and calendar configs.
+  - `committees/types.ts`: Detailed TS typings for technical committee schemas.
+  - `leadership.ts`: Types for branch officer and leader roles.
+- `studio/`: Custom Sanity Studio schema configurations and CMS document desk rules.
 - `src/styles/`: Global styles and design system tokens.
 - `public/documents/`: Governance documents (Constitution, Bylaws) and other resources.
-- `public/images/`: Organized image assets categorized by committee and general use.
+- `public/images/`: Organized static image assets.
 
 ## 🛠️ Building and Running
 
@@ -61,7 +62,7 @@ To deploy to Cloudflare Pages:
 
 1.  **Functional Components:** Use functional components with hooks.
 2.  **TypeScript:** Maintain strict typing throughout the codebase, especially for data structures in `src/data/`.
-3.  **Data-Driven UI:** Most content (committees, officers, projects) should be managed via files in `src/data/` rather than hardcoded in components.
+3.  **CMS-Driven Content:** All website content (committees, officers, projects, home, and about pages) is managed dynamically in Sanity CMS. Do not hardcode content in components or data files.
 4.  **Accessibility:** Utilize Radix UI primitives in `src/app/components/ui/` to ensure high accessibility standards.
 5.  **Styling:** Prefer Tailwind CSS utility classes. For complex or brand-specific styling, use the pre-defined CSS variables in `src/styles/`.
 6.  **Page Transitions:** Use the `<PageTransition>` component (wrapper around Framer Motion) for smooth navigation between routes.
@@ -71,5 +72,6 @@ To deploy to Cloudflare Pages:
 
 - `src/app/App.tsx`: Main routing and theme provider setup.
 - `src/app/components/Layout.tsx`: Common layout wrapper (Header, Footer, Navigation).
-- `src/data/committees/index.ts`: Central barrel file for all committee data.
-- `vite.config.ts`: Vite configuration with Tailwind CSS v4 plugin.
+- `src/hooks/useSanityData.ts`: React hooks used to query optimized dataset payloads from Sanity.
+- `studio/schema/`: Local definitions for Sanity CMS document and object types.
+- `vite.config.ts`: Vite configuration with Tailwind CSS v4 and image optimizer plugins.

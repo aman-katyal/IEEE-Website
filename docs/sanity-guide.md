@@ -22,6 +22,7 @@ The Technical Committees are the heart of our website. Each committee has its ow
 - **Tagline:** A short, punchy sentence appearing in the hero section.
 - **Description:** The short paragraph shown on the main list page.
 - **Long Description:** The detailed "About" text on the individual committee page. Supports **Markdown** for bolding and lists.
+- **Chair (Officer):** **Reference Field.** Choose the chair directly from the dropdown of existing **Officer** documents. Their contact details will automatically propagate to the frontend.
 
 ### 2. Custom Sections (Dynamic Layout)
 We use a "block" system for committee pages. You can add, remove, and reorder these sections:
@@ -48,6 +49,20 @@ We use a drag-and-drop system for ordering:
 - This document contains four lists (one for each category).
 - To change the order, simply **drag and drop** the officer names within their respective list.
 - Click **Publish** to save the new order.
+
+---
+
+## 🏗️ Cornerstone Committees (Operations/Involvement)
+
+Cornerstone committees represent functional support teams (like Operations or Member Involvement).
+
+### 1. Editing Cornerstone Info
+- Select **Cornerstone Committee** from the sidebar.
+- **Committee Name & Description:** General info.
+- **Committee Leads:** A list of leads for the sub-teams. For each lead:
+  - **Role:** The lead's role title (e.g., "Infrastructure").
+  - **Officer:** **Reference Field.** Select the officer from the dropdown of existing **Officer** documents.
+  - **Bio/Description:** A short description/bio of their sub-committee or role.
 
 ---
 

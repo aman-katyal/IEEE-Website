@@ -13,21 +13,22 @@ Detailed guides for various users and tasks:
 
 ## Tech Stack
 
-- **Framework:** React 18 with Vite
+- **Framework:** React 19 with Vite
 - **Styling:** Tailwind CSS and Custom CSS Variables (Design System)
 - **Animations:** Framer Motion
 - **Icons:** Lucide React
 - **Routing:** React Router 7
+- **CMS:** Sanity.io (Headless CMS)
 - **Deployment:** Cloudflare Pages (configured for Single Page Application routing via wrangler.jsonc)
 
 ## Project Structure
 
 - `src/app/pages/`: Primary page components (Home, Committees, Join, About, etc.)
 - `src/app/components/`: Modular UI components (Hero, Navigation, Stats, etc.)
-- `src/data/`: Centralized data management for Committees and Leadership information.
+- `src/data/`: Centralized TypeScript interfaces, routes, and configs.
 - `src/styles/`: Design system tokens and global style definitions (`ieee.css`, `theme.css`).
 - `public/documents/`: Governance documentation (Constitution and Bylaws).
-- `public/images/`: Organized image assets categorized by committee.
+- `public/images/`: Organized image assets.
 
 ## Getting Started
 

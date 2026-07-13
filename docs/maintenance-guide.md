@@ -35,7 +35,7 @@ When the content requirements change (e.g., adding a new field to a Committee), 
 
 ### 1. File Location
 All schema definitions are located in:
-**`/studio/purdue-ieee-website/schemaTypes/`**
+**`/studio/schema/`**
 
 ### 2. Making Changes
 - Open the relevant file (e.g., `leader.ts`).
@@ -46,25 +46,32 @@ All schema definitions are located in:
 After editing the local files, you must push the changes to Sanity's servers:
 ```bash
 # Navigate to the studio directory
-cd studio/purdue-ieee-website
+cd studio
 
 # Deploy the updated Studio and Schema
-npm run deploy
+npx sanity deploy
 ```
-*Note: You must have the Sanity CLI installed (`npm install -g sanity`) and be logged in (`sanity login`).*
+*Note: You must be logged in to Sanity (`npx sanity login`).*
 
 ---
 
-## 🔄 Standard Development Workflow
+## 🔄 Standard Development Workflow & CI/CD
 
-For those not using specialized AI tools (like Conductor), follow this standard Git workflow:
+To maintain codebase safety and reliability:
 
-1. **Create a Branch:** `git checkout -b feature/your-feature-name`
-2. **Develop:** Make your changes in `src/`.
-3. **Test:** Run `npm test` to ensure no regressions.
-4. **Build:** Run `npm run build` to verify the production build passes.
-5. **Commit:** Follow the [Conventional Commits](https://www.conventionalcommits.org/) format:
-   - `feat(...)`: New features
-   - `fix(...)`: Bug fixes
-   - `docs(...)`: Documentation changes
-6. **Push & PR:** Push your branch and open a Pull Request on GitHub.
+1.  **Branch Protection Rules (Master Branch):**
+    *   Direct pushes to `master` are blocked for collaborators.
+    *   Any new features, styling adjustments, or bug fixes must be submitted via a **Pull Request (PR)**.
+    *   Requires at least **1 approving review** from a repository owner or administrator before merging.
+
+2.  **Continuous Integration Checks:**
+    *   Every Pull Request and push to `master` triggers a GitHub Actions check (`.github/workflows/ci.yml`).
+    *   This workflow installs dependencies, runs the entire unit testing suite (`npm run test -- --run`), and compiles the production build (`npm run build`).
+    *   Merges are only permitted when this check passes successfully.
+
+3.  **Development Steps:**
+    *   **Create a Branch:** `git checkout -b feature/your-feature-name`
+    *   **Develop:** Make your changes in `src/`.
+    *   **Test & Validate:** Run `npm test` and `npm run build` locally before pushing.
+    *   **Commit:** Follow the [Conventional Commits](https://www.conventionalcommits.org/) format (e.g., `feat(committee): add projects grid`).
+    *   **Push & PR:** Push your branch and open a Pull Request on GitHub. Make sure it passes all CI checks and gets approved.
