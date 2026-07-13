@@ -5,6 +5,8 @@ import { useCommittee } from "../../hooks/useSanityData";
 import { Skeleton } from "boneyard-js/react";
 import ReactMarkdown from "react-markdown";
 import type { CommitteeSection } from "../../data/committees/types";
+import { useState, useMemo, useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
 
 /** 
  * Custom Discord Icon Component 
@@ -37,6 +39,40 @@ export function CommitteePage() {
   const { committee, loading, error } = useCommittee(id ?? "");
   const { theme } = useTheme();
   const isLight = theme === "light";
+
+  const availableTabs = useMemo(() => {
+    if (!committee) return [];
+    const tabs = [{ id: "overview", label: "Overview" }];
+
+    const hasProjects = committee.sections?.some(s => s.type === "projects");
+    if (hasProjects) {
+      tabs.push({ id: "projects", label: "Projects" });
+    }
+
+    const hasGallery = committee.sections?.some(s => s.type === "gallery");
+    if (hasGallery) {
+      tabs.push({ id: "media", label: "Media" });
+    }
+
+    const hasFAQ = committee.sections?.some(s => s.type === "faq");
+    const hasContact = committee.sections?.some(s => s.type === "contact");
+    if (hasFAQ || hasContact) {
+      tabs.push({ id: "faq", label: "FAQ & Contact" });
+    }
+
+    return tabs;
+  }, [committee]);
+
+  const [activeTab, setActiveTab] = useState("overview");
+
+  useEffect(() => {
+    if (availableTabs.length > 0) {
+      const exists = availableTabs.some(t => t.id === activeTab);
+      if (!exists) {
+        setActiveTab(availableTabs[0].id);
+      }
+    }
+  }, [availableTabs, activeTab]);
 
   if (error || (!loading && !committee)) {
     return (
@@ -270,20 +306,100 @@ export function CommitteePage() {
           <div className="ieee-grid-sidebar" style={{ gap: "48px" }}>
             <div>
               <Skeleton name="committee-content" loading={loading} color={isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}>
-                <div style={{ marginBottom: "64px" }}>
-                  <p className="section-eyebrow" style={{ marginBottom: "20px" }}>// About This Committee</p>
-                  <div className="glass-card" style={{ padding: "32px" }}>
-                    <p style={{ fontFamily: "var(--font-body)", fontSize: "16px", color: "var(--text-secondary)", lineHeight: 1.85 }}>{committee?.longDescription}</p>
+                {/* Tabs navigation */}
+                {availableTabs.length > 1 && (
+                  <div
+                    style={{
+                      borderBottom: "1px solid var(--glass-border)",
+                      marginBottom: "40px",
+                      display: "flex",
+                      gap: "8px",
+                      overflowX: "auto",
+                      paddingBottom: "1px",
+                    }}
+                  >
+                    {availableTabs.map((tab) => {
+                      const isActive = activeTab === tab.id;
+                      return (
+                        <button
+                          key={tab.id}
+                          onClick={() => setActiveTab(tab.id)}
+                          style={{
+                            position: "relative",
+                            padding: "12px 24px",
+                            fontFamily: "var(--font-mono)",
+                            fontSize: "11px",
+                            fontWeight: 600,
+                            textTransform: "uppercase",
+                            letterSpacing: "0.1em",
+                            border: "none",
+                            background: "transparent",
+                            color: isActive ? "var(--cyber-gold)" : "var(--text-muted)",
+                            cursor: "pointer",
+                            transition: "color 0.2s ease",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {tab.label}
+                          {isActive && (
+                            <motion.div
+                              layoutId="activeDetailTabIndicator"
+                              style={{
+                                position: "absolute",
+                                bottom: "-1px",
+                                left: 0,
+                                right: 0,
+                                height: "2px",
+                                background: "var(--cyber-gold)",
+                              }}
+                              transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                            />
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
-                </div>
+                )}
 
-                {/* Dynamic Content Blocks */}
-                {committee?.sections?.map((section, i) => renderSection(section, i))}
-
-                {/* Tags */}
-                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "64px" }}>
-                  {committee?.tags?.map((tag) => <span key={tag} className="tech-tag" style={{ opacity: isLight ? 1 : 0.9, padding: "6px 12px" }}>{tag}</span>)}
-                </div>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeTab}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {activeTab === "overview" && (
+                      <>
+                        <div style={{ marginBottom: "40px" }}>
+                          <p className="section-eyebrow" style={{ marginBottom: "20px" }}>// About This Committee</p>
+                          <div className="glass-card" style={{ padding: "32px" }}>
+                            <p style={{ fontFamily: "var(--font-body)", fontSize: "16px", color: "var(--text-secondary)", lineHeight: 1.85 }}>{committee?.longDescription}</p>
+                          </div>
+                        </div>
+                        {committee?.sections?.filter(s => s.type === "text").map((section, i) => renderSection(section, i))}
+                        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "24px", marginBottom: "64px" }}>
+                          {committee?.tags?.map((tag) => <span key={tag} className="tech-tag" style={{ opacity: isLight ? 1 : 0.9, padding: "6px 12px" }}>{tag}</span>)}
+                        </div>
+                      </>
+                    )}
+                    {activeTab === "projects" && (
+                      <div style={{ marginBottom: "64px" }}>
+                        {committee?.sections?.filter(s => s.type === "projects").map((section, i) => renderSection(section, i))}
+                      </div>
+                    )}
+                    {activeTab === "media" && (
+                      <div style={{ marginBottom: "64px" }}>
+                        {committee?.sections?.filter(s => s.type === "gallery").map((section, i) => renderSection(section, i))}
+                      </div>
+                    )}
+                    {activeTab === "faq" && (
+                      <div style={{ marginBottom: "64px" }}>
+                        {committee?.sections?.filter(s => s.type === "faq" || s.type === "contact").map((section, i) => renderSection(section, i))}
+                      </div>
+                    )}
+                  </motion.div>
+                </AnimatePresence>
               </Skeleton>
             </div>
 

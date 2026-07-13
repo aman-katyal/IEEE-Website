@@ -25,7 +25,7 @@ export function CornerstoneCommittees() {
       id="cornerstone"
       style={{
         background: "var(--boiler-black)",
-        padding: "96px 0",
+        padding: "16px 0 96px",
         position: "relative",
         overflow: "hidden",
       }}
@@ -34,20 +34,6 @@ export function CornerstoneCommittees() {
       <div
         className="ieee-grid-bg"
         style={{ position: "absolute", inset: 0, opacity: 0.25 }}
-      />
-
-      {/* Top border accent */}
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: "1px",
-          background:
-            "linear-gradient(90deg, transparent 0%, var(--electric-blue) 30%, var(--cyber-gold) 50%, var(--electric-blue) 70%, transparent 100%)",
-          opacity: 0.4
-        }}
       />
 
       <div
@@ -59,24 +45,6 @@ export function CornerstoneCommittees() {
           padding: "0 32px",
         }}
       >
-        <div style={{ marginBottom: "72px" }}>
-          <p className="section-eyebrow" style={{ marginBottom: "16px" }}>
-            // Organization & Operations
-          </p>
-          <h2
-            style={{
-              fontFamily: "var(--font-headline)",
-              fontSize: "clamp(32px, 4.5vw, 54px)",
-              fontWeight: 700,
-              color: "var(--text-primary)",
-              lineHeight: 1.1,
-              letterSpacing: "-0.025em",
-              marginBottom: "24px",
-            }}
-          >
-            Behind the <span style={{ color: "var(--electric-blue)" }}>Scenes</span>
-          </h2>
-        </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "64px" }}>
           {cornerstoneCommittees.map((section) => (

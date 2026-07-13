@@ -6,6 +6,8 @@ import { Skeleton as BoneyardSkeleton } from "boneyard-js/react";
 import { Skeleton } from "../ui/skeleton";
 import { MagneticWrapper } from "../ui/MagneticWrapper";
 import type { Committee } from "../../../data/committees/types";
+import { useState, useMemo } from "react";
+import { motion, AnimatePresence } from "motion/react";
 
 function CommitteeCard({ c }: { c: Committee }) {
   const { theme } = useTheme();
@@ -262,6 +264,29 @@ export function Committees() {
   const { committees, loading, error } = useCommittees();
   const { theme } = useTheme();
   const isLight = theme === "light";
+  const [selectedCategory, setSelectedCategory] = useState("All");
+
+  const categories = useMemo(() => {
+    if (!committees) return ["All"];
+    const tags = new Set<string>();
+    committees.forEach(c => {
+      if (c.tags) {
+        c.tags.forEach(t => {
+          if (t && t.trim() !== "") {
+            tags.add(t.trim());
+          }
+        });
+      }
+    });
+    return ["All", ...Array.from(tags).sort()];
+  }, [committees]);
+
+  const filteredCommittees = useMemo(() => {
+    if (selectedCategory === "All") return committees;
+    return committees.filter(c =>
+      c.tags?.some(t => t.toLowerCase() === selectedCategory.toLowerCase())
+    );
+  }, [committees, selectedCategory]);
 
   if (error) {
     return (
@@ -276,7 +301,7 @@ export function Committees() {
       id="committees"
       style={{
         background: "var(--boiler-black)",
-        padding: "48px 0 96px",
+        padding: "16px 0 96px",
         position: "relative",
         overflow: "hidden",
       }}
@@ -306,32 +331,66 @@ export function Committees() {
           style={{
             display: "flex",
             justifyContent: "space-between",
-            alignItems: "flex-end",
-            marginBottom: "48px",
+            alignItems: "center",
+            marginBottom: "40px",
             flexWrap: "wrap",
             gap: "24px",
+            borderBottom: "1px solid var(--glass-border)",
+            paddingBottom: "20px",
           }}
         >
-          <div>
-            <p className="section-eyebrow" style={{ marginBottom: "12px" }}>
-              // Project Committees
-            </p>
-            <h2
-              style={{
-                fontFamily: "var(--font-headline)",
-                fontSize: "clamp(28px, 4vw, 44px)",
-                fontWeight: 700,
-                color: "var(--text-primary)",
-                lineHeight: 1.15,
-                letterSpacing: "-0.02em",
-              }}
-            >
-              Active{" "}
-              <span style={{ color: "var(--cyber-gold)" }}>Engineering</span>{" "}
-              Teams
-            </h2>
+          {/* Category Filter Pills */}
+          <div
+            style={{
+              display: "flex",
+              gap: "8px",
+              flexWrap: "wrap",
+              alignItems: "center",
+            }}
+          >
+            {categories.map((cat) => {
+              const isActive = selectedCategory.toLowerCase() === cat.toLowerCase();
+              return (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  style={{
+                    position: "relative",
+                    padding: "8px 20px",
+                    borderRadius: "100px",
+                    fontFamily: "var(--font-mono)",
+                    fontSize: "10px",
+                    fontWeight: 600,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.08em",
+                    border: "none",
+                    background: "transparent",
+                    color: isActive ? "#ffffff" : "var(--text-muted)",
+                    cursor: "pointer",
+                    transition: "color 0.2s ease",
+                    zIndex: 2,
+                  }}
+                >
+                  {isActive && (
+                    <motion.div
+                      layoutId="categoryActiveBackground"
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        background: "var(--electric-blue)",
+                        borderRadius: "100px",
+                        zIndex: -1,
+                      }}
+                      transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                    />
+                  )}
+                  {cat}
+                </button>
+              );
+            })}
           </div>
 
+          {/* Stats count */}
           <div
             style={{
               display: "flex",
@@ -362,23 +421,28 @@ export function Committees() {
                   letterSpacing: "0.1em",
                 }}
               >
-                = {committees.length}
+                = {filteredCommittees.length}
               </div>
             )}
           </div>
         </div>
 
         <BoneyardSkeleton name="committees-grid" loading={loading} color={isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}>
-          <div className="ieee-grid-3">
-            {committees.map((c, index) => (
-              <div 
-                key={c.id} 
-                className={`animate-fade-in-up opacity-0-init`}
-                style={{ animationDelay: `${(index % 3) * 150}ms` }}
-              >
-                <CommitteeCard c={c} />
-              </div>
-            ))}
+          <div className="ieee-grid-3" style={{ minHeight: "200px" }}>
+            <AnimatePresence mode="popLayout">
+              {filteredCommittees.map((c) => (
+                <motion.div 
+                  key={c.id} 
+                  layout
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.25, ease: "easeInOut" }}
+                >
+                  <CommitteeCard c={c} />
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </div>
         </BoneyardSkeleton>
       </div>

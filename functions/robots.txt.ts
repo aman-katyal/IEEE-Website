@@ -4,6 +4,7 @@ export const onRequest: PagesFunction = async (context) => {
 
   const robotsText = `User-agent: *
 Disallow:
+Content-Signal: ai-train=no, search=yes, ai-input=no
 
 Sitemap: ${origin}/sitemap.xml
 `;
