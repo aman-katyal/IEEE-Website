@@ -264,29 +264,7 @@ export function Committees() {
   const { committees, loading, error } = useCommittees();
   const { theme } = useTheme();
   const isLight = theme === "light";
-  const [selectedCategory, setSelectedCategory] = useState("All");
 
-  const categories = useMemo(() => {
-    if (!committees) return ["All"];
-    const tags = new Set<string>();
-    committees.forEach(c => {
-      if (c.tags) {
-        c.tags.forEach(t => {
-          if (t && t.trim() !== "") {
-            tags.add(t.trim());
-          }
-        });
-      }
-    });
-    return ["All", ...Array.from(tags).sort()];
-  }, [committees]);
-
-  const filteredCommittees = useMemo(() => {
-    if (selectedCategory === "All") return committees;
-    return committees.filter(c =>
-      c.tags?.some(t => t.toLowerCase() === selectedCategory.toLowerCase())
-    );
-  }, [committees, selectedCategory]);
 
   if (error) {
     return (
@@ -330,67 +308,11 @@ export function Committees() {
         <div
           style={{
             display: "flex",
-            justifyContent: "space-between",
+            justifyContent: "flex-end",
             alignItems: "center",
-            marginBottom: "40px",
-            flexWrap: "wrap",
-            gap: "24px",
-            borderBottom: "1px solid var(--glass-border)",
-            paddingBottom: "20px",
+            marginBottom: "32px",
           }}
         >
-          {/* Category Filter Pills */}
-          <div
-            style={{
-              display: "flex",
-              gap: "8px",
-              flexWrap: "wrap",
-              alignItems: "center",
-            }}
-          >
-            {categories.map((cat) => {
-              const isActive = selectedCategory.toLowerCase() === cat.toLowerCase();
-              return (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
-                  style={{
-                    position: "relative",
-                    padding: "8px 20px",
-                    borderRadius: "100px",
-                    fontFamily: "var(--font-mono)",
-                    fontSize: "10px",
-                    fontWeight: 600,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.08em",
-                    border: "none",
-                    background: "transparent",
-                    color: isActive ? "#ffffff" : "var(--text-muted)",
-                    cursor: "pointer",
-                    transition: "color 0.2s ease",
-                    zIndex: 2,
-                  }}
-                >
-                  {isActive && (
-                    <motion.div
-                      layoutId="categoryActiveBackground"
-                      style={{
-                        position: "absolute",
-                        inset: 0,
-                        background: "var(--electric-blue)",
-                        borderRadius: "100px",
-                        zIndex: -1,
-                      }}
-                      transition={{ type: "spring", stiffness: 350, damping: 25 }}
-                    />
-                  )}
-                  {cat}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Stats count */}
           <div
             style={{
               display: "flex",
@@ -421,7 +343,7 @@ export function Committees() {
                   letterSpacing: "0.1em",
                 }}
               >
-                = {filteredCommittees.length}
+                = {committees.length}
               </div>
             )}
           </div>
@@ -430,7 +352,7 @@ export function Committees() {
         <BoneyardSkeleton name="committees-grid" loading={loading} color={isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}>
           <div className="ieee-grid-3" style={{ minHeight: "200px" }}>
             <AnimatePresence mode="popLayout">
-              {filteredCommittees.map((c) => (
+              {committees.map((c) => (
                 <motion.div 
                   key={c.id} 
                   layout
