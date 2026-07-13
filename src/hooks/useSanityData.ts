@@ -14,10 +14,10 @@ const SECTION_PROJECTION = `
       _type == "contactSection" => "contact",
       _type
     ),
-    "image": coalesce(image.asset->url, image),
+    "image": coalesce(image.asset->url + "?auto=format&q=75", image),
     items[]{
       ...,
-      "image": coalesce(image.asset->url, image)
+      "image": coalesce(image.asset->url + "?auto=format&w=800&q=75", image)
     }
   }
 `;
@@ -107,7 +107,7 @@ export function useCommittees() {
   const query = groq`*[_type == "committee"]{
     ...,
     "id": id.current,
-    "image": coalesce(image.asset->url, image),
+    "image": coalesce(image.asset->url + "?auto=format&w=1200&q=75", image),
     "chair": coalesce(chair->name, chair),
     "email": coalesce(email, chair->email),
     ${SECTION_PROJECTION}
@@ -120,7 +120,7 @@ export function useCommittee(id: string) {
   const query = groq`*[_type == "committee" && id.current == $id][0]{
     ...,
     "id": id.current,
-    "image": coalesce(image.asset->url, image),
+    "image": coalesce(image.asset->url + "?auto=format&w=1200&q=75", image),
     "chair": coalesce(chair->name, chair),
     "email": coalesce(email, chair->email),
     ${SECTION_PROJECTION}
@@ -147,7 +147,7 @@ export function useCornerstoneCommittees() {
 export function useLeaders() {
   const query = groq`*[_type == "leader"]{
     ...,
-    "image": coalesce(image.asset->url, image)
+    "image": coalesce(image.asset->url + "?auto=format&w=480&q=75", image)
   }`
   const { data, loading, error } = useDataFetching<any[]>(query, {});
   return { leaders: data || [], loading, error };
@@ -168,8 +168,8 @@ export function useOfficersConfig() {
 export function useHomePage() {
   const query = groq`*[_type == "homePage"][0]{
     ...,
-    "heroImage": heroImage.asset->url,
-    "aboutImage": aboutImage.asset->url
+    "heroImage": coalesce(heroImage.asset->url + "?auto=format&w=1600&q=75", heroImage.asset->url),
+    "aboutImage": coalesce(aboutImage.asset->url + "?auto=format&w=1000&q=75", aboutImage.asset->url)
   }`
   const { data, loading, error } = useDataFetching<any>(query);
   return { data, loading, error };
@@ -180,7 +180,7 @@ export function useAboutPage() {
     ...,
     sections[]{
       ...,
-      "image": image.asset->url
+      "image": coalesce(image.asset->url + "?auto=format&w=1000&q=75", image.asset->url)
     }
   }`
   const { data, loading, error } = useDataFetching<any>(query);
@@ -246,7 +246,7 @@ export interface Partner {
 export function usePartners() {
   const query = groq`*[_type == "partner"] | order(order asc){
     ...,
-    "logoUrl": logo.asset->url
+    "logoUrl": coalesce(logo.asset->url + "?auto=format&w=300&q=75", logo.asset->url)
   }`;
   const { data, loading, error } = useDataFetching<Partner[]>(query);
   return { partners: data || [], loading, error };

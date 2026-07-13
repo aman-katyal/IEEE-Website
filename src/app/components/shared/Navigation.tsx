@@ -66,13 +66,23 @@ export function Navigation() {
       const query = groq`*[_type == "committee"]{
         ...,
         "id": id.current,
-        "image": coalesce(image.asset->url, image),
+        "image": coalesce(image.asset->url + "?auto=format&w=1200&q=75", image),
+        "chair": coalesce(chair->name, chair),
+        "email": coalesce(email, chair->email),
         sections[]{
           ...,
-          "image": coalesce(image.asset->url, image),
+          "type": select(
+            _type == "textSection" => "text",
+            _type == "projectsSection" => "projects",
+            _type == "faqSection" => "faq",
+            _type == "gallerySection" => "gallery",
+            _type == "contactSection" => "contact",
+            _type
+          ),
+          "image": coalesce(image.asset->url + "?auto=format&q=75", image),
           items[]{
             ...,
-            "image": coalesce(image.asset->url, image)
+            "image": coalesce(image.asset->url + "?auto=format&w=800&q=75", image)
           }
         }
       }`;
@@ -90,20 +100,30 @@ export function Navigation() {
     if (href === "/officers") {
       const query = groq`*[_type == "leader"] | order(order asc){
         ...,
-        "image": coalesce(image.asset->url, image)
+        "image": coalesce(image.asset->url + "?auto=format&w=480&q=75", image)
       }`;
       prefetchData(query);
     } else if (committeeId) {
       const query = groq`*[_type == "committee" && id.current == $id][0]{
         ...,
         "id": id.current,
-        "image": coalesce(image.asset->url, image),
+        "image": coalesce(image.asset->url + "?auto=format&w=1200&q=75", image),
+        "chair": coalesce(chair->name, chair),
+        "email": coalesce(email, chair->email),
         sections[]{
           ...,
-          "image": coalesce(image.asset->url, image),
+          "type": select(
+            _type == "textSection" => "text",
+            _type == "projectsSection" => "projects",
+            _type == "faqSection" => "faq",
+            _type == "gallerySection" => "gallery",
+            _type == "contactSection" => "contact",
+            _type
+          ),
+          "image": coalesce(image.asset->url + "?auto=format&q=75", image),
           items[]{
             ...,
-            "image": coalesce(image.asset->url, image)
+            "image": coalesce(image.asset->url + "?auto=format&w=800&q=75", image)
           }
         }
       }`;
