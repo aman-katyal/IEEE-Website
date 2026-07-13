@@ -300,7 +300,9 @@ export function CommitteePage() {
                   <div style={{ marginBottom: "32px" }}>
                     <p className="section-eyebrow" style={{ marginBottom: "16px" }}>// About This Committee</p>
                     <div className="glass-card" style={{ padding: "24px" }}>
-                      <p style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--text-secondary)", lineHeight: 1.75 }}>{committee?.longDescription}</p>
+                      <div style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--text-secondary)", lineHeight: 1.75 }}>
+                        <ReactMarkdown>{committee?.longDescription}</ReactMarkdown>
+                      </div>
                     </div>
                   </div>
                   {textSections.map((section, i) => renderSection(section, i))}
