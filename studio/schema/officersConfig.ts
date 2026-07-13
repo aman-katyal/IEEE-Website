@@ -36,4 +36,11 @@ export const officersConfig = defineType({
       description: 'Drag and drop to reorder Member Involvement leads.',
     }),
   ],
+  preview: {
+    prepare() {
+      return {
+        title: 'Officers Configuration',
+      }
+    },
+  },
 })

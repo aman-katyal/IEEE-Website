@@ -132,4 +132,11 @@ export const homePage = defineType({
       initialValue: 'Purdue West Lafayette'
     }),
   ],
+  preview: {
+    prepare() {
+      return {
+        title: 'Home Page Content',
+      }
+    },
+  },
 })

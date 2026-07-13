@@ -14,4 +14,11 @@ export const aboutPage = defineType({
       of: [{ type: 'aboutPageSection' }],
     }),
   ],
+  preview: {
+    prepare() {
+      return {
+        title: 'About Page Content',
+      }
+    },
+  },
 })
