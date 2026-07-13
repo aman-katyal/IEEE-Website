@@ -693,17 +693,18 @@ export function BentoHero() {
                     ) : aboutTitle)}
                   </h3>
                   {aboutContent && (
-                    <p
+                    <div
                       style={{
                         fontFamily: "var(--font-body)",
                         fontSize: "13px",
                         color: "var(--text-secondary)",
                         lineHeight: 1.55,
                         marginBottom: "20px",
+                        whiteSpace: "pre-wrap"
                       }}
                     >
                       {aboutContent}
-                    </p>
+                    </div>
                   )}
                 </div>
                 <div>

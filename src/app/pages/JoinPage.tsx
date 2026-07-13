@@ -156,9 +156,9 @@ export function JoinPage() {
 
             <div className="ieee-grid-2" style={{ gap: "32px" }}>
               <div>
-                <p style={{ fontFamily: "var(--font-body)", fontSize: "16px", color: "var(--text-secondary)", lineHeight: 1.7, marginBottom: "24px" }}>
+                <div style={{ fontFamily: "var(--font-body)", fontSize: "16px", color: "var(--text-secondary)", lineHeight: 1.7, marginBottom: "24px", whiteSpace: "pre-wrap" }}>
                   {duesDescription}
-                </p>
+                </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                   {duesBenefits.map((benefit) => (
                     <div key={benefit} style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}>

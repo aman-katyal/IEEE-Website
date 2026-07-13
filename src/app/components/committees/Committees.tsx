@@ -125,7 +125,7 @@ function CommitteeCard({ c }: { c: Committee }) {
             {c.tagline}
           </p>
 
-          <p
+          <div
             style={{
               fontFamily: "var(--font-body)",
               fontSize: "13px",
@@ -133,10 +133,11 @@ function CommitteeCard({ c }: { c: Committee }) {
               lineHeight: 1.65,
               marginBottom: "20px",
               flex: 1,
+              whiteSpace: "pre-wrap"
             }}
           >
             {c.description}
-          </p>
+          </div>
 
           {/* Dynamic Metrics Row */}
           {displayMetrics.length > 0 && (

@@ -63,9 +63,9 @@ export function PartnersPage() {
                 </span>
               ))}
             </h1>
-            <p style={{ color: "var(--text-secondary)", fontSize: "1.1rem", maxWidth: "700px", lineHeight: 1.6, marginBottom: "40px" }}>
+            <div style={{ color: "var(--text-secondary)", fontSize: "1.1rem", maxWidth: "700px", lineHeight: 1.6, marginBottom: "40px", whiteSpace: "pre-wrap" }}>
               {heroSubtitle}
-            </p>
+            </div>
             
             <div style={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
               <a href="mailto:industry@purdueieee.org" className="btn-primary" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "8px" }}>

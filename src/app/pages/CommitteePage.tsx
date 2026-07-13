@@ -112,9 +112,9 @@ export function CommitteePage() {
       return (
         <div style={{ padding: "20px", background: "rgba(235, 211, 169, 0.05)", border: "1px solid var(--glass-border)", borderRadius: "4px", display: "flex", alignItems: "flex-start", gap: "12px" }}>
           <AlertCircle size={18} style={{ color: "var(--cyber-gold)", flexShrink: 0, marginTop: "2px" }} />
-          <p style={{ fontFamily: "var(--font-body)", fontSize: "13.5px", color: "var(--text-secondary)", lineHeight: 1.5 }}>
+          <div style={{ fontFamily: "var(--font-body)", fontSize: "13.5px", color: "var(--text-secondary)", lineHeight: 1.5, whiteSpace: "pre-wrap" }}>
             {config.message || "We are not currently accepting new members. Please check back later!"}
-          </p>
+          </div>
         </div>
       );
     }
@@ -140,7 +140,7 @@ export function CommitteePage() {
                 </div>
               )}
               <div style={{ flex: "1 1 300px" }}>
-                <div style={{ fontFamily: "var(--font-body)", fontSize: "15.5px", color: "var(--text-secondary)", lineHeight: 1.85 }}>
+                <div style={{ fontFamily: "var(--font-body)", fontSize: "15.5px", color: "var(--text-secondary)", lineHeight: 1.85, whiteSpace: "pre-wrap" }}>
                   <ReactMarkdown>{section.content}</ReactMarkdown>
                 </div>
               </div>
@@ -157,7 +157,7 @@ export function CommitteePage() {
               {section.items?.map((p, i) => (
                 <div key={i} className="glass-card" style={{ display: "flex", flexDirection: "column", overflow: "hidden" }}>
                   {p.image && <div style={{ height: "180px", width: "100%", borderBottom: "1px solid var(--glass-border)" }}><img src={p.image} alt={p.name} style={{ width: "100%", height: "100%", objectFit: projCrop ? "cover" : "contain", background: "rgba(0,0,0,0.05)" }} /></div>}
-                  <div style={{ padding: "24px" }}><h3 style={{ fontFamily: "var(--font-headline)", fontSize: "17px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "10px" }}>{p.name}</h3><div style={{ fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.65 }}><ReactMarkdown>{p.description}</ReactMarkdown></div></div>
+                  <div style={{ padding: "24px" }}><h3 style={{ fontFamily: "var(--font-headline)", fontSize: "17px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "10px" }}>{p.name}</h3><div style={{ fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.65, whiteSpace: "pre-wrap" }}><ReactMarkdown>{p.description}</ReactMarkdown></div></div>
                 </div>
               ))}
             </div>
@@ -198,7 +198,7 @@ export function CommitteePage() {
               {section.items?.map((faq, i) => (
                 <div key={i} className="glass-card" style={{ padding: "24px 32px" }}>
                   <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginBottom: "10px" }}><MessageCircle size={16} style={{ color: "var(--electric-blue)", flexShrink: 0, marginTop: "2px" }} /><h4 style={{ fontFamily: "var(--font-headline)", fontSize: "15px", fontWeight: 600, color: "var(--text-primary)", lineHeight: 1.45 }}>{faq.question}</h4></div>
-                  <div style={{ fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.7, paddingLeft: "28px" }}><ReactMarkdown>{faq.answer}</ReactMarkdown></div>
+                  <div style={{ fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.7, paddingLeft: "28px", whiteSpace: "pre-wrap" }}><ReactMarkdown>{faq.answer}</ReactMarkdown></div>
                 </div>
               ))}
             </div>

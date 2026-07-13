@@ -71,6 +71,7 @@ export function CornerstoneCommittees() {
                     fontSize: "17px",
                     color: "var(--text-secondary)",
                     lineHeight: 1.6,
+                    whiteSpace: "pre-wrap",
                   }}
                 >
                   <ReactMarkdown>{section.description}</ReactMarkdown>
@@ -136,6 +137,7 @@ export function CornerstoneCommittees() {
                         lineHeight: 1.6,
                         marginBottom: "24px",
                         flexGrow: 1,
+                        whiteSpace: "pre-wrap",
                       }}
                     >
                       <ReactMarkdown>{lead.description || ""}</ReactMarkdown>
