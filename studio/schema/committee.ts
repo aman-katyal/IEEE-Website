@@ -150,8 +150,9 @@ export const committee = defineType({
     // --- CONTACT & SOCIAL GROUP ---
     defineField({
       name: 'chair',
-      title: 'Chair Name',
-      type: 'string',
+      title: 'Chair (Officer)',
+      type: 'reference',
+      to: [{ type: 'leader' }],
       group: 'contact',
     }),
     defineField({

@@ -108,6 +108,8 @@ export function useCommittees() {
     ...,
     "id": id.current,
     "image": coalesce(image.asset->url, image),
+    "chair": coalesce(chair->name, chair),
+    "email": coalesce(email, chair->email),
     ${SECTION_PROJECTION}
   }`
   const { data, loading, error } = useDataFetching<Committee[]>(query, {});
@@ -119,6 +121,8 @@ export function useCommittee(id: string) {
     ...,
     "id": id.current,
     "image": coalesce(image.asset->url, image),
+    "chair": coalesce(chair->name, chair),
+    "email": coalesce(email, chair->email),
     ${SECTION_PROJECTION}
   }`
   
@@ -129,7 +133,12 @@ export function useCommittee(id: string) {
 export function useCornerstoneCommittees() {
   const query = groq`*[_type == "cornerstone"]{
     ...,
-    "id": id.current
+    "id": id.current,
+    leads[]{
+      ...,
+      "name": coalesce(officer->name, name),
+      "email": coalesce(officer->email, email)
+    }
   }`
   const { data, loading, error } = useDataFetching<CornerstoneCommittee[]>(query, {});
   return { committees: data || [], loading, error };
