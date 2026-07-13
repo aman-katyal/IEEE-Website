@@ -142,4 +142,11 @@ export const siteSettings = defineType({
       description: 'The benefits listed in the "Ready to Build Something Real?" section on the homepage.',
     }),
   ],
+  preview: {
+    prepare() {
+      return {
+        title: 'Global Site Settings',
+      }
+    },
+  },
 })
