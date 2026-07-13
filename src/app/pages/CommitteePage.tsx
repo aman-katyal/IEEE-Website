@@ -300,8 +300,8 @@ export function CommitteePage() {
                   <div style={{ marginBottom: "32px" }}>
                     <p className="section-eyebrow" style={{ marginBottom: "16px" }}>// About This Committee</p>
                     <div className="glass-card" style={{ padding: "24px" }}>
-                      <div style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--text-secondary)", lineHeight: 1.75 }}>
-                        <ReactMarkdown>{committee?.longDescription}</ReactMarkdown>
+                      <div style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--text-secondary)", lineHeight: 1.75, whiteSpace: "pre-wrap" }}>
+                        {committee?.longDescription}
                       </div>
                     </div>
                   </div>
