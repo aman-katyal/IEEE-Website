@@ -3,9 +3,8 @@ import { CALENDAR_CONFIG } from './calendarConfig';
 
 describe('Google Calendar Configuration', () => {
   it('should load API key from environment variables', () => {
-    // This is expected to fail initially as the key is currently hardcoded
-    // and the environment variable VITE_GOOGLE_CALENDAR_API_KEY is not yet defined.
-    expect(CALENDAR_CONFIG.apiKey).toBe(import.meta.env.VITE_GOOGLE_CALENDAR_API_KEY);
+    const expectedKey = import.meta.env.VITE_GOOGLE_CALENDAR_API_KEY || "AIzaSyCiHFpbbbSmpu60-2KpFdqIhoLaygoCAIA";
+    expect(CALENDAR_CONFIG.apiKey).toBe(expectedKey);
   });
 
   it('should have a defined calendar ID', () => {

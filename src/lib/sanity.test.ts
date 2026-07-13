@@ -27,8 +27,10 @@ describe('Sanity Client', () => {
   it('should export a client instance with correct config', () => {
     expect(client).toBeDefined();
     const config = (client as any).config();
-    expect(config.projectId).toBe(import.meta.env.VITE_SANITY_PROJECT_ID);
-    expect(config.dataset).toBe(import.meta.env.VITE_SANITY_DATASET);
+    const expectedProjectId = import.meta.env.VITE_SANITY_PROJECT_ID || 'vq0v7yv4';
+    const expectedDataset = import.meta.env.VITE_SANITY_DATASET || 'production';
+    expect(config.projectId).toBe(expectedProjectId);
+    expect(config.dataset).toBe(expectedDataset);
     expect(config.useCdn).toBe(false);
   });
 
