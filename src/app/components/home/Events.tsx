@@ -1,5 +1,5 @@
 import { MapPin, ChevronRight, Clock, CalendarPlus, ExternalLink, Loader2 } from "lucide-react";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import { useTheme } from "next-themes";
 import { useGoogleCalendarEvents, type CalendarEvent } from "../../../hooks/useGoogleCalendarEvents";
 

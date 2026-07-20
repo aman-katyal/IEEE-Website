@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Menu, X, ChevronDown, ArrowUpRight } from "lucide-react";
-import { Link, useLocation, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "next-themes";
 import { ThemeToggle } from "./ThemeToggle";
 import { IeeePurdueLogo } from "./IeeePurdueLogo";

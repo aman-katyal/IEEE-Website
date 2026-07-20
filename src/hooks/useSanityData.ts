@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from 'react'
-import { client, previewClient } from '../lib/sanity'
-import groq from 'groq'
-import type { Committee, CornerstoneCommittee } from '../data/committees/types'
+import { useQuery } from '@tanstack/react-query';
+import { client, previewClient } from '../lib/sanity';
+import groq from 'groq';
+import type { Committee, CornerstoneCommittee } from '../data/committees/types';
 
 const SECTION_PROJECTION = `
   sections[]{
@@ -22,21 +22,6 @@ const SECTION_PROJECTION = `
   }
 `;
 
-// Simple in-memory cache
-const cache: Record<string, any> = {};
-
-/**
- * Clears the in-memory data cache.
- */
-export function clearCache() {
-  Object.keys(cache).forEach(key => delete cache[key]);
-}
-
-// Helper to generate a cache key from query and params
-const getCacheKey = (query: string, params?: any) => {
-  return `${query}-${JSON.stringify(params || {})}`;
-};
-
 // Simple helper to detect if we should use the preview client
 const usePreview = () => {
   if (typeof window === 'undefined') return false;
@@ -44,63 +29,35 @@ const usePreview = () => {
   return params.has('preview') || window.location.hostname.includes('sanity.studio') || window.self !== window.top;
 };
 
-/**
- * Prefetches data from Sanity and populates the cache.
- * Useful for improving perceived performance during navigation.
- */
-export async function prefetchData(query: string, params?: any) {
-  const cacheKey = getCacheKey(query, params);
-  if (cache[cacheKey]) return cache[cacheKey];
-
-  try {
-    const data = await client?.fetch(query, params);
-    if (data) cache[cacheKey] = data;
-    return data;
-  } catch (error) {
-    console.error('Prefetch failed:', error);
-    return null;
-  }
-}
-
-function useDataFetching<T>(query: string, params?: any) {
-  const [data, setData] = useState<T | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<Error | null>(null)
-
+const getActiveClient = () => {
   const isPreview = usePreview();
-  const activeClient = isPreview ? previewClient : client;
-  const cacheKey = getCacheKey(query, params);
+  return isPreview ? previewClient : client;
+};
 
-  const fetchData = useCallback(async (ignoreCache = false) => {
-    if (!activeClient) {
-      console.warn('[useDataFetching] Sanity client not initialized. Query:', query);
-      setLoading(false);
-      return;
-    }
+// React Query hook for data fetching
+function useSanityQuery<T>(query: string, params?: Record<string, any>) {
+  const activeClient = getActiveClient();
+  const isPreview = usePreview();
 
-    if (!ignoreCache && !isPreview && cache[cacheKey]) {
-      setData(cache[cacheKey]);
-      setLoading(false);
-      return;
-    }
+  const queryResult = useQuery({
+    queryKey: ['sanity', query, params, isPreview],
+    queryFn: async (): Promise<T | null> => {
+      if (!activeClient) {
+        console.warn('[useSanityQuery] Sanity client not initialized. Query:', query);
+        return null;
+      }
+      return activeClient.fetch(query, params || {});
+    },
+    staleTime: isPreview ? 0 : 1000 * 60 * 5, // 5 minutes stale time for production
+    refetchOnWindowFocus: false, // Don't refetch on window focus
+  });
 
-    try {
-      const result = await activeClient.fetch(query, params);
-      if (!isPreview) cache[cacheKey] = result;
-      setData(result);
-      setLoading(false);
-    } catch (err) {
-      console.warn('[useDataFetching] Fetch failed:', err);
-      setError(err as Error);
-      setLoading(false);
-    }
-  }, [query, JSON.stringify(params), isPreview, activeClient, cacheKey]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
-  return { data, loading, error, refetch: () => fetchData(true) };
+  return {
+    data: queryResult.data as T | null,
+    loading: queryResult.isLoading,
+    error: queryResult.error as Error | null,
+    refetch: queryResult.refetch,
+  };
 }
 
 export function useCommittees() {
@@ -111,8 +68,8 @@ export function useCommittees() {
     "chair": coalesce(chair->name, chair),
     "email": coalesce(email, chair->email),
     ${SECTION_PROJECTION}
-  }`
-  const { data, loading, error } = useDataFetching<Committee[]>(query, {});
+  }`;
+  const { data, loading, error } = useSanityQuery<Committee[]>(query);
   return { committees: data || [], loading, error };
 }
 
@@ -124,9 +81,9 @@ export function useCommittee(id: string) {
     "chair": coalesce(chair->name, chair),
     "email": coalesce(email, chair->email),
     ${SECTION_PROJECTION}
-  }`
+  }`;
   
-  const { data, loading, error } = useDataFetching<Committee>(query, { id: id.toLowerCase() });
+  const { data, loading, error } = useSanityQuery<Committee>(query, { id: id.toLowerCase() });
   return { committee: data, loading, error };
 }
 
@@ -139,8 +96,8 @@ export function useCornerstoneCommittees() {
       "name": coalesce(officer->name, name),
       "email": coalesce(officer->email, email)
     }
-  }`
-  const { data, loading, error } = useDataFetching<CornerstoneCommittee[]>(query, {});
+  }`;
+  const { data, loading, error } = useSanityQuery<CornerstoneCommittee[]>(query);
   return { committees: data || [], loading, error };
 }
 
@@ -148,8 +105,8 @@ export function useLeaders() {
   const query = groq`*[_type == "leader"]{
     ...,
     "image": coalesce(image.asset->url + "?auto=format&w=480&q=75", image)
-  }`
-  const { data, loading, error } = useDataFetching<any[]>(query, {});
+  }`;
+  const { data, loading, error } = useSanityQuery<any[]>(query);
   return { leaders: data || [], loading, error };
 }
 
@@ -160,8 +117,8 @@ export function useOfficersConfig() {
     technicalOrder[]->{ _id },
     operationsOrder[]->{ _id },
     memberOrder[]->{ _id }
-  }`
-  const { data, loading, error } = useDataFetching<any>(query);
+  }`;
+  const { data, loading, error } = useSanityQuery<any>(query);
   return { config: data, loading, error };
 }
 
@@ -170,8 +127,8 @@ export function useHomePage() {
     ...,
     "heroImage": coalesce(heroImage.asset->url + "?auto=format&w=1600&q=75", heroImage.asset->url),
     "aboutImage": coalesce(aboutImage.asset->url + "?auto=format&w=1000&q=75", aboutImage.asset->url)
-  }`
-  const { data, loading, error } = useDataFetching<any>(query);
+  }`;
+  const { data, loading, error } = useSanityQuery<any>(query);
   return { data, loading, error };
 }
 
@@ -182,8 +139,8 @@ export function useAboutPage() {
       ...,
       "image": coalesce(image.asset->url + "?auto=format&w=1000&q=75", image.asset->url)
     }
-  }`
-  const { data, loading, error } = useDataFetching<any>(query);
+  }`;
+  const { data, loading, error } = useSanityQuery<any>(query);
   return { data, loading, error };
 }
 
@@ -231,7 +188,7 @@ export function useSiteSettings() {
     },
     "partnersProspectusUrl": partnersProspectusFile.asset->url
   }`;
-  const { data, loading, error } = useDataFetching<SiteSettings>(query);
+  const { data, loading, error } = useSanityQuery<SiteSettings>(query);
   return { settings: data, loading, error };
 }
 
@@ -248,6 +205,20 @@ export function usePartners() {
     ...,
     "logoUrl": coalesce(logo.asset->url + "?auto=format&w=300&q=75", logo.asset->url)
   }`;
-  const { data, loading, error } = useDataFetching<Partner[]>(query);
+  const { data, loading, error } = useSanityQuery<Partner[]>(query);
   return { partners: data || [], loading, error };
+}
+
+// Export a dummy prefetchData to keep compatibility with existing components
+// React Query handles prefetching differently (via queryClient.prefetchQuery)
+export async function prefetchData(query: string, params?: any) {
+  // We can just rely on the active client for this for now, though best practice
+  // is to use queryClient.prefetchQuery in components
+  const activeClient = getActiveClient();
+  if (!activeClient) return null;
+  try {
+    return await activeClient.fetch(query, params || {});
+  } catch (err) {
+    return null;
+  }
 }

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import { useTheme } from "next-themes";
 import { motion, AnimatePresence } from "motion/react";
 import { ChevronRight, ArrowUpRight } from "lucide-react";

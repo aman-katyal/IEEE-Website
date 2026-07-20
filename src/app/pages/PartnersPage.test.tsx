@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PartnersPage } from './PartnersPage';
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter } from 'react-router-dom';
 import * as useSanityData from '../../hooks/useSanityData';
 
 // Mock hooks

@@ -1,5 +1,5 @@
 import { Github, Linkedin, Instagram, Twitter, ExternalLink } from "lucide-react";
-import { Link, useLocation, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "next-themes";
 import { useCommittees, useSiteSettings } from "../../../hooks/useSanityData";
 import { IeeePurdueLogo } from "./IeeePurdueLogo";
