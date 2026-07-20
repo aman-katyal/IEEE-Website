@@ -18,7 +18,7 @@ vi.mock('next-themes', () => ({
 
 // Mock useNavigate since we want to verify calls
 const mockNavigate = vi.fn();
-vi.mock('react-router', async (importOriginal) => {
+vi.mock('react-router-dom', async (importOriginal) => {
   const actual = await importOriginal<typeof import('react-router')>();
   return {
     ...actual,
