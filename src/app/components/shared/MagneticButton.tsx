@@ -1,6 +1,6 @@
 import { useRef, ReactNode } from "react";
 import { motion, useMotionValue, useSpring } from "motion/react";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 
 interface MagneticButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "onDrag" | "onDragStart" | "onDragEnd" | "onAnimationStart" | "style"> {
   children: ReactNode;

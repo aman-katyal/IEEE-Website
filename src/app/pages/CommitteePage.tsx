@@ -1,4 +1,4 @@
-import { useParams, Link, useNavigate } from "react-router";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Mail, Users, Trophy, Cpu, ChevronRight, Calendar, Globe, MessageCircle, ExternalLink, UserCircle, AlertCircle, Github, Instagram, Linkedin, Twitter, Slack, Youtube, Info } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useCommittee } from "../../hooks/useSanityData";

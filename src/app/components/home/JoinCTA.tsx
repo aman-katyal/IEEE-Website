@@ -1,5 +1,5 @@
 import { ExternalLink, ChevronRight } from "lucide-react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { MagneticButton } from "../shared/MagneticButton";
 import { useSiteSettings, useCommittees } from "../../../hooks/useSanityData";
 

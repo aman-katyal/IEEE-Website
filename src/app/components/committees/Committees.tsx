@@ -1,5 +1,5 @@
 import { ArrowUpRight, Users, Trophy, Cpu, Globe, Loader2 } from "lucide-react";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import { useTheme } from "next-themes";
 import { useCommittees } from "../../../hooks/useSanityData";
 import { Skeleton as BoneyardSkeleton } from "boneyard-js/react";

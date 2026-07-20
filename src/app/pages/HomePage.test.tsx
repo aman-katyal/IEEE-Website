@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { HomePage } from './HomePage';
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter } from 'react-router-dom';
 import * as useSanityData from '../../hooks/useSanityData';
 import * as useGoogleCalendarEvents from '../../hooks/useGoogleCalendarEvents';
 

@@ -1,5 +1,5 @@
 import { ChevronLeft, Calendar as CalendarIcon, ExternalLink, Info } from "lucide-react";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import { useTheme } from "next-themes";
 import { useSiteSettings } from "../../hooks/useSanityData";
 

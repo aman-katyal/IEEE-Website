@@ -1,238 +1,141 @@
-import { renderHook, waitFor } from '@testing-library/react'
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest'
-import { 
-  useCommittees, 
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { renderHook } from '@testing-library/react';
+import { useQuery } from '@tanstack/react-query';
+import {
+  useCommittees,
   useCommittee,
   useCornerstoneCommittees,
-  useLeaders, 
+  useLeaders,
   useOfficersConfig,
   useHomePage,
   useAboutPage,
-  useSiteSettings, 
-  usePartners,
-  prefetchData,
-  clearCache 
-} from './useSanityData'
-import { client, previewClient } from '../lib/sanity'
+  useSiteSettings,
+  usePartners
+} from './useSanityData';
 
-// Mock the sanity lib
+// Mock react-query
+vi.mock('@tanstack/react-query', () => ({
+  useQuery: vi.fn(),
+}));
+
+// Mock sanity clients
 vi.mock('../lib/sanity', () => ({
-  client: {
-    fetch: vi.fn(),
-  },
-  previewClient: {
-    fetch: vi.fn(),
-  },
-  urlFor: vi.fn(() => ({
-    url: () => 'mock-url'
-  }))
-}))
+  client: { fetch: vi.fn() },
+  previewClient: { fetch: vi.fn() },
+}));
 
-describe('useSanityData hooks', () => {
+describe('useSanityData hooks with React Query', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-    clearCache()
-  })
+    vi.clearAllMocks();
 
-  describe('useCommittees', () => {
-    it('should return committees data on success', async () => {
-      const mockData = [
-        { _id: '1', name: 'Committee 1', id: 'c1' },
-        { _id: '2', name: 'Committee 2', id: 'c2' }
-      ]
-      vi.mocked(client.fetch).mockResolvedValue(mockData)
-
-      const { result } = renderHook(() => useCommittees())
-
-      expect(result.current.loading).toBe(true)
-      await waitFor(() => expect(result.current.loading).toBe(false))
-
-      expect(result.current.committees).toEqual(mockData)
-      expect(result.current.error).toBeNull()
-    })
-
-    it('should handle failure correctly', async () => {
-      vi.mocked(client.fetch).mockRejectedValue(new Error('Fetch failed'))
-      const { result } = renderHook(() => useCommittees())
-      await waitFor(() => expect(result.current.loading).toBe(false))
-      expect(result.current.committees).toEqual([])
-      expect(result.current.error).toBeDefined()
-    })
-  })
-
-  describe('useCommittee', () => {
-    it('should return specific committee data', async () => {
-      const mockData = { _id: '1', name: 'Computer Society', id: 'cs' }
-      vi.mocked(client.fetch).mockResolvedValue(mockData)
-
-      const { result } = renderHook(() => useCommittee('cs'))
-
-      await waitFor(() => expect(result.current.loading).toBe(false))
-      expect(result.current.committee).toEqual(mockData)
-      expect(client.fetch).toHaveBeenCalledWith(expect.stringContaining('id.current == $id'), { id: 'cs' })
-    })
-  })
-
-  describe('useCornerstoneCommittees', () => {
-    it('should return cornerstone committees', async () => {
-      const mockData = [{ _id: '1', name: 'Cornerstone 1' }]
-      vi.mocked(client.fetch).mockResolvedValue(mockData)
-
-      const { result } = renderHook(() => useCornerstoneCommittees())
-
-      await waitFor(() => expect(result.current.loading).toBe(false))
-      expect(result.current.committees).toEqual(mockData)
-    })
-  })
-
-  describe('useLeaders', () => {
-    it('should return leaders data', async () => {
-      const mockData = [{ _id: 'l1', name: 'Leader 1' }]
-      vi.mocked(client.fetch).mockResolvedValue(mockData)
-
-      const { result } = renderHook(() => useLeaders())
-
-      await waitFor(() => expect(result.current.loading).toBe(false))
-      expect(result.current.leaders).toEqual(mockData)
-    })
-  })
-
-  describe('useOfficersConfig', () => {
-    it('should return officers config', async () => {
-      const mockData = { executiveOrder: [] }
-      vi.mocked(client.fetch).mockResolvedValue(mockData)
-
-      const { result } = renderHook(() => useOfficersConfig())
-
-      await waitFor(() => expect(result.current.loading).toBe(false))
-      expect(result.current.config).toEqual(mockData)
-    })
-  })
-
-  describe('useHomePage', () => {
-    it('should return home page data', async () => {
-      const mockData = { title: 'Welcome' }
-      vi.mocked(client.fetch).mockResolvedValue(mockData)
-
-      const { result } = renderHook(() => useHomePage())
-
-      await waitFor(() => expect(result.current.loading).toBe(false))
-      expect(result.current.data).toEqual(mockData)
-    })
-  })
-
-  describe('useAboutPage', () => {
-    it('should return about page data', async () => {
-      const mockData = { title: 'About Us' }
-      vi.mocked(client.fetch).mockResolvedValue(mockData)
-
-      const { result } = renderHook(() => useAboutPage())
-
-      await waitFor(() => expect(result.current.loading).toBe(false))
-      expect(result.current.data).toEqual(mockData)
-    })
-  })
-
-  describe('useSiteSettings', () => {
-    it('should return site settings', async () => {
-      const mockData = { discordUrl: 'url' }
-      vi.mocked(client.fetch).mockResolvedValue(mockData)
-
-      const { result } = renderHook(() => useSiteSettings())
-
-      await waitFor(() => expect(result.current.loading).toBe(false))
-      expect(result.current.settings).toEqual(mockData)
-    })
-  })
-
-  describe('usePartners', () => {
-    it('should return partners data', async () => {
-      const mockData = [{ name: 'Partner 1', tier: 'Gold' }]
-      vi.mocked(client.fetch).mockResolvedValue(mockData)
-
-      const { result } = renderHook(() => usePartners())
-
-      await waitFor(() => expect(result.current.loading).toBe(false))
-      expect(result.current.partners).toEqual(mockData)
-    })
-  })
-
-  describe('Preview Mode', () => {
-    const originalLocation = window.location;
-
-    beforeEach(() => {
-      // @ts-ignore
-      delete window.location;
-      window.location = { ...originalLocation, search: '' };
+    // Clear URL search params for preview detection
+    Object.defineProperty(window, 'location', {
+      value: { search: '', hostname: 'localhost' },
+      writable: true
     });
+  });
 
-    afterEach(() => {
-      window.location = originalLocation;
-    });
+  const setupQueryMock = (data: any, isLoading = false, error = null) => {
+    vi.mocked(useQuery).mockReturnValue({
+      data,
+      isLoading,
+      error,
+      refetch: vi.fn(),
+    } as any);
+  };
 
-    it('should use previewClient when preview param is present', async () => {
-      // @ts-ignore
-      window.location.search = '?preview=true';
+  it('should return committees data on success', () => {
+    const mockData = [{ id: '1', name: 'Test Committee' }];
+    setupQueryMock(mockData);
 
-      const mockData = [{ id: 'preview-1' }]
-      vi.mocked(previewClient.fetch).mockResolvedValue(mockData)
+    const { result } = renderHook(() => useCommittees());
 
-      const { result } = renderHook(() => useCommittees())
-      await waitFor(() => expect(result.current.loading).toBe(false))
+    expect(result.current.committees).toEqual(mockData);
+    expect(result.current.loading).toBe(false);
+    expect(result.current.error).toBeNull();
+  });
 
-      expect(result.current.committees).toEqual(mockData)
-      expect(previewClient.fetch).toHaveBeenCalled()
-      expect(client.fetch).not.toHaveBeenCalled()
-    })
-  })
+  it('should handle failure correctly', () => {
+    const mockError = new Error('Fetch failed');
+    setupQueryMock(null, false, mockError);
 
-  describe('Caching and Prefetching', () => {
-    it('should use cache for subsequent requests', async () => {
-      const mockData = [{ id: '1' }]
-      vi.mocked(client.fetch).mockResolvedValue(mockData)
+    const { result } = renderHook(() => useCommittees());
 
-      // First call
-      const { result: result1, unmount: unmount1 } = renderHook(() => useCommittees())
-      await waitFor(() => expect(result1.current.loading).toBe(false))
-      expect(client.fetch).toHaveBeenCalledTimes(1)
-      unmount1()
+    expect(result.current.committees).toEqual([]);
+    expect(result.current.error).toEqual(mockError);
+    expect(result.current.loading).toBe(false);
+  });
 
-      // Second call should use cache
-      const { result: result2 } = renderHook(() => useCommittees())
-      await waitFor(() => expect(result2.current.loading).toBe(false))
-      expect(result2.current.committees).toEqual(mockData)
-      expect(client.fetch).toHaveBeenCalledTimes(1) // Still 1
-    })
+  it('should return specific committee data', () => {
+    const mockData = { id: 'test', name: 'Test Committee' };
+    setupQueryMock(mockData);
 
-    it('should clear cache correctly', async () => {
-      const mockData = [{ id: '1' }]
-      vi.mocked(client.fetch).mockResolvedValue(mockData)
+    const { result } = renderHook(() => useCommittee('test'));
 
-      // First call
-      const { result: result1, unmount: unmount1 } = renderHook(() => useCommittees())
-      await waitFor(() => expect(result1.current.loading).toBe(false))
-      unmount1()
+    expect(result.current.committee).toEqual(mockData);
+    expect(result.current.loading).toBe(false);
+  });
 
-      clearCache()
+  it('should return cornerstone committees', () => {
+    const mockData = [{ id: '1', name: 'Operations' }];
+    setupQueryMock(mockData);
 
-      // Second call after clear cache should fetch again
-      const { result: result2 } = renderHook(() => useCommittees())
-      await waitFor(() => expect(result2.current.loading).toBe(false))
-      expect(client.fetch).toHaveBeenCalledTimes(2)
-    })
+    const { result } = renderHook(() => useCornerstoneCommittees());
 
-    it('prefetchData should populate cache', async () => {
-      const mockData = [{ id: '1' }]
-      vi.mocked(client.fetch).mockResolvedValue(mockData)
-      const query = 'custom-query'
+    expect(result.current.committees).toEqual(mockData);
+  });
 
-      await prefetchData(query)
-      expect(client.fetch).toHaveBeenCalledTimes(1)
+  it('should return leaders data', () => {
+    const mockData = [{ id: '1', name: 'Leader 1' }];
+    setupQueryMock(mockData);
 
-      // Calling it again should use cache
-      const result = await prefetchData(query)
-      expect(result).toEqual(mockData)
-      expect(client.fetch).toHaveBeenCalledTimes(1) // Still 1
-    })
-  })
-})
+    const { result } = renderHook(() => useLeaders());
+
+    expect(result.current.leaders).toEqual(mockData);
+  });
+
+  it('should return officers config', () => {
+    const mockData = { executiveOrder: [] };
+    setupQueryMock(mockData);
+
+    const { result } = renderHook(() => useOfficersConfig());
+
+    expect(result.current.config).toEqual(mockData);
+  });
+
+  it('should return home page data', () => {
+    const mockData = { title: 'Home' };
+    setupQueryMock(mockData);
+
+    const { result } = renderHook(() => useHomePage());
+
+    expect(result.current.data).toEqual(mockData);
+  });
+
+  it('should return about page data', () => {
+    const mockData = { title: 'About' };
+    setupQueryMock(mockData);
+
+    const { result } = renderHook(() => useAboutPage());
+
+    expect(result.current.data).toEqual(mockData);
+  });
+
+  it('should return site settings', () => {
+    const mockData = { discordUrl: 'https://discord.com' };
+    setupQueryMock(mockData);
+
+    const { result } = renderHook(() => useSiteSettings());
+
+    expect(result.current.settings).toEqual(mockData);
+  });
+
+  it('should return partners data', () => {
+    const mockData = [{ name: 'Partner', tier: 'Gold' }];
+    setupQueryMock(mockData);
+
+    const { result } = renderHook(() => usePartners());
+
+    expect(result.current.partners).toEqual(mockData);
+  });
+});

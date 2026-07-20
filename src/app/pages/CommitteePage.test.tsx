@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { CommitteePage } from './CommitteePage';
 import { vi, describe, it, expect } from 'vitest';
 import * as useSanityData from '../../hooks/useSanityData';
