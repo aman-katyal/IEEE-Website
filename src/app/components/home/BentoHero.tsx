@@ -614,26 +614,30 @@ export function BentoHero() {
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "0.7rem", color: "var(--text-secondary)" }}>
                   {hqLocation && (
-                    <div style={{ display: "flex", justifyContent: "space-between" }}>
-                      <span style={{ color: "var(--text-muted)" }}>HQ Location:</span>
+                    <div style={{ display: "flex", justifyContent: "space-between", gap: "12px" }}>
+                      <span style={{ color: "var(--text-muted)", flexShrink: 0 }}>HQ Location:</span>
                       <span>{hqLocation}</span>
                     </div>
                   )}
                   {committees && committees.length > 0 && (
-                    <div style={{ display: "flex", justifyContent: "space-between" }}>
-                      <span style={{ color: "var(--text-muted)" }}>Active Projects:</span>
+                    <div style={{ display: "flex", justifyContent: "space-between", gap: "12px" }}>
+                      <span style={{ color: "var(--text-muted)", flexShrink: 0 }}>Active Projects:</span>
                       <span>{committees.length} Teams</span>
                     </div>
                   )}
-                  {siteSettings?.duesDescription && (
-                    <div style={{ display: "flex", justifyContent: "space-between" }}>
-                      <span style={{ color: "var(--text-muted)" }}>Dues Rate:</span>
-                      <span>{siteSettings.duesDescription}</span>
-                    </div>
-                  )}
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: "12px" }}>
+                    <span style={{ color: "var(--text-muted)", flexShrink: 0 }}>Dues Rate:</span>
+                    <span style={{ color: "var(--text-primary)", fontWeight: 600 }}>
+                      {siteSettings?.duesOptions?.[0]?.price
+                        ? siteSettings.duesOptions[0].price
+                        : (siteSettings?.duesDescription && siteSettings.duesDescription.length < 30
+                            ? siteSettings.duesDescription
+                            : "$10 / year")}
+                    </span>
+                  </div>
                   {discordMembers && (
-                    <div style={{ display: "flex", justifyContent: "space-between" }}>
-                      <span style={{ color: "var(--text-muted)" }}>Discord Hub:</span>
+                    <div style={{ display: "flex", justifyContent: "space-between", gap: "12px" }}>
+                      <span style={{ color: "var(--text-muted)", flexShrink: 0 }}>Discord Hub:</span>
                       <span style={{ color: "var(--cyber-gold)" }}>{discordMembers}</span>
                     </div>
                   )}
