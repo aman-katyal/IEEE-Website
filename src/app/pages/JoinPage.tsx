@@ -30,117 +30,73 @@ export function JoinPage() {
   const duesOptions = settings?.duesOptions || defaultOptions;
 
   if (loading) {
-    return <div style={{ minHeight: "100vh", display: "flex", justifyContent: "center", alignItems: "center", background: "var(--boiler-black)", color: "var(--text-primary)" }}>Loading...</div>;
+    return <div className="min-h-screen flex justify-center items-center bg-[var(--boiler-black)] text-[var(--text-primary)]">Loading...</div>;
   }
 
   return (
-    <section
-      style={{
-        background: "var(--boiler-black)",
-        minHeight: "100vh",
-        padding: "120px 0 96px",
-        position: "relative",
-        overflow: "hidden",
-      }}
-    >
+    <section className="bg-[var(--boiler-black)] min-h-screen pt-[120px] pb-24 relative overflow-hidden">
       {/* Background grid */}
       <div
-        className="ieee-grid-bg"
-        style={{ position: "absolute", inset: 0, opacity: isLight ? 0.4 : 0.25 }}
+        className={`ieee-grid-bg absolute inset-0 ${isLight ? "opacity-40" : "opacity-25"}`}
       />
 
-      <div
-        style={{
-          position: "relative",
-          zIndex: 5,
-          maxWidth: "1000px",
-          margin: "0 auto",
-          padding: "0 32px",
-        }}
-      >
+      <div className="relative z-5 max-w-[1000px] mx-auto px-8">
         {/* Header */}
-        <div style={{ marginBottom: "72px", textAlign: "center" }}>
-          <p className="section-eyebrow" style={{ marginBottom: "16px", opacity: isLight ? 1 : 0.9 }}>
+        <div className="mb-[72px] text-center">
+          <p className={`section-eyebrow mb-4 ${isLight ? "opacity-100" : "opacity-90"}`}>
             // Get Started
           </p>
-          <h2
-            style={{
-              fontFamily: "var(--font-headline)",
-              fontSize: "clamp(32px, 5vw, 56px)",
-              fontWeight: 700,
-              color: "var(--text-primary)",
-              lineHeight: 1.1,
-              letterSpacing: "-0.03em",
-              marginBottom: "24px",
-            }}
-          >
-            Joining Purdue IEEE is <span style={{ color: "var(--electric-blue)" }}>easier than ever!</span>
+          <h2 className="font-[family-name:var(--font-headline)] text-[clamp(32px,5vw,56px)] font-bold text-[var(--text-primary)] leading-[1.1] tracking-[-0.03em] mb-6">
+            Joining Purdue IEEE is <span className="text-[var(--electric-blue)]">easier than ever!</span>
           </h2>
-          <p
-            style={{
-              fontFamily: "var(--font-body)",
-              fontSize: "18px",
-              color: "var(--text-secondary)",
-              lineHeight: 1.6,
-              maxWidth: "700px",
-              margin: "0 auto",
-            }}
-          >
+          <p className="font-[family-name:var(--font-body)] text-lg text-[var(--text-secondary)] leading-[1.6] max-w-[700px] mx-auto">
             To join, simply attend any committee meeting and pay dues.
           </p>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "48px" }}>
+        <div className="flex flex-col gap-12">
           {/* Quick Steps */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "24px" }}>
-            <div className="glass-card" style={{ padding: "24px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "20px" }}>
-                <Users size={24} style={{ color: "var(--electric-blue)" }} />
-                <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "20px", fontWeight: 600, color: "var(--text-primary)" }}>Attend Meetings</h3>
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6">
+            <div className="glass-card p-6">
+              <div className="flex items-center gap-4 mb-5">
+                <Users size={24} className="text-[var(--electric-blue)]" />
+                <h3 className="font-[family-name:var(--font-headline)] text-xl font-semibold text-[var(--text-primary)]">Attend Meetings</h3>
               </div>
-              <p style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--text-secondary)", lineHeight: 1.6 }}>
+              <p className="font-[family-name:var(--font-body)] text-[15px] text-[var(--text-secondary)] leading-[1.6]">
                 Check out our list of committees and find one that interests you. You're welcome to attend any meeting to see what we're about.
               </p>
             </div>
-            <div className="glass-card" style={{ padding: "24px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "20px" }}>
-                <CreditCard size={24} style={{ color: "var(--cyber-gold)" }} />
-                <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "20px", fontWeight: 600, color: "var(--text-primary)" }}>Pay Dues</h3>
+            <div className="glass-card p-6">
+              <div className="flex items-center gap-4 mb-5">
+                <CreditCard size={24} className="text-[var(--cyber-gold)]" />
+                <h3 className="font-[family-name:var(--font-headline)] text-xl font-semibold text-[var(--text-primary)]">Pay Dues</h3>
               </div>
-              <p style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--text-secondary)", lineHeight: 1.6 }}>
+              <p className="font-[family-name:var(--font-body)] text-[15px] text-[var(--text-secondary)] leading-[1.6]">
                 Official membership requires small annual dues, which fund our projects, competitions, and events.
               </p>
             </div>
           </div>
 
           {/* Connect Section */}
-          <div className="glass-card" style={{ padding: "clamp(24px, 5vw, 48px)", background: isLight ? "rgba(88, 101, 242, 0.08)" : "rgba(88, 101, 242, 0.05)", borderColor: isLight ? "rgba(88, 101, 242, 0.3)" : "rgba(88, 101, 242, 0.2)" }}>
-            <div style={{ display: "flex", gap: "32px", alignItems: "center", flexWrap: "wrap" }}>
-              <div style={{ flex: 1, minWidth: "260px" }}>
-                <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "28px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "16px" }}>Connect with us</h3>
-                <p style={{ fontFamily: "var(--font-body)", fontSize: "16px", color: "var(--text-secondary)", lineHeight: 1.6, marginBottom: "24px" }}>
+          <div className={`glass-card p-[clamp(24px,5vw,48px)] ${isLight ? "bg-[#5865F214] border-[#5865F24D]" : "bg-[#5865F20D] border-[#5865F233]"}`}>
+            <div className="flex gap-8 items-center flex-wrap">
+              <div className="flex-1 min-w-[260px]">
+                <h3 className="font-[family-name:var(--font-headline)] text-[28px] font-semibold text-[var(--text-primary)] mb-4">Connect with us</h3>
+                <p className="font-[family-name:var(--font-body)] text-base text-[var(--text-secondary)] leading-[1.6] mb-6">
                   Join Purdue IEEE today and start connecting with fellow members on Discord. Stay engaged with all committee updates and event announcements.
                 </p>
                 <a
                   href={discordUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn-primary"
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "10px",
-                    textDecoration: "none",
-                    background: "#5865F2",
-                    borderColor: "#5865F2"
-                  }}
+                  className="btn-primary inline-flex items-center gap-2.5 no-underline bg-[#5865F2] border-[#5865F2] hover:bg-[#4752C4] hover:border-[#4752C4]"
                 >
                   <MessageCircle size={18} />
                   Join Discord
                 </a>
               </div>
-              <div style={{ width: "120px", height: "120px", background: "rgba(88, 101, 242, 0.1)", borderRadius: "24px", display: "flex", alignItems: "center", justifyContent: "center" }} className="hidden sm:flex">
-                 <svg width="64" height="64" viewBox="0 0 24 24" fill="#5865F2" style={{ margin: "auto" }}>
+              <div className="w-[120px] h-[120px] bg-[#5865F21A] rounded-3xl hidden sm:flex items-center justify-center">
+                 <svg width="64" height="64" viewBox="0 0 24 24" fill="#5865F2" className="m-auto">
                     <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.086 2.157 2.419c0 1.334-.947 2.419-2.157 2.419zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.086 2.157 2.419c0 1.334-.946 2.419-2.157 2.419z"/>
                  </svg>
               </div>
@@ -148,39 +104,39 @@ export function JoinPage() {
           </div>
 
           {/* Dues Section */}
-          <div style={{ marginTop: "32px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "32px" }}>
-              <div style={{ width: "40px", height: "1px", background: "var(--cyber-gold)" }} />
-              <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "32px", fontWeight: 700, color: "var(--text-primary)" }}>Dues</h3>
+          <div className="mt-8">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="w-10 h-px bg-[var(--cyber-gold)]" />
+              <h3 className="font-[family-name:var(--font-headline)] text-[32px] font-bold text-[var(--text-primary)]">Dues</h3>
             </div>
 
-            <div className="ieee-grid-2" style={{ gap: "32px" }}>
+            <div className="ieee-grid-2 gap-8">
               <div>
-                <div style={{ fontFamily: "var(--font-body)", fontSize: "16px", color: "var(--text-secondary)", lineHeight: 1.7, marginBottom: "24px", whiteSpace: "pre-wrap" }}>
+                <div className="font-[family-name:var(--font-body)] text-base text-[var(--text-secondary)] leading-[1.7] mb-6 whitespace-pre-wrap">
                   {duesDescription}
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                <div className="flex flex-col gap-4">
                   {duesBenefits.map((benefit) => (
-                    <div key={benefit} style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}>
-                      <CheckCircle2 size={18} style={{ color: "var(--electric-blue)", flexShrink: 0, marginTop: "2px" }} />
-                      <span style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--text-primary)" }}>{benefit}</span>
+                    <div key={benefit} className="flex gap-3 items-start">
+                      <CheckCircle2 size={18} className="text-[var(--electric-blue)] shrink-0 mt-0.5" />
+                      <span className="font-[family-name:var(--font-body)] text-[15px] text-[var(--text-primary)]">{benefit}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="glass-card" style={{ padding: "clamp(24px, 5vw, 40px)", background: isLight ? "rgba(0, 90, 135, 0.05)" : "rgba(0, 98, 155, 0.05)" }}>
-                <h4 style={{ fontFamily: "var(--font-headline)", fontSize: "18px", fontWeight: 600, color: "var(--cyber-gold)", marginBottom: "20px", textTransform: "uppercase", letterSpacing: "0.1em", opacity: isLight ? 1 : 0.9 }}>
+              <div className={`glass-card p-[clamp(24px,5vw,40px)] ${isLight ? "bg-[rgba(0,90,135,0.05)]" : "bg-[rgba(0,98,155,0.05)]"}`}>
+                <h4 className={`font-[family-name:var(--font-headline)] text-lg font-semibold text-[var(--cyber-gold)] mb-5 uppercase tracking-[0.1em] ${isLight ? "opacity-100" : "opacity-90"}`}>
                   2025-26 Options
                 </h4>
-                <div style={{ display: "flex", flexDirection: "column", gap: "24px", marginBottom: "32px" }}>
+                <div className="flex flex-col gap-6 mb-8">
                   {duesOptions.map((option, idx) => (
-                    <div key={idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--glass-border)", paddingBottom: "16px" }}>
+                    <div key={idx} className="flex justify-between items-center border-b border-[var(--glass-border)] pb-4">
                       <div>
-                        <span style={{ display: "block", color: "var(--text-primary)", fontWeight: 600 }}>{option.name}</span>
-                        <span style={{ fontSize: "12px", color: "var(--text-muted)", opacity: isLight ? 1 : 0.8 }}>{option.subtitle}</span>
+                        <span className="block text-[var(--text-primary)] font-semibold">{option.name}</span>
+                        <span className={`text-xs text-[var(--text-muted)] ${isLight ? "opacity-100" : "opacity-80"}`}>{option.subtitle}</span>
                       </div>
-                      <span style={{ fontSize: "24px", fontWeight: 700, color: "var(--electric-blue)" }}>{option.price}</span>
+                      <span className="text-2xl font-bold text-[var(--electric-blue)]">{option.price}</span>
                     </div>
                   ))}
                 </div>
@@ -189,18 +145,17 @@ export function JoinPage() {
                   href={paymentUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn-gold" 
-                  style={{ width: "100%", textAlign: "center", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", textDecoration: "none" }}
+                  className="btn-gold w-full text-center flex items-center justify-center gap-2 no-underline"
                 >
                   Pay via TooCool
                   <ExternalLink size={14} />
                 </a>
                 
-                <p style={{ marginTop: "12px", fontSize: "12px", color: "var(--electric-blue)", textAlign: "center", fontFamily: "var(--font-mono)", fontWeight: isLight ? 600 : 400 }}>
+                <p className={`mt-3 text-xs text-[var(--electric-blue)] text-center font-[family-name:var(--font-mono)] ${isLight ? "font-semibold" : "font-normal"}`}>
                   Search for "IEEE" in the search box on TooCool
                 </p>
                 
-                <p style={{ marginTop: "24px", fontSize: "13px", color: "var(--text-muted)", fontStyle: "italic", lineHeight: 1.5, opacity: isLight ? 1 : 0.8 }}>
+                <p className={`mt-6 text-[13px] text-[var(--text-muted)] italic leading-relaxed ${isLight ? "opacity-100" : "opacity-80"}`}>
                   * If you have an active International IEEE Membership, you are exempt from local dues! Contact an officer to complete registration.
                 </p>
               </div>

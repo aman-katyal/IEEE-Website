@@ -426,8 +426,6 @@ export function BentoHero() {
   const { committees, loading: committeesLoading } = useCommittees();
   const { settings: siteSettings, loading: settingsLoading } = useSiteSettings();
 
-  const [hoveredSlot, setHoveredSlot] = useState<RackSlot | null>(null);
-
   const isLight = theme === "light";
   const loading = homeLoading || committeesLoading || settingsLoading;
 
