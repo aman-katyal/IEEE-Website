@@ -52,7 +52,7 @@ export function PartnersPage() {
       <section style={{ padding: "80px 0 64px", position: "relative", overflow: "hidden" }}>
         <div className="ieee-grid-bg" style={{ position: "absolute", inset: 0, opacity: 0.2 }} />
         
-        <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 32px", position: "relative", zIndex: 10 }}>
+        <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 clamp(16px, 4vw, 32px)", position: "relative", zIndex: 10 }}>
           <motion.div {...revealProps}>
             <p className="section-eyebrow" style={{ marginBottom: "16px" }}>// Corporate Relations</p>
             <h1 className="text-heading-1" style={{ marginBottom: "24px", maxWidth: "800px" }}>
@@ -83,7 +83,7 @@ export function PartnersPage() {
 
       {/* Partners Grid */}
       <section style={{ padding: "64px 0 128px" }}>
-        <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 32px" }}>
+        <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 clamp(16px, 4vw, 32px)" }}>
           
           {/* Gold Tier */}
           <div style={{ marginBottom: "80px" }}>
@@ -93,7 +93,7 @@ export function PartnersPage() {
               <div style={{ flex: 1, height: "1px", background: "linear-gradient(90deg, var(--glass-border), transparent)" }} />
             </div>
             
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "24px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 260px), 1fr))", gap: "24px" }}>
               {partners.filter(p => p.tier === "Gold").map(p => (
                 <PartnerCard key={p.domain || p.name} partner={p} isLight={isLight} />
               ))}
@@ -108,7 +108,7 @@ export function PartnersPage() {
               <div style={{ flex: 1, height: "1px", background: "linear-gradient(90deg, var(--glass-border), transparent)" }} />
             </div>
             
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "20px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 200px), 1fr))", gap: "20px" }}>
               {partners.filter(p => p.tier === "Silver").map(p => (
                 <PartnerCard key={p.domain || p.name} partner={p} isLight={isLight} />
               ))}
@@ -123,7 +123,7 @@ export function PartnersPage() {
               <div style={{ flex: 1, height: "1px", background: "linear-gradient(90deg, var(--glass-border), transparent)" }} />
             </div>
             
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "16px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 160px), 1fr))", gap: "16px" }}>
               {partners.filter(p => p.tier === "Bronze").map(p => (
                 <PartnerCard key={p.domain || p.name} partner={p} isLight={isLight} />
               ))}

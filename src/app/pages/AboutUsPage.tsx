@@ -50,15 +50,15 @@ export function AboutUsPage() {
     <div style={{ paddingTop: "80px", background: "var(--boiler-black)" }}>
       {/* Heritage & Impact - The moved content */}
       <section style={{ padding: "80px 0 40px", position: "relative" }}>
-        <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 32px" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "32px" }}>
+        <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 clamp(16px, 4vw, 32px)" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 280px), 1fr))", gap: "32px" }}>
             <div className="glass-card" style={{ padding: "32px", borderLeft: "4px solid var(--cyber-gold)" }}>
               <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "20px", fontWeight: 700, color: "var(--cyber-gold)", marginBottom: "12px" }}>Established 1903</h3>
               <p style={{ fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.6 }}>Over a century of fostering innovation and engineering excellence at Purdue University.</p>
             </div>
             <div className="glass-card" style={{ padding: "32px", borderLeft: "4px solid var(--electric-blue)" }}>
               <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "20px", fontWeight: 700, color: "var(--electric-blue)", marginBottom: "12px" }}>Professional Growth</h3>
-              <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
+              <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 140px), 1fr))", gap: "8px" }}>
                 {["Professional Careers", "Engineering Software", "Practical Solutions", "Lasting Connections"].map(item => (
                   <li key={item} style={{ fontSize: "12px", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "6px" }}>
                     <div style={{ width: "4px", height: "4px", borderRadius: "50%", background: "var(--electric-blue)" }} />
@@ -87,7 +87,7 @@ export function AboutUsPage() {
       >
         <div className="ieee-grid-bg" style={{ position: "absolute", inset: 0, opacity: 0.25 }} />
 
-        <div style={{ position: "relative", zIndex: 5, maxWidth: "1280px", margin: "0 auto", padding: "0 32px" }}>
+        <div style={{ position: "relative", zIndex: 5, maxWidth: "1280px", margin: "0 auto", padding: "0 clamp(16px, 4vw, 32px)" }}>
           {sections.map((section: any, idx: number) => (
             <motion.div
               key={idx}

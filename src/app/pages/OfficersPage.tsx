@@ -255,7 +255,7 @@ export function OfficersPage() {
           zIndex: 5,
           maxWidth: "1280px",
           margin: "0 auto",
-          padding: "0 32px",
+          padding: "0 clamp(16px, 4vw, 32px)",
         }}
       >
         {/* Header */}
@@ -286,7 +286,7 @@ export function OfficersPage() {
                     </Accordion.Header>
                     <Accordion.Content className="AccordionContent">
                       <p style={{ fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--text-muted)", marginBottom: "24px" }}>{cat.description}</p>
-                      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "24px", paddingBottom: "32px" }}>
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 260px), 1fr))", gap: "24px", paddingBottom: "32px" }}>
                         {sectionLeaders.map(renderOfficerCard)}
                       </div>
                     </Accordion.Content>
@@ -308,7 +308,7 @@ export function OfficersPage() {
                     </h3>
                     <p style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--text-muted)", maxWidth: "800px" }}>{cat.description}</p>
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "24px" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 260px), 1fr))", gap: "24px" }}>
                     {sectionLeaders.map(renderOfficerCard)}
                   </div>
                 </div>

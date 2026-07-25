@@ -92,7 +92,7 @@ export function JoinCTA() {
           zIndex: 5,
           maxWidth: "1280px",
           margin: "0 auto",
-          padding: "0 32px",
+          padding: "0 clamp(16px, 4vw, 32px)",
         }}
         className="ieee-grid-sidebar"
       >
@@ -156,7 +156,7 @@ export function JoinCTA() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "1fr 1fr",
+              gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 180px), 1fr))",
               gap: "10px 24px",
             }}
           >

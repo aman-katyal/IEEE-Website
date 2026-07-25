@@ -42,7 +42,7 @@ export function CornerstoneCommittees() {
           zIndex: 5,
           maxWidth: "1280px",
           margin: "0 auto",
-          padding: "0 32px",
+          padding: "0 clamp(16px, 4vw, 32px)",
         }}
       >
 
@@ -81,7 +81,7 @@ export function CornerstoneCommittees() {
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 280px), 1fr))",
                   gap: "24px",
                 }}
               >
