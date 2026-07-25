@@ -10,8 +10,10 @@ import {
   useHomePage,
   useAboutPage,
   useSiteSettings,
-  usePartners
+  usePartners,
+  prefetchData
 } from './useSanityData';
+import { client } from '../lib/sanity';
 
 // Mock react-query
 vi.mock('@tanstack/react-query', () => ({
@@ -137,5 +139,39 @@ describe('useSanityData hooks with React Query', () => {
     const { result } = renderHook(() => usePartners());
 
     expect(result.current.partners).toEqual(mockData);
+  });
+});
+
+describe('prefetchData', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+
+    // Clear URL search params for preview detection
+    Object.defineProperty(window, 'location', {
+      value: { search: '', hostname: 'localhost' },
+      writable: true
+    });
+  });
+
+  it('should return fetched data on success', async () => {
+    const mockData = { id: 'test', value: 'data' };
+    vi.mocked(client.fetch).mockResolvedValueOnce(mockData);
+
+    const result = await prefetchData('*[_type == "test"]', { param: 1 });
+
+    expect(client.fetch).toHaveBeenCalledWith('*[_type == "test"]', { param: 1 });
+    expect(result).toEqual(mockData);
+  });
+
+  it('should return null on fetch error', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.mocked(client.fetch).mockRejectedValueOnce(new Error('Fetch failed'));
+
+    const result = await prefetchData('*[_type == "test"]');
+
+    expect(client.fetch).toHaveBeenCalledWith('*[_type == "test"]', {});
+    expect(result).toBeNull();
+
+    vi.mocked(console.error).mockRestore();
   });
 });
