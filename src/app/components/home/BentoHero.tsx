@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { Link } from "react-router";
 import { useTheme } from "next-themes";
 import { motion, AnimatePresence } from "motion/react";
@@ -178,24 +178,28 @@ export function BentoHero() {
   const heroImage = rawHeroImage ? `${rawHeroImage}?w=1400&auto=format&q=80` : null;
 
   // Resolve committee slots from Sanity only
-  const activeSlots: RackSlot[] = (committees && committees.length > 0)
-    ? committees.map((c) => {
-        const meta = COMMITTEE_STATUS_METADATA[c.id.toLowerCase()] ?? {
-          tag: c.shortName,
-          indicator: "ONLINE",
-        };
-        return {
-          id: c.id,
-          tag: meta.tag ?? c.shortName,
-          indicator: c.status ?? meta.indicator,
-          title: c.name,
-          displayTitle: makeDisplayTitle(c.name),
-          description: c.description ?? c.tagline ?? "",
-          meeting: c.meetingSchedule ?? "Check Discord for schedule",
-          link: `/committee/${c.id}`,
-        };
-      })
-    : [];
+  // ⚡ Bolt: Memoize the mapping to prevent recalculating and reallocating object references
+  // on every render (which is triggered frequently by the hoveredSlot state).
+  const activeSlots: RackSlot[] = useMemo(() => {
+    return (committees && committees.length > 0)
+      ? committees.map((c) => {
+          const meta = COMMITTEE_STATUS_METADATA[c.id.toLowerCase()] ?? {
+            tag: c.shortName,
+            indicator: "ONLINE",
+          };
+          return {
+            id: c.id,
+            tag: meta.tag ?? c.shortName,
+            indicator: c.status ?? meta.indicator,
+            title: c.name,
+            displayTitle: makeDisplayTitle(c.name),
+            description: c.description ?? c.tagline ?? "",
+            meeting: c.meetingSchedule ?? "Check Discord for schedule",
+            link: `/committee/${c.id}`,
+          };
+        })
+      : [];
+  }, [committees]);
 
   return (
     <section

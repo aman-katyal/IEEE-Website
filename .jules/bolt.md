@@ -1,0 +1,3 @@
+## 2024-05-18 - React Rendering in Interactive Hero Components
+**Learning:** In interactive hero components with complex layouts (like `BentoHero`), frequently changing state (e.g., hover states on individual items) can trigger full re-renders. If these renders recalculate complex arrays or objects (like mapping over a list of committees to build `RackSlot`s), it causes unnecessary memory allocation and performance degradation.
+**Action:** Always memoize derived data arrays (using `useMemo`) that are generated from props or stable data sources when the component relies on high-frequency state updates like hover or scroll.
