@@ -79,6 +79,7 @@ const stripMotionProps = ({
   whileInView,
   viewport,
   layout,
+  layoutId,
   ...props
 }: any) => props;
 
