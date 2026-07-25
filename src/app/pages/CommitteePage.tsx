@@ -216,7 +216,7 @@ export function CommitteePage() {
           <div style={{ position: "absolute", inset: 0, backgroundImage: `url('${committee?.image}')`, backgroundSize: "cover", backgroundPosition: "center 40%", filter: isLight ? "brightness(0.9) saturate(1.1)" : "brightness(0.35) saturate(0.7)" }} />
           <div style={{ position: "absolute", inset: 0, background: isLight ? "linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 30%, rgba(248,250,252,0.85) 80%, var(--boiler-black) 100%)" : "linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0.85) 80%, var(--boiler-black) 100%)" }} />
           <div className="ieee-grid-bg" style={{ position: "absolute", inset: 0, opacity: isLight ? 0.4 : 0.6 }} />
-          <div style={{ position: "relative", zIndex: 5, maxWidth: "1280px", margin: "0 auto", padding: "120px 32px 24px", width: "100%" }}>
+          <div style={{ position: "relative", zIndex: 5, maxWidth: "1280px", margin: "0 auto", padding: "120px clamp(16px, 4vw, 32px) 24px", width: "100%" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "32px", gap: "40px" }}>
               <Link 
                 to="/committees" 
@@ -281,19 +281,11 @@ export function CommitteePage() {
       </Skeleton>
 
       <section style={{ background: "var(--boiler-black)", padding: "56px 0 120px", position: "relative" }}>
-        <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 32px" }}>
+        <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 clamp(16px, 4vw, 32px)" }}>
           <div style={{ display: "flex", flexDirection: "column", gap: "56px" }}>
             
             {/* Row 1: About & Details Sidebar */}
-            <div 
-              style={{ 
-                display: "grid", 
-                gridTemplateColumns: "1fr 340px", 
-                gap: "40px", 
-                alignItems: "start" 
-              }}
-              className="ieee-grid-sidebar"
-            >
+            <div className="ieee-grid-sidebar">
               {/* Left Column: About & Text Sections */}
               <div>
                 <Skeleton name="committee-content" loading={loading} color={isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}>
@@ -357,10 +349,7 @@ export function CommitteePage() {
               <div 
                 style={{ 
                   borderTop: "1px solid var(--glass-border)", 
-                  paddingTop: "48px",
-                  display: "grid",
-                  gridTemplateColumns: (gallerySections.length > 0 && (faqSections.length > 0 || contactSections.length > 0)) ? "1.2fr 0.8fr" : "1fr",
-                  gap: "48px"
+                  paddingTop: "48px"
                 }}
                 className="ieee-grid-sidebar"
               >
