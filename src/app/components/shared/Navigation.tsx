@@ -15,6 +15,9 @@ const DiscordIcon = ({ size = 16 }: { size?: number }) => (
   </svg>
 );
 
+interface NavDropdownItem { label: string; href: string; id?: string }
+interface NavLinkItem { label: string; href: string; dropdown?: NavDropdownItem[] }
+
 export function Navigation() {
   const { committees } = useCommittees();
   const { settings } = useSiteSettings();
@@ -31,7 +34,8 @@ export function Navigation() {
 
   const discordUrl = settings?.discordUrl || "https://discord.gg/sPPQequ9ws";
 
-  const navLinks = [
+
+  const navLinks: NavLinkItem[] = [
     { 
       label: "About", 
       href: "/about",
@@ -319,7 +323,7 @@ export function Navigation() {
                         </>
                       )}
                       
-                      {link.dropdown.map((subItem: any) => (
+                      {link.dropdown.map((subItem) => (
                         <a
                           key={subItem.href}
                           href={subItem.href}
@@ -484,7 +488,7 @@ export function Navigation() {
                       {link.label}
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                      {link.dropdown.map((subItem: any) => (
+                      {link.dropdown.map((subItem) => (
                         <a
                           key={subItem.href}
                           href={subItem.href}
