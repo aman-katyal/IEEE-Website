@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation } from "react-router";
 import { AnimatePresence } from "motion/react";
 import { ThemeProvider } from "next-themes";
 import { enableVisualEditing } from "@sanity/visual-editing";

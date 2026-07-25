@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router';
 import App from './App';
 import { enableVisualEditing } from '@sanity/visual-editing';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';

@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useRef, useState, useMemo } from "react";
+import { Link } from "react-router";
 import { useTheme } from "next-themes";
 import { motion, AnimatePresence } from "motion/react";
 import { ChevronRight, ArrowUpRight } from "lucide-react";
@@ -152,13 +152,279 @@ function makeDisplayTitle(title: string) {
   return title.replace(/\(.*\)/, "").trim();
 }
 
+
+
+function LabStatusRack({ committees, isLight }: { committees: any[]; isLight: boolean }) {
+  const [hoveredSlot, setHoveredSlot] = useState<RackSlot | null>(null);
+
+  const activeSlots: RackSlot[] = useMemo(() => {
+    return (committees && committees.length > 0)
+      ? committees.map((c) => {
+          const meta = COMMITTEE_STATUS_METADATA[c.id.toLowerCase()] ?? {
+            tag: c.shortName,
+            indicator: "ONLINE",
+          };
+          return {
+            id: c.id,
+            tag: meta.tag ?? c.shortName,
+            indicator: c.status ?? meta.indicator,
+            title: c.name,
+            displayTitle: makeDisplayTitle(c.name),
+            description: c.description ?? c.tagline ?? "",
+            meeting: c.meetingSchedule ?? "Check Discord for schedule",
+            link: `/committee/${c.id}`,
+          };
+        })
+      : [];
+  }, [committees]);
+
+  return (
+    <div
+      className="glass-card pcb-bento-tile"
+      style={{
+        padding: "24px",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        background: "rgba(0, 30, 60, 0.03)",
+        borderColor: isLight ? "rgba(0, 90, 135, 0.15)" : "rgba(0, 98, 155, 0.2)",
+      }}
+    >
+      <div>
+        <div
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: "0.6rem",
+            letterSpacing: "0.15em",
+            color: "var(--electric-blue)",
+            textTransform: "uppercase",
+            fontWeight: 700,
+            marginBottom: "16px",
+          }}
+        >
+          // Lab Status Rack
+        </div>
+
+        {/* Visual Server/Equipment Rack Layout */}
+        <div
+          className="rack-slots-grid"
+          onMouseLeave={() => setHoveredSlot(null)}
+        >
+          {activeSlots.length > 0 ? (
+            activeSlots.map((slot) => {
+              const isHovered = hoveredSlot?.id === slot.id;
+
+              // Color-code by indicator status
+              const statusColor =
+                slot.indicator === "RUNNING" ? "#4FC3F7" :
+                slot.indicator === "STABLE"  ? "#00C853" :
+                slot.indicator === "ACTIVE"  ? "#EBD3A9" :
+                slot.indicator === "ONLINE"  ? "#69F0AE" :
+                                               "#00C853";
+
+              return (
+                <Link
+                  key={slot.id}
+                  to={slot.link}
+                  aria-label={`Inspect telemetry and view details for ${slot.displayTitle} committee`}
+                  onMouseEnter={() => setHoveredSlot(slot)}
+                  onFocus={() => setHoveredSlot(slot)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    padding: "10px 12px",
+                    borderRadius: "6px",
+                    border: `1px solid ${isHovered ? statusColor : "rgba(255,255,255,0.06)"}`,
+                    borderLeft: `3px solid ${isHovered ? statusColor : "rgba(255,255,255,0.12)"}`,
+                    background: isHovered
+                      ? `rgba(${slot.indicator === "RUNNING" ? "79,195,247" : "0,200,83"},0.06)`
+                      : "rgba(255,255,255,0.02)",
+                    cursor: "pointer",
+                    transition: "all 0.18s cubic-bezier(0.16, 1, 0.3, 1)",
+                    overflow: "hidden",
+                    boxSizing: "border-box",
+                    textDecoration: "none",
+                  }}
+                >
+                  {/* Pill tag badge */}
+                  <span style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    flexShrink: 0,
+                    background: isHovered
+                      ? `${statusColor}22`
+                      : "rgba(0, 98, 155, 0.18)",
+                    border: `1px solid ${isHovered ? statusColor : "rgba(0,98,155,0.4)"}`,
+                    borderRadius: "4px",
+                    padding: "2px 7px",
+                    fontFamily: "var(--font-mono)",
+                    fontSize: "0.58rem",
+                    fontWeight: 700,
+                    letterSpacing: "0.06em",
+                    color: isHovered ? statusColor : "var(--electric-blue)",
+                    whiteSpace: "nowrap",
+                    transition: "all 0.18s ease",
+                  }}>
+                    {slot.tag}
+                  </span>
+
+                  {/* Committee Name */}
+                  <span style={{
+                    flex: 1,
+                    minWidth: 0,
+                    fontFamily: "var(--font-body)",
+                    fontSize: "0.75rem",
+                    fontWeight: 600,
+                    color: isHovered ? "var(--text-primary)" : "rgba(248,249,250,0.75)",
+                    textOverflow: "ellipsis",
+                    overflow: "hidden",
+                    whiteSpace: "nowrap",
+                    letterSpacing: "0.01em",
+                    transition: "color 0.18s ease",
+                  }}>
+                    {slot.displayTitle}
+                  </span>
+
+                  {/* Status indicator dot */}
+                  <div style={{ display: "flex", alignItems: "center", gap: "5px", flexShrink: 0 }}>
+                    <div style={{
+                      width: "6px",
+                      height: "6px",
+                      borderRadius: "50%",
+                      background: statusColor,
+                      boxShadow: `0 0 ${isHovered ? "8px" : "4px"} ${statusColor}`,
+                      transition: "box-shadow 0.18s ease",
+                      animation: "pulse-dot 2.5s ease-in-out infinite",
+                    }} />
+                  </div>
+                </Link>
+              );
+            })
+          ) : (
+            <div style={{ fontFamily: "var(--font-mono)", color: "var(--text-muted)", fontSize: "0.65rem", textAlign: "center", padding: "24px 0" }}>
+              // NO_COMMITTEES_FOUND — configure in Sanity Studio
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Stateful Info Panel inside card */}
+      <div
+        style={{
+          background: isLight ? "rgba(255, 255, 255, 0.5)" : "rgba(0, 0, 0, 0.2)",
+          border: "1px solid var(--glass-border)",
+          borderRadius: "4px",
+          padding: "16px",
+          minHeight: "90px",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          transition: "all 0.3s ease",
+        }}
+      >
+        <AnimatePresence mode="wait">
+          {hoveredSlot ? (
+            <motion.div
+              key={hoveredSlot.id}
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -5 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "6px",
+                }}
+              >
+                <h4
+                  style={{
+                    fontFamily: "var(--font-headline)",
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    color: "var(--cyber-gold)",
+                  }}
+                >
+                  {hoveredSlot.title}
+                </h4>
+                <Link
+                  to={hoveredSlot.link}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "2px",
+                    fontFamily: "var(--font-mono)",
+                    fontSize: "0.55rem",
+                    color: "var(--electric-blue)",
+                    textDecoration: "none",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                    fontWeight: 700,
+                  }}
+                >
+                  Go to Team
+                  <ArrowUpRight size={10} />
+                </Link>
+              </div>
+
+              {/* Schedule info */}
+              <div
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "0.6rem",
+                  color: "var(--electric-blue)",
+                  marginBottom: "8px",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.02em",
+                }}
+              >
+                Schedule: {hoveredSlot.meeting}
+              </div>
+
+              <div
+                style={{
+                  fontFamily: "var(--font-body)",
+                  fontSize: "12px",
+                  color: "var(--text-secondary)",
+                  lineHeight: 1.4,
+                }}
+              >
+                {hoveredSlot.description}
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="idle"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: "0.6rem",
+                letterSpacing: "0.08em",
+                color: "var(--text-muted)",
+                textAlign: "center",
+                textTransform: "uppercase",
+              }}
+            >
+              Hover over any status slot above to inspect the technical committee's active telemetry.
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
+
+
 export function BentoHero() {
   const { theme } = useTheme();
   const { data: homeData, loading: homeLoading } = useHomePageData();
   const { committees, loading: committeesLoading } = useCommittees();
   const { settings: siteSettings, loading: settingsLoading } = useSiteSettings();
-
-  const [hoveredSlot, setHoveredSlot] = useState<RackSlot | null>(null);
 
   const isLight = theme === "light";
   const loading = homeLoading || committeesLoading || settingsLoading;
@@ -177,25 +443,6 @@ export function BentoHero() {
   // Optimize image URL for responsive format & compression
   const heroImage = rawHeroImage ? `${rawHeroImage}?w=1400&auto=format&q=80` : null;
 
-  // Resolve committee slots from Sanity only
-  const activeSlots: RackSlot[] = (committees && committees.length > 0)
-    ? committees.map((c) => {
-        const meta = COMMITTEE_STATUS_METADATA[c.id.toLowerCase()] ?? {
-          tag: c.shortName,
-          indicator: "ONLINE",
-        };
-        return {
-          id: c.id,
-          tag: meta.tag ?? c.shortName,
-          indicator: c.status ?? meta.indicator,
-          title: c.name,
-          displayTitle: makeDisplayTitle(c.name),
-          description: c.description ?? c.tagline ?? "",
-          meeting: c.meetingSchedule ?? "Check Discord for schedule",
-          link: `/committee/${c.id}`,
-        };
-      })
-    : [];
 
   return (
     <section
@@ -409,243 +656,7 @@ export function BentoHero() {
             ) : null}
 
             {/* 4. Lab Status Rack (2x2 span) */}
-            <div
-              className="glass-card pcb-bento-tile"
-              style={{
-                padding: "24px",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-                background: "rgba(0, 30, 60, 0.03)",
-                borderColor: isLight ? "rgba(0, 90, 135, 0.15)" : "rgba(0, 98, 155, 0.2)",
-              }}
-            >
-              <div>
-                <div
-                  style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: "0.6rem",
-                    letterSpacing: "0.15em",
-                    color: "var(--electric-blue)",
-                    textTransform: "uppercase",
-                    fontWeight: 700,
-                    marginBottom: "16px",
-                  }}
-                >
-                  // Lab Status Rack
-                </div>
-                
-                {/* Visual Server/Equipment Rack Layout */}
-                <div
-                  className="rack-slots-grid"
-                  onMouseLeave={() => setHoveredSlot(null)}
-                >
-                  {activeSlots.length > 0 ? (
-                    activeSlots.map((slot) => {
-                      const isHovered = hoveredSlot?.id === slot.id;
-
-                      // Color-code by indicator status
-                      const statusColor =
-                        slot.indicator === "RUNNING" ? "#4FC3F7" :
-                        slot.indicator === "STABLE"  ? "#00C853" :
-                        slot.indicator === "ACTIVE"  ? "#EBD3A9" :
-                        slot.indicator === "ONLINE"  ? "#69F0AE" :
-                                                       "#00C853";
-
-                      return (
-                        <Link
-                          key={slot.id}
-                          to={slot.link}
-                          aria-label={`Inspect telemetry and view details for ${slot.displayTitle} committee`}
-                          onMouseEnter={() => setHoveredSlot(slot)}
-                          onFocus={() => setHoveredSlot(slot)}
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "10px",
-                            padding: "10px 12px",
-                            borderRadius: "6px",
-                            border: `1px solid ${isHovered ? statusColor : "rgba(255,255,255,0.06)"}`,
-                            borderLeft: `3px solid ${isHovered ? statusColor : "rgba(255,255,255,0.12)"}`,
-                            background: isHovered
-                              ? `rgba(${slot.indicator === "RUNNING" ? "79,195,247" : "0,200,83"},0.06)`
-                              : "rgba(255,255,255,0.02)",
-                            cursor: "pointer",
-                            transition: "all 0.18s cubic-bezier(0.16, 1, 0.3, 1)",
-                            overflow: "hidden",
-                            boxSizing: "border-box",
-                            textDecoration: "none",
-                          }}
-                        >
-                          {/* Pill tag badge */}
-                          <span style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            flexShrink: 0,
-                            background: isHovered
-                              ? `${statusColor}22`
-                              : "rgba(0, 98, 155, 0.18)",
-                            border: `1px solid ${isHovered ? statusColor : "rgba(0,98,155,0.4)"}`,
-                            borderRadius: "4px",
-                            padding: "2px 7px",
-                            fontFamily: "var(--font-mono)",
-                            fontSize: "0.58rem",
-                            fontWeight: 700,
-                            letterSpacing: "0.06em",
-                            color: isHovered ? statusColor : "var(--electric-blue)",
-                            whiteSpace: "nowrap",
-                            transition: "all 0.18s ease",
-                          }}>
-                            {slot.tag}
-                          </span>
-
-                          {/* Committee Name */}
-                          <span style={{
-                            flex: 1,
-                            minWidth: 0,
-                            fontFamily: "var(--font-body)",
-                            fontSize: "0.75rem",
-                            fontWeight: 600,
-                            color: isHovered ? "var(--text-primary)" : "rgba(248,249,250,0.75)",
-                            textOverflow: "ellipsis",
-                            overflow: "hidden",
-                            whiteSpace: "nowrap",
-                            letterSpacing: "0.01em",
-                            transition: "color 0.18s ease",
-                          }}>
-                            {slot.displayTitle}
-                          </span>
-
-                          {/* Status indicator dot */}
-                          <div style={{ display: "flex", alignItems: "center", gap: "5px", flexShrink: 0 }}>
-                            <div style={{
-                              width: "6px",
-                              height: "6px",
-                              borderRadius: "50%",
-                              background: statusColor,
-                              boxShadow: `0 0 ${isHovered ? "8px" : "4px"} ${statusColor}`,
-                              transition: "box-shadow 0.18s ease",
-                              animation: "pulse-dot 2.5s ease-in-out infinite",
-                            }} />
-                          </div>
-                        </Link>
-                      );
-                    })
-                  ) : (
-                    <div style={{ fontFamily: "var(--font-mono)", color: "var(--text-muted)", fontSize: "0.65rem", textAlign: "center", padding: "24px 0" }}>
-                      // NO_COMMITTEES_FOUND — configure in Sanity Studio
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Stateful Info Panel inside card */}
-              <div
-                style={{
-                  background: isLight ? "rgba(255, 255, 255, 0.5)" : "rgba(0, 0, 0, 0.2)",
-                  border: "1px solid var(--glass-border)",
-                  borderRadius: "4px",
-                  padding: "16px",
-                  minHeight: "90px",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  transition: "all 0.3s ease",
-                }}
-              >
-                <AnimatePresence mode="wait">
-                  {hoveredSlot ? (
-                    <motion.div
-                      key={hoveredSlot.id}
-                      initial={{ opacity: 0, y: 5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -5 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          marginBottom: "6px",
-                        }}
-                      >
-                        <h4
-                          style={{
-                            fontFamily: "var(--font-headline)",
-                            fontSize: "14px",
-                            fontWeight: 600,
-                            color: "var(--cyber-gold)",
-                          }}
-                        >
-                          {hoveredSlot.title}
-                        </h4>
-                        <Link
-                          to={hoveredSlot.link}
-                          style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: "2px",
-                            fontFamily: "var(--font-mono)",
-                            fontSize: "0.55rem",
-                            color: "var(--electric-blue)",
-                            textDecoration: "none",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.05em",
-                            fontWeight: 700,
-                          }}
-                        >
-                          Go to Team
-                          <ArrowUpRight size={10} />
-                        </Link>
-                      </div>
-
-                      {/* Schedule info */}
-                      <div
-                        style={{
-                          fontFamily: "var(--font-mono)",
-                          fontSize: "0.6rem",
-                          color: "var(--electric-blue)",
-                          marginBottom: "8px",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.02em",
-                        }}
-                      >
-                        Schedule: {hoveredSlot.meeting}
-                      </div>
-
-                      <div
-                        style={{
-                          fontFamily: "var(--font-body)",
-                          fontSize: "12px",
-                          color: "var(--text-secondary)",
-                          lineHeight: 1.4,
-                        }}
-                      >
-                        {hoveredSlot.description}
-                      </div>
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="idle"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      style={{
-                        fontFamily: "var(--font-mono)",
-                        fontSize: "0.6rem",
-                        letterSpacing: "0.08em",
-                        color: "var(--text-muted)",
-                        textAlign: "center",
-                        textTransform: "uppercase",
-                      }}
-                    >
-                      Hover over any status slot above to inspect the technical committee's active telemetry.
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            </div>
+            <LabStatusRack committees={committees} isLight={isLight} />
 
             {/* 5. About Us (2x2 span) */}
             <div
