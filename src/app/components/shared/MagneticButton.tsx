@@ -2,26 +2,33 @@ import { useRef, ReactNode } from "react";
 import { motion, useMotionValue, useSpring } from "motion/react";
 import { Link } from "react-router";
 
-interface MagneticButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "onDrag" | "onDragStart" | "onDragEnd" | "onAnimationStart" | "style"> {
+type CommonProps = {
   children: ReactNode;
   variant?: "primary" | "ghost" | "gold";
   strength?: number;
   className?: string;
   style?: React.CSSProperties;
-  to?: string;
-}
+};
+
+type OmittedProps = "onDrag" | "onDragStart" | "onDragEnd" | "onAnimationStart" | "style";
+
+type ButtonProps = CommonProps & Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, OmittedProps> & { to?: never };
+type LinkProps = CommonProps & Omit<import("react-router").LinkProps, OmittedProps> & { to: string };
+
+export type MagneticButtonProps = ButtonProps | LinkProps;
 
 const MotionLink = motion.create(Link);
 
-export function MagneticButton({ 
-  children, 
-  variant = "primary",
-  strength = 0.2,
-  className = "", 
-  style,
-  to,
-  ...props 
-}: MagneticButtonProps) {
+export function MagneticButton(props: MagneticButtonProps) {
+  const {
+    children,
+    variant = "primary",
+    strength = 0.2,
+    className = "",
+    style,
+    ...restProps
+  } = props;
+
   const ref = useRef<HTMLButtonElement & HTMLAnchorElement>(null);
   
   const mouseX = useMotionValue(0);
@@ -50,7 +57,8 @@ export function MagneticButton({
                        variant === "ghost" ? "btn-ghost hover-glow-gold" : 
                        "btn-gold hover-glow-gold";
 
-  if (to) {
+  if (restProps.to) {
+    const { to, ...linkProps } = restProps as typeof restProps & { to: string };
     return (
       <MotionLink
         to={to}
@@ -59,12 +67,14 @@ export function MagneticButton({
         onMouseLeave={handleMouseLeave}
         style={{ ...style, x, y }}
         className={`${variantClass} ${className}`}
-        {...(props as any)}
+        {...linkProps}
       >
         {children}
       </MotionLink>
     );
   }
+
+  const { to, ...buttonProps } = restProps as typeof restProps & { to?: never };
 
   return (
     <motion.button
@@ -73,7 +83,7 @@ export function MagneticButton({
       onMouseLeave={handleMouseLeave}
       style={{ ...style, x, y }}
       className={`${variantClass} ${className}`}
-      {...props}
+      {...buttonProps}
     >
       {children}
     </motion.button>
