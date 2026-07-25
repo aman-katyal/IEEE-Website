@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { motion } from "motion/react";
 import { useAboutPage } from "../../hooks/useSanityData";
 import { useTheme } from "next-themes";
+import ReactMarkdown from "react-markdown";
 
 export function AboutUsPage() {
   const { data, loading } = useAboutPage();
@@ -109,8 +110,8 @@ export function AboutUsPage() {
                     return <span key={i}>{isLast ? <span style={{ color: highlightColor }}>{word}</span> : word}{' '}</span>
                   })}
                 </h2>
-                <div style={{ fontFamily: "var(--font-body)", fontSize: "16px", color: "var(--text-secondary)", lineHeight: 1.8, whiteSpace: "pre-line" }}>
-                  {section.content}
+                <div style={{ fontFamily: "var(--font-body)", fontSize: "16px", color: "var(--text-secondary)", lineHeight: 1.8 }}>
+                  <ReactMarkdown>{section.content}</ReactMarkdown>
                 </div>
               </div>
               {section.image && (

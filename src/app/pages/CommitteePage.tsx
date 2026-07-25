@@ -133,14 +133,14 @@ export function CommitteePage() {
         return (
           <div key={index} style={{ marginBottom: "64px" }}>
             <p className="section-eyebrow" style={{ marginBottom: "20px" }}>// {section.title || "Information"}</p>
-            <div className="glass-card" style={{ padding: "32px", display: "flex", flexDirection: layout === "top" ? "column" : layout === "left" ? "row" : "row-reverse", gap: "32px", alignItems: "flex-start", flexWrap: "wrap" }}>
+            <div className="glass-card" style={{ padding: "clamp(20px, 4vw, 32px)", display: "flex", flexDirection: layout === "top" ? "column" : layout === "left" ? "row" : "row-reverse", gap: "32px", alignItems: "flex-start", flexWrap: "wrap" }}>
               {section.image && (
-                <div style={{ flex: layout === "top" ? "1 1 100%" : `0 0 ${widthMap[size]}`, maxWidth: "100%", borderRadius: "4px", overflow: "hidden", border: "1px solid var(--glass-border)", background: "rgba(0,0,0,0.1)" }}>
+                <div style={{ flex: layout === "top" ? "1 1 100%" : `0 0 ${widthMap[size]}`, width: "100%", maxWidth: "100%", borderRadius: "4px", overflow: "hidden", border: "1px solid var(--glass-border)", background: "rgba(0,0,0,0.1)" }}>
                   <img src={section.image} alt={section.title} style={{ width: "100%", height: "auto", maxHeight: layout === "top" ? "500px" : "600px", objectFit: isCrop ? "cover" : "contain", display: "block" }} />
                 </div>
               )}
-              <div style={{ flex: "1 1 300px" }}>
-                <div style={{ fontFamily: "var(--font-body)", fontSize: "15.5px", color: "var(--text-secondary)", lineHeight: 1.85, whiteSpace: "pre-wrap" }}>
+              <div style={{ flex: "1 1 300px", width: "100%", maxWidth: "100%" }}>
+                <div style={{ fontFamily: "var(--font-body)", fontSize: "15.5px", color: "var(--text-secondary)", lineHeight: 1.85 }}>
                   <ReactMarkdown>{section.content}</ReactMarkdown>
                 </div>
               </div>
@@ -291,9 +291,9 @@ export function CommitteePage() {
                 <Skeleton name="committee-content" loading={loading} color={isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}>
                   <div style={{ marginBottom: "32px" }}>
                     <p className="section-eyebrow" style={{ marginBottom: "16px" }}>// About This Committee</p>
-                    <div className="glass-card" style={{ padding: "24px" }}>
-                      <div style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--text-secondary)", lineHeight: 1.75, whiteSpace: "pre-wrap" }}>
-                        {committee?.longDescription}
+                    <div className="glass-card" style={{ padding: "clamp(20px, 4vw, 32px)" }}>
+                      <div style={{ fontFamily: "var(--font-body)", fontSize: "15.5px", color: "var(--text-secondary)", lineHeight: 1.85 }}>
+                        <ReactMarkdown>{committee?.longDescription || ""}</ReactMarkdown>
                       </div>
                     </div>
                   </div>
