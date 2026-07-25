@@ -392,7 +392,7 @@ export function Navigation() {
               <a
                 href={discordUrl}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 className="btn-ghost hover-glow-gold"
                 style={{ 
                   padding: "9px 16px", 
@@ -537,7 +537,7 @@ export function Navigation() {
                 <a
                   href={discordUrl}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className="btn-ghost hover-glow-gold w-full"
                   style={{ 
                     padding: "18px", 
