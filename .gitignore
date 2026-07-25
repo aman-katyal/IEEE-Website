@@ -50,3 +50,4 @@ commit_message.txt
 design-system/
 graphify-out/
 **/graphify-out/
+.htpasswd
