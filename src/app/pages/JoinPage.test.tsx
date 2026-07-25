@@ -1,12 +1,14 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { JoinPage } from './JoinPage';
+import { GlobalDataProvider } from '../../context/GlobalDataContext';
 import { MemoryRouter } from 'react-router';
 import * as useSanityData from '../../hooks/useSanityData';
 
 // Mock hooks
 vi.mock('../../hooks/useSanityData', () => ({
   useSiteSettings: vi.fn(),
+  useCommittees: vi.fn(),
 }));
 
 describe('JoinPage', () => {
@@ -29,6 +31,11 @@ describe('JoinPage', () => {
       loading: false,
       error: null
     });
+    (useSanityData.useCommittees as any).mockReturnValue({
+      committees: [],
+      loading: false,
+      error: null
+    });
   });
 
   it('renders loading state when data is fetching', () => {
@@ -40,7 +47,7 @@ describe('JoinPage', () => {
 
     render(
       <MemoryRouter>
-        <JoinPage />
+        <GlobalDataProvider><GlobalDataProvider><JoinPage /></GlobalDataProvider></GlobalDataProvider>
       </MemoryRouter>
     );
 
@@ -50,7 +57,7 @@ describe('JoinPage', () => {
   it('renders correctly with custom site settings', () => {
     render(
       <MemoryRouter>
-        <JoinPage />
+        <GlobalDataProvider><GlobalDataProvider><JoinPage /></GlobalDataProvider></GlobalDataProvider>
       </MemoryRouter>
     );
 
@@ -78,7 +85,7 @@ describe('JoinPage', () => {
 
     render(
       <MemoryRouter>
-        <JoinPage />
+        <GlobalDataProvider><GlobalDataProvider><JoinPage /></GlobalDataProvider></GlobalDataProvider>
       </MemoryRouter>
     );
 

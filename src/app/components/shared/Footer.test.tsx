@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Footer } from './Footer';
+import { GlobalDataProvider } from '../../../context/GlobalDataContext';
 import { MemoryRouter } from 'react-router';
 import * as useSanityData from '../../../hooks/useSanityData';
 import * as nextThemes from 'next-themes';
@@ -66,7 +67,9 @@ describe('Footer', () => {
   it('renders branding and tagline', () => {
     render(
       <MemoryRouter>
-        <Footer />
+        <GlobalDataProvider>
+          <Footer />
+        </GlobalDataProvider>
       </MemoryRouter>
     );
 
@@ -79,7 +82,9 @@ describe('Footer', () => {
   it('renders social links from site settings', () => {
     render(
       <MemoryRouter>
-        <Footer />
+        <GlobalDataProvider>
+          <Footer />
+        </GlobalDataProvider>
       </MemoryRouter>
     );
 
@@ -99,7 +104,9 @@ describe('Footer', () => {
 
     render(
       <MemoryRouter>
-        <Footer />
+        <GlobalDataProvider>
+          <Footer />
+        </GlobalDataProvider>
       </MemoryRouter>
     );
 
@@ -110,7 +117,9 @@ describe('Footer', () => {
   it('renders committee links', () => {
     render(
       <MemoryRouter>
-        <Footer />
+        <GlobalDataProvider>
+          <Footer />
+        </GlobalDataProvider>
       </MemoryRouter>
     );
 
@@ -124,7 +133,9 @@ describe('Footer', () => {
   it('renders navigation columns', () => {
     render(
       <MemoryRouter>
-        <Footer />
+        <GlobalDataProvider>
+          <Footer />
+        </GlobalDataProvider>
       </MemoryRouter>
     );
 
@@ -140,7 +151,9 @@ describe('Footer', () => {
   it('uses custom discord URL from settings', () => {
     render(
       <MemoryRouter>
-        <Footer />
+        <GlobalDataProvider>
+          <Footer />
+        </GlobalDataProvider>
       </MemoryRouter>
     );
 
@@ -193,7 +206,9 @@ describe('Footer', () => {
   it('renders bottom bar links', () => {
     render(
       <MemoryRouter>
-        <Footer />
+        <GlobalDataProvider>
+          <Footer />
+        </GlobalDataProvider>
       </MemoryRouter>
     );
 
@@ -209,7 +224,9 @@ describe('Footer', () => {
 
     render(
       <MemoryRouter>
-        <Footer />
+        <GlobalDataProvider>
+          <Footer />
+        </GlobalDataProvider>
       </MemoryRouter>
     );
 
@@ -221,7 +238,9 @@ describe('Footer', () => {
   it('renders external links correctly', () => {
     render(
       <MemoryRouter>
-        <Footer />
+        <GlobalDataProvider>
+          <Footer />
+        </GlobalDataProvider>
       </MemoryRouter>
     );
 
@@ -234,7 +253,9 @@ describe('Footer', () => {
   it('handles external link click without preventing default', () => {
     render(
       <MemoryRouter>
-        <Footer />
+        <GlobalDataProvider>
+          <Footer />
+        </GlobalDataProvider>
       </MemoryRouter>
     );
 
@@ -248,7 +269,9 @@ describe('Footer', () => {
   it('renders version information', () => {
     render(
       <MemoryRouter>
-        <Footer />
+        <GlobalDataProvider>
+          <Footer />
+        </GlobalDataProvider>
       </MemoryRouter>
     );
 

@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { HomePage } from './HomePage';
+import { GlobalDataProvider } from '../../context/GlobalDataContext';
 import { MemoryRouter } from 'react-router';
 import * as useSanityData from '../../hooks/useSanityData';
 import * as useGoogleCalendarEvents from '../../hooks/useGoogleCalendarEvents';
@@ -100,7 +101,7 @@ describe('HomePage', () => {
 
     const { container } = render(
       <MemoryRouter>
-        <HomePage />
+        <GlobalDataProvider><GlobalDataProvider><HomePage /></GlobalDataProvider></GlobalDataProvider>
       </MemoryRouter>
     );
 
@@ -112,7 +113,7 @@ describe('HomePage', () => {
   it('renders hero section with correct content', () => {
     render(
       <MemoryRouter>
-        <HomePage />
+        <GlobalDataProvider><GlobalDataProvider><HomePage /></GlobalDataProvider></GlobalDataProvider>
       </MemoryRouter>
     );
 
@@ -124,7 +125,7 @@ describe('HomePage', () => {
   it('renders about section with correct content', () => {
     render(
       <MemoryRouter>
-        <HomePage />
+        <GlobalDataProvider><GlobalDataProvider><HomePage /></GlobalDataProvider></GlobalDataProvider>
       </MemoryRouter>
     );
 
@@ -135,7 +136,7 @@ describe('HomePage', () => {
   it('renders stats section with correct content', () => {
     render(
       <MemoryRouter>
-        <HomePage />
+        <GlobalDataProvider><GlobalDataProvider><HomePage /></GlobalDataProvider></GlobalDataProvider>
       </MemoryRouter>
     );
 
@@ -147,7 +148,7 @@ describe('HomePage', () => {
   it('renders events section with correct content', () => {
     render(
       <MemoryRouter>
-        <HomePage />
+        <GlobalDataProvider><GlobalDataProvider><HomePage /></GlobalDataProvider></GlobalDataProvider>
       </MemoryRouter>
     );
 
@@ -158,7 +159,7 @@ describe('HomePage', () => {
   it('renders join CTA section with correct content', () => {
     render(
       <MemoryRouter>
-        <HomePage />
+        <GlobalDataProvider><GlobalDataProvider><HomePage /></GlobalDataProvider></GlobalDataProvider>
       </MemoryRouter>
     );
 

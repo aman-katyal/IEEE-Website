@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PartnersPage } from './PartnersPage';
+import { GlobalDataProvider } from '../../context/GlobalDataContext';
 import { MemoryRouter } from 'react-router';
 import * as useSanityData from '../../hooks/useSanityData';
 
@@ -8,6 +9,7 @@ import * as useSanityData from '../../hooks/useSanityData';
 vi.mock('../../hooks/useSanityData', () => ({
   usePartners: vi.fn(),
   useSiteSettings: vi.fn(),
+  useCommittees: vi.fn(),
 }));
 
 describe('PartnersPage', () => {
@@ -48,7 +50,7 @@ describe('PartnersPage', () => {
 
     render(
       <MemoryRouter>
-        <PartnersPage />
+        <GlobalDataProvider><GlobalDataProvider><PartnersPage /></GlobalDataProvider></GlobalDataProvider>
       </MemoryRouter>
     );
 
@@ -58,7 +60,7 @@ describe('PartnersPage', () => {
   it('renders correct content from site settings', () => {
     render(
       <MemoryRouter>
-        <PartnersPage />
+        <GlobalDataProvider><GlobalDataProvider><PartnersPage /></GlobalDataProvider></GlobalDataProvider>
       </MemoryRouter>
     );
 
@@ -72,7 +74,7 @@ describe('PartnersPage', () => {
   it('renders all partner tiers correctly', () => {
     render(
       <MemoryRouter>
-        <PartnersPage />
+        <GlobalDataProvider><GlobalDataProvider><PartnersPage /></GlobalDataProvider></GlobalDataProvider>
       </MemoryRouter>
     );
 
@@ -95,7 +97,7 @@ describe('PartnersPage', () => {
 
     render(
       <MemoryRouter>
-        <PartnersPage />
+        <GlobalDataProvider><GlobalDataProvider><PartnersPage /></GlobalDataProvider></GlobalDataProvider>
       </MemoryRouter>
     );
 
