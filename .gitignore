@@ -51,3 +51,4 @@ design-system/
 graphify-out/
 **/graphify-out/
 .htpasswd
+coverage/
