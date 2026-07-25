@@ -442,7 +442,6 @@ export function BentoHero() {
 
   // Optimize image URL for responsive format & compression
   const heroImage = rawHeroImage ? `${rawHeroImage}?w=1400&auto=format&q=80` : null;
-
   return (
     <section
       id="hero-bento"
