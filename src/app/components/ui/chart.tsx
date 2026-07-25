@@ -102,7 +102,7 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
     })
     .join("");
 
-  return <style dangerouslySetInnerHTML={{ __html: styleHTML }} />;
+  return <style>{styleHTML}</style>;
 };
 
 const ChartTooltip = RechartsPrimitive.Tooltip;
