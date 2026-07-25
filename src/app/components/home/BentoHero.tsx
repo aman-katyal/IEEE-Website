@@ -432,7 +432,7 @@ export function BentoHero() {
   // All content comes directly from Sanity — no hardcoded fallbacks
   const heroTitle    = homeData?.heroTitle    ?? null;
   const heroSubtitle = homeData?.heroSubtitle ?? null;
-  const rawHeroImage = homeData?.heroImage    ?? null;
+  const rawHeroImage = homeData?.heroImage ?? "/images/general%20IEEE%20pictures/ieee%20whole%20team%20photo.webp";
   const aboutTitle   = homeData?.aboutTitle   ?? null;
   const aboutContent = homeData?.aboutContent ?? null;
   const stats: StatItem[] = (homeData?.stats && homeData.stats.length > 0) ? homeData.stats : [];
@@ -440,8 +440,10 @@ export function BentoHero() {
   const discordMembers    = homeData?.discordMembers ?? null;
   const campusLocation    = homeData?.campusLocation ?? null;
 
-  // Optimize image URL for responsive format & compression
-  const heroImage = rawHeroImage ? `${rawHeroImage}?w=1400&auto=format&q=80` : null;
+  // Optimize image URL for responsive format & compression safely without duplicate query strings
+  const heroImage = rawHeroImage
+    ? (rawHeroImage.includes("?") ? rawHeroImage : `${rawHeroImage}?w=1400&auto=format&q=80`)
+    : null;
   return (
     <section
       id="hero-bento"
