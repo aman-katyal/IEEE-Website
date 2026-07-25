@@ -72,7 +72,7 @@ export function PartnersPage() {
                 <Mail size={18} />
                 Become a Partner
               </a>
-              <a href={prospectusUrl} target="_blank" className="btn-ghost" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "8px" }}>
+              <a href={prospectusUrl} target="_blank" rel="noopener noreferrer" className="btn-ghost" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "8px" }}>
                 Download Prospectus
                 <ExternalLink size={16} />
               </a>
