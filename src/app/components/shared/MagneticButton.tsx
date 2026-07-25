@@ -24,6 +24,8 @@ export function MagneticButton({
 }: MagneticButtonProps) {
   const ref = useRef<HTMLButtonElement & HTMLAnchorElement>(null);
   
+  const boundsRef = useRef<{ left: number; top: number; width: number; height: number } | null>(null);
+
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -31,10 +33,22 @@ export function MagneticButton({
   const x = useSpring(mouseX, springConfig);
   const y = useSpring(mouseY, springConfig);
 
+  const handleMouseEnter = () => {
+    if (!ref.current) return;
+    boundsRef.current = ref.current.getBoundingClientRect();
+  };
+
   const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
     if (!ref.current) return;
+
+    // Fallback in case mouseEnter didn't fire or cache is missing
+    if (!boundsRef.current) {
+      boundsRef.current = ref.current.getBoundingClientRect();
+    }
+
     const { clientX, clientY } = e;
-    const { left, top, width, height } = ref.current.getBoundingClientRect();
+    const { left, top, width, height } = boundsRef.current;
+
     const centerX = left + width / 2;
     const centerY = top + height / 2;
     mouseX.set((clientX - centerX) * strength);
@@ -44,6 +58,7 @@ export function MagneticButton({
   const handleMouseLeave = () => {
     mouseX.set(0);
     mouseY.set(0);
+    boundsRef.current = null;
   };
 
   const variantClass = variant === "primary" ? "btn-primary hover-glow-blue" : 
@@ -55,6 +70,7 @@ export function MagneticButton({
       <MotionLink
         to={to}
         ref={ref}
+        onMouseEnter={handleMouseEnter}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         style={{ ...style, x, y }}
@@ -69,6 +85,7 @@ export function MagneticButton({
   return (
     <motion.button
       ref={ref}
+      onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{ ...style, x, y }}

@@ -13,8 +13,8 @@ export function MagneticWrapper({
   className = "" 
 }: MagneticWrapperProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const boundsRef = useRef<DOMRect | null>(null);
-  
+  const boundsRef = useRef<{ left: number; top: number; width: number; height: number } | null>(null);
+
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -23,9 +23,8 @@ export function MagneticWrapper({
   const y = useSpring(mouseY, springConfig);
 
   const handleMouseEnter = () => {
-    if (ref.current) {
-      boundsRef.current = ref.current.getBoundingClientRect();
-    }
+    if (!ref.current) return;
+    boundsRef.current = ref.current.getBoundingClientRect();
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
