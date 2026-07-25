@@ -153,13 +153,7 @@ export function JoinCTA() {
           </MagneticButton>
 
           {/* Benefits list */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 180px), 1fr))",
-              gap: "10px 24px",
-            }}
-          >
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
             {benefits.map((b) => (
               <div
                 key={b}

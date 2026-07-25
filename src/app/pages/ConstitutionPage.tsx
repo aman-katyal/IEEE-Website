@@ -52,7 +52,7 @@ export function ConstitutionPage() {
           zIndex: 5,
           maxWidth: "900px",
           margin: "0 auto",
-          padding: "0 32px",
+          padding: "0 clamp(16px, 4vw, 32px)",
         }}
       >
         {/* Header */}
@@ -93,7 +93,7 @@ export function ConstitutionPage() {
               <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "24px", fontWeight: 600, color: "var(--text-primary)" }}>Branch Constitution</h3>
             </div>
             {coreDocs.map((doc) => (
-              <div key={doc.name} className="glass-card" style={{ padding: "32px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "24px" }}>
+              <div key={doc.name} className="glass-card flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 p-8">
                 <div>
                   <h4 style={{ fontFamily: "var(--font-headline)", fontSize: "20px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "8px" }}>{doc.name}</h4>
                   <div style={{ fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.5, whiteSpace: "pre-wrap" }}>{doc.description}</div>
@@ -112,7 +112,7 @@ export function ConstitutionPage() {
               <FileText size={24} style={{ color: "var(--cyber-gold)" }} />
               <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "24px", fontWeight: 600, color: "var(--text-primary)" }}>Technical Committee Bylaws</h3>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "16px" }}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {committeeBylaws.map((doc) => (
                 <a 
                   key={doc.name} 

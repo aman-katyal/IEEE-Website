@@ -297,61 +297,61 @@ export function Committees() {
         }}
       />
 
-      <div
-        style={{
-          position: "relative",
-          zIndex: 5,
-          maxWidth: "1280px",
-          margin: "0 auto",
-          padding: "0 32px",
-        }}
-      >
         <div
           style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            alignItems: "center",
-            marginBottom: "32px",
+            position: "relative",
+            zIndex: 5,
+            maxWidth: "1280px",
+            margin: "0 auto",
+            padding: "0 clamp(16px, 4vw, 32px)",
           }}
         >
           <div
             style={{
               display: "flex",
+              justifyContent: "flex-end",
               alignItems: "center",
-              gap: "12px",
+              marginBottom: "32px",
             }}
           >
             <div
               style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: "0.65rem",
-                letterSpacing: "0.15em",
-                color: "var(--text-muted)",
-                textTransform: "uppercase",
-                opacity: isLight ? 1 : 0.8
+                display: "flex",
+                alignItems: "center",
+                gap: "12px",
               }}
             >
-              sys.committees.count
-            </div>
-            {loading ? (
-              <Skeleton style={{ height: "16px", width: "30px", background: "rgba(255,255,255,0.1)" }} />
-            ) : (
               <div
                 style={{
                   fontFamily: "var(--font-mono)",
                   fontSize: "0.65rem",
-                  color: "var(--electric-blue)",
-                  letterSpacing: "0.1em",
+                  letterSpacing: "0.15em",
+                  color: "var(--text-muted)",
+                  textTransform: "uppercase",
+                  opacity: isLight ? 1 : 0.8
                 }}
               >
-                = {committees.length}
+                sys.committees.count
               </div>
-            )}
+              {loading ? (
+                <Skeleton style={{ height: "16px", width: "30px", background: "rgba(255,255,255,0.1)" }} />
+              ) : (
+                <div
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: "0.65rem",
+                    color: "var(--electric-blue)",
+                    letterSpacing: "0.1em",
+                  }}
+                >
+                  = {committees.length}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
 
-        <BoneyardSkeleton name="committees-grid" loading={loading} color={isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}>
-          <div className="ieee-grid-3" style={{ minHeight: "200px" }}>
+          <BoneyardSkeleton name="committees-grid" loading={loading} color={isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" style={{ minHeight: "200px" }}>
             <AnimatePresence mode="popLayout">
               {committees.map((c) => (
                 <motion.div 

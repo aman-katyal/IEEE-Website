@@ -153,7 +153,7 @@ export function CommitteePage() {
         return (
           <div key={index} style={{ marginBottom: "64px" }}>
             <p className="section-eyebrow" style={{ marginBottom: "20px" }}>// {section.title || "Projects"}</p>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "24px" }}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {section.items?.map((p, i) => (
                 <div key={i} className="glass-card" style={{ display: "flex", flexDirection: "column", overflow: "hidden" }}>
                   {p.image && <div style={{ height: "180px", width: "100%", borderBottom: "1px solid var(--glass-border)" }}><img src={p.image} alt={p.name} style={{ width: "100%", height: "100%", objectFit: projCrop ? "cover" : "contain", background: "rgba(0,0,0,0.05)" }} /></div>}

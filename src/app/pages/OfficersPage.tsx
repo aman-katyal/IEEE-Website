@@ -286,7 +286,7 @@ export function OfficersPage() {
                     </Accordion.Header>
                     <Accordion.Content className="AccordionContent">
                       <p style={{ fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--text-muted)", marginBottom: "24px" }}>{cat.description}</p>
-                      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 260px), 1fr))", gap: "24px", paddingBottom: "32px" }}>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-8">
                         {sectionLeaders.map(renderOfficerCard)}
                       </div>
                     </Accordion.Content>
@@ -308,7 +308,7 @@ export function OfficersPage() {
                     </h3>
                     <p style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--text-muted)", maxWidth: "800px" }}>{cat.description}</p>
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 260px), 1fr))", gap: "24px" }}>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {sectionLeaders.map(renderOfficerCard)}
                   </div>
                 </div>

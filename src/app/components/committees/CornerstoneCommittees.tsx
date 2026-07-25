@@ -78,13 +78,7 @@ export function CornerstoneCommittees() {
                 </div>
               </div>
 
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 280px), 1fr))",
-                  gap: "24px",
-                }}
-              >
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {section.leads.map((lead, index) => (
                   <div
                     key={lead.role}

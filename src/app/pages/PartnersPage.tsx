@@ -93,7 +93,7 @@ export function PartnersPage() {
               <div style={{ flex: 1, height: "1px", background: "linear-gradient(90deg, var(--glass-border), transparent)" }} />
             </div>
             
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 260px), 1fr))", gap: "24px" }}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {partners.filter(p => p.tier === "Gold").map(p => (
                 <PartnerCard key={p.domain || p.name} partner={p} isLight={isLight} />
               ))}
@@ -108,7 +108,7 @@ export function PartnersPage() {
               <div style={{ flex: 1, height: "1px", background: "linear-gradient(90deg, var(--glass-border), transparent)" }} />
             </div>
             
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 200px), 1fr))", gap: "20px" }}>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
               {partners.filter(p => p.tier === "Silver").map(p => (
                 <PartnerCard key={p.domain || p.name} partner={p} isLight={isLight} />
               ))}
@@ -123,7 +123,7 @@ export function PartnersPage() {
               <div style={{ flex: 1, height: "1px", background: "linear-gradient(90deg, var(--glass-border), transparent)" }} />
             </div>
             
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 160px), 1fr))", gap: "16px" }}>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
               {partners.filter(p => p.tier === "Bronze").map(p => (
                 <PartnerCard key={p.domain || p.name} partner={p} isLight={isLight} />
               ))}
