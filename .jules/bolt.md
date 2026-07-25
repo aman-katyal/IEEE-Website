@@ -1,0 +1,3 @@
+## 2023-11-20 - Localized State in BentoHero Hover
+**Learning:** In React, lifting state that updates very frequently (like hover interactions) to the top level of a large component tree (like the BentoHero which includes massive images and nested UI elements) forces the entire tree to re-render, creating noticeable lag and CPU usage. The derived states depending on large arrays also get recalculated every time unless memoized.
+**Action:** Always localize high-frequency state (hover/scroll/mouse positions) into small, isolated wrapper components. If computing complex arrays, `useMemo` is crucial when dealing with potential re-renders.
