@@ -30,18 +30,16 @@ export function urlFor(source: any) {
   return builder.image(source);
 }
 
-// Client for fetching draft content (requires a token)
-// SECURE CONFIGURATION: Only initialize previewClient in development to prevent VITE_SANITY_API_TOKEN from being baked into the production bundle.
-export const previewClient = (import.meta.env.DEV && import.meta.env.VITE_SANITY_API_TOKEN) ? createClient({
+// Client for fetching draft content
+// SECURE CONFIGURATION: Do not inject API tokens into the client bundle.
+export const previewClient = createClient({
   projectId,
   dataset,
   useCdn: false,
   apiVersion,
-  token: import.meta.env.VITE_SANITY_API_TOKEN,
   perspective: 'drafts',
-  ignoreBrowserTokenWarning: true,
   stega: {
     enabled: isStegaEnabled,
     studioUrl,
   },
-}) : null;
+});

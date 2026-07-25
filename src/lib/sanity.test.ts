@@ -43,15 +43,11 @@ describe('Sanity Client', () => {
     expect(client).toBeDefined();
   });
 
-  it('should export a previewClient instance if token is provided and in DEV mode', () => {
-    if (import.meta.env.DEV && import.meta.env.VITE_SANITY_API_TOKEN) {
-      expect(previewClient).toBeDefined();
-      const config = (previewClient as any).config();
-      expect(config.token).toBe(import.meta.env.VITE_SANITY_API_TOKEN);
-      expect(config.perspective).toBe('drafts');
-    } else {
-      expect(previewClient).toBeNull();
-    }
+  it('should export a previewClient instance for drafts', () => {
+    expect(previewClient).toBeDefined();
+    const config = (previewClient as any).config();
+    expect(config.perspective).toBe('drafts');
+    expect(config.token).toBeUndefined();
   });
 
   it('urlFor should return a URL', () => {
