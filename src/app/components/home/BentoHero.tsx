@@ -443,6 +443,32 @@ export function BentoHero() {
   // Optimize image URL for responsive format & compression
   const heroImage = rawHeroImage ? `${rawHeroImage}?w=1400&auto=format&q=80` : null;
 
+<<<<<<< HEAD
+=======
+  // Resolve committee slots from Sanity only
+  // ⚡ Bolt: Memoize the mapping to prevent recalculating and reallocating object references
+  // on every render (which is triggered frequently by the hoveredSlot state).
+  const activeSlots: RackSlot[] = useMemo(() => {
+    return (committees && committees.length > 0)
+      ? committees.map((c) => {
+          const meta = COMMITTEE_STATUS_METADATA[c.id.toLowerCase()] ?? {
+            tag: c.shortName,
+            indicator: "ONLINE",
+          };
+          return {
+            id: c.id,
+            tag: meta.tag ?? c.shortName,
+            indicator: c.status ?? meta.indicator,
+            title: c.name,
+            displayTitle: makeDisplayTitle(c.name),
+            description: c.description ?? c.tagline ?? "",
+            meeting: c.meetingSchedule ?? "Check Discord for schedule",
+            link: `/committee/${c.id}`,
+          };
+        })
+      : [];
+  }, [committees]);
+>>>>>>> 7bc583424c1c83af4dcde14f118ca4d961ed0852
 
   return (
     <section
