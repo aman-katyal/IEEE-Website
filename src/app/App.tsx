@@ -14,17 +14,14 @@ export default function App() {
     const isPreview = new URLSearchParams(window.location.search).has('preview');
 
     if (isIframe || isPreview) {
-      console.log("Sanity Visual Editing: Initializing handshake...");
       const disable = enableVisualEditing({
         zIndex: 1000,
         onPublish: () => {
-          console.log("Sanity Visual Editing: Content published");
           window.location.reload();
         }
       } as any);
 
       return () => {
-        console.log("Sanity Visual Editing: Disabling handshake");
         disable();
       };
     }
