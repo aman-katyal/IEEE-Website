@@ -8,7 +8,7 @@ const defaultValue: HomePageContextValue = {
   data: null,
   loading: true,
   error: null,
-  refetch: () => Promise.resolve(),
+  refetch: (() => Promise.resolve({} as any)) as any,
 };
 
 const HomePageContext = createContext<HomePageContextValue>(defaultValue);
