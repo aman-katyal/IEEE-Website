@@ -67,6 +67,8 @@ To deploy to Cloudflare Pages:
 5.  **Styling:** Prefer Tailwind CSS utility classes. For complex or brand-specific styling, use the pre-defined CSS variables in `src/styles/`.
 6.  **Page Transitions:** Use the `<PageTransition>` component (wrapper around Framer Motion) for smooth navigation between routes.
 7.  **Responsive Design:** Ensure all components are mobile-friendly using Tailwind's responsive prefixes.
+8.  **Sanity Image URL Safety:** Before appending query parameters (e.g., `?w=1400`) to Sanity CDN URLs in components, inspect `url.includes('?')` to prevent generating malformed double-query parameters.
+9.  **TypeScript 7.0 Alignment:** Keep `tsconfig.json` free of deprecated options like `baseUrl` or `ignoreDeprecations`. Use explicit relative path aliases (`"@/*": ["./src/*"]`).
 
 ## 📁 Key Files
 
