@@ -1,0 +1,4 @@
+## 2025-05-18 - Hardcoded Google Calendar API Key Fallback
+**Vulnerability:** A hardcoded Google Calendar API key (`AIzaSyCiHFpbbbSmpu60-2KpFdqIhoLaygoCAIA`) was used as a fallback for the environment variable `VITE_GOOGLE_CALENDAR_API_KEY` in `src/data/calendarConfig.ts`.
+**Learning:** Hardcoding API keys as fallbacks in configuration files exposes secrets in the source code and version control, even if they are meant to be a developer convenience or safe default. If the API key has quotas or billing attached, this allows unrestricted abuse by anyone reading the public repository or decompiled client bundle.
+**Prevention:** Never use hardcoded strings as fallbacks for API keys or secrets. Instead, fallback to an empty string `""` or `undefined`, and explicitly handle the missing key at the call site (e.g., in the data-fetching hook `useGoogleCalendarEvents.ts`) by setting an appropriate error state and aborting the request without attempting a network call.

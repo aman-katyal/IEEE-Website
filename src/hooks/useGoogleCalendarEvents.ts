@@ -91,7 +91,11 @@ export function useGoogleCalendarEvents() {
     const nowMs = Date.now();
 
     // Return cached events if within the refresh interval and not forcing a refresh
-    if (!forceRefresh && cachedEvents && (nowMs - lastFetchTime < CALENDAR_CONFIG.refreshInterval)) {
+    if (
+      !forceRefresh &&
+      cachedEvents &&
+      nowMs - lastFetchTime < CALENDAR_CONFIG.refreshInterval
+    ) {
       setEvents(cachedEvents);
       setLoading(false);
       return;
@@ -104,11 +108,18 @@ export function useGoogleCalendarEvents() {
         setEvents(events);
         setError(null);
       } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : "Failed to fetch events";
+        const message =
+          err instanceof Error ? err.message : "Failed to fetch events";
         setError(message);
       } finally {
         setLoading(false);
       }
+      return;
+    }
+
+    if (!CALENDAR_CONFIG.apiKey) {
+      setError("Google Calendar API key is missing.");
+      setLoading(false);
       return;
     }
 
@@ -117,8 +128,8 @@ export function useGoogleCalendarEvents() {
       const now = new Date().toISOString();
       const url = new URL(
         `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(
-          CALENDAR_CONFIG.calendarId
-        )}/events`
+          CALENDAR_CONFIG.calendarId,
+        )}/events`,
       );
       url.searchParams.set("key", CALENDAR_CONFIG.apiKey);
       url.searchParams.set("timeMin", now);
@@ -128,13 +139,13 @@ export function useGoogleCalendarEvents() {
       url.searchParams.set("timeZone", CALENDAR_CONFIG.timeZone);
 
       fetchPromise = fetch(url.toString())
-        .then(res => {
+        .then((res) => {
           if (!res.ok) {
             throw new Error(`Calendar API ${res.status}: ${res.statusText}`);
           }
           return res.json();
         })
-        .then(data => {
+        .then((data) => {
           const parsed = (data.items ?? []).map(parseEvent);
           cachedEvents = parsed;
           lastFetchTime = Date.now();
@@ -145,7 +156,8 @@ export function useGoogleCalendarEvents() {
       setEvents(parsed);
       setError(null);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Failed to fetch events";
+      const message =
+        err instanceof Error ? err.message : "Failed to fetch events";
       console.warn("[useGoogleCalendarEvents]", message);
       setError(message);
     } finally {
