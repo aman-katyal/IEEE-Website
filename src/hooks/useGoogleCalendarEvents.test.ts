@@ -12,6 +12,7 @@ describe('useGoogleCalendarEvents', () => {
   };
 
   beforeEach(() => {
+    vi.stubEnv('VITE_GOOGLE_CALENDAR_API_KEY', 'test-api-key');
     mockFetch.mockReset();
     vi.useFakeTimers({ shouldAdvanceTime: true });
     vi.setSystemTime(new Date('2023-01-01T00:00:00Z'));

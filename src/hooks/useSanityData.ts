@@ -128,8 +128,8 @@ export function useHomePage() {
     "heroImage": coalesce(heroImage.asset->url + "?auto=format&w=1600&q=75", heroImage.asset->url),
     "aboutImage": coalesce(aboutImage.asset->url + "?auto=format&w=1000&q=75", aboutImage.asset->url)
   }`;
-  const { data, loading, error } = useSanityQuery<any>(query);
-  return { data, loading, error };
+  const { data, loading, error, refetch } = useSanityQuery<any>(query);
+  return { data, loading, error, refetch };
 }
 
 export function useAboutPage() {

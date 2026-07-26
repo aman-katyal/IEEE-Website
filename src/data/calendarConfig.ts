@@ -1,11 +1,9 @@
 // ─── Google Calendar Configuration ──────────────────────────────
 // Edit this file to connect a different calendar or rotate the API key.
 
-const FALLBACK_KEY = "AIzaSyCiHFpbbbSmpu60-2KpFdqIhoLaygoCAIA";
-
 export const CALENDAR_CONFIG = {
   /** Google Calendar API key (restricted to Calendar API) */
-  apiKey: import.meta.env.VITE_GOOGLE_CALENDAR_API_KEY || FALLBACK_KEY,
+  apiKey: import.meta.env.VITE_GOOGLE_CALENDAR_API_KEY || "",
 
   /** Public calendar ID */
   calendarId:
