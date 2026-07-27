@@ -4,6 +4,16 @@ import { renderHook, waitFor, act } from '@testing-library/react';
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
+vi.mock('../data/calendarConfig', () => ({
+  CALENDAR_CONFIG: {
+    apiKey: 'test-api-key',
+    calendarId: 'test-calendar-id',
+    maxResults: 10,
+    timeZone: 'America/Indiana/Indianapolis',
+    refreshInterval: 5 * 60 * 1000,
+  },
+}));
+
 describe('useGoogleCalendarEvents', () => {
   const getHook = async () => {
     vi.resetModules();
@@ -39,10 +49,13 @@ describe('useGoogleCalendarEvents', () => {
       ]
     };
 
-    mockFetch.mockReturnValueOnce(Promise.resolve({
+    const fetchResponse = {
       ok: true,
       json: () => Promise.resolve(mockData)
-    } as any));
+    };
+
+    // The fetch implementation calls .then() multiple times, so the mock needs to return a proper promise chain.
+    mockFetch.mockReturnValueOnce(Promise.resolve(fetchResponse));
 
     const { result } = renderHook(() => useGoogleCalendarEvents());
 
@@ -77,10 +90,12 @@ describe('useGoogleCalendarEvents', () => {
       ]
     };
 
-    mockFetch.mockReturnValueOnce(Promise.resolve({
+    const fetchResponse = {
       ok: true,
       json: () => Promise.resolve(mockData)
-    } as any));
+    };
+
+    mockFetch.mockReturnValueOnce(Promise.resolve(fetchResponse));
 
     const { result } = renderHook(() => useGoogleCalendarEvents());
 
@@ -94,11 +109,14 @@ describe('useGoogleCalendarEvents', () => {
 
   it('should handle fetch failure', async () => {
     const useGoogleCalendarEvents = await getHook();
-    mockFetch.mockReturnValueOnce(Promise.resolve({
+
+    const fetchResponse = {
       ok: false,
       status: 500,
       statusText: 'Internal Server Error'
-    } as any));
+    };
+
+    mockFetch.mockReturnValueOnce(Promise.resolve(fetchResponse));
 
     const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
@@ -116,6 +134,8 @@ describe('useGoogleCalendarEvents', () => {
 
   it('should handle network error', async () => {
     const useGoogleCalendarEvents = await getHook();
+
+    // We must reject the promise directly to simulate a network error
     mockFetch.mockReturnValueOnce(Promise.reject(new Error('Network Error')));
     const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
@@ -132,20 +152,16 @@ describe('useGoogleCalendarEvents', () => {
   it('should cache data and not fetch again within refresh interval', async () => {
     const useGoogleCalendarEvents = await getHook();
 
-    // Force refresh
-    act(() => {
-      vi.advanceTimersByTime(5 * 60 * 1000 + 100);
-    });
-    mockFetch.mockReset();
-
     const mockData = {
       items: [{ id: '1', summary: 'Cached Event', start: { date: '2023-01-01' }, end: { date: '2023-01-02' } }]
     };
 
-    mockFetch.mockReturnValueOnce(Promise.resolve({
+    const fetchResponse = {
       ok: true,
       json: () => Promise.resolve(mockData)
-    } as any));
+    };
+
+    mockFetch.mockReturnValueOnce(Promise.resolve(fetchResponse));
 
     const { result, unmount } = renderHook(() => useGoogleCalendarEvents());
 
@@ -172,17 +188,15 @@ describe('useGoogleCalendarEvents', () => {
   it('should deduplicate concurrent fetches', async () => {
     const useGoogleCalendarEvents = await getHook();
 
-    // Force refresh
-    act(() => {
-      vi.advanceTimersByTime(5 * 60 * 1000 + 100);
-    });
-    mockFetch.mockReset();
-
     const mockData = {
       items: [{ id: '1', summary: 'Concurrent Event', start: { date: '2023-01-01' }, end: { date: '2023-01-02' } }]
     };
 
     let resolveFetch: (value: any) => void;
+
+    // To mock a pending fetch, we need to return a promise that hasn't resolved yet
+    // The promise MUST resolve to an object with an `ok` property and a `json` function
+    // because `fetchPromise.then((res) => { if(!res.ok) ... return res.json() })` happens in the hook
     const fetchPromise = new Promise<any>((resolve) => {
       resolveFetch = resolve;
     });
