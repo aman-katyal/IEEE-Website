@@ -6,7 +6,9 @@ import { useTheme } from "next-themes";
 import { motion, AnimatePresence } from "motion/react";
 
 export function CommitteesPage() {
-  const [viewMode, setViewMode] = useState<"technical" | "operations">("technical");
+  const [viewMode, setViewMode] = useState<"technical" | "operations">(
+    "technical",
+  );
   const { theme } = useTheme();
   const isLight = theme === "light";
 
@@ -18,9 +20,7 @@ export function CommitteesPage() {
   return (
     <div className="pt-20 bg-[var(--boiler-black)] min-h-screen">
       <div className="max-w-[1280px] mx-auto pt-12 px-8 text-center relative z-10">
-        <p className="section-eyebrow mb-4">
-          // Purdue IEEE Committees
-        </p>
+        <p className="section-eyebrow mb-4">// Purdue IEEE Committees</p>
         <h1 className="font-[family-name:var(--font-headline)] text-[clamp(36px,5vw,64px)] font-bold text-[var(--text-primary)] leading-[1.1] tracking-[-0.025em] mb-8">
           Our <span className="text-[var(--electric-blue)]">Teams</span>
         </h1>
@@ -30,9 +30,12 @@ export function CommitteesPage() {
           <div className="flex bg-[rgba(128,128,128,0.05)] border border-[var(--glass-border)] rounded-full p-1 relative">
             <button
               onClick={() => setViewMode("technical")}
+              aria-pressed={viewMode === "technical"}
               className={`relative py-2.5 px-6 rounded-full font-[family-name:var(--font-mono)] text-[11px] font-semibold uppercase tracking-[0.08em] border-none bg-transparent cursor-pointer transition-colors duration-200 z-[2] ${
                 viewMode === "technical"
-                  ? (isLight ? "text-[var(--background)]" : "text-[var(--boiler-black)]")
+                  ? isLight
+                    ? "text-[var(--background)]"
+                    : "text-[var(--boiler-black)]"
                   : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
               }`}
             >
@@ -47,9 +50,12 @@ export function CommitteesPage() {
             </button>
             <button
               onClick={() => setViewMode("operations")}
+              aria-pressed={viewMode === "operations"}
               className={`relative py-2.5 px-6 rounded-full font-[family-name:var(--font-mono)] text-[11px] font-semibold uppercase tracking-[0.08em] border-none bg-transparent cursor-pointer transition-colors duration-200 z-[2] ${
                 viewMode === "operations"
-                  ? (isLight ? "text-[var(--background)]" : "text-[var(--boiler-black)]")
+                  ? isLight
+                    ? "text-[var(--background)]"
+                    : "text-[var(--boiler-black)]"
                   : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
               }`}
             >
