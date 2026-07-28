@@ -785,7 +785,7 @@ export function CommitteePage() {
                 fontWeight: isLight ? 600 : 400,
               }}
             >
-              {committee?.tagline}
+              {committee?.tagline} {committee?.foundedYear ? `• Est. ${committee.foundedYear}` : ""}
             </p>
           </div>
         </section>
