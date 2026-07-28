@@ -202,7 +202,7 @@ function LabStatusRack({ committees, isLight }: { committees: any[]; isLight: bo
             marginBottom: "16px",
           }}
         >
-          // Lab Status Rack
+          // Active Committees & Projects
         </div>
 
         {/* Visual Server/Equipment Rack Layout */}
@@ -226,7 +226,7 @@ function LabStatusRack({ committees, isLight }: { committees: any[]; isLight: bo
                 <Link
                   key={slot.id}
                   to={slot.link}
-                  aria-label={`Inspect telemetry and view details for ${slot.displayTitle} committee`}
+                  aria-label={`Inspect committee details for ${slot.displayTitle}`}
                   onMouseEnter={() => setHoveredSlot(slot)}
                   onFocus={() => setHoveredSlot(slot)}
                   style={{
@@ -410,7 +410,7 @@ function LabStatusRack({ committees, isLight }: { committees: any[]; isLight: bo
                 textTransform: "uppercase",
               }}
             >
-              Hover over any status slot above to inspect the technical committee's active telemetry.
+              Hover over any committee slot above to view active project details.
             </motion.div>
           )}
         </AnimatePresence>
