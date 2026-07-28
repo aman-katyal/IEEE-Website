@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useMemo } from "react";
 import { Link } from "react-router";
 import { useTheme } from "next-themes";
 import { motion, AnimatePresence } from "motion/react";
-import { ChevronRight, ArrowUpRight } from "lucide-react";
+import { ChevronRight, ArrowUpRight, Pause, Play } from "lucide-react";
 import { useCommittees, useSiteSettings } from "../../../hooks/useSanityData";
 import { useHomePageData } from "../../../context/HomePageContext";
 import { MagneticButton } from "../shared/MagneticButton";
@@ -45,10 +45,11 @@ interface StatItem {
 function CyclingStat({ stats, isLight }: { stats: StatItem[]; isLight: boolean }) {
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   
   const currentStat = stats[index] || { value: 0, label: "Metric", suffix: "" };
-  const count = useCountUp(Number(currentStat.value) || 0, 1500, visible);
+  const count = useCountUp(Number(currentStat.value) || 0, 1500, visible && !isPaused);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -62,12 +63,21 @@ function CyclingStat({ stats, isLight }: { stats: StatItem[]; isLight: boolean }
   }, []);
 
   useEffect(() => {
-    if (stats.length <= 1) return;
+    if (typeof window !== "undefined") {
+      const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+      if (mediaQuery.matches) {
+        setIsPaused(true);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (stats.length <= 1 || isPaused) return;
     const timer = setInterval(() => {
       setIndex((prev) => (prev + 1) % stats.length);
     }, 4500);
     return () => clearInterval(timer);
-  }, [stats]);
+  }, [stats, isPaused]);
 
   return (
     <div
@@ -81,9 +91,35 @@ function CyclingStat({ stats, isLight }: { stats: StatItem[]; isLight: boolean }
         alignItems: "center",
         textAlign: "center",
         height: "100%",
+        position: "relative",
         background: "rgba(0, 98, 155, 0.02)",
       }}
     >
+      {stats.length > 1 && (
+        <button
+          type="button"
+          onClick={() => setIsPaused((prev) => !prev)}
+          aria-label={isPaused ? "Play stats animation" : "Pause stats animation"}
+          style={{
+            position: "absolute",
+            top: "12px",
+            right: "12px",
+            background: "none",
+            border: "none",
+            color: "var(--text-muted)",
+            cursor: "pointer",
+            padding: "4px",
+            borderRadius: "4px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            opacity: 0.7,
+            transition: "opacity 0.2s",
+          }}
+        >
+          {isPaused ? <Play size={14} /> : <Pause size={14} />}
+        </button>
+      )}
       <div
         className="stat-number"
         style={{
