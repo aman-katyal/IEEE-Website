@@ -6,7 +6,7 @@ import { useTheme } from "next-themes";
 import { motion, AnimatePresence } from "motion/react";
 
 export function CommitteesPage() {
-  const [viewMode, setViewMode] = useState<"technical" | "operations">(
+  const [viewMode, setViewMode] = useState<"technical" | "involvement" | "operations">(
     "technical",
   );
   const { theme } = useTheme();
@@ -22,12 +22,12 @@ export function CommitteesPage() {
       <div className="max-w-[1280px] mx-auto pt-12 px-8 text-center relative z-10">
         <p className="section-eyebrow mb-4">// Purdue IEEE Committees</p>
         <h1 className="font-[family-name:var(--font-headline)] text-[clamp(36px,5vw,64px)] font-bold text-[var(--text-primary)] leading-[1.1] tracking-[-0.025em] mb-8">
-          Our <span className="text-[var(--electric-blue)]">Teams</span>
+          Our <span className="text-[var(--electric-blue)]">Committees</span>
         </h1>
 
         {/* View Mode Toggle */}
         <div className="flex justify-center mb-6">
-          <div className="flex bg-[rgba(128,128,128,0.05)] border border-[var(--glass-border)] rounded-full p-1 relative">
+          <div className="flex bg-[rgba(128,128,128,0.05)] border border-[var(--glass-border)] rounded-full p-1 relative flex-wrap sm:flex-nowrap gap-1">
             <button
               onClick={() => setViewMode("technical")}
               aria-pressed={viewMode === "technical"}
@@ -47,6 +47,26 @@ export function CommitteesPage() {
                 />
               )}
               Engineering
+            </button>
+            <button
+              onClick={() => setViewMode("involvement")}
+              aria-pressed={viewMode === "involvement"}
+              className={`relative py-2.5 px-6 rounded-full font-[family-name:var(--font-mono)] text-[11px] font-semibold uppercase tracking-[0.08em] border-none bg-transparent cursor-pointer transition-colors duration-200 z-[2] ${
+                viewMode === "involvement"
+                  ? isLight
+                    ? "text-[var(--background)]"
+                    : "text-[var(--boiler-black)]"
+                  : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
+              }`}
+            >
+              {viewMode === "involvement" && (
+                <motion.div
+                  layoutId="viewModeIndicator"
+                  className="absolute inset-0 bg-[var(--cyber-gold)] rounded-full z-[-1]"
+                  transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                />
+              )}
+              Involvement
             </button>
             <button
               onClick={() => setViewMode("operations")}
@@ -73,7 +93,7 @@ export function CommitteesPage() {
       </div>
 
       <AnimatePresence mode="wait">
-        {viewMode === "technical" ? (
+        {viewMode === "technical" && (
           <motion.div
             key="technical"
             initial={{ opacity: 0, y: 15 }}
@@ -83,7 +103,19 @@ export function CommitteesPage() {
           >
             <Committees />
           </motion.div>
-        ) : (
+        )}
+        {viewMode === "involvement" && (
+          <motion.div
+            key="involvement"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.3 }}
+          >
+            <CornerstoneCommittees filterId="involvement" />
+          </motion.div>
+        )}
+        {viewMode === "operations" && (
           <motion.div
             key="operations"
             initial={{ opacity: 0, y: 15 }}
@@ -91,7 +123,7 @@ export function CommitteesPage() {
             exit={{ opacity: 0, y: -15 }}
             transition={{ duration: 0.3 }}
           >
-            <CornerstoneCommittees />
+            <CornerstoneCommittees filterId="operations" />
           </motion.div>
         )}
       </AnimatePresence>
