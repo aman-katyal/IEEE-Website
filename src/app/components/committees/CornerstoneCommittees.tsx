@@ -2,7 +2,7 @@ import { Mail, Users, Layout, Loader2 } from "lucide-react";
 import { useCornerstoneCommittees } from "../../../hooks/useSanityData";
 import ReactMarkdown from "react-markdown";
 
-export function CornerstoneCommittees() {
+export function CornerstoneCommittees({ filterId }: { filterId?: "involvement" | "operations" }) {
   const { committees: cornerstoneCommittees, loading, error } = useCornerstoneCommittees();
 
   if (loading) {
@@ -20,6 +20,10 @@ export function CornerstoneCommittees() {
       </div>
     );
   }
+
+  const displayedSections = filterId 
+    ? cornerstoneCommittees.filter((section) => section.id.toLowerCase().includes(filterId))
+    : cornerstoneCommittees;
   return (
     <section
       id="cornerstone"
@@ -47,7 +51,7 @@ export function CornerstoneCommittees() {
       >
 
         <div style={{ display: "flex", flexDirection: "column", gap: "64px" }}>
-          {cornerstoneCommittees.map((section) => (
+          {displayedSections.map((section) => (
             <div key={section.id}>
               <div style={{ marginBottom: "32px", maxWidth: "800px" }}>
                 <h3
