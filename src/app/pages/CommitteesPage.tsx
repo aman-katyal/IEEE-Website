@@ -46,7 +46,7 @@ export function CommitteesPage() {
                   transition={{ type: "spring", stiffness: 350, damping: 25 }}
                 />
               )}
-              Engineering
+              Technical Committees
             </button>
             <button
               onClick={() => setViewMode("involvement")}
