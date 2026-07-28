@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { Link } from "react-router";
+import { ArrowRight } from "lucide-react";
 import { useTheme } from "next-themes";
 import { usePartners } from "../../../hooks/useSanityData";
 
@@ -93,6 +95,45 @@ export function TechMarquee() {
             />
           </div>
         ))}
+      </div>
+
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "16px", flexWrap: "wrap", marginTop: "24px", position: "relative", zIndex: 10 }}>
+        <Link
+          to="/partners"
+          className="btn-secondary"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            fontSize: "0.8rem",
+            fontFamily: "var(--font-mono)",
+            textTransform: "uppercase",
+            letterSpacing: "0.08em",
+            padding: "8px 18px",
+            borderRadius: "6px",
+            textDecoration: "none",
+          }}
+        >
+          Corporate Partners <ArrowRight size={14} />
+        </Link>
+        <Link
+          to="/committees"
+          className="btn-secondary"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            fontSize: "0.8rem",
+            fontFamily: "var(--font-mono)",
+            textTransform: "uppercase",
+            letterSpacing: "0.08em",
+            padding: "8px 18px",
+            borderRadius: "6px",
+            textDecoration: "none",
+          }}
+        >
+          Active Committees <ArrowRight size={14} />
+        </Link>
       </div>
     </div>
   );
