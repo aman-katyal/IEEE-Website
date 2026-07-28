@@ -94,6 +94,7 @@ export function TechMarquee() {
               }}
             />
           </div>
+        ))}
       </div>
 
       <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "16px", flexWrap: "wrap", marginTop: "24px", position: "relative", zIndex: 10 }}>
