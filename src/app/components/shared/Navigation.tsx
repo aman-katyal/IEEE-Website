@@ -317,7 +317,7 @@ export function Navigation() {
                             }}
                             onClick={(e) => { e.preventDefault(); handleNav("/committees"); }}
                           >
-                            View All Teams
+                            View All Committees
                             <ArrowUpRight size={14} />
                           </a>
                         </>

@@ -676,7 +676,7 @@ export function BentoHero() {
                   {committees && committees.length > 0 && (
                     <div style={{ display: "flex", justifyContent: "space-between", gap: "12px" }}>
                       <span style={{ color: "var(--text-muted)", flexShrink: 0 }}>Active Projects:</span>
-                      <span>{committees.length} Teams</span>
+                      <span>{committees.length} Committees</span>
                     </div>
                   )}
                   <div style={{ display: "flex", justifyContent: "space-between", gap: "12px" }}>
