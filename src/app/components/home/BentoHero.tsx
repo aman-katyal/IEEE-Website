@@ -229,6 +229,7 @@ function LabStatusRack({ committees, isLight }: { committees: any[]; isLight: bo
                   aria-label={`Inspect telemetry and view details for ${slot.displayTitle} committee`}
                   onMouseEnter={() => setHoveredSlot(slot)}
                   onFocus={() => setHoveredSlot(slot)}
+                  onClick={() => setHoveredSlot(slot)}
                   style={{
                     display: "flex",
                     alignItems: "center",
