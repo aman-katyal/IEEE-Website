@@ -131,12 +131,21 @@ export function JoinPage() {
                 </h4>
                 <div className="flex flex-col gap-6 mb-8">
                   {duesOptions.map((option, idx) => (
-                    <div key={idx} className="flex justify-between items-center border-b border-[var(--glass-border)] pb-4">
-                      <div>
-                        <span className="block text-[var(--text-primary)] font-semibold">{option.name}</span>
-                        <span className={`text-xs text-[var(--text-muted)] ${isLight ? "opacity-100" : "opacity-80"}`}>{option.subtitle}</span>
+                    <div key={idx}>
+                      {idx > 0 && (
+                        <div className="flex items-center gap-3 my-3">
+                          <div className="flex-1 h-px bg-[var(--glass-border)]" />
+                          <span className="text-[11px] font-bold text-[var(--cyber-gold)] uppercase tracking-wider px-2 py-0.5 rounded bg-[rgba(235,211,169,0.12)]">OR</span>
+                          <div className="flex-1 h-px bg-[var(--glass-border)]" />
+                        </div>
+                      )}
+                      <div className="flex justify-between items-center border-b border-[var(--glass-border)] pb-4">
+                        <div>
+                          <span className="block text-[var(--text-primary)] font-semibold">{option.name}</span>
+                          <span className={`text-xs text-[var(--text-muted)] ${isLight ? "opacity-100" : "opacity-80"}`}>{option.subtitle}</span>
+                        </div>
+                        <span className="text-2xl font-bold text-[var(--electric-blue)]">{option.price}</span>
                       </div>
-                      <span className="text-2xl font-bold text-[var(--electric-blue)]">{option.price}</span>
                     </div>
                   ))}
                 </div>
