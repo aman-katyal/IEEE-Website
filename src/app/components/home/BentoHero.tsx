@@ -337,7 +337,11 @@ function LabStatusRack({ committees, isLight }: { committees: any[]; isLight: bo
                   </span>
 
                   {/* Status indicator dot */}
-                  <div style={{ display: "flex", alignItems: "center", gap: "5px", flexShrink: 0 }}>
+                  <div 
+                    title={`Status: Active Committee (${slot.displayTitle})`}
+                    aria-label={`Active status indicator for ${slot.displayTitle}`}
+                    style={{ display: "flex", alignItems: "center", gap: "5px", flexShrink: 0 }}
+                  >
                     <div style={{
                       width: "6px",
                       height: "6px",
