@@ -10,7 +10,8 @@
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "deploy": "npm run build && wrangler deploy",
-    "preview": "npm run build && wrangler dev"
+    "preview": "npm run build && wrangler dev",
+    "issue:start": "pwsh ./scripts/issue-start.ps1"
   },
   "dependencies": {
     "@popperjs/core": "2.11.8",
