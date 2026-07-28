@@ -962,17 +962,17 @@ export function CommitteePage() {
                       >
                         Committee Chair
                       </div>
-                      <div
+                      <h3
                         style={{
                           fontFamily: "var(--font-headline)",
-                          fontSize: "16px",
+                          fontSize: "18px",
                           fontWeight: 600,
                           color: "var(--text-primary)",
                           marginBottom: "6px",
                         }}
                       >
                         {committee?.chair}
-                      </div>
+                      </h3>
                       <a
                         href={`mailto:${committee?.email}`}
                         style={{
