@@ -1,0 +1,21 @@
+name: Feature Request
+description: Propose a new feature or improvement for the website
+title: "[FEATURE]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement / Rationale
+      description: Is your feature request related to a problem or missing capability?
+      placeholder: "Describe the need for this feature..."
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the solution or user experience you would like to see.
+      placeholder: "Describe how it should work..."
+    validations:
+      required: true

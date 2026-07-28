@@ -1,0 +1,21 @@
+name: Maintenance Task / TODO
+description: Track a maintenance task, refactoring, or test suite addition
+title: "[TASK]: "
+labels: ["task"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Task Summary
+      description: Overview of what needs to be done.
+      placeholder: "e.g., Add unit tests for Navbar component"
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria
+      description: Checklist of items that complete this task.
+      placeholder: "- [ ] Test desktop navbar\n- [ ] Test mobile menu"
+    validations:
+      required: true
