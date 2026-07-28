@@ -406,8 +406,11 @@ export function CommitteePage() {
       case "contact":
         return (
           <div key={index} style={{ marginBottom: "64px" }}>
-            <p className="section-eyebrow" style={{ marginBottom: "20px" }}>
+            <p className="section-eyebrow" style={{ marginBottom: "8px" }}>
               // {section.title || "Contact"}
+            </p>
+            <p style={{ fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--text-secondary)", marginBottom: "20px" }}>
+              Have questions? Get in touch with our committee leads:
             </p>
             <div
               className="glass-card"
