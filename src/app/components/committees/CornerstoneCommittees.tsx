@@ -97,34 +97,28 @@ export function CornerstoneCommittees({ filterId }: { filterId?: "involvement" |
                     }}
                   >
                     <div style={{ marginBottom: "20px" }}>
-                      <div
-                        style={{
-                          display: "inline-block",
-                          padding: "4px 12px",
-                          background: "rgba(0, 98, 155, 0.1)",
-                          border: "1px solid var(--glass-border)",
-                          borderRadius: "4px",
-                          color: "var(--electric-blue)",
-                          fontSize: "12px",
-                          fontWeight: 600,
-                          textTransform: "uppercase",
-                          letterSpacing: "0.05em",
-                          marginBottom: "16px",
-                        }}
-                      >
-                        {lead.role}
-                      </div>
                       <h4
                         style={{
                           fontFamily: "var(--font-headline)",
                           fontSize: "22px",
                           fontWeight: 600,
                           color: "var(--text-primary)",
-                          marginBottom: "8px",
+                          marginBottom: "6px",
                         }}
                       >
-                        {lead.name}
+                        {lead.role}
                       </h4>
+                      <p
+                        style={{
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "13px",
+                          fontWeight: 600,
+                          color: "var(--cyber-gold)",
+                          letterSpacing: "0.03em",
+                        }}
+                      >
+                        Chair: {lead.name}
+                      </p>
                     </div>
 
                     <div
@@ -141,7 +135,7 @@ export function CornerstoneCommittees({ filterId }: { filterId?: "involvement" |
                       <ReactMarkdown>{lead.description || ""}</ReactMarkdown>
                     </div>
 
-                    <div style={{ display: "flex", gap: "12px", alignItems: "center", borderTop: "1px solid var(--glass-border)", paddingTop: "20px" }}>
+                    <div style={{ display: "flex", gap: "10px", alignItems: "center", borderTop: "1px solid var(--glass-border)", paddingTop: "16px" }}>
                       <Mail size={16} style={{ color: "var(--electric-blue)", flexShrink: 0 }} />
                       <a
                         href={`mailto:${lead.email}`}
@@ -150,6 +144,7 @@ export function CornerstoneCommittees({ filterId }: { filterId?: "involvement" |
                           fontSize: "13px",
                           color: "var(--text-secondary)",
                           textDecoration: "none",
+                          wordBreak: "break-all",
                           transition: "color 0.2s ease",
                         }}
                         onMouseEnter={(e) => (e.currentTarget.style.color = "var(--electric-blue)")}
