@@ -265,7 +265,18 @@ export function Committees() {
   const { committees, loading, error } = useCommittees();
   const { theme } = useTheme();
   const isLight = theme === "light";
+  const [selectedTag, setSelectedTag] = useState<string>("All");
 
+  const allTags = useMemo(() => {
+    const set = new Set<string>();
+    committees.forEach((c) => c.tags?.forEach((t) => set.add(t)));
+    return ["All", ...Array.from(set)];
+  }, [committees]);
+
+  const filteredCommittees = useMemo(() => {
+    if (selectedTag === "All") return committees;
+    return committees.filter((c) => c.tags?.includes(selectedTag));
+  }, [committees, selectedTag]);
 
   if (error) {
     return (
@@ -306,6 +317,24 @@ export function Committees() {
             padding: "0 clamp(16px, 4vw, 32px)",
           }}
         >
+          {allTags.length > 1 && (
+            <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
+              {allTags.map((tag) => (
+                <button
+                  key={tag}
+                  onClick={() => setSelectedTag(tag)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-[family-name:var(--font-mono)] font-semibold transition-all duration-200 cursor-pointer border ${
+                    selectedTag === tag
+                      ? "bg-[var(--electric-blue)] text-white border-[var(--electric-blue)]"
+                      : "bg-[rgba(128,128,128,0.06)] text-[var(--text-secondary)] border-[var(--glass-border)] hover:border-[var(--electric-blue)]"
+                  }`}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+          )}
+
           <div
             style={{
               display: "flex",
@@ -344,7 +373,7 @@ export function Committees() {
                     letterSpacing: "0.1em",
                   }}
                 >
-                  = {committees.length}
+                  = {filteredCommittees.length}
                 </div>
               )}
             </div>
@@ -353,7 +382,7 @@ export function Committees() {
           <BoneyardSkeleton name="committees-grid" loading={loading} color={isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" style={{ minHeight: "200px" }}>
             <AnimatePresence mode="popLayout">
-              {committees.map((c) => (
+              {filteredCommittees.map((c) => (
                 <motion.div 
                   key={c.id} 
                   layout
