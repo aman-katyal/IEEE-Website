@@ -30,6 +30,7 @@ import type {
 } from "../../data/committees/types";
 import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../components/ui/dialog";
 
 /**
  * Custom Discord Icon Component
@@ -74,6 +75,7 @@ export function CommitteePage() {
   const { committee, loading, error } = useCommittee(id ?? "");
   const { theme } = useTheme();
   const isLight = theme === "light";
+  const [selectedProject, setSelectedProject] = useState<{ name: string; description?: string; image?: string } | null>(null);
 
   const {
     textSections,
@@ -346,11 +348,16 @@ export function CommitteePage() {
               {section.items?.map((p, i) => (
                 <div
                   key={i}
-                  className="glass-card"
+                  className="glass-card transition-all duration-200 hover:scale-[1.02] hover:border-[var(--electric-blue)]"
+                  onClick={() => setSelectedProject(p)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => e.key === "Enter" && setSelectedProject(p)}
                   style={{
                     display: "flex",
                     flexDirection: "column",
                     overflow: "hidden",
+                    cursor: "pointer",
                   }}
                 >
                   {p.image && (
@@ -373,18 +380,22 @@ export function CommitteePage() {
                       />
                     </div>
                   )}
-                  <div style={{ padding: "24px" }}>
-                    <h3
-                      style={{
-                        fontFamily: "var(--font-headline)",
-                        fontSize: "17px",
-                        fontWeight: 600,
-                        color: "var(--text-primary)",
-                        marginBottom: "10px",
-                      }}
-                    >
-                      {p.name}
-                    </h3>
+                  <div style={{ padding: "24px", display: "flex", flexDirection: "column", flex: 1 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+                      <h3
+                        style={{
+                          fontFamily: "var(--font-headline)",
+                          fontSize: "17px",
+                          fontWeight: 600,
+                          color: "var(--text-primary)",
+                        }}
+                      >
+                        {p.name}
+                      </h3>
+                      <span style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--electric-blue)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                        View Details →
+                      </span>
+                    </div>
                     <div
                       style={{
                         fontFamily: "var(--font-body)",
@@ -1056,6 +1067,27 @@ export function CommitteePage() {
           </div>
         </div>
       </section>
+      <Dialog open={!!selectedProject} onOpenChange={(open) => !open && setSelectedProject(null)}>
+        <DialogContent className="max-w-2xl bg-[var(--boiler-black)] border-[var(--glass-border)] text-[var(--text-primary)]">
+          {selectedProject && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="font-[family-name:var(--font-headline)] text-2xl font-bold text-[var(--text-primary)]">
+                  {selectedProject.name}
+                </DialogTitle>
+              </DialogHeader>
+              {selectedProject.image && (
+                <div className="w-full h-64 rounded-lg overflow-hidden my-3 border border-[var(--glass-border)]">
+                  <img src={selectedProject.image} alt={selectedProject.name} className="w-full h-full object-cover" />
+                </div>
+              )}
+              <DialogDescription className="font-[family-name:var(--font-body)] text-base text-[var(--text-secondary)] leading-relaxed whitespace-pre-wrap">
+                <ReactMarkdown>{selectedProject.description}</ReactMarkdown>
+              </DialogDescription>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
       <style>{`.gallery-item-container:hover .caption-overlay { opacity: 1 !important; transform: translateY(0) !important; } .gallery-item-container:hover img { filter: brightness(1) !important; transform: scale(1.05); } .social-tag:hover { border-color: var(--electric-blue); color: var(--electric-blue); background: rgba(0, 98, 155, 0.05); }`}</style>
     </>
   );
