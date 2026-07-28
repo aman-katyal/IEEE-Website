@@ -22,7 +22,7 @@ export function CommitteesPage() {
       <div className="max-w-[1280px] mx-auto pt-12 px-8 text-center relative z-10">
         <p className="section-eyebrow mb-4">// Purdue IEEE Committees</p>
         <h1 className="font-[family-name:var(--font-headline)] text-[clamp(36px,5vw,64px)] font-bold text-[var(--text-primary)] leading-[1.1] tracking-[-0.025em] mb-8">
-          Our <span className="text-[var(--electric-blue)]">Teams</span>
+          Our <span className="text-[var(--electric-blue)]">Committees</span>
         </h1>
 
         {/* View Mode Toggle */}

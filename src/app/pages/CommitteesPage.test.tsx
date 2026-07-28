@@ -29,7 +29,7 @@ describe('CommitteesPage', () => {
     render(<CommitteesPage />);
 
     expect(screen.getByText('Our')).toBeInTheDocument();
-    expect(screen.getByText('Teams')).toBeInTheDocument();
+    expect(screen.getByText('Committees')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Engineering/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Operations/i })).toBeInTheDocument();
   });
