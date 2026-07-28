@@ -207,7 +207,7 @@ function LabStatusRack({ committees, isLight }: { committees: any[]; isLight: bo
             title: c.name,
             displayTitle: makeDisplayTitle(c.name),
             description: c.description ?? c.tagline ?? "",
-            meeting: c.meetingSchedule ?? "Check Discord for schedule",
+            meeting: c.meetingSchedule ?? "Announced on Discord",
             link: `/committee/${c.id}`,
           };
         })
