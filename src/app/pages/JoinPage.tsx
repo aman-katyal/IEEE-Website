@@ -66,7 +66,7 @@ export function JoinPage() {
                 Check out our list of committees and find one that interests you. You're welcome to attend any meeting to see what we're about.
               </p>
             </div>
-            <div className="glass-card p-6">
+            <div id="dues-section" className="glass-card p-6">
               <div className="flex items-center gap-4 mb-5">
                 <CreditCard size={24} className="text-[var(--cyber-gold)]" />
                 <h3 className="font-[family-name:var(--font-headline)] text-xl font-semibold text-[var(--text-primary)]">Pay Dues</h3>
