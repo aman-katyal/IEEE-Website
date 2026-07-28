@@ -671,38 +671,45 @@ export function CommitteePage() {
                 gap: "40px",
               }}
             >
-              <Link
-                to="/committees"
+              <div
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
-                  gap: "10px",
-                  color: "var(--text-secondary)",
-                  textDecoration: "none",
+                  gap: "8px",
                   fontFamily: "var(--font-mono)",
                   fontSize: "0.65rem",
                   letterSpacing: "0.12em",
                   textTransform: "uppercase",
-                  transition: "all 0.2s ease",
-                  opacity: isLight ? 1 : 0.75,
                   height: "28px",
-                  lineHeight: "28px",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = "var(--electric-blue)";
-                  e.currentTarget.style.opacity = "1";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = "var(--text-secondary)";
-                  e.currentTarget.style.opacity = isLight ? "1" : "0.75";
                 }}
               >
-                <ArrowLeft
-                  size={14}
-                  style={{ position: "relative", top: "-1px" }}
-                />{" "}
-                Home / Committees
-              </Link>
+                <Link
+                  to="/"
+                  style={{
+                    color: "var(--text-secondary)",
+                    textDecoration: "none",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    opacity: isLight ? 1 : 0.75,
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = "var(--electric-blue)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-secondary)")}
+                >
+                  <ArrowLeft size={14} /> Home
+                </Link>
+                <span style={{ color: "var(--text-muted)" }}>/</span>
+                <Link
+                  to="/committees"
+                  style={{
+                    color: "var(--electric-blue)",
+                    textDecoration: "none",
+                    fontWeight: 600,
+                  }}
+                >
+                  Committees
+                </Link>
+              </div>
 
               <div
                 className="status-badge"
