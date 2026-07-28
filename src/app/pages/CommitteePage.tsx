@@ -745,17 +745,30 @@ export function CommitteePage() {
                   lineHeight: "28px",
                 }}
               >
-                <div
-                  style={{
-                    width: "6px",
-                    height: "6px",
-                    borderRadius: "50%",
-                    marginRight: "10px",
-                    background: "currentColor",
-                    boxShadow: "0 0 10px currentColor",
-                    flexShrink: 0,
-                  }}
-                />
+                <div style={{ position: "relative", display: "inline-flex", alignItems: "center", justifyContent: "center", marginRight: "10px" }}>
+                  <span
+                    className="animate-ping"
+                    style={{
+                      position: "absolute",
+                      display: "inline-flex",
+                      height: "8px",
+                      width: "8px",
+                      borderRadius: "50%",
+                      background: "currentColor",
+                      opacity: 0.75,
+                    }}
+                  />
+                  <span
+                    style={{
+                      position: "relative",
+                      display: "inline-flex",
+                      borderRadius: "50%",
+                      height: "6px",
+                      width: "6px",
+                      background: "currentColor",
+                    }}
+                  />
+                </div>
                 {committee?.status || "Active"}
               </div>
             </div>
