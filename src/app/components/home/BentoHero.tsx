@@ -241,6 +241,19 @@ function LabStatusRack({ committees, isLight }: { committees: any[]; isLight: bo
           // Active Committees & Projects
         </div>
 
+        <div
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: "0.62rem",
+            letterSpacing: "0.08em",
+            color: "var(--text-muted)",
+            textTransform: "uppercase",
+            marginBottom: "12px",
+          }}
+        >
+          Select or hover any committee below to view details:
+        </div>
+
         {/* Visual Server/Equipment Rack Layout */}
         <div
           className="rack-slots-grid"
