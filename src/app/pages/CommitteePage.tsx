@@ -381,17 +381,24 @@ export function CommitteePage() {
                     </div>
                   )}
                   <div style={{ padding: "24px", display: "flex", flexDirection: "column", flex: 1 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-                      <h3
-                        style={{
-                          fontFamily: "var(--font-headline)",
-                          fontSize: "17px",
-                          fontWeight: 600,
-                          color: "var(--text-primary)",
-                        }}
-                      >
-                        {p.name}
-                      </h3>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px", flexWrap: "wrap", gap: "6px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                        <h3
+                          style={{
+                            fontFamily: "var(--font-headline)",
+                            fontSize: "18px",
+                            fontWeight: 600,
+                            color: "var(--text-primary)",
+                          }}
+                        >
+                          {p.name}
+                        </h3>
+                        {i === 0 && (
+                          <span style={{ fontSize: "10px", fontWeight: 700, fontFamily: "var(--font-mono)", color: "var(--cyber-gold)", background: "rgba(235, 211, 169, 0.12)", border: "1px solid rgba(235, 211, 169, 0.3)", padding: "2px 8px", borderRadius: "9999px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                            ★ Flagship
+                          </span>
+                        )}
+                      </div>
                       <span style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--electric-blue)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                         View Details →
                       </span>
