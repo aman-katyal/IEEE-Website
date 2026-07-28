@@ -294,18 +294,22 @@
   gap: 6px;
   font-family: var(--font-mono);
   font-size: 0.65rem;
-  font-weight: 500;
-  letter-spacing: 0.12em;
+  font-weight: 600;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  padding: 5px 10px 5px 8px;
-  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+  padding: 4px 10px;
+  border-radius: 9999px;
+  background: rgba(34, 197, 94, 0.12);
+  color: var(--semantic-success);
+  border: 1px solid rgba(34, 197, 94, 0.3);
 }
 
 .status-badge .dot {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: currentColor;
+  background: var(--semantic-success);
+  box-shadow: 0 0 6px var(--semantic-success);
   animation: pulse-dot 2s ease-in-out infinite;
 }
 
