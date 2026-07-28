@@ -98,8 +98,8 @@ export function ConstitutionPage() {
                   <h4 style={{ fontFamily: "var(--font-headline)", fontSize: "20px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "8px" }}>{doc.name}</h4>
                   <div style={{ fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.5, whiteSpace: "pre-wrap" }}>{doc.description}</div>
                 </div>
-                <a href={doc.pdfUrl} className="btn-primary" style={{ display: "flex", alignItems: "center", gap: "8px", textDecoration: "none", flexShrink: 0 }}>
-                  <Download size={16} />
+                <a href={doc.pdfUrl} target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ display: "flex", alignItems: "center", gap: "8px", textDecoration: "none", flexShrink: 0 }}>
+                  <ExternalLink size={16} />
                   View PDF
                 </a>
               </div>
@@ -117,6 +117,8 @@ export function ConstitutionPage() {
                 <a 
                   key={doc.name} 
                   href={doc.pdfUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
                   className="glass-card" 
                   style={{ 
                     padding: "20px 24px", 
