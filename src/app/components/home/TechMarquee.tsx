@@ -128,6 +128,8 @@ function MarqueeItem({ partner, isLight }: { partner: any; isLight: boolean }) {
         <img 
           src={logoSrc} 
           alt={partner.name} 
+          title={partner.name}
+          aria-label={partner.name}
           loading="lazy"
           onError={handleImageError}
           style={{ 
