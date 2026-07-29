@@ -170,7 +170,7 @@ export function PartnersPage() {
                   gap: "8px",
                 }}
               >
-                Download Prospectus
+                Branch Constitution
                 <ExternalLink size={16} />
               </a>
             </div>

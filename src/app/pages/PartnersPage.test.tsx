@@ -65,7 +65,7 @@ describe('PartnersPage', () => {
     expect(screen.getByText('Test Partner Title')).toBeInTheDocument();
     expect(screen.getByText('Test Partner Subtitle')).toBeInTheDocument();
     
-    const prospectusLink = screen.getByRole('link', { name: /Download Prospectus/i });
+    const prospectusLink = screen.getByRole('link', { name: /Branch Constitution/i });
     expect(prospectusLink).toHaveAttribute('href', 'https://prospectus.test');
   });
 
