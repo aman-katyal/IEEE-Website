@@ -478,10 +478,9 @@ export function BentoHero() {
   const { theme } = useTheme();
   const { data: homeData, loading: homeLoading } = useHomePageData();
   const { committees, loading: committeesLoading } = useCommittees();
-  const { settings: siteSettings, loading: settingsLoading } = useSiteSettings();
 
   const isLight = theme === "light";
-  const loading = homeLoading || committeesLoading || settingsLoading;
+  const loading = homeLoading || committeesLoading;
 
   // All content comes directly from Sanity — no hardcoded fallbacks
   const heroTitle    = homeData?.heroTitle    ?? null;
@@ -680,14 +679,10 @@ export function BentoHero() {
                     </div>
                   )}
                   <div style={{ display: "flex", justifyContent: "space-between", gap: "12px" }}>
-                    <span style={{ color: "var(--text-muted)", flexShrink: 0 }}>Dues Rate:</span>
-                    <span style={{ color: "var(--text-primary)", fontWeight: 600 }}>
-                      {siteSettings?.duesOptions?.[0]?.price
-                        ? siteSettings.duesOptions[0].price
-                        : (siteSettings?.duesDescription && siteSettings.duesDescription.length < 30
-                            ? siteSettings.duesDescription
-                            : "$10 / year")}
-                    </span>
+                    <span style={{ color: "var(--text-muted)", flexShrink: 0 }}>Membership:</span>
+                    <Link to="/join" style={{ color: "var(--cyber-gold)", fontWeight: 600, textDecoration: "none", fontSize: "0.7rem" }}>
+                      Join Now →
+                    </Link>
                   </div>
                   {discordMembers && (
                     <div style={{ display: "flex", justifyContent: "space-between", gap: "12px" }}>
