@@ -195,6 +195,7 @@ export function useSiteSettings() {
 export interface Partner {
   name: string;
   domain?: string;
+  websiteUrl?: string;
   tier: 'Gold' | 'Silver' | 'Bronze';
   logoUrl?: string;
   order?: number;
@@ -203,7 +204,8 @@ export interface Partner {
 export function usePartners() {
   const query = groq`*[_type == "partner"] | order(order asc){
     ...,
-    "logoUrl": coalesce(logo.asset->url + "?auto=format&w=300&q=75", logo.asset->url)
+    "logoUrl": coalesce(logo.asset->url + "?auto=format&w=300&q=75", logo.asset->url),
+    "websiteUrl": coalesce(websiteUrl, select(defined(domain) => "https://" + domain, null))
   }`;
   const { data, loading, error } = useSanityQuery<Partner[]>(query);
   return { partners: data || [], loading, error };
