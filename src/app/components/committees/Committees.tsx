@@ -86,7 +86,7 @@ function CommitteeCard({ c }: { c: Committee }) {
             }}
           >
             <span className="dot" />
-            {c.status}
+            {c.status === "Active" ? "Active · 2025–26" : c.status}
           </div>
         </div>
 
