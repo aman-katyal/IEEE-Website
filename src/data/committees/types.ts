@@ -84,6 +84,7 @@ export interface Committee {
   sections?: CommitteeSection[];
 
   // ── Legacy/Optional fields ──
+  foundedYear?: number;
   projects?: CommitteeProject[];
   gallery?: GalleryItem[];
   faqs?: FAQ[];
