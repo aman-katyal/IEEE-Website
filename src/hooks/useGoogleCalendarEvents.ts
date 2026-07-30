@@ -88,7 +88,7 @@ export function useGoogleCalendarEvents() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchEvents = useCallback(async (forceRefresh = false) => {
-    const nowMs = Date.now();
+    const nowMs = performance.now();
 
     // Return cached events if within the refresh interval and not forcing a refresh
     if (
@@ -148,7 +148,7 @@ export function useGoogleCalendarEvents() {
         .then((data) => {
           const parsed = (data.items ?? []).map(parseEvent);
           cachedEvents = parsed;
-          lastFetchTime = Date.now();
+          lastFetchTime = performance.now();
           return parsed;
         });
 
