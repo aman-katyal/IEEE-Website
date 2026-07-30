@@ -69,9 +69,24 @@ export function AboutUsPage() {
               </ul>
             </div>
             <div className="glass-card" style={{ padding: "32px", borderLeft: "4px solid var(--cyber-gold)" }}>
-              <p style={{ fontStyle: "italic", fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.6 }}>
-                "Our alumni go on to work at some of the world's largest companies... helping shape the future of technology."
-              </p>
+              <figure style={{ margin: 0 }}>
+                <blockquote style={{ fontStyle: "italic", fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.6, margin: "0 0 16px" }}>
+                  "Our alumni go on to work at some of the world's largest companies... helping shape the future of technology."
+                </blockquote>
+                <figcaption style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "linear-gradient(135deg, var(--cyber-gold), var(--electric-blue))", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: 700, color: "#000", flexShrink: 0 }}>
+                    PI
+                  </div>
+                  <div>
+                    <div style={{ fontFamily: "var(--font-headline)", fontSize: "13px", fontWeight: 600, color: "var(--text-primary)" }}>
+                      {data?.quoteAuthor || "Purdue IEEE Leadership"}
+                    </div>
+                    <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--text-muted)", letterSpacing: "0.05em" }}>
+                      {data?.quoteAuthorTitle || "Executive Officer, Purdue IEEE"}
+                    </div>
+                  </div>
+                </figcaption>
+              </figure>
             </div>
           </div>
         </div>
