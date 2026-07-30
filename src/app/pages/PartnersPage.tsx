@@ -401,7 +401,7 @@ function PartnerCard({
 
   const showLogo = logoSrc && !logoError;
 
-  return (
+  const cardContent = (
     <motion.div
       className="glass-card"
       whileHover={{ y: -5 }}
@@ -469,4 +469,20 @@ function PartnerCard({
       )}
     </motion.div>
   );
+
+  if (partner.websiteUrl) {
+    return (
+      <a
+        href={partner.websiteUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`Visit ${partner.name} website`}
+        style={{ display: "block", height: "100%", textDecoration: "none" }}
+      >
+        {cardContent}
+      </a>
+    );
+  }
+
+  return cardContent;
 }
