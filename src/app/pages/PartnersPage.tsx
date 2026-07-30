@@ -219,6 +219,48 @@ export function PartnersPage() {
               />
             </div>
 
+            {/* IEEE Gold Partner Explanation Callout */}
+            <div
+              className="glass-card"
+              style={{
+                padding: "20px 24px",
+                marginBottom: "28px",
+                borderLeft: "4px solid var(--cyber-gold)",
+                display: "flex",
+                alignItems: "flex-start",
+                gap: "16px",
+                background: "rgba(235, 211, 169, 0.04)",
+              }}
+            >
+              <Award size={20} style={{ color: "var(--cyber-gold)", flexShrink: 0, marginTop: "2px" }} />
+              <div>
+                <p
+                  style={{
+                    fontFamily: "var(--font-headline)",
+                    fontSize: "14px",
+                    fontWeight: 700,
+                    color: "var(--cyber-gold)",
+                    marginBottom: "4px",
+                    letterSpacing: "0.03em",
+                  }}
+                >
+                  IEEE Exemplary Student Branch — Gold Partner Recognition
+                </p>
+                <p
+                  style={{
+                    fontFamily: "var(--font-body)",
+                    fontSize: "13px",
+                    color: "var(--text-secondary)",
+                    lineHeight: 1.65,
+                    margin: 0,
+                  }}
+                >
+                  Gold Partner status is awarded by IEEE to student branches that demonstrate exceptional technical activity, community impact, and organizational excellence. Purdue IEEE has earned this recognition through consistent leadership in engineering education, record member engagement, and nationally recognized technical projects. Gold Partners receive premium placement at our recruiting events and direct access to our most accomplished members.
+                </p>
+              </div>
+            </div>
+
+
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {partners
                 .filter((p) => p.tier === "Gold")
