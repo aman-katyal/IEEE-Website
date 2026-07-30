@@ -24,7 +24,7 @@ export function JoinPage() {
   const paymentUrl = settings?.paymentUrl || "https://www.toocoolpurdue.com/TooCOOLPurdueWL/vECItemCatalogOrganizationItems/OrganizationItemsGallery.aspx";
   const duesDescription = settings?.duesDescription || "Purdue IEEE Student Branch requires payment of dues for membership. To pay, follow the link below and search for \"IEEE\" in the catalog search box. Payment gives access to:";
   const defaultOptions = [
-    { name: "Standard Membership", subtitle: "Local dues only", price: "$10" },
+    { name: "Standard Membership", subtitle: "Local dues — Purdue West Lafayette only", price: "$10" },
     { name: "Membership + Shirt", subtitle: "Support the branch & gear up", price: "$15" }
   ];
   const duesOptions = settings?.duesOptions || defaultOptions;
@@ -144,7 +144,10 @@ export function JoinPage() {
                           <span className="block text-[var(--text-primary)] font-semibold">{option.name}</span>
                           <span className={`text-xs text-[var(--text-muted)] ${isLight ? "opacity-100" : "opacity-80"}`}>{option.subtitle}</span>
                         </div>
-                        <span className="text-2xl font-bold text-[var(--electric-blue)]">{option.price}</span>
+                        <div>
+                          <span className="text-2xl font-bold text-[var(--electric-blue)]">{option.price}</span>
+                          <span className="text-xs text-[var(--text-muted)] ml-1">/ yr</span>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -165,7 +168,7 @@ export function JoinPage() {
                 </p>
                 
                 <p className={`mt-6 text-[13px] text-[var(--text-muted)] italic leading-relaxed ${isLight ? "opacity-100" : "opacity-80"}`}>
-                  * If you have an active International IEEE Membership, you are exempt from local dues! Contact an officer to complete registration.
+                  * Local dues apply only to Purdue West Lafayette campus students. If you have an active International IEEE Membership, you are exempt from local dues. Contact an officer to complete registration.
                 </p>
               </div>
             </div>
