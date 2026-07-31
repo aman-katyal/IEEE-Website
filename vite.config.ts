@@ -9,7 +9,7 @@ import { cloudflare } from "@cloudflare/vite-plugin";
 export default defineConfig({
   plugins: [// The React and Tailwind plugins are both required for Make, even if
   // Tailwind is not being actively used – do not remove them
-  react(), tailwindcss(), ViteImageOptimizer({
+  react({ oxc: {} }), tailwindcss(), ViteImageOptimizer({
     test: /\.(jpe?g|png|gif|tiff|webp|svg|avif)$/i,
     exclude: undefined,
     include: undefined,
@@ -68,8 +68,9 @@ export default defineConfig({
     },
   },
 
+  esbuild: false,
   build: {
-    rollupOptions: {
+    rolldownOptions: {
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
