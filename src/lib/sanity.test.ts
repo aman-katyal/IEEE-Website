@@ -31,7 +31,7 @@ describe('Sanity Client', () => {
     const expectedDataset = import.meta.env.VITE_SANITY_DATASET || 'production';
     expect(config.projectId).toBe(expectedProjectId);
     expect(config.dataset).toBe(expectedDataset);
-    expect(config.useCdn).toBe(false);
+    expect(config.useCdn).toBe(true);
   });
 
   it('should throw if VITE_SANITY_PROJECT_ID is missing', async () => {
