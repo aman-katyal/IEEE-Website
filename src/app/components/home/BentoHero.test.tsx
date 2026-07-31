@@ -103,7 +103,7 @@ describe('BentoHero', () => {
     // Check Telemetry
     expect(screen.getByText('EE 115')).toBeInTheDocument();
     expect(screen.getByText('1 Committees')).toBeInTheDocument();
-    expect(screen.getByText('$15 / semester')).toBeInTheDocument();
+    expect(screen.getByText('Join Now →')).toBeInTheDocument();
     expect(screen.getByText('1,200+ Members')).toBeInTheDocument();
     expect(screen.getByText('Purdue West Lafayette')).toBeInTheDocument();
 

@@ -24,7 +24,7 @@ export function JoinPage() {
   const paymentUrl = settings?.paymentUrl || "https://www.toocoolpurdue.com/TooCOOLPurdueWL/vECItemCatalogOrganizationItems/OrganizationItemsGallery.aspx";
   const duesDescription = settings?.duesDescription || "Purdue IEEE Student Branch requires payment of dues for membership. To pay, follow the link below and search for \"IEEE\" in the catalog search box. Payment gives access to:";
   const defaultOptions = [
-    { name: "Standard Membership", subtitle: "Local dues only", price: "$10" },
+    { name: "Standard Membership", subtitle: "Local dues — Purdue West Lafayette only", price: "$10" },
     { name: "Membership + Shirt", subtitle: "Support the branch & gear up", price: "$15" }
   ];
   const duesOptions = settings?.duesOptions || defaultOptions;
@@ -126,25 +126,28 @@ export function JoinPage() {
               </div>
 
               <div className={`glass-card p-[clamp(24px,5vw,40px)] ${isLight ? "bg-[rgba(0,90,135,0.05)]" : "bg-[rgba(0,98,155,0.05)]"}`}>
-                <h4 className={`font-[family-name:var(--font-headline)] text-lg font-semibold text-[var(--cyber-gold)] mb-5 uppercase tracking-[0.1em] ${isLight ? "opacity-100" : "opacity-90"}`}>
-                  2025-26 Options
+                <h4 className={`font-[family-name:var(--font-headline)] text-lg font-semibold text-[var(--cyber-gold)] mb-6 uppercase tracking-[0.1em] ${isLight ? "opacity-100" : "opacity-90"}`}>
+                  2025-26 Membership Options
                 </h4>
-                <div className="flex flex-col gap-6 mb-8">
+                <div className="flex flex-col gap-4 mb-8">
                   {duesOptions.map((option, idx) => (
-                    <div key={idx}>
-                      {idx > 0 && (
-                        <div className="flex items-center gap-3 my-3">
-                          <div className="flex-1 h-px bg-[var(--glass-border)]" />
-                          <span className="text-[11px] font-bold text-[var(--cyber-gold)] uppercase tracking-wider px-2 py-0.5 rounded bg-[rgba(235,211,169,0.12)]">OR</span>
-                          <div className="flex-1 h-px bg-[var(--glass-border)]" />
-                        </div>
-                      )}
-                      <div className="flex justify-between items-center border-b border-[var(--glass-border)] pb-4">
-                        <div>
-                          <span className="block text-[var(--text-primary)] font-semibold">{option.name}</span>
-                          <span className={`text-xs text-[var(--text-muted)] ${isLight ? "opacity-100" : "opacity-80"}`}>{option.subtitle}</span>
-                        </div>
-                        <span className="text-2xl font-bold text-[var(--electric-blue)]">{option.price}</span>
+                    <div
+                      key={idx}
+                      className={`p-5 rounded-lg border transition-all ${
+                        isLight
+                          ? "bg-[rgba(255,255,255,0.8)] border-[rgba(0,90,135,0.18)]"
+                          : "bg-[rgba(10,10,12,0.4)] border-[var(--glass-border)]"
+                      }`}
+                    >
+                      <div className="font-[family-name:var(--font-mono)] text-xs font-semibold text-[var(--electric-blue)] uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                        <span className="opacity-80" aria-hidden="true">//</span>
+                        <span>{option.name}</span>
+                      </div>
+                      <div className={`text-xs text-[var(--text-muted)] mb-3 ${isLight ? "opacity-90" : "opacity-80"}`}>
+                        {option.subtitle}
+                      </div>
+                      <div className="text-3xl font-bold text-[var(--text-primary)]">
+                        {option.price}
                       </div>
                     </div>
                   ))}
@@ -154,18 +157,18 @@ export function JoinPage() {
                   href={paymentUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn-gold w-full text-center flex items-center justify-center gap-2 no-underline"
+                  className="w-full text-center flex items-center justify-center gap-2 no-underline bg-[var(--electric-blue)] hover:bg-[#005085] text-white font-bold py-3.5 px-4 rounded-lg shadow-md transition-colors uppercase tracking-wider text-sm"
                 >
                   Pay via TooCool
-                  <ExternalLink size={14} />
+                  <ExternalLink size={16} />
                 </a>
                 
-                <p className={`mt-3 text-xs text-[var(--electric-blue)] text-center font-[family-name:var(--font-mono)] ${isLight ? "font-semibold" : "font-normal"}`}>
+                <p className="mt-4 text-xs text-[var(--text-secondary)] text-center font-[family-name:var(--font-body)]">
                   Search for "IEEE" in the search box on TooCool
                 </p>
                 
-                <p className={`mt-6 text-[13px] text-[var(--text-muted)] italic leading-relaxed ${isLight ? "opacity-100" : "opacity-80"}`}>
-                  * If you have an active International IEEE Membership, you are exempt from local dues! Contact an officer to complete registration.
+                <p className={`mt-6 text-[13px] text-[var(--text-muted)] leading-relaxed ${isLight ? "opacity-100" : "opacity-80"}`}>
+                  * Local dues apply only to Purdue West Lafayette campus students. If you have an active International IEEE Membership, you are exempt from local dues. Contact an officer to complete registration.
                 </p>
               </div>
             </div>
