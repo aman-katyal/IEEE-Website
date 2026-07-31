@@ -10,14 +10,26 @@ type CommonProps = {
   style?: React.CSSProperties;
 };
 
-type OmittedProps = "onDrag" | "onDragStart" | "onDragEnd" | "onAnimationStart" | "style";
+type OmittedProps =
+  | "onDrag"
+  | "onDragStart"
+  | "onDragEnd"
+  | "onAnimationStart"
+  | "style";
 
-type ButtonProps = CommonProps & Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, OmittedProps> & { to?: never };
-type LinkProps = CommonProps & Omit<import("react-router").LinkProps, OmittedProps> & { to: string };
+type ButtonProps = CommonProps &
+  Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, OmittedProps> & {
+    to?: never;
+  };
+type LinkProps = CommonProps &
+  Omit<import("react-router").LinkProps, OmittedProps> & { to: string };
 
 export type MagneticButtonProps = ButtonProps | LinkProps;
 
 const MotionLink = motion.create(Link);
+
+// Optimization: Moved static config outside component to prevent recreation on every render
+const springConfig = { stiffness: 150, damping: 15, mass: 0.1 };
 
 export function MagneticButton(props: MagneticButtonProps) {
   const {
@@ -30,13 +42,17 @@ export function MagneticButton(props: MagneticButtonProps) {
   } = props;
 
   const ref = useRef<HTMLButtonElement & HTMLAnchorElement>(null);
-  
-  const boundsRef = useRef<{ left: number; top: number; width: number; height: number } | null>(null);
+
+  const boundsRef = useRef<{
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+  } | null>(null);
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  const springConfig = { stiffness: 150, damping: 15, mass: 0.1 };
   const x = useSpring(mouseX, springConfig);
   const y = useSpring(mouseY, springConfig);
 
@@ -45,7 +61,9 @@ export function MagneticButton(props: MagneticButtonProps) {
     boundsRef.current = ref.current.getBoundingClientRect();
   };
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
+  const handleMouseMove = (
+    e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>,
+  ) => {
     if (!ref.current) return;
 
     // Fallback in case mouseEnter didn't fire or cache is missing
@@ -68,9 +86,12 @@ export function MagneticButton(props: MagneticButtonProps) {
     boundsRef.current = null;
   };
 
-  const variantClass = variant === "primary" ? "btn-primary hover-glow-blue" : 
-                       variant === "ghost" ? "btn-ghost hover-glow-gold" : 
-                       "btn-gold hover-glow-gold";
+  const variantClass =
+    variant === "primary"
+      ? "btn-primary hover-glow-blue"
+      : variant === "ghost"
+        ? "btn-ghost hover-glow-gold"
+        : "btn-gold hover-glow-gold";
 
   if (restProps.to) {
     const { to, ...linkProps } = restProps as typeof restProps & { to: string };
@@ -106,4 +127,3 @@ export function MagneticButton(props: MagneticButtonProps) {
     </motion.button>
   );
 }
-

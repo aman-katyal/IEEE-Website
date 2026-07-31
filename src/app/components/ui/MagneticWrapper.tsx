@@ -7,18 +7,25 @@ interface MagneticWrapperProps {
   className?: string;
 }
 
-export function MagneticWrapper({ 
-  children, 
+// Optimization: Moved static config outside component to prevent recreation on every render
+const springConfig = { stiffness: 150, damping: 15, mass: 0.1 };
+
+export function MagneticWrapper({
+  children,
   strength = 0.5,
-  className = "" 
+  className = "",
 }: MagneticWrapperProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const boundsRef = useRef<{ left: number; top: number; width: number; height: number } | null>(null);
+  const boundsRef = useRef<{
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+  } | null>(null);
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  const springConfig = { stiffness: 150, damping: 15, mass: 0.1 };
   const x = useSpring(mouseX, springConfig);
   const y = useSpring(mouseY, springConfig);
 
@@ -29,20 +36,20 @@ export function MagneticWrapper({
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!ref.current) return;
-    
+
     if (!boundsRef.current) {
       boundsRef.current = ref.current.getBoundingClientRect();
     }
 
     const { clientX, clientY } = e;
     const { left, top, width, height } = boundsRef.current;
-    
+
     const centerX = left + width / 2;
     const centerY = top + height / 2;
-    
+
     const distanceX = clientX - centerX;
     const distanceY = clientY - centerY;
-    
+
     mouseX.set(distanceX * strength);
     mouseY.set(distanceY * strength);
   };
