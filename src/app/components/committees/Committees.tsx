@@ -339,11 +339,19 @@ export function Committees() {
         }}
       >
         {allTags.length > 1 && (
-          <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
+          <div
+            className="flex flex-wrap items-center justify-center gap-2 mb-8"
+            role="group"
+            aria-label="Committee filters"
+          >
             {allTags.map((tag) => (
               <button
                 key={tag}
                 onClick={() => setSelectedTag(tag)}
+                aria-pressed={selectedTag === tag}
+                aria-label={
+                  tag === "All" ? "Show all committees" : `Filter by ${tag}`
+                }
                 className={`px-3 py-1.5 rounded-full text-xs font-[family-name:var(--font-mono)] font-semibold transition-all duration-200 cursor-pointer border ${
                   selectedTag === tag
                     ? "bg-[var(--electric-blue)] text-white border-[var(--electric-blue)]"
