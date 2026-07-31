@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { OfficersPage, getOrderedLeaders } from './OfficersPage';
+import { OfficersPage } from './OfficersPage';
+import { getOrderedLeaders } from './officersUtils';
 import '@testing-library/jest-dom';
 import { Leader } from '../../data/leadership';
 

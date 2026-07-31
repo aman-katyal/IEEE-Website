@@ -1,8 +1,9 @@
-import { createContext, useContext, type ReactNode } from "react";
+import { createContext, useContext } from "react";
 import { useHomePage } from "../hooks/useSanityData";
+export { HomePageProvider } from "./HomePageProvider";
 
 // ─── Type mirrors the return shape of useHomePage ─────────────────
-type HomePageContextValue = ReturnType<typeof useHomePage>;
+export type HomePageContextValue = ReturnType<typeof useHomePage>;
 
 const defaultValue: HomePageContextValue = {
   data: null,
@@ -11,22 +12,7 @@ const defaultValue: HomePageContextValue = {
   refetch: (() => Promise.resolve({} as any)) as any,
 };
 
-const HomePageContext = createContext<HomePageContextValue>(defaultValue);
-
-/**
- * Provide homePage Sanity data once at the page level.
- * All descendant components call useHomePageData() instead of
- * calling useHomePage() independently, eliminating redundant
- * hook subscriptions for the same GROQ query.
- */
-export function HomePageProvider({ children }: { children: ReactNode }) {
-  const value = useHomePage();
-  return (
-    <HomePageContext.Provider value={value}>
-      {children}
-    </HomePageContext.Provider>
-  );
-}
+export const HomePageContext = createContext<HomePageContextValue>(defaultValue);
 
 export function useHomePageData(): HomePageContextValue {
   return useContext(HomePageContext);

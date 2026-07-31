@@ -46,10 +46,16 @@ function useSanityQuery<T>(query: string, params?: Record<string, any>) {
         console.warn('[useSanityQuery] Sanity client not initialized. Query:', query);
         return null;
       }
-      return activeClient.fetch(query, params || {});
+      try {
+        return await activeClient.fetch(query, params || {});
+      } catch (err) {
+        console.warn('[useSanityQuery] Query failed (Sanity fetch error or CORS):', err);
+        return null;
+      }
     },
     staleTime: isPreview ? 0 : 1000 * 60 * 5, // 5 minutes stale time for production
     refetchOnWindowFocus: false, // Don't refetch on window focus
+    retry: 1,
   });
 
   return {
