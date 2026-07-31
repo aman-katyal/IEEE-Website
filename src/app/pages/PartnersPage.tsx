@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { motion } from "motion/react";
 import { useTheme } from "next-themes";
 import { ExternalLink, Mail, Award, Rocket, Shield, Cpu } from "lucide-react";
@@ -15,6 +15,19 @@ export function PartnersPage() {
   const { partners, loading: partnersLoading } = usePartners();
 
   const loading = settingsLoading || partnersLoading;
+
+  const goldPartners = useMemo(
+    () => partners.filter((p) => p.tier === "Gold"),
+    [partners],
+  );
+  const silverPartners = useMemo(
+    () => partners.filter((p) => p.tier === "Silver"),
+    [partners],
+  );
+  const bronzePartners = useMemo(
+    () => partners.filter((p) => p.tier === "Bronze"),
+    [partners],
+  );
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -232,7 +245,14 @@ export function PartnersPage() {
                 background: "rgba(235, 211, 169, 0.04)",
               }}
             >
-              <Award size={20} style={{ color: "var(--cyber-gold)", flexShrink: 0, marginTop: "2px" }} />
+              <Award
+                size={20}
+                style={{
+                  color: "var(--cyber-gold)",
+                  flexShrink: 0,
+                  marginTop: "2px",
+                }}
+              />
               <div>
                 <p
                   style={{
@@ -255,22 +275,26 @@ export function PartnersPage() {
                     margin: 0,
                   }}
                 >
-                  Gold Partner status is awarded by IEEE to student branches that demonstrate exceptional technical activity, community impact, and organizational excellence. Purdue IEEE has earned this recognition through consistent leadership in engineering education, record member engagement, and nationally recognized technical projects. Gold Partners receive premium placement at our recruiting events and direct access to our most accomplished members.
+                  Gold Partner status is awarded by IEEE to student branches
+                  that demonstrate exceptional technical activity, community
+                  impact, and organizational excellence. Purdue IEEE has earned
+                  this recognition through consistent leadership in engineering
+                  education, record member engagement, and nationally recognized
+                  technical projects. Gold Partners receive premium placement at
+                  our recruiting events and direct access to our most
+                  accomplished members.
                 </p>
               </div>
             </div>
 
-
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {partners
-                .filter((p) => p.tier === "Gold")
-                .map((p) => (
-                  <PartnerCard
-                    key={p.domain || p.name}
-                    partner={p}
-                    isLight={isLight}
-                  />
-                ))}
+              {goldPartners.map((p) => (
+                <PartnerCard
+                  key={p.domain || p.name}
+                  partner={p}
+                  isLight={isLight}
+                />
+              ))}
             </div>
           </div>
 
@@ -307,15 +331,13 @@ export function PartnersPage() {
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
-              {partners
-                .filter((p) => p.tier === "Silver")
-                .map((p) => (
-                  <PartnerCard
-                    key={p.domain || p.name}
-                    partner={p}
-                    isLight={isLight}
-                  />
-                ))}
+              {silverPartners.map((p) => (
+                <PartnerCard
+                  key={p.domain || p.name}
+                  partner={p}
+                  isLight={isLight}
+                />
+              ))}
             </div>
           </div>
 
@@ -352,15 +374,13 @@ export function PartnersPage() {
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {partners
-                .filter((p) => p.tier === "Bronze")
-                .map((p) => (
-                  <PartnerCard
-                    key={p.domain || p.name}
-                    partner={p}
-                    isLight={isLight}
-                  />
-                ))}
+              {bronzePartners.map((p) => (
+                <PartnerCard
+                  key={p.domain || p.name}
+                  partner={p}
+                  isLight={isLight}
+                />
+              ))}
             </div>
           </div>
         </div>
