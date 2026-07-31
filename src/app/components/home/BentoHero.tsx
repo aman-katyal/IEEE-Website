@@ -586,15 +586,16 @@ export function BentoHero() {
                     fontSize: "clamp(28px, 4.5vw, 46px)",
                     fontWeight: 700,
                     lineHeight: 1.15,
-                    color: "var(--text-primary)",
+                    color: "#ffffff",
                     letterSpacing: "-0.02em",
                     marginBottom: "16px",
+                    textShadow: "0 2px 10px rgba(0,0,0,0.5)",
                   }}
                 >
                   {heroTitle.includes("innovation") ? (
                     <>
                       {heroTitle.split("innovation")[0]}
-                      <span style={{ color: "var(--electric-blue)" }}>innovation</span>
+                      <span style={{ color: "#38BDF8" }}>innovation</span>
                       {heroTitle.split("innovation")[1]}
                     </>
                   ) : heroTitle}
@@ -606,10 +607,11 @@ export function BentoHero() {
                   style={{
                     fontFamily: "var(--font-mono)",
                     fontSize: "0.75rem",
-                    color: "var(--text-muted)",
+                    color: "rgba(255, 255, 255, 0.85)",
                     letterSpacing: "0.1em",
                     textTransform: "uppercase",
                     marginBottom: "32px",
+                    textShadow: "0 1px 4px rgba(0,0,0,0.5)",
                   }}
                 >
                   {heroSubtitle}
@@ -632,6 +634,10 @@ export function BentoHero() {
                     alignItems: "center",
                     gap: "8px",
                     textDecoration: "none",
+                    color: "#ffffff",
+                    borderColor: "rgba(255, 255, 255, 0.4)",
+                    background: "rgba(255, 255, 255, 0.12)",
+                    backdropFilter: "blur(4px)",
                   }}
                 >
                   Join Purdue IEEE
