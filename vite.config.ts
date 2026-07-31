@@ -66,6 +66,13 @@ export default defineConfig({
     fs: {
       strict: false,
     },
+    proxy: {
+      '/sanity-api': {
+        target: 'https://vq0v7yv4.apicdn.sanity.io',
+        changeOrigin: true,
+        rewrite: (p) => p.replace(/^\/sanity-api/, ''),
+      },
+    },
   },
 
   esbuild: false,

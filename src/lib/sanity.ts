@@ -12,11 +12,16 @@ const isStegaEnabled = typeof window !== 'undefined' &&
   (new URLSearchParams(window.location.search).has('stega') || 
    window.self !== window.top);
 
+const apiHost = typeof window !== 'undefined' && import.meta.env.DEV && !import.meta.env.VITEST
+  ? `${window.location.origin}/sanity-api`
+  : undefined;
+
 export const client = createClient({
   projectId,
   dataset,
   useCdn: true,
   apiVersion,
+  ...(apiHost ? { apiHost } : {}),
   stega: {
     enabled: false, // Keep disabled for production delivery to prevent string issues
     studioUrl,
