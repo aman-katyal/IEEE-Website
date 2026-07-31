@@ -574,7 +574,7 @@ export function BentoHero() {
                 overflow: "hidden",
                 backgroundImage: heroImage
                   ? isLight
-                    ? `linear-gradient(to right, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.8) 45%, rgba(255, 255, 255, 0.55) 65%, rgba(255, 255, 255, 0.95) 100%), linear-gradient(to bottom, rgba(255, 255, 255, 0.4) 0%, transparent 40%, transparent 60%, rgba(255, 255, 255, 0.9) 100%), url('${heroImage}')`
+                    ? `linear-gradient(to right, rgba(255, 255, 255, 0.78) 0%, rgba(255, 255, 255, 0.45) 40%, rgba(255, 255, 255, 0.18) 70%, rgba(255, 255, 255, 0.5) 100%), linear-gradient(to bottom, rgba(255, 255, 255, 0.2) 0%, transparent 40%, transparent 60%, rgba(255, 255, 255, 0.5) 100%), url('${heroImage}')`
                     : `linear-gradient(to right, rgba(10, 10, 12, 0.92) 0%, rgba(10, 10, 12, 0.55) 38%, rgba(10, 10, 12, 0.35) 58%, rgba(10, 10, 12, 0.88) 100%), linear-gradient(to bottom, rgba(10, 10, 12, 0.15) 0%, transparent 30%, transparent 65%, rgba(10, 10, 12, 0.75) 100%), url('${heroImage}')`
                   : undefined,
                 backgroundSize: "cover",
