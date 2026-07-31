@@ -573,7 +573,9 @@ export function BentoHero() {
                 position: "relative",
                 overflow: "hidden",
                 backgroundImage: heroImage
-                  ? `linear-gradient(to right, rgba(10, 10, 12, 0.92) 0%, rgba(10, 10, 12, 0.55) 38%, rgba(10, 10, 12, 0.35) 58%, rgba(10, 10, 12, 0.88) 100%), linear-gradient(to bottom, rgba(10, 10, 12, 0.15) 0%, transparent 30%, transparent 65%, rgba(10, 10, 12, 0.75) 100%), url('${heroImage}')`
+                  ? isLight
+                    ? `linear-gradient(to right, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.8) 45%, rgba(255, 255, 255, 0.55) 65%, rgba(255, 255, 255, 0.95) 100%), linear-gradient(to bottom, rgba(255, 255, 255, 0.4) 0%, transparent 40%, transparent 60%, rgba(255, 255, 255, 0.9) 100%), url('${heroImage}')`
+                    : `linear-gradient(to right, rgba(10, 10, 12, 0.92) 0%, rgba(10, 10, 12, 0.55) 38%, rgba(10, 10, 12, 0.35) 58%, rgba(10, 10, 12, 0.88) 100%), linear-gradient(to bottom, rgba(10, 10, 12, 0.15) 0%, transparent 30%, transparent 65%, rgba(10, 10, 12, 0.75) 100%), url('${heroImage}')`
                   : undefined,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
@@ -586,16 +588,16 @@ export function BentoHero() {
                     fontSize: "clamp(28px, 4.5vw, 46px)",
                     fontWeight: 700,
                     lineHeight: 1.15,
-                    color: "#ffffff",
+                    color: isLight ? "var(--text-primary)" : "#ffffff",
                     letterSpacing: "-0.02em",
                     marginBottom: "16px",
-                    textShadow: "0 2px 10px rgba(0,0,0,0.5)",
+                    textShadow: isLight ? "none" : "0 2px 10px rgba(0,0,0,0.5)",
                   }}
                 >
                   {heroTitle.includes("innovation") ? (
                     <>
                       {heroTitle.split("innovation")[0]}
-                      <span style={{ color: "#38BDF8" }}>innovation</span>
+                      <span style={{ color: isLight ? "var(--electric-blue)" : "#38BDF8" }}>innovation</span>
                       {heroTitle.split("innovation")[1]}
                     </>
                   ) : heroTitle}
@@ -607,11 +609,11 @@ export function BentoHero() {
                   style={{
                     fontFamily: "var(--font-mono)",
                     fontSize: "0.75rem",
-                    color: "rgba(255, 255, 255, 0.85)",
+                    color: isLight ? "var(--text-muted)" : "rgba(255, 255, 255, 0.85)",
                     letterSpacing: "0.1em",
                     textTransform: "uppercase",
                     marginBottom: "32px",
-                    textShadow: "0 1px 4px rgba(0,0,0,0.5)",
+                    textShadow: isLight ? "none" : "0 1px 4px rgba(0,0,0,0.5)",
                   }}
                 >
                   {heroSubtitle}
@@ -634,10 +636,6 @@ export function BentoHero() {
                     alignItems: "center",
                     gap: "8px",
                     textDecoration: "none",
-                    color: "#ffffff",
-                    borderColor: "rgba(255, 255, 255, 0.4)",
-                    background: "rgba(255, 255, 255, 0.12)",
-                    backdropFilter: "blur(4px)",
                   }}
                 >
                   Join Purdue IEEE
