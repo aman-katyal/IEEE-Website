@@ -12,8 +12,14 @@ const isStegaEnabled = typeof window !== 'undefined' &&
   (new URLSearchParams(window.location.search).has('stega') || 
    window.self !== window.top);
 
-const apiHost = typeof window !== 'undefined' && import.meta.env.DEV && !import.meta.env.VITEST
-  ? `${window.location.origin}/sanity-api`
+const devFetch = typeof window !== 'undefined' && import.meta.env.DEV && !import.meta.env.VITEST
+  ? (url: RequestInfo | URL, init?: RequestInit) => {
+      const urlString = url.toString();
+      const proxiedUrl = urlString
+        .replace('https://vq0v7yv4.apicdn.sanity.io', '/sanity-api')
+        .replace('https://vq0v7yv4.api.sanity.io', '/sanity-api');
+      return fetch(proxiedUrl, init);
+    }
   : undefined;
 
 export const client = createClient({
@@ -21,7 +27,7 @@ export const client = createClient({
   dataset,
   useCdn: true,
   apiVersion,
-  ...(apiHost ? { apiHost } : {}),
+  ...(devFetch ? { fetch: devFetch as any } : {}),
   stega: {
     enabled: false, // Keep disabled for production delivery to prevent string issues
     studioUrl,

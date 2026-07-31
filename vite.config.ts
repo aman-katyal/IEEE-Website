@@ -71,6 +71,12 @@ export default defineConfig({
         target: 'https://vq0v7yv4.apicdn.sanity.io',
         changeOrigin: true,
         rewrite: (p) => p.replace(/^\/sanity-api/, ''),
+        configure: (proxy) => {
+          proxy.on('proxyReq', (proxyReq) => {
+            proxyReq.removeHeader('origin');
+            proxyReq.removeHeader('referer');
+          });
+        },
       },
     },
   },
