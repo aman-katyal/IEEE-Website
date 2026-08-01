@@ -9,9 +9,45 @@ import * as Accordion from "@radix-ui/react-accordion";
 
 import { getOrderedLeaders } from "./officersUtils";
 
+// Define categories and their display names
+const CATEGORIES = [
+  {
+    id: "executive",
+    name: "Executive Committee",
+    description:
+      "The core leadership responsible for the branch's strategic direction and administration.",
+  },
+  {
+    id: "technical",
+    name: "Technical Committee Chairs",
+    description:
+      "Project leads who manage our engineering teams and technical projects.",
+  },
+  {
+    id: "operations",
+    name: "Operational Leads",
+    description:
+      "Officers managing infrastructure, corporate relations, and internal logistics.",
+  },
+  {
+    id: "member",
+    name: "Member Involvement",
+    description:
+      "Dedicated leads focused on student engagement, social events, and recruitment.",
+  },
+];
+
 export function OfficersPage() {
-  const { leaders, loading: leadersLoading, error: leadersError } = useLeaders();
-  const { config, loading: configLoading, error: configError } = useOfficersConfig();
+  const {
+    leaders,
+    loading: leadersLoading,
+    error: leadersError,
+  } = useLeaders();
+  const {
+    config,
+    loading: configLoading,
+    error: configError,
+  } = useOfficersConfig();
   const { theme } = useTheme();
   const isLight = theme === "light";
   const isMobile = useIsMobile();
@@ -21,25 +57,30 @@ export function OfficersPage() {
 
   if (error) {
     return (
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--boiler-black)", color: "var(--text-secondary)" }}>
+      <div
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "var(--boiler-black)",
+          color: "var(--text-secondary)",
+        }}
+      >
         Error loading officers: {error.message}
       </div>
     );
   }
 
-  // Define categories and their display names
-  const categories = [
-    { id: "executive", name: "Executive Committee", description: "The core leadership responsible for the branch's strategic direction and administration." },
-    { id: "technical", name: "Technical Committee Chairs", description: "Project leads who manage our engineering teams and technical projects." },
-    { id: "operations", name: "Operational Leads", description: "Officers managing infrastructure, corporate relations, and internal logistics." },
-    { id: "member", name: "Member Involvement", description: "Dedicated leads focused on student engagement, social events, and recruitment." },
-  ];
-
   // Define how many skeleton cards to show per section
   const skeletonCards = Array.from({ length: 4 });
 
   const renderOfficerCard = (officer: Leader) => (
-    <MagneticWrapper key={officer._id || officer.name + officer.role} strength={0.05} className="w-full h-full">
+    <MagneticWrapper
+      key={officer._id || officer.name + officer.role}
+      strength={0.05}
+      className="w-full h-full"
+    >
       <div
         className="glass-card hover-glow-gold hover-scale hover-border-gold"
         style={{
@@ -49,7 +90,7 @@ export function OfficersPage() {
           height: "100%",
           transition: "all 0.3s ease",
           position: "relative",
-          overflow: "hidden"
+          overflow: "hidden",
         }}
       >
         {/* Image Container with masked fade */}
@@ -65,54 +106,85 @@ export function OfficersPage() {
             justifyContent: "center",
             border: "1px solid var(--glass-border)",
             position: "relative",
-            overflow: "hidden"
+            overflow: "hidden",
           }}
         >
           {officer.image ? (
             <>
-              <img 
-                src={officer.image} 
-                alt={officer.name} 
-                style={{ 
-                  width: "100%", 
-                  height: "100%", 
+              <img
+                src={officer.image}
+                alt={officer.name}
+                style={{
+                  width: "100%",
+                  height: "100%",
                   objectFit: "cover",
-                  transition: "transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)"
+                  transition: "transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
-                onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.transform = "scale(1.05)")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.transform = "scale(1)")
+                }
               />
-              
+
               {/* Bottom Gradient Fade - Softer in Light Mode */}
-              <div 
-                style={{ 
-                  position: "absolute", 
-                  inset: 0, 
-                  background: isLight 
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background: isLight
                     ? "linear-gradient(to bottom, transparent 80%, rgba(248, 250, 252, 0.5) 100%)"
                     : "linear-gradient(to bottom, transparent 60%, rgba(10, 10, 12, 0.9) 100%)",
-                  pointerEvents: "none"
-                }} 
+                  pointerEvents: "none",
+                }}
               />
 
               {/* Subtle Inner Shadow - Much lighter in Light Mode */}
-              <div 
-                style={{ 
-                  position: "absolute", 
-                  inset: 0, 
-                  boxShadow: isLight 
-                    ? "inset 0 0 20px rgba(0,0,0,0.03)" 
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  boxShadow: isLight
+                    ? "inset 0 0 20px rgba(0,0,0,0.03)"
                     : "inset 0 0 40px rgba(0,0,0,0.2)",
-                  pointerEvents: "none"
-                }} 
+                  pointerEvents: "none",
+                }}
               />
 
               {/* Stylized Tech Accents - More prominent */}
-              <div style={{ position: "absolute", top: "10px", left: "10px", width: "16px", height: "16px", borderTop: "2px solid var(--electric-blue)", borderLeft: "2px solid var(--electric-blue)", opacity: 0.8, zIndex: 2 }} />
-              <div style={{ position: "absolute", bottom: "10px", right: "10px", width: "16px", height: "16px", borderBottom: "2px solid var(--cyber-gold)", borderRight: "2px solid var(--cyber-gold)", opacity: 0.8, zIndex: 2 }} />
+              <div
+                style={{
+                  position: "absolute",
+                  top: "10px",
+                  left: "10px",
+                  width: "16px",
+                  height: "16px",
+                  borderTop: "2px solid var(--electric-blue)",
+                  borderLeft: "2px solid var(--electric-blue)",
+                  opacity: 0.8,
+                  zIndex: 2,
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: "10px",
+                  right: "10px",
+                  width: "16px",
+                  height: "16px",
+                  borderBottom: "2px solid var(--cyber-gold)",
+                  borderRight: "2px solid var(--cyber-gold)",
+                  opacity: 0.8,
+                  zIndex: 2,
+                }}
+              />
             </>
           ) : (
-            <User size={48} style={{ color: "var(--text-muted)", opacity: 0.3 }} />
+            <User
+              size={48}
+              style={{ color: "var(--text-muted)", opacity: 0.3 }}
+            />
           )}
         </div>
 
@@ -146,25 +218,75 @@ export function OfficersPage() {
           </div>
         </div>
 
-        <div style={{ flexGrow: 1, display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div
+          style={{
+            flexGrow: 1,
+            display: "flex",
+            flexDirection: "column",
+            gap: "16px",
+          }}
+        >
           {officer.committees && (
-            <div style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}>
-              <Users size={15} style={{ color: "var(--cyber-gold)", marginTop: "3px", flexShrink: 0 }} />
+            <div
+              style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}
+            >
+              <Users
+                size={15}
+                style={{
+                  color: "var(--cyber-gold)",
+                  marginTop: "3px",
+                  flexShrink: 0,
+                }}
+              />
               <div>
-                <p style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--text-muted)", marginBottom: "2px", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                <p
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: "10px",
+                    color: "var(--text-muted)",
+                    marginBottom: "2px",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.1em",
+                  }}
+                >
                   Committees
                 </p>
-                <p style={{ fontFamily: "var(--font-body)", fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.5 }}>
+                <p
+                  style={{
+                    fontFamily: "var(--font-body)",
+                    fontSize: "13px",
+                    color: "var(--text-secondary)",
+                    lineHeight: 1.5,
+                  }}
+                >
                   {officer.committees}
                 </p>
               </div>
             </div>
           )}
 
-          <div style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}>
-            <Mail size={15} style={{ color: "var(--electric-blue)", marginTop: "3px", flexShrink: 0 }} />
+          <div
+            style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}
+          >
+            <Mail
+              size={15}
+              style={{
+                color: "var(--electric-blue)",
+                marginTop: "3px",
+                flexShrink: 0,
+              }}
+            />
             <div>
-              <p style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--text-muted)", marginBottom: "2px", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+              <p
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "10px",
+                  color: "var(--text-muted)",
+                  marginBottom: "2px",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.1em",
+                }}
+              >
                 Contact
               </p>
               <a
@@ -176,8 +298,12 @@ export function OfficersPage() {
                   textDecoration: "none",
                   transition: "color 0.2s ease",
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "var(--electric-blue)")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-secondary)")}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.color = "var(--electric-blue)")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.color = "var(--text-secondary)")
+                }
               >
                 {officer.email}
               </a>
@@ -215,32 +341,105 @@ export function OfficersPage() {
       >
         {/* Header */}
         <div style={{ marginBottom: "72px", textAlign: "center" }}>
-          <p className="section-eyebrow" style={{ marginBottom: "16px" }}>// Leadership Team</p>
-          <h2 style={{ fontFamily: "var(--font-headline)", fontSize: "clamp(32px, 5vw, 56px)", fontWeight: 700, color: "var(--text-primary)", lineHeight: 1.1, letterSpacing: "-0.03em", marginBottom: "24px" }}>
-            Meet Our <span style={{ color: "var(--electric-blue)" }}>Officers</span>
+          <p className="section-eyebrow" style={{ marginBottom: "16px" }}>
+            // Leadership Team
+          </p>
+          <h2
+            style={{
+              fontFamily: "var(--font-headline)",
+              fontSize: "clamp(32px, 5vw, 56px)",
+              fontWeight: 700,
+              color: "var(--text-primary)",
+              lineHeight: 1.1,
+              letterSpacing: "-0.03em",
+              marginBottom: "24px",
+            }}
+          >
+            Meet Our{" "}
+            <span style={{ color: "var(--electric-blue)" }}>Officers</span>
           </h2>
-          <p style={{ fontFamily: "var(--font-body)", fontSize: "18px", color: "var(--text-secondary)", lineHeight: 1.6, maxWidth: "700px", margin: "0 auto" }}>
-            The dedicated students who keep Purdue IEEE running smoothly across all technical and administrative operations.
+          <p
+            style={{
+              fontFamily: "var(--font-body)",
+              fontSize: "18px",
+              color: "var(--text-secondary)",
+              lineHeight: 1.6,
+              maxWidth: "700px",
+              margin: "0 auto",
+            }}
+          >
+            The dedicated students who keep Purdue IEEE running smoothly across
+            all technical and administrative operations.
           </p>
         </div>
 
-        <Skeleton name="officers-list" loading={loading} color={isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}>
+        <Skeleton
+          name="officers-list"
+          loading={loading}
+          color={isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}
+        >
           {isMobile ? (
-            <Accordion.Root type="multiple" className="AccordionRoot" defaultValue={["executive"]}>
-              {categories.map((cat) => {
-                const sectionLeaders = getOrderedLeaders(leaders, config, cat.id);
+            <Accordion.Root
+              type="multiple"
+              className="AccordionRoot"
+              defaultValue={["executive"]}
+            >
+              {CATEGORIES.map((cat) => {
+                const sectionLeaders = getOrderedLeaders(
+                  leaders,
+                  config,
+                  cat.id,
+                );
                 if (sectionLeaders.length === 0) return null;
 
                 return (
-                  <Accordion.Item key={cat.id} value={cat.id} className="AccordionItem" style={{ borderBottom: "1px solid var(--glass-border)", marginBottom: "12px" }}>
+                  <Accordion.Item
+                    key={cat.id}
+                    value={cat.id}
+                    className="AccordionItem"
+                    style={{
+                      borderBottom: "1px solid var(--glass-border)",
+                      marginBottom: "12px",
+                    }}
+                  >
                     <Accordion.Header className="AccordionHeader">
-                      <Accordion.Trigger className="AccordionTrigger" style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 0", background: "none", border: "none", color: "var(--text-primary)", cursor: "pointer" }}>
-                        <span style={{ fontFamily: "var(--font-headline)", fontSize: "20px", fontWeight: 600 }}>{cat.name}</span>
+                      <Accordion.Trigger
+                        className="AccordionTrigger"
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          padding: "20px 0",
+                          background: "none",
+                          border: "none",
+                          color: "var(--text-primary)",
+                          cursor: "pointer",
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontFamily: "var(--font-headline)",
+                            fontSize: "20px",
+                            fontWeight: 600,
+                          }}
+                        >
+                          {cat.name}
+                        </span>
                         <ChevronDown className="AccordionChevron" aria-hidden />
                       </Accordion.Trigger>
                     </Accordion.Header>
                     <Accordion.Content className="AccordionContent">
-                      <p style={{ fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--text-muted)", marginBottom: "24px" }}>{cat.description}</p>
+                      <p
+                        style={{
+                          fontFamily: "var(--font-body)",
+                          fontSize: "14px",
+                          color: "var(--text-muted)",
+                          marginBottom: "24px",
+                        }}
+                      >
+                        {cat.description}
+                      </p>
                       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-8">
                         {sectionLeaders.map(renderOfficerCard)}
                       </div>
@@ -250,18 +449,47 @@ export function OfficersPage() {
               })}
             </Accordion.Root>
           ) : (
-            categories.map((cat) => {
+            CATEGORIES.map((cat) => {
               const sectionLeaders = getOrderedLeaders(leaders, config, cat.id);
               if (sectionLeaders.length === 0) return null;
 
               return (
                 <div key={cat.id} style={{ marginBottom: "80px" }}>
                   <div style={{ marginBottom: "32px" }}>
-                    <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "28px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "8px", display: "flex", alignItems: "center", gap: "12px" }}>
-                      <span style={{ color: cat.id === "executive" ? "var(--cyber-gold)" : "var(--electric-blue)" }}>//</span>
+                    <h3
+                      style={{
+                        fontFamily: "var(--font-headline)",
+                        fontSize: "28px",
+                        fontWeight: 600,
+                        color: "var(--text-primary)",
+                        marginBottom: "8px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "12px",
+                      }}
+                    >
+                      <span
+                        style={{
+                          color:
+                            cat.id === "executive"
+                              ? "var(--cyber-gold)"
+                              : "var(--electric-blue)",
+                        }}
+                      >
+                        //
+                      </span>
                       {cat.name}
                     </h3>
-                    <p style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--text-muted)", maxWidth: "800px" }}>{cat.description}</p>
+                    <p
+                      style={{
+                        fontFamily: "var(--font-body)",
+                        fontSize: "15px",
+                        color: "var(--text-muted)",
+                        maxWidth: "800px",
+                      }}
+                    >
+                      {cat.description}
+                    </p>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {sectionLeaders.map(renderOfficerCard)}

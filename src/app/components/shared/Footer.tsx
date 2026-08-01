@@ -1,4 +1,10 @@
-import { Github, Linkedin, Instagram, Twitter, ExternalLink } from "lucide-react";
+import {
+  Github,
+  Linkedin,
+  Instagram,
+  Twitter,
+  ExternalLink,
+} from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { useTheme } from "next-themes";
 import { useCommittees, useSiteSettings } from "../../../hooks/useSanityData";
@@ -15,20 +21,51 @@ const footerLinks = {
   Resources: [
     { label: "IEEE.org", href: "https://ieee.org", external: true },
     { label: "Event Calendar", href: "/calendar" },
-    { label: "Member Benefits", href: "https://www.ieee.org/membership/benefits/index.html", external: true },
+    {
+      label: "Member Benefits",
+      href: "https://www.ieee.org/membership/benefits/index.html",
+      external: true,
+    },
   ],
   Connect: [
     { label: "Join Purdue IEEE", href: "/join" },
     { label: "Contact Us", href: "mailto:ieee@purdue.edu", external: true },
-    { label: "Community Discord", href: "https://discord.gg/sPPQequ9ws", external: true },
+    {
+      label: "Community Discord",
+      href: "https://discord.gg/sPPQequ9ws",
+      external: true,
+    },
   ],
 };
 
 const socials = [
   { Icon: Github, label: "GitHub", href: "https://github.com/PurdueIEEE" },
-  { Icon: Linkedin, label: "LinkedIn", href: "https://linkedin.com/company/purdue-ieee" },
-  { Icon: Instagram, label: "Instagram", href: "https://instagram.com/purdueieee" },
+  {
+    Icon: Linkedin,
+    label: "LinkedIn",
+    href: "https://linkedin.com/company/purdue-ieee",
+  },
+  {
+    Icon: Instagram,
+    label: "Instagram",
+    href: "https://instagram.com/purdueieee",
+  },
   { Icon: Twitter, label: "Twitter", href: "https://twitter.com/purdueieee" },
+];
+
+const PLATFORM_ICONS: Record<string, any> = {
+  github: Github,
+  linkedin: Linkedin,
+  instagram: Instagram,
+  twitter: Twitter,
+  x: Twitter,
+};
+
+const FALLBACK_SOCIALS = [
+  { platform: "github", url: "https://github.com/PurdueIEEE" },
+  { platform: "linkedin", url: "https://linkedin.com/company/purdue-ieee" },
+  { platform: "instagram", url: "https://instagram.com/purdueieee" },
+  { platform: "twitter", url: "https://twitter.com/purdueieee" },
 ];
 
 export function Footer() {
@@ -52,7 +89,11 @@ export function Footer() {
     Resources: [
       { label: "IEEE.org", href: "https://ieee.org", external: true },
       { label: "Event Calendar", href: "/calendar" },
-      { label: "Member Benefits", href: "https://www.ieee.org/membership/benefits/index.html", external: true },
+      {
+        label: "Member Benefits",
+        href: "https://www.ieee.org/membership/benefits/index.html",
+        external: true,
+      },
     ],
     Connect: [
       { label: "Join Purdue IEEE", href: "/join" },
@@ -61,24 +102,10 @@ export function Footer() {
     ],
   };
 
-  const platformIcons: Record<string, any> = {
-    github: Github,
-    linkedin: Linkedin,
-    instagram: Instagram,
-    twitter: Twitter,
-    x: Twitter,
-  };
-
-  const fallbackSocials = [
-    { platform: "github", url: "https://github.com/PurdueIEEE" },
-    { platform: "linkedin", url: "https://linkedin.com/company/purdue-ieee" },
-    { platform: "instagram", url: "https://instagram.com/purdueieee" },
-    { platform: "twitter", url: "https://twitter.com/purdueieee" },
-  ];
-
-  const socials = (settings?.socialLinks && settings.socialLinks.length > 0) 
-    ? settings.socialLinks 
-    : fallbackSocials;
+  const currentSocials =
+    settings?.socialLinks && settings.socialLinks.length > 0
+      ? settings.socialLinks
+      : FALLBACK_SOCIALS;
 
   const footerCommitteeLinks = committees.map((c) => ({
     label: c.shortName,
@@ -136,8 +163,10 @@ export function Footer() {
               }}
             >
               <IeeePurdueLogo style={{ height: "48px", width: "auto" }} />
-              
-              <div style={{ display: "flex", flexDirection: "column", gap: "0" }}>
+
+              <div
+                style={{ display: "flex", flexDirection: "column", gap: "0" }}
+              >
                 <span
                   style={{
                     fontFamily: "var(--font-headline)",
@@ -146,7 +175,7 @@ export function Footer() {
                     color: "var(--text-primary)",
                     letterSpacing: "0.15em",
                     textTransform: "uppercase",
-                    lineHeight: "1"
+                    lineHeight: "1",
                   }}
                 >
                   PURDUE
@@ -159,7 +188,7 @@ export function Footer() {
                     color: "var(--electric-blue)",
                     letterSpacing: "0.18em",
                     textTransform: "uppercase",
-                    lineHeight: "1"
+                    lineHeight: "1",
                   }}
                 >
                   IEEE
@@ -174,8 +203,9 @@ export function Footer() {
                 lineHeight: 1.7,
               }}
             >
-              Purdue University's premier IEEE student branch. Fostering technological
-              innovation and excellence for the benefit of humanity since 1903.
+              Purdue University's premier IEEE student branch. Fostering
+              technological innovation and excellence for the benefit of
+              humanity since 1903.
             </p>
           </div>
 
@@ -195,14 +225,15 @@ export function Footer() {
                 letterSpacing: "0.15em",
                 color: "var(--text-muted)",
                 textTransform: "uppercase",
-                opacity: isLight ? 1 : 0.8
+                opacity: isLight ? 1 : 0.8,
               }}
             >
               Find us online
             </div>
             <div style={{ display: "flex", gap: "8px" }}>
-              {socials.map((social: any) => {
-                const Icon = platformIcons[social.platform.toLowerCase()] || ExternalLink;
+              {currentSocials.map((social: any) => {
+                const Icon =
+                  PLATFORM_ICONS[social.platform.toLowerCase()] || ExternalLink;
                 return (
                   <MagneticWrapper key={social.platform} strength={0.15}>
                     <a
@@ -269,10 +300,12 @@ export function Footer() {
                 transition: "color 0.2s ease",
               }}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-primary)";
+                (e.currentTarget as HTMLAnchorElement).style.color =
+                  "var(--text-primary)";
               }}
               onMouseLeave={(e) => {
-                (e.currentTarget as HTMLAnchorElement).style.color = "var(--electric-blue)";
+                (e.currentTarget as HTMLAnchorElement).style.color =
+                  "var(--electric-blue)";
               }}
             >
               Committees
@@ -296,10 +329,12 @@ export function Footer() {
                     transition: "color 0.2s ease",
                   }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-primary)";
+                    (e.currentTarget as HTMLAnchorElement).style.color =
+                      "var(--text-primary)";
                   }}
                   onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-secondary)";
+                    (e.currentTarget as HTMLAnchorElement).style.color =
+                      "var(--text-secondary)";
                   }}
                 >
                   {link.label}
@@ -335,7 +370,9 @@ export function Footer() {
                     key={link.label}
                     href={(link as any).external ? link.href : link.href}
                     target={(link as any).external ? "_blank" : undefined}
-                    rel={(link as any).external ? "noopener noreferrer" : undefined}
+                    rel={
+                      (link as any).external ? "noopener noreferrer" : undefined
+                    }
                     onClick={(e) => {
                       if (!(link as any).external) {
                         e.preventDefault();
@@ -353,16 +390,16 @@ export function Footer() {
                       transition: "color 0.2s ease",
                     }}
                     onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-primary)";
+                      (e.currentTarget as HTMLAnchorElement).style.color =
+                        "var(--text-primary)";
                     }}
                     onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-secondary)";
+                      (e.currentTarget as HTMLAnchorElement).style.color =
+                        "var(--text-secondary)";
                     }}
                   >
                     {link.label}
-                    {(link as any).external && (
-                      <ExternalLink size={10} />
-                    )}
+                    {(link as any).external && <ExternalLink size={10} />}
                   </a>
                 ))}
               </div>
@@ -387,10 +424,11 @@ export function Footer() {
               fontSize: "0.6rem",
               letterSpacing: "0.1em",
               color: "var(--text-muted)",
-              opacity: isLight ? 1 : 0.8
+              opacity: isLight ? 1 : 0.8,
             }}
           >
-            © {new Date().getFullYear()} Purdue IEEE Student Branch · All rights reserved
+            © {new Date().getFullYear()} Purdue IEEE Student Branch · All rights
+            reserved
           </span>
 
           <div style={{ display: "flex", gap: "24px", alignItems: "center" }}>
@@ -407,13 +445,15 @@ export function Footer() {
                   color: "var(--text-muted)",
                   textDecoration: "none",
                   transition: "color 0.2s ease",
-                  opacity: isLight ? 1 : 0.8
+                  opacity: isLight ? 1 : 0.8,
                 }}
                 onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-secondary)";
+                  (e.currentTarget as HTMLAnchorElement).style.color =
+                    "var(--text-secondary)";
                 }}
                 onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-muted)";
+                  (e.currentTarget as HTMLAnchorElement).style.color =
+                    "var(--text-muted)";
                 }}
               >
                 {item}
@@ -428,7 +468,7 @@ export function Footer() {
               fontSize: "0.58rem",
               letterSpacing: "0.12em",
               color: "var(--text-muted)",
-              opacity: isLight ? 0.8 : 0.6
+              opacity: isLight ? 0.8 : 0.6,
             }}
           >
             v2.6.0 · SPRING_2026
