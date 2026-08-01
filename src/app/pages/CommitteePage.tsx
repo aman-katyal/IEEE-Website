@@ -30,7 +30,13 @@ import type {
 } from "../../data/committees/types";
 import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "../components/ui/dialog";
 
 /**
  * Custom Discord Icon Component
@@ -75,7 +81,11 @@ export function CommitteePage() {
   const { committee, loading, error } = useCommittee(id ?? "");
   const { theme } = useTheme();
   const isLight = theme === "light";
-  const [selectedProject, setSelectedProject] = useState<{ name: string; description?: string; image?: string } | null>(null);
+  const [selectedProject, setSelectedProject] = useState<{
+    name: string;
+    description?: string;
+    image?: string;
+  } | null>(null);
 
   const {
     textSections,
@@ -192,7 +202,9 @@ export function CommitteePage() {
       return (
         <button
           onClick={() =>
-            isExternal ? window.open(url) : navigate(url || "/join")
+            isExternal
+              ? window.open(url, "_blank", "noopener,noreferrer")
+              : navigate(url || "/join")
           }
           className="btn-primary"
           style={{
@@ -380,9 +392,32 @@ export function CommitteePage() {
                       />
                     </div>
                   )}
-                  <div style={{ padding: "24px", display: "flex", flexDirection: "column", flex: 1 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px", flexWrap: "wrap", gap: "6px" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                  <div
+                    style={{
+                      padding: "24px",
+                      display: "flex",
+                      flexDirection: "column",
+                      flex: 1,
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        marginBottom: "10px",
+                        flexWrap: "wrap",
+                        gap: "6px",
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          flexWrap: "wrap",
+                        }}
+                      >
                         <h3
                           style={{
                             fontFamily: "var(--font-headline)",
@@ -394,12 +429,33 @@ export function CommitteePage() {
                           {p.name}
                         </h3>
                         {i === 0 && (
-                          <span style={{ fontSize: "10px", fontWeight: 700, fontFamily: "var(--font-mono)", color: "var(--cyber-gold)", background: "rgba(235, 211, 169, 0.12)", border: "1px solid rgba(235, 211, 169, 0.3)", padding: "2px 8px", borderRadius: "9999px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                          <span
+                            style={{
+                              fontSize: "10px",
+                              fontWeight: 700,
+                              fontFamily: "var(--font-mono)",
+                              color: "var(--cyber-gold)",
+                              background: "rgba(235, 211, 169, 0.12)",
+                              border: "1px solid rgba(235, 211, 169, 0.3)",
+                              padding: "2px 8px",
+                              borderRadius: "9999px",
+                              textTransform: "uppercase",
+                              letterSpacing: "0.08em",
+                            }}
+                          >
                             ★ Flagship
                           </span>
                         )}
                       </div>
-                      <span style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--electric-blue)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                      <span
+                        style={{
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "11px",
+                          color: "var(--electric-blue)",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.05em",
+                        }}
+                      >
                         View Details →
                       </span>
                     </div>
@@ -427,7 +483,14 @@ export function CommitteePage() {
             <p className="section-eyebrow" style={{ marginBottom: "8px" }}>
               // {section.title || "Contact"}
             </p>
-            <p style={{ fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--text-secondary)", marginBottom: "20px" }}>
+            <p
+              style={{
+                fontFamily: "var(--font-body)",
+                fontSize: "14px",
+                color: "var(--text-secondary)",
+                marginBottom: "20px",
+              }}
+            >
               Have questions? Get in touch with our committee leads:
             </p>
             <div
@@ -714,8 +777,12 @@ export function CommitteePage() {
                     gap: "6px",
                     opacity: isLight ? 1 : 0.75,
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.color = "var(--electric-blue)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-secondary)")}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.color = "var(--electric-blue)")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.color = "var(--text-secondary)")
+                  }
                 >
                   <ArrowLeft size={14} /> Home
                 </Link>
@@ -752,7 +819,15 @@ export function CommitteePage() {
                   lineHeight: "28px",
                 }}
               >
-                <div style={{ position: "relative", display: "inline-flex", alignItems: "center", justifyContent: "center", marginRight: "10px" }}>
+                <div
+                  style={{
+                    position: "relative",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginRight: "10px",
+                  }}
+                >
                   <span
                     className="animate-ping"
                     style={{
@@ -805,7 +880,8 @@ export function CommitteePage() {
                 fontWeight: isLight ? 600 : 400,
               }}
             >
-              {committee?.tagline} {committee?.foundedYear ? `• Est. ${committee.foundedYear}` : ""}
+              {committee?.tagline}{" "}
+              {committee?.foundedYear ? `• Est. ${committee.foundedYear}` : ""}
             </p>
           </div>
         </section>
@@ -1097,7 +1173,10 @@ export function CommitteePage() {
           </div>
         </div>
       </section>
-      <Dialog open={!!selectedProject} onOpenChange={(open) => !open && setSelectedProject(null)}>
+      <Dialog
+        open={!!selectedProject}
+        onOpenChange={(open) => !open && setSelectedProject(null)}
+      >
         <DialogContent className="max-w-2xl bg-[var(--boiler-black)] border-[var(--glass-border)] text-[var(--text-primary)]">
           {selectedProject && (
             <>
@@ -1108,7 +1187,11 @@ export function CommitteePage() {
               </DialogHeader>
               {selectedProject.image && (
                 <div className="w-full h-64 rounded-lg overflow-hidden my-3 border border-[var(--glass-border)]">
-                  <img src={selectedProject.image} alt={selectedProject.name} className="w-full h-full object-cover" />
+                  <img
+                    src={selectedProject.image}
+                    alt={selectedProject.name}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               )}
               <DialogDescription className="font-[family-name:var(--font-body)] text-base text-[var(--text-secondary)] leading-relaxed whitespace-pre-wrap">
