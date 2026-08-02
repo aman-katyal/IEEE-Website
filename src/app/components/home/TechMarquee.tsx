@@ -4,30 +4,31 @@ import { ArrowRight } from "lucide-react";
 import { useTheme } from "next-themes";
 import { usePartners } from "../../../hooks/useSanityData";
 
+// Optimization: Hoisted static array out of component to prevent re-allocation on every render
+const STATIC_PARTNERS: { name: string; domain: string; logoUrl?: string }[] = [
+  { name: "Texas Instruments", domain: "ti.com" },
+  { name: "Qualcomm", domain: "qualcomm.com" },
+  { name: "SpaceX", domain: "spacex.com" },
+  { name: "Intel", domain: "intel.com" },
+  { name: "NVIDIA", domain: "nvidia.com" },
+  { name: "Lockheed Martin", domain: "lockheedmartin.com" },
+  { name: "Raytheon Technologies", domain: "rtx.com" },
+  { name: "Northrop Grumman", domain: "northropgrumman.com" },
+  { name: "Boeing", domain: "boeing.com" },
+  { name: "L3Harris", domain: "l3harris.com" },
+  { name: "AMD", domain: "amd.com" },
+  { name: "Apple", domain: "apple.com" },
+  { name: "Cisco", domain: "cisco.com" },
+  { name: "Honeywell", domain: "honeywell.com" },
+  { name: "Caterpillar", domain: "caterpillar.com" },
+];
+
 export function TechMarquee() {
   const { theme } = useTheme();
   const { partners: sanityPartners } = usePartners();
   const isLight = theme === "light";
 
-  const staticPartners: { name: string; domain: string; logoUrl?: string }[] = [
-    { name: "Texas Instruments", domain: "ti.com" },
-    { name: "Qualcomm", domain: "qualcomm.com" },
-    { name: "SpaceX", domain: "spacex.com" },
-    { name: "Intel", domain: "intel.com" },
-    { name: "NVIDIA", domain: "nvidia.com" },
-    { name: "Lockheed Martin", domain: "lockheedmartin.com" },
-    { name: "Raytheon Technologies", domain: "rtx.com" },
-    { name: "Northrop Grumman", domain: "northropgrumman.com" },
-    { name: "Boeing", domain: "boeing.com" },
-    { name: "L3Harris", domain: "l3harris.com" },
-    { name: "AMD", domain: "amd.com" },
-    { name: "Apple", domain: "apple.com" },
-    { name: "Cisco", domain: "cisco.com" },
-    { name: "Honeywell", domain: "honeywell.com" },
-    { name: "Caterpillar", domain: "caterpillar.com" },
-  ];
-
-  const partners = sanityPartners.length > 0 ? sanityPartners : staticPartners;
+  const partners = sanityPartners.length > 0 ? sanityPartners : STATIC_PARTNERS;
 
   return (
     <div
@@ -38,7 +39,7 @@ export function TechMarquee() {
         padding: "32px 0",
         overflow: "hidden",
         position: "relative",
-        transition: "background 0.3s ease"
+        transition: "background 0.3s ease",
       }}
     >
       {/* Fade edges */}
@@ -49,7 +50,7 @@ export function TechMarquee() {
           top: 0,
           bottom: 0,
           width: "150px",
-          background: isLight 
+          background: isLight
             ? "linear-gradient(to right, #F8FAFC, transparent)"
             : "linear-gradient(to right, var(--boiler-black), transparent)",
           zIndex: 5,
@@ -62,7 +63,7 @@ export function TechMarquee() {
           top: 0,
           bottom: 0,
           width: "150px",
-          background: isLight 
+          background: isLight
             ? "linear-gradient(to left, #F8FAFC, transparent)"
             : "linear-gradient(to left, var(--boiler-black), transparent)",
           zIndex: 5,
@@ -82,7 +83,7 @@ export function TechMarquee() {
             }}
           >
             <MarqueeItem partner={p} isLight={isLight} />
-            
+
             <div
               style={{
                 width: "4px",
@@ -90,14 +91,25 @@ export function TechMarquee() {
                 borderRadius: "50%",
                 background: "var(--electric-blue)",
                 flexShrink: 0,
-                opacity: 0.4
+                opacity: 0.4,
               }}
             />
           </div>
         ))}
       </div>
 
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "16px", flexWrap: "wrap", marginTop: "24px", position: "relative", zIndex: 10 }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: "16px",
+          flexWrap: "wrap",
+          marginTop: "24px",
+          position: "relative",
+          zIndex: 10,
+        }}
+      >
         <Link
           to="/partners"
           className="btn-secondary"
@@ -142,7 +154,7 @@ export function TechMarquee() {
 function MarqueeItem({ partner, isLight }: { partner: any; isLight: boolean }) {
   const [logoError, setLogoError] = useState(false);
   const [useFavicon, setUseFavicon] = useState(false);
-  
+
   // Resolve source: Sanity URL -> unavatar clearbit proxy (bypasses adblockers) -> Google S2 favicon
   let logoSrc = partner.logoUrl;
   if (!logoSrc && partner.domain) {
@@ -164,21 +176,28 @@ function MarqueeItem({ partner, isLight }: { partner: any; isLight: boolean }) {
   const showLogo = logoSrc && !logoError;
 
   return (
-    <div style={{ position: "relative", height: "32px", display: "flex", alignItems: "center" }}>
+    <div
+      style={{
+        position: "relative",
+        height: "32px",
+        display: "flex",
+        alignItems: "center",
+      }}
+    >
       {showLogo ? (
-        <img 
-          src={logoSrc} 
-          alt={partner.name} 
+        <img
+          src={logoSrc}
+          alt={partner.name}
           title={partner.name}
           aria-label={partner.name}
           loading="lazy"
           onError={handleImageError}
-          style={{ 
-            height: "32px", 
-            width: "auto", 
+          style={{
+            height: "32px",
+            width: "auto",
             maxWidth: "140px",
-            filter: isLight 
-              ? "grayscale(1) opacity(0.6)" 
+            filter: isLight
+              ? "grayscale(1) opacity(0.6)"
               : "grayscale(1) invert(1) brightness(1.5) opacity(0.5)",
             transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
             cursor: "pointer",
@@ -189,25 +208,27 @@ function MarqueeItem({ partner, isLight }: { partner: any; isLight: boolean }) {
             e.currentTarget.style.transform = "scale(1.05)";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.filter = isLight 
-              ? "grayscale(1) opacity(0.6)" 
+            e.currentTarget.style.filter = isLight
+              ? "grayscale(1) opacity(0.6)"
               : "grayscale(1) invert(1) brightness(1.5) opacity(0.5)";
             e.currentTarget.style.transform = "scale(1)";
           }}
         />
       ) : (
-        <span style={{ 
-          fontSize: "14px", 
-          fontWeight: 600, 
-          color: isLight ? "var(--text-secondary)" : "rgba(255, 255, 255, 0.5)",
-          fontFamily: "var(--font-headline)",
-          letterSpacing: "0.05em",
-        }}>
+        <span
+          style={{
+            fontSize: "14px",
+            fontWeight: 600,
+            color: isLight
+              ? "var(--text-secondary)"
+              : "rgba(255, 255, 255, 0.5)",
+            fontFamily: "var(--font-headline)",
+            letterSpacing: "0.05em",
+          }}
+        >
           {partner.name}
         </span>
       )}
     </div>
   );
 }
-
-
