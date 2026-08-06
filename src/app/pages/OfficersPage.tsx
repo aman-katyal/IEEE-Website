@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Mail, Users, User, ChevronDown } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useLeaders, useOfficersConfig } from "../../hooks/useSanityData";
@@ -71,6 +72,17 @@ export function OfficersPage() {
       </div>
     );
   }
+
+  const categorizedLeaders = useMemo(() => {
+    if (!leaders) return {} as Record<string, Leader[]>;
+    return CATEGORIES.reduce(
+      (acc, cat) => {
+        acc[cat.id] = getOrderedLeaders(leaders, config, cat.id);
+        return acc;
+      },
+      {} as Record<string, Leader[]>,
+    );
+  }, [leaders, config]);
 
   // Define how many skeleton cards to show per section
   const skeletonCards = Array.from({ length: 4 });
@@ -385,11 +397,7 @@ export function OfficersPage() {
               defaultValue={["executive"]}
             >
               {CATEGORIES.map((cat) => {
-                const sectionLeaders = getOrderedLeaders(
-                  leaders,
-                  config,
-                  cat.id,
-                );
+                const sectionLeaders = categorizedLeaders[cat.id] ?? [];
                 if (sectionLeaders.length === 0) return null;
 
                 return (
@@ -450,7 +458,7 @@ export function OfficersPage() {
             </Accordion.Root>
           ) : (
             CATEGORIES.map((cat) => {
-              const sectionLeaders = getOrderedLeaders(leaders, config, cat.id);
+              const sectionLeaders = categorizedLeaders[cat.id] ?? [];
               if (sectionLeaders.length === 0) return null;
 
               return (
