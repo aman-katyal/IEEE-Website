@@ -1,6 +1,10 @@
 import { Leader } from "../../data/leadership";
 
-export const getOrderedLeaders = (leaders: Leader[], config: any, categoryId: string) => {
+export const getOrderedLeaders = (
+  leaders: Leader[],
+  config: any,
+  categoryId: string,
+) => {
   const categoryLeaders = leaders.filter((l: Leader) => {
     // Use explicit category if available
     if (l.category) return l.category === categoryId;
@@ -9,7 +13,11 @@ export const getOrderedLeaders = (leaders: Leader[], config: any, categoryId: st
     const role = l.role || "";
     let inferredCategory = "member";
 
-    if (role.includes("President") || role.includes("Secretary") || role.includes("Treasurer")) {
+    if (
+      role.includes("President") ||
+      role.includes("Secretary") ||
+      role.includes("Treasurer")
+    ) {
       inferredCategory = "executive";
     } else if (
       role.includes("Chair") ||
@@ -41,15 +49,15 @@ export const getOrderedLeaders = (leaders: Leader[], config: any, categoryId: st
     categoryId === "executive"
       ? config.executiveOrder
       : categoryId === "technical"
-      ? config.technicalOrder
-      : categoryId === "operations"
-      ? config.operationsOrder
-      : config.memberOrder;
+        ? config.technicalOrder
+        : categoryId === "operations"
+          ? config.operationsOrder
+          : config.memberOrder;
 
   if (!orderArray || orderArray.length === 0) return categoryLeaders;
 
   // Map _id from orderArray
-  const orderedIds = orderArray?.map((ref: any) => ref._id) || [];
+  const orderedIds = orderArray?.map((ref: { _id: string }) => ref._id) || [];
 
   // Sort categoryLeaders based on orderedIds
   const sorted = [...categoryLeaders].sort((a, b) => {
