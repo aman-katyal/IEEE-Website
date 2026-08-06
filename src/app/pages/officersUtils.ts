@@ -1,6 +1,6 @@
-import { Leader } from "../../data/leadership";
+import { Leader, LeaderReference, OfficersConfig } from "../../data/leadership";
 
-export const getOrderedLeaders = (leaders: Leader[], config: any, categoryId: string) => {
+export const getOrderedLeaders = (leaders: Leader[], config: OfficersConfig | null | undefined, categoryId: string) => {
   const categoryLeaders = leaders.filter((l: Leader) => {
     // Use explicit category if available
     if (l.category) return l.category === categoryId;
@@ -49,7 +49,7 @@ export const getOrderedLeaders = (leaders: Leader[], config: any, categoryId: st
   if (!orderArray || orderArray.length === 0) return categoryLeaders;
 
   // Map _id from orderArray
-  const orderedIds = orderArray?.map((ref: any) => ref._id) || [];
+  const orderedIds = orderArray?.map((ref: LeaderReference) => ref._id) || [];
 
   // Sort categoryLeaders based on orderedIds
   const sorted = [...categoryLeaders].sort((a, b) => {

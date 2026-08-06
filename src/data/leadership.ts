@@ -11,3 +11,14 @@ export interface Leader {
   image?: string;
   committees?: string;
 }
+
+export interface LeaderReference {
+  _id: string;
+}
+
+export interface OfficersConfig {
+  executiveOrder?: LeaderReference[];
+  technicalOrder?: LeaderReference[];
+  operationsOrder?: LeaderReference[];
+  memberOrder?: LeaderReference[];
+}
