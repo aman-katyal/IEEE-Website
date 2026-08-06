@@ -103,13 +103,21 @@ export function CommitteePage() {
         contactSections: [],
       };
     }
-    return {
-      textSections: committee.sections.filter((s) => s.type === "text"),
-      projectsSections: committee.sections.filter((s) => s.type === "projects"),
-      gallerySections: committee.sections.filter((s) => s.type === "gallery"),
-      faqSections: committee.sections.filter((s) => s.type === "faq"),
-      contactSections: committee.sections.filter((s) => s.type === "contact"),
+    const result = {
+      textSections: [] as CommitteeSection[],
+      projectsSections: [] as CommitteeSection[],
+      gallerySections: [] as CommitteeSection[],
+      faqSections: [] as CommitteeSection[],
+      contactSections: [] as CommitteeSection[],
     };
+    for (const s of committee.sections) {
+      if (s.type === "text") result.textSections.push(s);
+      else if (s.type === "projects") result.projectsSections.push(s);
+      else if (s.type === "gallery") result.gallerySections.push(s);
+      else if (s.type === "faq") result.faqSections.push(s);
+      else if (s.type === "contact") result.contactSections.push(s);
+    }
+    return result;
   }, [committee]);
 
   if (error || (!loading && !committee)) {
