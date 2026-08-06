@@ -17,3 +17,7 @@
 ## 2024-05-18 - Hoisting Static Data in React
 **Learning:** Defining static arrays or configuration objects (like default lists or category mapping) inside a React component body forces the JavaScript engine to allocate new memory on every single render. This triggers frequent Garbage Collection (GC) pauses and negatively impacts rendering performance.
 **Action:** Always move static arrays and objects (that do not depend on props or component state) completely out of the component function's body into the file's outer scope. Use UPPER_SNAKE_CASE for these constants to clearly distinguish them.
+
+## 2026-08-06 - Array Search Inside Sort Callback (O(N^2) Bottleneck)
+**Learning:** Using `Array.prototype.indexOf` inside an `Array.prototype.sort` callback creates an O(N^2) complexity bottleneck, because `indexOf` performs a linear search on every comparison.
+**Action:** Always pre-compute a lookup table (e.g., using a `Map`) before the sort operation. A `Map.get()` lookup inside the sort callback takes O(1) time, reducing the overall sorting complexity to an efficient O(N log N).
