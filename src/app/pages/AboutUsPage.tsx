@@ -38,6 +38,16 @@ const SectionTitle = React.memo(
   },
 );
 
+export interface AboutSectionData {
+  _key?: string;
+  eyebrow?: string;
+  title?: string;
+  content?: string;
+  image?: string;
+  layout?: "normal" | "reversed" | string;
+  colorTheme?: "gold" | string;
+}
+
 export function AboutUsPage() {
   const { data, loading } = useAboutPage();
   const { theme } = useTheme();
@@ -54,7 +64,7 @@ export function AboutUsPage() {
     transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as const },
   };
 
-  const fallbackSections = [
+  const fallbackSections: AboutSectionData[] = [
     {
       eyebrow: "// Excellence",
       title: "At Purdue, we strive to be the best",
@@ -267,7 +277,7 @@ export function AboutUsPage() {
             padding: "0 clamp(16px, 4vw, 32px)",
           }}
         >
-          {sections.map((section: any, idx: number) => (
+          {sections.map((section: AboutSectionData, idx: number) => (
             <motion.div
               key={idx}
               className={section.image ? "ieee-grid-2" : ""}
