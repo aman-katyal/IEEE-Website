@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Menu, X, ChevronDown, ArrowUpRight } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { useTheme } from "next-themes";
@@ -35,7 +35,7 @@ export function Navigation() {
   const discordUrl = settings?.discordUrl || "https://discord.gg/sPPQequ9ws";
 
 
-  const navLinks: NavLinkItem[] = [
+  const navLinks: NavLinkItem[] = useMemo(() => [
     { 
       label: "About", 
       href: "/about",
@@ -53,7 +53,7 @@ export function Navigation() {
     { label: "Events", href: "/calendar" },
     { label: "Officers", href: "/officers" },
     { label: "Join", href: "/join" },
-  ];
+  ], [committees]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
