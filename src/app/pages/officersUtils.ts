@@ -9,7 +9,11 @@ export const getOrderedLeaders = (leaders: Leader[], config: OfficersConfig | nu
     const role = l.role || "";
     let inferredCategory = "member";
 
-    if (role.includes("President") || role.includes("Secretary") || role.includes("Treasurer")) {
+    if (
+      role.includes("President") ||
+      role.includes("Secretary") ||
+      role.includes("Treasurer")
+    ) {
       inferredCategory = "executive";
     } else if (
       role.includes("Chair") ||
@@ -41,20 +45,23 @@ export const getOrderedLeaders = (leaders: Leader[], config: OfficersConfig | nu
     categoryId === "executive"
       ? config.executiveOrder
       : categoryId === "technical"
-      ? config.technicalOrder
-      : categoryId === "operations"
-      ? config.operationsOrder
-      : config.memberOrder;
+        ? config.technicalOrder
+        : categoryId === "operations"
+          ? config.operationsOrder
+          : config.memberOrder;
 
   if (!orderArray || orderArray.length === 0) return categoryLeaders;
 
   // Map _id from orderArray
   const orderedIds = orderArray?.map((ref: LeaderReference) => ref._id) || [];
 
+  const orderMap = new Map<string, number>();
+  orderedIds.forEach((id: string, index: number) => orderMap.set(id, index));
+
   // Sort categoryLeaders based on orderedIds
   const sorted = [...categoryLeaders].sort((a, b) => {
-    const indexA = orderedIds.indexOf(a._id);
-    const indexB = orderedIds.indexOf(b._id);
+    const indexA = orderMap.has(a._id) ? orderMap.get(a._id)! : -1;
+    const indexB = orderMap.has(b._id) ? orderMap.get(b._id)! : -1;
 
     if (indexA === -1 && indexB === -1) return 0;
     if (indexA === -1) return 1;
