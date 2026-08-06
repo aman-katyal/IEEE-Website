@@ -6,9 +6,9 @@ import { useTheme } from "next-themes";
 import { motion, AnimatePresence } from "motion/react";
 
 export function CommitteesPage() {
-  const [viewMode, setViewMode] = useState<"technical" | "involvement" | "operations">(
-    "technical",
-  );
+  const [viewMode, setViewMode] = useState<
+    "technical" | "involvement" | "operations"
+  >("technical");
   const { theme } = useTheme();
   const isLight = theme === "light";
 
@@ -27,7 +27,11 @@ export function CommitteesPage() {
 
         {/* View Mode Toggle */}
         <div className="flex justify-center mb-6">
-          <div className="flex bg-[rgba(128,128,128,0.05)] border border-[var(--glass-border)] rounded-full p-1 relative flex-wrap sm:flex-nowrap gap-1">
+          <div
+            className="flex bg-[rgba(128,128,128,0.05)] border border-[var(--glass-border)] rounded-full p-1 relative flex-wrap sm:flex-nowrap gap-1"
+            role="group"
+            aria-label="Committee category"
+          >
             <button
               onClick={() => setViewMode("technical")}
               aria-pressed={viewMode === "technical"}
