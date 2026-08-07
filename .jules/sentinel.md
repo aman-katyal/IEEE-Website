@@ -7,3 +7,8 @@
 **Vulnerability:** External links were opened in a new tab via `window.open(url)` inside an onClick handler without specifying the `noopener,noreferrer` parameters. This allows the opened external site to manipulate the `window.opener` object, potentially leading to reverse tabnabbing and phishing attacks.
 **Learning:** While modern browsers automatically secure `<a target="_blank">` tags by applying `noopener` by default, this automatic protection does NOT apply to programmatic navigations using `window.open()`. The `window.opener` context remains exposed to the target tab unless explicitly revoked.
 **Prevention:** Always explicitly provide the third argument `"noopener,noreferrer"` when using `window.open(url, "_blank")` for untrusted or external URLs, exactly as you would have historically done for `<a>` tags.
+
+## 2026-05-19 - CSP Hardening and Iframe Sandboxing
+**Vulnerability:** The Content-Security-Policy allowed `unsafe-eval` and arbitrary scripts from `https://unpkg.com`, which increased the potential attack surface for XSS. In addition, `<iframe>` embeds for Google Calendar lacked a `sandbox` attribute, violating the principle of least privilege.
+**Learning:** Overly permissive CSP configurations and unsandboxed iframes provide an unnecessary attack surface. Even if the application logic does not use `eval()` or unpkg, omitting them prevents attackers from leveraging these capabilities if an injection flaw is found.
+**Prevention:** Always restrict `script-src` to the absolute minimum necessary (removing `unsafe-eval` and unneeded third-party script origins) and apply the `sandbox` attribute to all `<iframe>` elements to sandbox third-party content.

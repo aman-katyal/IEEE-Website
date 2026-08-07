@@ -164,6 +164,7 @@ export function CalendarPage() {
               }}
               frameBorder="0"
               scrolling="no"
+              sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
             ></iframe>
           </div>
         </div>
@@ -207,6 +208,7 @@ export function CalendarPage() {
               }}
               frameBorder="0"
               scrolling="no"
+              sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
             ></iframe>
           </div>
         </div>
