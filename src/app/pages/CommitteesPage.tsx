@@ -27,7 +27,11 @@ export function CommitteesPage() {
 
         {/* View Mode Toggle */}
         <div className="flex justify-center mb-6">
-          <div className="flex bg-[rgba(128,128,128,0.05)] border border-[var(--glass-border)] rounded-full p-1 relative flex-wrap sm:flex-nowrap gap-1">
+          <div
+            className="flex bg-[rgba(128,128,128,0.05)] border border-[var(--glass-border)] rounded-full p-1 relative flex-wrap sm:flex-nowrap gap-1"
+            role="group"
+            aria-label="Committee view mode"
+          >
             <button
               onClick={() => setViewMode("technical")}
               aria-pressed={viewMode === "technical"}
