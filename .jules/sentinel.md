@@ -7,3 +7,8 @@
 **Vulnerability:** External links were opened in a new tab via `window.open(url)` inside an onClick handler without specifying the `noopener,noreferrer` parameters. This allows the opened external site to manipulate the `window.opener` object, potentially leading to reverse tabnabbing and phishing attacks.
 **Learning:** While modern browsers automatically secure `<a target="_blank">` tags by applying `noopener` by default, this automatic protection does NOT apply to programmatic navigations using `window.open()`. The `window.opener` context remains exposed to the target tab unless explicitly revoked.
 **Prevention:** Always explicitly provide the third argument `"noopener,noreferrer"` when using `window.open(url, "_blank")` for untrusted or external URLs, exactly as you would have historically done for `<a>` tags.
+
+## 2025-02-28 - Validate URLs before window.open
+**Vulnerability:** DOM-based Cross-Site Scripting (XSS) via `javascript:` URIs passed to `window.open`.
+**Learning:** `window.open` will execute `javascript:` URIs if passed directly without validation. This is a common DOM XSS vector if URLs are sourced from external APIs or user input.
+**Prevention:** Always parse and validate external URLs using `new URL()` and verify the protocol is explicitly `http:` or `https:` before opening them.

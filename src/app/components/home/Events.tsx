@@ -234,7 +234,18 @@ export function Events() {
                 {displayEvents.map((event, i) => (
                   <div
                     key={event.id}
-                    onClick={() => event.htmlLink && window.open(event.htmlLink, "_blank", "noopener,noreferrer")}
+                    onClick={() => {
+                      if (event.htmlLink) {
+                        try {
+                          const url = new URL(event.htmlLink);
+                          if (url.protocol === 'http:' || url.protocol === 'https:') {
+                            window.open(event.htmlLink, "_blank", "noopener,noreferrer");
+                          }
+                        } catch (e) {
+                          // Invalid URL, do nothing
+                        }
+                      }
+                    }}
                     style={{ textDecoration: "none", color: "inherit" }}
                   >
                     <div
