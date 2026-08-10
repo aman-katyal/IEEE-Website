@@ -209,11 +209,22 @@ export function CommitteePage() {
 
       return (
         <button
-          onClick={() =>
-            isExternal
-              ? window.open(url, "_blank", "noopener,noreferrer")
-              : navigate(url || "/join")
-          }
+          onClick={() => {
+            if (isExternal) {
+              try {
+                const parsedUrl = new URL(url);
+                if (parsedUrl.protocol === "http:" || parsedUrl.protocol === "https:") {
+                  window.open(url, "_blank", "noopener,noreferrer");
+                } else {
+                  console.warn("Blocked attempt to open untrusted protocol:", parsedUrl.protocol);
+                }
+              } catch (e) {
+                console.warn("Invalid URL provided to window.open", e);
+              }
+            } else {
+              navigate(url || "/join");
+            }
+          }}
           className="btn-primary"
           style={{
             width: "100%",

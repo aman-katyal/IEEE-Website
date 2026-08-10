@@ -234,8 +234,21 @@ export function Events() {
                 {displayEvents.map((event, i) => (
                   <div
                     key={event.id}
-                    onClick={() => event.htmlLink && window.open(event.htmlLink, "_blank", "noopener,noreferrer")}
-                    style={{ textDecoration: "none", color: "inherit" }}
+                    onClick={() => {
+                      if (event.htmlLink) {
+                        try {
+                          const parsedUrl = new URL(event.htmlLink);
+                          if (parsedUrl.protocol === "http:" || parsedUrl.protocol === "https:") {
+                            window.open(event.htmlLink, "_blank", "noopener,noreferrer");
+                          } else {
+                            console.warn("Blocked attempt to open untrusted protocol:", parsedUrl.protocol);
+                          }
+                        } catch (e) {
+                          console.warn("Invalid URL provided to window.open", e);
+                        }
+                      }
+                    }}
+                    style={{ textDecoration: "none", color: "inherit", cursor: "pointer" }}
                   >
                     <div
                       className="event-card responsive-event-card"
