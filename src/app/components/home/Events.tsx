@@ -1,7 +1,17 @@
-import { MapPin, ChevronRight, Clock, CalendarPlus, ExternalLink, Loader2 } from "lucide-react";
+import {
+  MapPin,
+  ChevronRight,
+  Clock,
+  CalendarPlus,
+  ExternalLink,
+  Loader2,
+} from "lucide-react";
 import { Link } from "react-router";
 import { useTheme } from "next-themes";
-import { useGoogleCalendarEvents, type CalendarEvent } from "../../../hooks/useGoogleCalendarEvents";
+import {
+  useGoogleCalendarEvents,
+  type CalendarEvent,
+} from "../../../hooks/useGoogleCalendarEvents";
 
 // ─── Fallback events (used if Google Calendar API fails) ────────
 const fallbackEvents = [
@@ -41,18 +51,39 @@ const fallbackEvents = [
 ] satisfies CalendarEvent[];
 
 // ─── Date formatting helpers ────────────────────────────────────
-const MONTHS = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
-const DAYS = ["SUN","MON","TUE","WED","THU","FRI","SAT"];
+const MONTHS = [
+  "JAN",
+  "FEB",
+  "MAR",
+  "APR",
+  "MAY",
+  "JUN",
+  "JUL",
+  "AUG",
+  "SEP",
+  "OCT",
+  "NOV",
+  "DEC",
+];
+const DAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
 function fmtDate(d: Date) {
   return `${MONTHS[d.getMonth()]} ${String(d.getDate()).padStart(2, "0")}`;
 }
-function fmtDay(d: Date) { return DAYS[d.getDay()]; }
-function fmtYear(d: Date) { return String(d.getFullYear()); }
+function fmtDay(d: Date) {
+  return DAYS[d.getDay()];
+}
+function fmtYear(d: Date) {
+  return String(d.getFullYear());
+}
 function fmtTime(start: Date, end: Date) {
   const f = (d: Date) =>
     d
-      .toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true })
+      .toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      })
       .toUpperCase();
   return `${f(start)} – ${f(end)}`;
 }
@@ -70,16 +101,80 @@ function EventSkeleton() {
         alignItems: "flex-start",
       }}
     >
-      <div style={{ minWidth: 56, display: "flex", flexDirection: "column", gap: 6 }}>
-        <div style={{ width: 34, height: 10, background: "var(--text-muted)", opacity: 0.1, borderRadius: 2 }} />
-        <div style={{ width: 50, height: 18, background: "var(--text-muted)", opacity: 0.15, borderRadius: 2 }} />
-        <div style={{ width: 28, height: 8, background: "var(--text-muted)", opacity: 0.08, borderRadius: 2 }} />
+      <div
+        style={{
+          minWidth: 56,
+          display: "flex",
+          flexDirection: "column",
+          gap: 6,
+        }}
+      >
+        <div
+          style={{
+            width: 34,
+            height: 10,
+            background: "var(--text-muted)",
+            opacity: 0.1,
+            borderRadius: 2,
+          }}
+        />
+        <div
+          style={{
+            width: 50,
+            height: 18,
+            background: "var(--text-muted)",
+            opacity: 0.15,
+            borderRadius: 2,
+          }}
+        />
+        <div
+          style={{
+            width: 28,
+            height: 8,
+            background: "var(--text-muted)",
+            opacity: 0.08,
+            borderRadius: 2,
+          }}
+        />
       </div>
-      <div style={{ width: 1, alignSelf: "stretch", background: "var(--text-muted)", opacity: 0.1 }} />
+      <div
+        style={{
+          width: 1,
+          alignSelf: "stretch",
+          background: "var(--text-muted)",
+          opacity: 0.1,
+        }}
+      />
       <div style={{ flex: 1 }}>
-        <div style={{ width: "60%", height: 16, background: "var(--text-muted)", opacity: 0.15, borderRadius: 2, marginBottom: 8 }} />
-        <div style={{ width: "90%", height: 12, background: "var(--text-muted)", opacity: 0.1, borderRadius: 2, marginBottom: 12 }} />
-        <div style={{ width: "40%", height: 10, background: "var(--text-muted)", opacity: 0.08, borderRadius: 2 }} />
+        <div
+          style={{
+            width: "60%",
+            height: 16,
+            background: "var(--text-muted)",
+            opacity: 0.15,
+            borderRadius: 2,
+            marginBottom: 8,
+          }}
+        />
+        <div
+          style={{
+            width: "90%",
+            height: 12,
+            background: "var(--text-muted)",
+            opacity: 0.1,
+            borderRadius: 2,
+            marginBottom: 12,
+          }}
+        />
+        <div
+          style={{
+            width: "40%",
+            height: 10,
+            background: "var(--text-muted)",
+            opacity: 0.08,
+            borderRadius: 2,
+          }}
+        />
       </div>
     </div>
   );
@@ -92,7 +187,7 @@ export function Events() {
   const isLight = theme === "light";
   const events = liveEvents;
   const isLive = liveEvents.length > 0;
-  
+
   // Limit to 4 events for the home page
   const displayEvents = events.slice(0, 4);
   const nextEvent = events[0];
@@ -182,7 +277,9 @@ export function Events() {
                     display: "inline-block",
                   }}
                 />
-                <span className="hidden sm:inline">Live from Google Calendar</span>
+                <span className="hidden sm:inline">
+                  Live from Google Calendar
+                </span>
                 <span className="sm:hidden">Live</span>
               </div>
             )}
@@ -193,7 +290,7 @@ export function Events() {
                 letterSpacing: "0.15em",
                 color: "var(--text-muted)",
                 textTransform: "uppercase",
-                opacity: isLight ? 1 : 0.8
+                opacity: isLight ? 1 : 0.8,
               }}
             >
               {loading ? "..." : `${events.length} events`}
@@ -204,7 +301,9 @@ export function Events() {
         {/* Two-column layout */}
         <div className="ieee-grid-sidebar">
           {/* Events list */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "12px" }}
+          >
             {loading ? (
               <>
                 <EventSkeleton />
@@ -257,7 +356,8 @@ export function Events() {
                         gap: "clamp(16px, 4vw, 24px)",
                         alignItems: "flex-start",
                         cursor: "pointer",
-                        borderLeftColor: i === 0 ? "var(--cyber-gold)" : undefined,
+                        borderLeftColor:
+                          i === 0 ? "var(--cyber-gold)" : undefined,
                       }}
                     >
                       {/* Date column */}
@@ -343,7 +443,7 @@ export function Events() {
                               display: "-webkit-box",
                               WebkitLineClamp: 2,
                               WebkitBoxOrient: "vertical",
-                              opacity: isLight ? 1 : 0.9
+                              opacity: isLight ? 1 : 0.9,
                             }}
                           >
                             {event.description}
@@ -359,10 +459,21 @@ export function Events() {
                           }}
                         >
                           {!event.isAllDay && (
-                            <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "5px",
+                              }}
+                            >
                               <Clock
                                 size={11}
-                                style={{ color: isLight ? "var(--electric-blue)" : "var(--text-muted)", flexShrink: 0 }}
+                                style={{
+                                  color: isLight
+                                    ? "var(--electric-blue)"
+                                    : "var(--text-muted)",
+                                  flexShrink: 0,
+                                }}
                               />
                               <span
                                 style={{
@@ -370,7 +481,7 @@ export function Events() {
                                   fontSize: "0.62rem",
                                   color: "var(--text-muted)",
                                   letterSpacing: "0.06em",
-                                  opacity: isLight ? 1 : 0.8
+                                  opacity: isLight ? 1 : 0.8,
                                 }}
                               >
                                 {fmtTime(event.start, event.end)}
@@ -378,10 +489,21 @@ export function Events() {
                             </div>
                           )}
                           {event.location && (
-                            <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "5px",
+                              }}
+                            >
                               <MapPin
                                 size={11}
-                                style={{ color: isLight ? "var(--electric-blue)" : "var(--text-muted)", flexShrink: 0 }}
+                                style={{
+                                  color: isLight
+                                    ? "var(--electric-blue)"
+                                    : "var(--text-muted)",
+                                  flexShrink: 0,
+                                }}
                               />
                               <span
                                 style={{
@@ -393,7 +515,7 @@ export function Events() {
                                   whiteSpace: "nowrap",
                                   textOverflow: "ellipsis",
                                   maxWidth: "150px",
-                                  opacity: isLight ? 1 : 0.8
+                                  opacity: isLight ? 1 : 0.8,
                                 }}
                               >
                                 {event.location}
@@ -406,6 +528,7 @@ export function Events() {
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
+                            aria-label={`Add ${event.title} to calendar`}
                             style={{
                               display: "inline-flex",
                               alignItems: "center",
@@ -420,10 +543,14 @@ export function Events() {
                               transition: "color 0.2s ease",
                             }}
                             onMouseEnter={(e) => {
-                              (e.currentTarget as HTMLAnchorElement).style.color = "var(--cyber-gold)";
+                              (
+                                e.currentTarget as HTMLAnchorElement
+                              ).style.color = "var(--cyber-gold)";
                             }}
                             onMouseLeave={(e) => {
-                              (e.currentTarget as HTMLAnchorElement).style.color = "var(--electric-blue)";
+                              (
+                                e.currentTarget as HTMLAnchorElement
+                              ).style.color = "var(--electric-blue)";
                             }}
                           >
                             <CalendarPlus size={11} />
@@ -433,7 +560,10 @@ export function Events() {
                       </div>
 
                       {/* Arrow (hidden on very small screens) */}
-                      <div className="hidden xs:block" style={{ flexShrink: 0, paddingTop: "4px" }}>
+                      <div
+                        className="hidden xs:block"
+                        style={{ flexShrink: 0, paddingTop: "4px" }}
+                      >
                         <ChevronRight
                           size={16}
                           style={{ color: "var(--text-muted)", opacity: 0.6 }}
@@ -442,7 +572,7 @@ export function Events() {
                     </div>
                   </div>
                 ))}
-                
+
                 {/* View All Events Button */}
                 {events.length > 4 && (
                   <Link
@@ -456,7 +586,7 @@ export function Events() {
                       justifyContent: "center",
                       gap: "12px",
                       textDecoration: "none",
-                      width: "100%"
+                      width: "100%",
                     }}
                   >
                     View All Events
@@ -471,7 +601,11 @@ export function Events() {
           {nextEvent && !loading && (
             <div
               className="glass-card next-event-sidebar animate-float-no-x"
-              style={{ padding: "clamp(24px, 5vw, 32px)", position: "sticky", top: "96px" }}
+              style={{
+                padding: "clamp(24px, 5vw, 32px)",
+                position: "sticky",
+                top: "96px",
+              }}
             >
               <div
                 style={{
@@ -540,11 +674,25 @@ export function Events() {
               )}
 
               <div
-                style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "28px" }}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "10px",
+                  marginBottom: "28px",
+                }}
               >
                 {!nextEvent.isAllDay && (
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <Clock size={13} style={{ color: "var(--electric-blue)", flexShrink: 0 }} />
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                    }}
+                  >
+                    <Clock
+                      size={13}
+                      style={{ color: "var(--electric-blue)", flexShrink: 0 }}
+                    />
                     <span
                       style={{
                         fontFamily: "var(--font-body)",
@@ -557,8 +705,17 @@ export function Events() {
                   </div>
                 )}
                 {nextEvent.location && (
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <MapPin size={13} style={{ color: "var(--electric-blue)", flexShrink: 0 }} />
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                    }}
+                  >
+                    <MapPin
+                      size={13}
+                      style={{ color: "var(--electric-blue)", flexShrink: 0 }}
+                    />
                     <span
                       style={{
                         fontFamily: "var(--font-body)",
@@ -577,6 +734,7 @@ export function Events() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-primary"
+                aria-label={`Add ${nextEvent.title} to Google Calendar`}
                 style={{
                   width: "100%",
                   textAlign: "center",
@@ -610,10 +768,12 @@ export function Events() {
                   transition: "color 0.2s ease",
                 }}
                 onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.color = "var(--electric-blue)";
+                  (e.currentTarget as HTMLAnchorElement).style.color =
+                    "var(--electric-blue)";
                 }}
                 onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-muted)";
+                  (e.currentTarget as HTMLAnchorElement).style.color =
+                    "var(--text-muted)";
                 }}
               >
                 <ExternalLink size={11} />
@@ -623,7 +783,7 @@ export function Events() {
           )}
         </div>
       </div>
-      
+
       <style>{`
         @media (max-width: 480px) {
           .responsive-event-card {
