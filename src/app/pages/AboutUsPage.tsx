@@ -48,6 +48,54 @@ export interface AboutSectionData {
   colorTheme?: "gold" | string;
 }
 
+// ⚡ Bolt Optimization:
+// Moving static configuration objects (REVEAL_PROPS) and arrays (FALLBACK_SECTIONS, PROFESSIONAL_GROWTH_ITEMS)
+// outside of the component body. This prevents the JavaScript engine from allocating new memory
+// for these variables on every single render, reducing Garbage Collection (GC) pauses and improving
+// overall rendering performance for the AboutUsPage.
+
+const REVEAL_PROPS = {
+  initial: { opacity: 0, y: 40 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: "-100px" },
+  transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as const },
+};
+
+const FALLBACK_SECTIONS: AboutSectionData[] = [
+  {
+    eyebrow: "// Excellence",
+    title: "At Purdue, we strive to be the best",
+    content:
+      "Whether creating drones, designing radio transmitters, or pioneering next-gen biotech, Purdue engineers excel. Purdue IEEE (Eye-Triple-E) is no different. Founded in 1903, we are the largest technical organization with students of every academic background. Our members work on real-world problems and advance their engineering skills.",
+    image: "",
+    layout: "normal",
+  },
+  {
+    eyebrow: "// Technical Growth",
+    title: "Applying academics to extracurriculars",
+    content:
+      "Purdue IEEE continually strives to further our goals of technical and professional growth. We help our members enter their professional careers, learn engineering software and skills, and socialize with others to form lasting connections inside and outside of this organization.\\n\\nOur teams apply the knowledge and create real-world, practical solutions to complex engineering projects.",
+    image: "",
+    colorTheme: "gold",
+    layout: "reversed",
+  },
+  {
+    eyebrow: "// Professional Success",
+    title: "Connecting industry partners to talented engineers",
+    content:
+      "Our alumni go on to utilize the skills they learn at some of the world's largest companies. We have alumni working in every sector of every industry, helping shape the future of technology.\\n\\nWe host regular professional networking events and company recruiting sessions - just for our members. We also host resume reviews, alumni panels, and professor talks.",
+    image: "",
+    layout: "normal",
+  },
+];
+
+const PROFESSIONAL_GROWTH_ITEMS = [
+  "Professional Careers",
+  "Engineering Software",
+  "Practical Solutions",
+  "Lasting Connections",
+];
+
 export function AboutUsPage() {
   const { data, loading } = useAboutPage();
   const { theme } = useTheme();
@@ -57,42 +105,7 @@ export function AboutUsPage() {
     window.scrollTo(0, 0);
   }, []);
 
-  const revealProps = {
-    initial: { opacity: 0, y: 40 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, margin: "-100px" },
-    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as const },
-  };
-
-  const fallbackSections: AboutSectionData[] = [
-    {
-      eyebrow: "// Excellence",
-      title: "At Purdue, we strive to be the best",
-      content:
-        "Whether creating drones, designing radio transmitters, or pioneering next-gen biotech, Purdue engineers excel. Purdue IEEE (Eye-Triple-E) is no different. Founded in 1903, we are the largest technical organization with students of every academic background. Our members work on real-world problems and advance their engineering skills.",
-      image: "",
-      layout: "normal",
-    },
-    {
-      eyebrow: "// Technical Growth",
-      title: "Applying academics to extracurriculars",
-      content:
-        "Purdue IEEE continually strives to further our goals of technical and professional growth. We help our members enter their professional careers, learn engineering software and skills, and socialize with others to form lasting connections inside and outside of this organization.\\n\\nOur teams apply the knowledge and create real-world, practical solutions to complex engineering projects.",
-      image: "",
-      colorTheme: "gold",
-      layout: "reversed",
-    },
-    {
-      eyebrow: "// Professional Success",
-      title: "Connecting industry partners to talented engineers",
-      content:
-        "Our alumni go on to utilize the skills they learn at some of the world's largest companies. We have alumni working in every sector of every industry, helping shape the future of technology.\\n\\nWe host regular professional networking events and company recruiting sessions - just for our members. We also host resume reviews, alumni panels, and professor talks.",
-      image: "",
-      layout: "normal",
-    },
-  ];
-
-  const sections = data?.sections || fallbackSections;
+  const sections = data?.sections || FALLBACK_SECTIONS;
 
   return (
     <div style={{ paddingTop: "80px", background: "var(--boiler-black)" }}>
@@ -154,12 +167,7 @@ export function AboutUsPage() {
                 Professional Growth
               </h3>
               <ul className="list-none p-0 m-0 grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {[
-                  "Professional Careers",
-                  "Engineering Software",
-                  "Practical Solutions",
-                  "Lasting Connections",
-                ].map((item) => (
+                {PROFESSIONAL_GROWTH_ITEMS.map((item) => (
                   <li
                     key={item}
                     style={{
@@ -287,7 +295,7 @@ export function AboutUsPage() {
                 maxWidth: section.image ? "none" : "800px",
                 margin: section.image ? "0 auto 120px" : "0 auto 120px",
               }}
-              {...revealProps}
+              {...REVEAL_PROPS}
             >
               <div style={{ order: section.layout === "reversed" ? 2 : 1 }}>
                 <p className="section-eyebrow" style={{ marginBottom: "16px" }}>
