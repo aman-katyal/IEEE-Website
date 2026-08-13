@@ -8,10 +8,11 @@ import {
 import { Link, useLocation, useNavigate } from "react-router";
 import { useTheme } from "next-themes";
 import { useCommittees, useSiteSettings } from "../../../hooks/useSanityData";
+import { useMemo } from "react";
 import { IeeePurdueLogo } from "./IeeePurdueLogo";
 import { MagneticWrapper } from "../ui/MagneticWrapper";
 
-const footerLinks = {
+const FOOTER_LINKS = {
   Organization: [
     { label: "About Us", href: "/about" },
     { label: "Officers", href: "/officers" },
@@ -79,38 +80,31 @@ export function Footer() {
 
   const discordUrl = settings?.discordUrl || "https://discord.gg/sPPQequ9ws";
 
-  const footerLinks = {
-    Organization: [
-      { label: "About Us", href: "/about" },
-      { label: "Officers", href: "/officers" },
-      { label: "Constitution", href: "/constitution" },
-      { label: "Corporate Partners", href: "/partners" },
-    ],
-    Resources: [
-      { label: "IEEE.org", href: "https://ieee.org", external: true },
-      { label: "Event Calendar", href: "/calendar" },
-      {
-        label: "Member Benefits",
-        href: "https://www.ieee.org/membership/benefits/index.html",
-        external: true,
-      },
-    ],
-    Connect: [
-      { label: "Join Purdue IEEE", href: "/join" },
-      { label: "Contact Us", href: "mailto:ieee@purdue.edu", external: true },
-      { label: "Community Discord", href: discordUrl, external: true },
-    ],
-  };
+  // dynamically update discord url if overridden in sanity
+  const footerLinksToUse = useMemo(() => {
+    if (settings?.discordUrl && settings.discordUrl !== "https://discord.gg/sPPQequ9ws") {
+      const updated = { ...FOOTER_LINKS };
+      updated.Connect = FOOTER_LINKS.Connect.map((link) =>
+        link.label === "Community Discord"
+          ? { ...link, href: settings.discordUrl }
+          : link
+      );
+      return updated;
+    }
+    return FOOTER_LINKS;
+  }, [settings?.discordUrl]);
 
   const currentSocials =
     settings?.socialLinks && settings.socialLinks.length > 0
       ? settings.socialLinks
       : FALLBACK_SOCIALS;
 
-  const footerCommitteeLinks = committees.map((c) => ({
-    label: c.shortName,
-    to: `/committee/${c.id}`,
-  }));
+  const footerCommitteeLinks = useMemo(() => {
+    return committees.map((c) => ({
+      label: c.shortName,
+      to: `/committee/${c.id}`,
+    }));
+  }, [committees]);
 
   const handleHashNav = (href: string) => {
     if (href.startsWith("/")) {
@@ -344,7 +338,7 @@ export function Footer() {
           </div>
 
           {/* Other link columns */}
-          {Object.entries(footerLinks).map(([section, links]) => (
+          {Object.entries(footerLinksToUse).map(([section, links]) => (
             <div key={section}>
               <div
                 style={{
