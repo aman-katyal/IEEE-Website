@@ -131,7 +131,12 @@ function CyclingStat({ stats, isLight }: { stats: StatItem[]; isLight: boolean }
         }}
       >
         {currentStat.prefix || ""}
-        {count.toLocaleString()}
+        {(() => {
+          const isYear =
+            (currentStat.value >= 1800 && currentStat.value <= 2100) ||
+            /year|founded|est/i.test(`${currentStat.label || ""} ${currentStat.sublabel || ""}`);
+          return isYear ? count.toString() : count.toLocaleString();
+        })()}
         {currentStat.suffix || ""}
       </div>
       <div
