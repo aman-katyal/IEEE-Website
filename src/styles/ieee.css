@@ -3,7 +3,9 @@
 :root {
   --boiler-black: #000000;
   --deep-space-blue: #001E3C;
-  --electric-blue: #38BDF8;
+  --ieee-blue-primary: #00629B;
+  --ieee-blue-dark: #002855;
+  --electric-blue: #00B5E2;
   --midnight-gray: #1A1A1B;
   --cyber-gold: #EBD3A9;
   --stellar-white: #F8F9FA;
@@ -29,9 +31,11 @@
 .light {
   --boiler-black: #F8FAFC;
   --deep-space-blue: #F1F5F9;
-  --electric-blue: #005A87; /* Slightly darker for better light-mode contrast */
+  --ieee-blue-primary: #00629B;
+  --ieee-blue-dark: #002855;
+  --electric-blue: #005A87;
   --midnight-gray: #F8FAFC;
-  --cyber-gold: #85754D; /* Darker Purdue Gold for text legibility on white */
+  --cyber-gold: #85754D;
   --stellar-white: #0F172A;
 
   --semantic-error: #DC2626;
@@ -145,7 +149,7 @@
 
 /* ─── Buttons ──────────────────────────────────── */
 .btn-primary {
-  background: var(--electric-blue);
+  background: var(--ieee-blue-primary);
   color: #FFFFFF;
   font-family: var(--font-body);
   font-size: 0.875rem;
