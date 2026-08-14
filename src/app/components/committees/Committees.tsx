@@ -6,7 +6,6 @@ import { Skeleton as BoneyardSkeleton } from "boneyard-js/react";
 import { Skeleton } from "../ui/skeleton";
 import { MagneticWrapper } from "../ui/MagneticWrapper";
 import type { Committee } from "../../../data/committees/types";
-import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
 
 function CommitteeCard({ c }: { c: Committee }) {
@@ -280,18 +279,6 @@ export function Committees() {
   const { committees, loading, error } = useCommittees();
   const { theme } = useTheme();
   const isLight = theme === "light";
-  const [selectedTag, setSelectedTag] = useState<string>("All");
-
-  const allTags = useMemo(() => {
-    const set = new Set<string>();
-    committees.forEach((c) => c.tags?.forEach((t) => set.add(t)));
-    return ["All", ...Array.from(set)];
-  }, [committees]);
-
-  const filteredCommittees = useMemo(() => {
-    if (selectedTag === "All") return committees;
-    return committees.filter((c) => c.tags?.includes(selectedTag));
-  }, [committees, selectedTag]);
 
   if (error) {
     return (
@@ -338,31 +325,6 @@ export function Committees() {
           padding: "0 clamp(16px, 4vw, 32px)",
         }}
       >
-        {allTags.length > 1 && (
-          <div
-            className="flex flex-wrap items-center justify-center gap-2 mb-8"
-            role="group"
-            aria-label="Committee filters"
-          >
-            {allTags.map((tag) => (
-              <button
-                key={tag}
-                onClick={() => setSelectedTag(tag)}
-                aria-pressed={selectedTag === tag}
-                aria-label={
-                  tag === "All" ? "Show all committees" : `Filter by ${tag}`
-                }
-                className={`px-3 py-1.5 rounded-full text-xs font-[family-name:var(--font-mono)] font-semibold transition-all duration-200 cursor-pointer border ${
-                  selectedTag === tag
-                    ? "bg-[var(--electric-blue)] text-white border-[var(--electric-blue)]"
-                    : "bg-[rgba(128,128,128,0.06)] text-[var(--text-secondary)] border-[var(--glass-border)] hover:border-[var(--electric-blue)]"
-                }`}
-              >
-                {tag}
-              </button>
-            ))}
-          </div>
-        )}
 
         <div
           style={{
@@ -408,7 +370,7 @@ export function Committees() {
                   letterSpacing: "0.1em",
                 }}
               >
-                = {filteredCommittees.length}
+                = {committees.length}
               </div>
             )}
           </div>
@@ -424,7 +386,7 @@ export function Committees() {
             style={{ minHeight: "200px" }}
           >
             <AnimatePresence mode="popLayout">
-              {filteredCommittees.map((c) => (
+              {committees.map((c) => (
                 <motion.div
                   key={c.id}
                   layout
