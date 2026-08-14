@@ -21,3 +21,7 @@
 ## 2026-08-06 - Array Search Inside Sort Callback (O(N^2) Bottleneck)
 **Learning:** Using `Array.prototype.indexOf` inside an `Array.prototype.sort` callback creates an O(N^2) complexity bottleneck, because `indexOf` performs a linear search on every comparison.
 **Action:** Always pre-compute a lookup table (e.g., using a `Map`) before the sort operation. A `Map.get()` lookup inside the sort callback takes O(1) time, reducing the overall sorting complexity to an efficient O(N log N).
+
+## 2026-08-10 - Synchronous Scroll Blocking
+**Learning:** Binding scroll event listeners without `{ passive: true }` blocks the main thread from scrolling the page until the event handler completes, causing jank and layout thrashing, especially when components update layout state on scroll.
+**Action:** Always add `{ passive: true }` to `addEventListener('scroll')` to allow the browser to scroll smoothly independently of script execution.
