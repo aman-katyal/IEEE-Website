@@ -5,3 +5,7 @@
 ## 2026-08-11 - Contextualize Event Action Links
 **Learning:** Generic links like 'Add' or 'Add to Google Calendar' within lists of events can lose meaning when read out of context by screen readers or accessed via an element list.
 **Action:** Always provide explicit `aria-label` attributes that incorporate unique identifying details (like `event.title`) for repeated interaction links within lists or cards.
+
+## 2026-08-13 - ARIA Group Role on Committee Toggle Buttons
+**Learning:** Filter button groups in React lack accessibility roles and labels for context.
+**Action:** Always wrap the container in `role="group"` with a descriptive `aria-label`, and use `aria-pressed` on the individual toggle buttons. Standalone text like 'All' must be contextualized using `aria-label`.
