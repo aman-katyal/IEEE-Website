@@ -209,11 +209,20 @@ export function CommitteePage() {
 
       return (
         <button
-          onClick={() =>
-            isExternal
-              ? window.open(url, "_blank", "noopener,noreferrer")
-              : navigate(url || "/join")
-          }
+          onClick={() => {
+            if (isExternal) {
+              try {
+                const urlObj = new URL(url);
+                if (urlObj.protocol === "http:" || urlObj.protocol === "https:") {
+                  window.open(urlObj.href, "_blank", "noopener,noreferrer");
+                }
+              } catch (e) {
+                // Invalid URL
+              }
+            } else {
+              navigate(url || "/join");
+            }
+          }}
           className="btn-primary"
           style={{
             width: "100%",
