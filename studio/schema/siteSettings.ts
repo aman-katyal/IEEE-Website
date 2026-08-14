@@ -122,6 +122,31 @@ export const siteSettings = defineType({
       type: 'file',
       group: 'partners',
     }),
+    defineField({
+      name: 'showCorporateTiers',
+      title: 'Show Corporate Tiers Section',
+      type: 'boolean',
+      group: 'partners',
+      description: 'Toggle to show or hide the tier breakdown section on the Partners page.',
+      initialValue: false,
+    }),
+    defineField({
+      name: 'partnerTierDescriptions',
+      title: 'Partner Tier Descriptions & Criteria',
+      type: 'array',
+      group: 'partners',
+      description: 'Descriptions and criteria for each sponsorship tier (e.g. Gold, Silver, Bronze).',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            { name: 'tier', title: 'Tier Name (e.g. Gold)', type: 'string' },
+            { name: 'color', title: 'Tier Color Accent (e.g. gold, silver, bronze)', type: 'string' },
+            { name: 'description', title: 'Tier Description & Qualification Criteria', type: 'text' },
+          ],
+        },
+      ],
+    }),
 
     // --- SOCIAL GROUP ---
     defineField({

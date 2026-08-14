@@ -165,6 +165,12 @@ export interface SiteSettings {
   partnersHeroTitle?: string;
   partnersHeroSubtitle?: string;
   partnersProspectusUrl?: string;
+  showCorporateTiers?: boolean;
+  partnerTierDescriptions?: {
+    tier: string;
+    color: string;
+    description: string;
+  }[];
   socialLinks?: {
     platform: string;
     url: string;
