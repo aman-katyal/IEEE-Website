@@ -131,6 +131,7 @@ export function JoinPage() {
                   href={discordUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="Join Purdue IEEE Discord server"
                   className="btn-primary inline-flex items-center gap-2.5 no-underline bg-[#5865F2] border-[#5865F2] hover:bg-[#4752C4] hover:border-[#4752C4]"
                 >
                   <MessageCircle size={18} />
@@ -220,6 +221,7 @@ export function JoinPage() {
                   href={paymentUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="Pay Purdue IEEE membership dues via TooCool"
                   className="w-full text-center flex items-center justify-center gap-2 no-underline bg-[var(--electric-blue)] hover:bg-[#005085] text-white font-bold py-3.5 px-4 rounded-lg shadow-md transition-colors uppercase tracking-wider text-sm"
                 >
                   Pay via TooCool
