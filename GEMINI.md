@@ -69,6 +69,7 @@ To deploy to Cloudflare Pages:
 7.  **Responsive Design:** Ensure all components are mobile-friendly using Tailwind's responsive prefixes.
 8.  **Sanity Image URL Safety:** Before appending query parameters (e.g., `?w=1400`) to Sanity CDN URLs in components, inspect `url.includes('?')` to prevent generating malformed double-query parameters.
 9.  **TypeScript 7.0 Alignment:** Keep `tsconfig.json` free of deprecated options like `baseUrl` or `ignoreDeprecations`. Use explicit relative path aliases (`"@/*": ["./src/*"]`).
+10. **Sanity Studio Schema Workflow:** Whenever schemas in `studio/schema/` are modified, always build (`cd studio && npm run build`) and deploy the updated studio to Sanity (`npx sanity deploy`).
 
 ## 📁 Key Files
 
