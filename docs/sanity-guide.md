@@ -1,4 +1,3 @@
-
 # Content Editor Guide (Sanity CMS)
 
 This guide is for Purdue IEEE officers and members who need to update the website's content without touching the code. We use **Sanity.io**, a flexible Headless CMS, to manage our data.
@@ -14,7 +13,7 @@ You can access the administrative interface at:
 
 ## 🏗️ Managing Committees
 
-The Technical Committees are the heart of our website. Each committee has its own dedicated page.
+The Technical Committees are the heart of our website. Each committee has its own dedicated page (`/committee/<slug>`).
 
 ### 1. Updating Basic Info
 - Select **Committee** from the sidebar.
@@ -25,9 +24,9 @@ The Technical Committees are the heart of our website. Each committee has its ow
 - **Chair (Officer):** **Reference Field.** Choose the chair directly from the dropdown of existing **Officer** documents. Their contact details will automatically propagate to the frontend.
 
 ### 2. Custom Sections (Dynamic Layout)
-We use a "block" system for committee pages. You can add, remove, and reorder these sections:
-- **Text Sections:** Standard paragraphs with optional images. Use this for "Subteams" or "Mission" statements.
-- **Project Sections:** A grid of cards for specific projects. Each item needs a name, description, and image.
+We use a block system for committee pages. You can add, remove, and reorder these sections:
+- **Text Sections:** Standard paragraphs with optional images. Use this for "Subteams", "Mission", or "History" statements.
+- **Project Sections:** A grid of cards for specific projects. Each item needs a name, description, and optional image. Mark flagship projects with `flagship: true`.
 - **FAQ Sections:** A list of questions and answers.
 - **Gallery Sections:** A collection of photos from the committee's history.
 
@@ -39,7 +38,7 @@ The Officers page is split into functional categories based on our Constitution.
 
 ### 1. Adding/Editing an Officer
 - Select **Officer** from the sidebar.
-- **Full Name & Role:** Ensure the role matches the official title (e.g., "AESC Chair").
+- **Full Name & Role:** Ensure the role matches the official title (e.g., "President", "Treasurer", "ROV Chair").
 - **Category:** **CRITICAL.** Select the functional area (Executive, Technical, Operations, or Member Involvement). This determines where they appear on the page.
 - **Officer Image:** Use a high-quality headshot. Sanity will automatically handle cropping and optimization.
 
@@ -52,32 +51,61 @@ We use a drag-and-drop system for ordering:
 
 ---
 
-## 🏗️ Cornerstone Committees (Operations/Involvement)
+## 🤝 Corporate Partners & Sponsors
 
-Cornerstone committees represent functional support teams (like Operations or Member Involvement).
+Manage all corporate sponsors and industry partners in one centralized place.
 
-### 1. Editing Cornerstone Info
-- Select **Cornerstone Committee** from the sidebar.
-- **Committee Name & Description:** General info.
-- **Committee Leads:** A list of leads for the sub-teams. For each lead:
-  - **Role:** The lead's role title (e.g., "Infrastructure").
-  - **Officer:** **Reference Field.** Select the officer from the dropdown of existing **Officer** documents.
-  - **Bio/Description:** A short description/bio of their sub-committee or role.
+### 1. Adding/Editing a Partner
+- Select **Partner** from the sidebar.
+- **Name:** Official company name (e.g., "Texas Instruments", "Qualcomm").
+- **Domain:** Company domain without protocols (e.g., `ti.com`). Used for automatic logo fetching and fallback links.
+- **Website URL:** Full URL (e.g., `https://www.ti.com/`).
+- **Tier:** Select `Gold`, `Silver`, or `Bronze`.
+- **Logo:** Upload a high-resolution transparent PNG/SVG logo.
+- **Order:** Integer defining display priority.
+
+> [!NOTE]
+> Partners published here automatically sync across both the **Home page TechMarquee** and the **Partners page** (`/partners`).
 
 ---
 
-## 📅 Calendar & Events
+## ⚙️ Global Site Settings
 
-Events are currently synced with our Google Calendar configuration, but supplemental metadata may be managed here in the future. Check with the Webmaster for current status.
+Site-wide parameters are configured under **Global Site Settings** in the Sanity Studio sidebar.
+
+### 1. 📅 Calendar & Events
+- **Google Calendar ID:** The public Google Calendar address:
+  ```text
+  7e80819a448e91ef81721772e0c6d9236076b45ad51343474265c1b7d4a363f1@group.calendar.google.com
+  ```
+  *(Used to generate direct subscribe links and sync live events on the Home and Calendar pages).*
+- **Google Calendar Embed URL:** The full embed URL:
+  ```text
+  https://calendar.google.com/calendar/embed?src=7e80819a448e91ef81721772e0c6d9236076b45ad51343474265c1b7d4a363f1%40group.calendar.google.com&ctz=America%2FIndiana%2FIndianapolis
+  ```
+
+### 2. 💼 Partners Page Configuration
+- **Show Corporate Tiers Section:** Boolean toggle (`true` / `false`). When `false` (default), the Partners page displays a clean, unified sponsor directory grid. When `true`, it breaks sponsors down into Gold, Silver, and Bronze tier sections.
+- **Partners Prospectus PDF:** Upload the current annual Industrial Relations sponsorship prospectus PDF to enable the download button on `/partners`.
+- **Hero Title & Subtitle:** Customizable header copy for the Partners page.
+
+### 3. 📜 Legal & Governance
+- **Branch Constitution:** Upload the current Purdue IEEE Constitution PDF and description.
+- **Committee Bylaws:** Upload individual Technical Committee bylaws PDFs.
+
+### 4. 💳 General & Dues
+- **Discord Invite URL:** Official community invite link.
+- **TooCool Payment URL:** Link for online membership dues payment.
+- **Dues Options & Benefits:** Customizable membership price points and benefit bullet points shown on the Join page (`/join`).
 
 ---
 
 ## 🚀 Publishing Changes
 
-1.  Make your edits in any document.
-2.  Observe the status in the bottom right corner (e.g., "Draft", "Edited").
-3.  Click the big green **Publish** button.
-4.  Your changes will be live on the website within seconds!
+1. Make your edits in any document.
+2. Observe the status in the bottom right corner (e.g., "Draft", "Edited").
+3. Click the big green **Publish** button.
+4. Your changes will be live on the website within seconds!
 
 ## 💡 Pro-Tips
 - **Markdown Support:** Many text fields support Markdown. Use `**text**` for bold and `*text*` for italics.

@@ -65,14 +65,16 @@ export const siteSettings = defineType({
       title: 'Google Calendar Embed URL',
       type: 'url',
       group: 'calendar',
-      description: 'The URL for the Google Calendar embed.',
+      description: 'The full iframe embed URL for Google Calendar. Example: https://calendar.google.com/calendar/embed?src=7e80819a448e91ef81721772e0c6d9236076b45ad51343474265c1b7d4a363f1%40group.calendar.google.com&ctz=America%2FIndiana%2FIndianapolis',
+      initialValue: 'https://calendar.google.com/calendar/embed?src=7e80819a448e91ef81721772e0c6d9236076b45ad51343474265c1b7d4a363f1%40group.calendar.google.com&ctz=America%2FIndiana%2FIndianapolis',
     }),
     defineField({
       name: 'calendarId',
       title: 'Google Calendar ID',
       type: 'string',
       group: 'calendar',
-      description: 'The direct Google Calendar ID (used in the subscribe link).',
+      description: 'The public Google Calendar ID email address. Default: 7e80819a448e91ef81721772e0c6d9236076b45ad51343474265c1b7d4a363f1@group.calendar.google.com. Used to generate "Subscribe to Calendar" and event synchronization links.',
+      initialValue: '7e80819a448e91ef81721772e0c6d9236076b45ad51343474265c1b7d4a363f1@group.calendar.google.com',
     }),
 
     // --- LEGAL GROUP ---
