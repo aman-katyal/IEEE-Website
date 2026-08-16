@@ -232,4 +232,46 @@ describe('useGoogleCalendarEvents', () => {
     expect(hook2.result.current.events).toHaveLength(1);
     expect(hook3.result.current.events).toHaveLength(1);
   });
+
+  it('should handle concurrent fetch failure', async () => {
+    const useGoogleCalendarEvents = await getHook();
+
+    let rejectFetch: (reason?: any) => void;
+
+    // To mock a pending fetch that will fail, return a promise we can reject
+    const fetchPromise = new Promise<any>((_, reject) => {
+      rejectFetch = reject;
+    });
+
+    mockFetch.mockReturnValueOnce(fetchPromise);
+
+    const hook1 = renderHook(() => useGoogleCalendarEvents());
+    const hook2 = renderHook(() => useGoogleCalendarEvents());
+
+    // Only one network request should be in flight
+    expect(mockFetch.mock.calls.length).toBe(1);
+
+    expect(hook1.result.current.loading).toBe(true);
+    expect(hook2.result.current.loading).toBe(true);
+
+    const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    act(() => {
+      rejectFetch!(new Error('Concurrent Fetch Error'));
+    });
+
+    await waitFor(() => {
+      expect(hook1.result.current.loading).toBe(false);
+    });
+
+    expect(hook2.result.current.loading).toBe(false);
+
+    expect(hook1.result.current.error).toBe('Concurrent Fetch Error');
+    expect(hook2.result.current.error).toBe('Concurrent Fetch Error');
+
+    expect(hook1.result.current.events).toEqual([]);
+    expect(hook2.result.current.events).toEqual([]);
+
+    consoleWarnSpy.mockRestore();
+  });
 });
