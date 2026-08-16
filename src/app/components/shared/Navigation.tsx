@@ -2,7 +2,6 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { Menu, X, ChevronDown, ArrowUpRight } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { useTheme } from "next-themes";
-import { ThemeToggle } from "./ThemeToggle";
 import { IeeePurdueLogo } from "./IeeePurdueLogo";
 import { useCommittees, prefetchData, useSiteSettings } from "../../../hooks/useSanityData";
 import { MagneticWrapper } from "../ui/MagneticWrapper";
@@ -382,16 +381,6 @@ export function Navigation() {
               )
             ))}
 
-            <div
-              style={{
-                width: "1px",
-                height: "20px",
-                background: "var(--glass-border)",
-              }}
-            />
-
-            <ThemeToggle />
-
             <MagneticWrapper strength={0.1}>
               <a
                 href={discordUrl}
@@ -421,9 +410,8 @@ export function Navigation() {
             </MagneticButton>
           </div>
 
-          {/* Mobile Hamburger & Toggle */}
+          {/* Mobile Hamburger */}
           <div className="nav-mobile-toggle-group" style={{ alignItems: "center", gap: "12px" }}>
-            <ThemeToggle />
             <button
               className="nav-mobile-toggle"
               onClick={() => setMenuOpen(!menuOpen)}

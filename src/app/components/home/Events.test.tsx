@@ -102,7 +102,7 @@ describe("Events Component", () => {
     render(<Events />);
 
     expect(screen.getByText("No upcoming events right now. Check back soon!")).toBeInTheDocument();
-    expect(screen.getByText("0 events")).toBeInTheDocument();
+    expect(screen.getByText("0 upcoming events")).toBeInTheDocument();
   });
 
   it("renders up to 4 events and highlights the next event in the sidebar", () => {
@@ -127,7 +127,7 @@ describe("Events Component", () => {
     expect(screen.getByText("View All Events")).toBeInTheDocument();
 
     // Check total events count
-    expect(screen.getByText("5 events")).toBeInTheDocument();
+    expect(screen.getByText("5 upcoming events")).toBeInTheDocument();
 
     expect(screen.getByText("// Next Event")).toBeInTheDocument();
 

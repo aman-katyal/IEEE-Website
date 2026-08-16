@@ -1,5 +1,5 @@
 import { defineField, defineType } from 'sanity'
-import { Users, Info, Image as ImageIcon, Contact, ShieldCheck, Share2, BarChart3 } from 'lucide-react'
+import { Users, Info, Image as ImageIcon, Contact, Share2, BarChart3 } from 'lucide-react'
 
 export const committee = defineType({
   name: 'committee',
@@ -9,7 +9,6 @@ export const committee = defineType({
   groups: [
     { name: 'info', title: 'General Info', icon: Info, default: true },
     { name: 'media', title: 'Media', icon: ImageIcon },
-    { name: 'status', title: 'Status & Badges', icon: ShieldCheck },
     { name: 'content', title: 'Page Content', icon: BarChart3 },
     { name: 'contact', title: 'Contact & Social', icon: Contact },
     { name: 'social', title: 'Social Links', icon: Share2 },
@@ -59,29 +58,6 @@ export const committee = defineType({
       type: 'text',
       group: 'info',
       rows: 5,
-    }),
-
-    // --- STATUS GROUP ---
-    defineField({
-      name: 'status',
-      title: 'Status Label',
-      type: 'string',
-      group: 'status',
-      initialValue: 'Active',
-    }),
-    defineField({
-      name: 'statusColor',
-      title: 'Status Text Color (Hex)',
-      type: 'string',
-      group: 'status',
-      description: 'e.g., #FFFFFF',
-    }),
-    defineField({
-      name: 'statusBg',
-      title: 'Status Background (RGBA)',
-      type: 'string',
-      group: 'status',
-      description: 'e.g., rgba(0, 200, 83, 0.2)',
     }),
 
     // --- MEDIA GROUP ---

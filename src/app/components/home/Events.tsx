@@ -186,7 +186,6 @@ export function Events() {
   const { theme } = useTheme();
   const isLight = theme === "light";
   const events = liveEvents;
-  const isLive = liveEvents.length > 0;
 
   // Limit to 4 events for the home page
   const displayEvents = events.slice(0, 4);
@@ -253,36 +252,6 @@ export function Events() {
               gap: "12px",
             }}
           >
-            {/* Live indicator */}
-            {isLive && (
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  fontFamily: "var(--font-mono)",
-                  fontSize: "0.6rem",
-                  letterSpacing: "0.12em",
-                  color: isLight ? "#16A34A" : "#00C853",
-                  textTransform: "uppercase",
-                }}
-              >
-                <span
-                  style={{
-                    width: 6,
-                    height: 6,
-                    borderRadius: "50%",
-                    background: isLight ? "#16A34A" : "#00C853",
-                    boxShadow: isLight ? "none" : "0 0 8px rgba(0,200,83,0.6)",
-                    display: "inline-block",
-                  }}
-                />
-                <span className="hidden sm:inline">
-                  Live from Google Calendar
-                </span>
-                <span className="sm:hidden">Live</span>
-              </div>
-            )}
             <div
               style={{
                 fontFamily: "var(--font-mono)",
@@ -293,7 +262,7 @@ export function Events() {
                 opacity: isLight ? 1 : 0.8,
               }}
             >
-              {loading ? "..." : `${events.length} events`}
+              {loading ? "..." : `${events.length} upcoming events`}
             </div>
           </div>
         </div>

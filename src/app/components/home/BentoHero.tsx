@@ -429,20 +429,6 @@ function LabStatusRack({ committees, isLight }: { committees: any[]; isLight: bo
                 </Link>
               </div>
 
-              {/* Schedule info */}
-              <div
-                style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: "0.6rem",
-                  color: "var(--electric-blue)",
-                  marginBottom: "8px",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.02em",
-                }}
-              >
-                Schedule: {hoveredSlot.meeting}
-              </div>
-
               <div
                 style={{
                   fontFamily: "var(--font-body)",

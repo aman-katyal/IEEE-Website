@@ -28,7 +28,7 @@ export default function App() {
   }, []);
 
   return (
-    <ThemeProvider attribute="class" defaultTheme="dark">
+    <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark">
       <BackToTop />
       
       <AnimatePresence mode="wait">
