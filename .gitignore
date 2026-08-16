@@ -5,6 +5,8 @@ gha-creds-*.json
 .env.*.local
 dist
 dist-ssr
+studio/dist
+studio/.sanity
 *.local
 node_modules
 .worktrees/
