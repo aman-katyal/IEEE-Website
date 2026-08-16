@@ -59,7 +59,7 @@ export const getOrderedLeaders = (leaders: Leader[], config: OfficersConfig | nu
   orderedIds.forEach((id: string, index: number) => orderMap.set(id, index));
 
   // Sort categoryLeaders based on orderedIds
-  const sorted = [...categoryLeaders].sort((a, b) => {
+  const sorted = categoryLeaders.sort((a, b) => {
     const indexA = orderMap.has(a._id) ? orderMap.get(a._id)! : -1;
     const indexB = orderMap.has(b._id) ? orderMap.get(b._id)! : -1;
 
