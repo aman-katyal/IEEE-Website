@@ -107,6 +107,14 @@ export const siteSettings = defineType({
 
     // --- PARTNERS GROUP ---
     defineField({
+      name: 'showCorporateTiers',
+      title: 'Show Corporate Tiers Breakdown',
+      type: 'boolean',
+      group: 'partners',
+      description: 'Toggle corporate tier breakdown: When OFF (default), shows a clean unified "Our Corporate Partners & Sponsors" directory. When ON, shows separate Gold, Silver, and Bronze tier sections.',
+      initialValue: false,
+    }),
+    defineField({
       name: 'partnersHeroTitle',
       title: 'Partners Hero Title',
       type: 'string',
@@ -123,14 +131,6 @@ export const siteSettings = defineType({
       title: 'Partners Prospectus PDF',
       type: 'file',
       group: 'partners',
-    }),
-    defineField({
-      name: 'showCorporateTiers',
-      title: 'Show Corporate Tiers Section',
-      type: 'boolean',
-      group: 'partners',
-      description: 'Toggle to show or hide the tier breakdown section on the Partners page.',
-      initialValue: false,
     }),
     defineField({
       name: 'partnerTierDescriptions',
