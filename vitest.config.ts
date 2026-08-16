@@ -2,8 +2,7 @@ import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
-  esbuild: false,
-  plugins: [react({ oxc: {} })],
+  plugins: [react({ disableOxcRecommendation: true })],
   resolve: {
     tsconfigPaths: true,
   },
