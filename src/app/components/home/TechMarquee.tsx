@@ -3,24 +3,7 @@ import { Link } from "react-router";
 import { ArrowRight } from "lucide-react";
 import { useTheme } from "next-themes";
 import { usePartners } from "../../../hooks/useSanityData";
-
-const STATIC_PARTNERS: { name: string; domain: string; logoUrl?: string }[] = [
-  { name: "Texas Instruments", domain: "ti.com" },
-  { name: "Qualcomm", domain: "qualcomm.com" },
-  { name: "SpaceX", domain: "spacex.com" },
-  { name: "Intel", domain: "intel.com" },
-  { name: "NVIDIA", domain: "nvidia.com" },
-  { name: "Lockheed Martin", domain: "lockheedmartin.com" },
-  { name: "Raytheon Technologies", domain: "rtx.com" },
-  { name: "Northrop Grumman", domain: "northropgrumman.com" },
-  { name: "Boeing", domain: "boeing.com" },
-  { name: "L3Harris", domain: "l3harris.com" },
-  { name: "AMD", domain: "amd.com" },
-  { name: "Apple", domain: "apple.com" },
-  { name: "Cisco", domain: "cisco.com" },
-  { name: "Honeywell", domain: "honeywell.com" },
-  { name: "Caterpillar", domain: "caterpillar.com" },
-];
+import { STATIC_PARTNERS } from "../../../data/partners";
 
 export function TechMarquee() {
   const { theme } = useTheme();

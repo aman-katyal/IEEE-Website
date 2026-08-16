@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PartnersPage } from './PartnersPage';
 import { MemoryRouter } from 'react-router';
 import * as useSanityData from '../../hooks/useSanityData';
+import { STATIC_PARTNERS } from '../../data/partners';
 
 // Mock hooks
 vi.mock('../../hooks/useSanityData', () => ({
@@ -20,7 +21,8 @@ describe('PartnersPage', () => {
   const mockSettings = {
     partnersHeroTitle: 'Test Partner Title',
     partnersHeroSubtitle: 'Test Partner Subtitle',
-    partnersProspectusUrl: 'https://prospectus.test'
+    partnersProspectusUrl: 'https://prospectus.test',
+    showCorporateTiers: false,
   };
 
   beforeEach(() => {
@@ -67,9 +69,33 @@ describe('PartnersPage', () => {
     
     expect(screen.queryByRole('link', { name: /Branch Constitution/i })).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Become a Partner/i })).toHaveAttribute('href', 'mailto:industry@purdueieee.org');
+    expect(screen.getByRole('link', { name: /Sponsorship Prospectus/i })).toHaveAttribute('href', 'https://prospectus.test');
   });
 
-  it('renders all partner tiers correctly', () => {
+  it('renders unified corporate partners & sponsors directory when tiers are hidden (default)', () => {
+    render(
+      <MemoryRouter>
+        <PartnersPage />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText('Our Corporate Partners & Sponsors')).toBeInTheDocument();
+    expect(screen.getByText('Gold Partner 1')).toBeInTheDocument();
+    expect(screen.getByText('Silver Partner 1')).toBeInTheDocument();
+    expect(screen.getByText('Bronze Partner 1')).toBeInTheDocument();
+
+    // Tiers headers should not appear when showCorporateTiers is false
+    expect(screen.queryByText('Silver Partners')).not.toBeInTheDocument();
+    expect(screen.queryByText('Bronze Partners')).not.toBeInTheDocument();
+  });
+
+  it('renders all partner tiers correctly when showCorporateTiers is true', () => {
+    (useSanityData.useSiteSettings as any).mockReturnValue({
+      settings: { ...mockSettings, showCorporateTiers: true },
+      loading: false,
+      error: null
+    });
+
     render(
       <MemoryRouter>
         <PartnersPage />
@@ -84,6 +110,32 @@ describe('PartnersPage', () => {
 
     expect(screen.getByText('Bronze Partners')).toBeInTheDocument();
     expect(screen.getByText('Bronze Partner 1')).toBeInTheDocument();
+  });
+
+  it('renders IEEE Gold Partner recognition callout', () => {
+    render(
+      <MemoryRouter>
+        <PartnersPage />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText(/IEEE Exemplary Student Branch — Gold Partner Recognition/i)).toBeInTheDocument();
+  });
+
+  it('renders fallback partners from STATIC_PARTNERS when sanityPartners is empty', () => {
+    (useSanityData.usePartners as any).mockReturnValue({
+      partners: [],
+      loading: false,
+      error: null
+    });
+
+    render(
+      <MemoryRouter>
+        <PartnersPage />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText(STATIC_PARTNERS[0].name)).toBeInTheDocument();
   });
 
   it('renders fallback content when settings are missing', () => {

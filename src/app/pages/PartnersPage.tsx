@@ -1,20 +1,29 @@
 import { useEffect, useState, useMemo } from "react";
 import { motion } from "motion/react";
 import { useTheme } from "next-themes";
-import { Mail, Award, Rocket, Shield, Cpu } from "lucide-react";
+import { Mail, Award, Rocket, Shield, Cpu, Download } from "lucide-react";
 import {
   usePartners,
   useSiteSettings,
   Partner,
 } from "../../hooks/useSanityData";
+import { STATIC_PARTNERS } from "../../data/partners";
 
 export function PartnersPage() {
   const { theme } = useTheme();
   const isLight = theme === "light";
   const { settings, loading: settingsLoading } = useSiteSettings();
-  const { partners, loading: partnersLoading } = usePartners();
+  const { partners: sanityPartners, loading: partnersLoading } = usePartners();
 
   const loading = settingsLoading || partnersLoading;
+
+  // Use Sanity partners if populated, otherwise use centralized static partners
+  const partners = useMemo(
+    () => (sanityPartners && sanityPartners.length > 0 ? sanityPartners : STATIC_PARTNERS),
+    [sanityPartners]
+  );
+
+  const showCorporateTiers = settings?.showCorporateTiers === true;
 
   const goldPartners = useMemo(
     () => partners.filter((p) => p.tier === "Gold"),
@@ -77,7 +86,7 @@ export function PartnersPage() {
     );
   }
 
-  // Use dynamic content from settings or fall back to current hardcoded values
+  // Use dynamic content from settings or fall back to default values
   const heroTitle =
     settings?.partnersHeroTitle ||
     "Empowering the next generation of innovators";
@@ -168,12 +177,29 @@ export function PartnersPage() {
                 <Mail size={18} />
                 Become a Partner
               </a>
+              {settings?.partnersProspectusUrl && (
+                <a
+                  href={settings.partnersProspectusUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-ghost"
+                  style={{
+                    textDecoration: "none",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                  }}
+                >
+                  <Download size={18} />
+                  Sponsorship Prospectus
+                </a>
+              )}
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Partners Grid */}
+      {/* Partners Grid Section */}
       <section style={{ padding: "64px 0 128px" }}>
         <div
           style={{
@@ -182,189 +208,243 @@ export function PartnersPage() {
             padding: "0 clamp(16px, 4vw, 32px)",
           }}
         >
-          {/* Gold Tier */}
-          <div style={{ marginBottom: "80px" }}>
-            <div
+          {/* IEEE Gold Partner Recognition Callout */}
+          <div
+            className="glass-card"
+            style={{
+              padding: "20px 24px",
+              marginBottom: "48px",
+              borderLeft: "4px solid var(--cyber-gold)",
+              display: "flex",
+              alignItems: "flex-start",
+              gap: "16px",
+              background: "rgba(235, 211, 169, 0.04)",
+            }}
+          >
+            <Award
+              size={20}
               style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "16px",
-                marginBottom: "32px",
+                color: "var(--cyber-gold)",
+                flexShrink: 0,
+                marginTop: "2px",
               }}
-            >
-              <Award style={{ color: "var(--cyber-gold)" }} size={24} />
-              <h2
+            />
+            <div>
+              <p
                 style={{
                   fontFamily: "var(--font-headline)",
-                  fontSize: "1.5rem",
-                  color: "var(--text-primary)",
-                  letterSpacing: "0.05em",
-                  textTransform: "uppercase",
+                  fontSize: "14px",
+                  fontWeight: 700,
+                  color: "var(--cyber-gold)",
+                  marginBottom: "4px",
+                  letterSpacing: "0.03em",
                 }}
               >
-                Gold Partners
-              </h2>
+                IEEE Exemplary Student Branch — Gold Partner Recognition
+              </p>
+              <p
+                style={{
+                  fontFamily: "var(--font-body)",
+                  fontSize: "13px",
+                  color: "var(--text-secondary)",
+                  lineHeight: 1.65,
+                  margin: 0,
+                }}
+              >
+                Gold Partner status is awarded by IEEE to student branches
+                that demonstrate exceptional technical activity, community
+                impact, and organizational excellence. Purdue IEEE has earned
+                this recognition through consistent leadership in engineering
+                education, record member engagement, and nationally recognized
+                technical projects. Gold Partners receive premium placement at
+                our recruiting events and direct access to our most
+                accomplished members.
+              </p>
+            </div>
+          </div>
+
+          {/* Conditional Tier Breakdown or Unified Sponsors Grid */}
+          {showCorporateTiers ? (
+            <>
+              {/* Gold Tier */}
+              {goldPartners.length > 0 && (
+                <div style={{ marginBottom: "80px" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "16px",
+                      marginBottom: "32px",
+                    }}
+                  >
+                    <Award style={{ color: "var(--cyber-gold)" }} size={24} />
+                    <h2
+                      style={{
+                        fontFamily: "var(--font-headline)",
+                        fontSize: "1.5rem",
+                        color: "var(--text-primary)",
+                        letterSpacing: "0.05em",
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      Gold Partners
+                    </h2>
+                    <div
+                      style={{
+                        flex: 1,
+                        height: "1px",
+                        background:
+                          "linear-gradient(90deg, var(--glass-border), transparent)",
+                      }}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {goldPartners.map((p) => (
+                      <PartnerCard
+                        key={p.domain || p.name}
+                        partner={p}
+                        isLight={isLight}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Silver Tier */}
+              {silverPartners.length > 0 && (
+                <div style={{ marginBottom: "80px" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "16px",
+                      marginBottom: "32px",
+                    }}
+                  >
+                    <Shield style={{ color: "var(--text-secondary)" }} size={24} />
+                    <h2
+                      style={{
+                        fontFamily: "var(--font-headline)",
+                        fontSize: "1.25rem",
+                        color: "var(--text-primary)",
+                        letterSpacing: "0.05em",
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      Silver Partners
+                    </h2>
+                    <div
+                      style={{
+                        flex: 1,
+                        height: "1px",
+                        background:
+                          "linear-gradient(90deg, var(--glass-border), transparent)",
+                      }}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
+                    {silverPartners.map((p) => (
+                      <PartnerCard
+                        key={p.domain || p.name}
+                        partner={p}
+                        isLight={isLight}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Bronze Tier */}
+              {bronzePartners.length > 0 && (
+                <div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "16px",
+                      marginBottom: "32px",
+                    }}
+                  >
+                    <Cpu style={{ color: "#CD7F32" }} size={24} />
+                    <h2
+                      style={{
+                        fontFamily: "var(--font-headline)",
+                        fontSize: "1.1rem",
+                        color: "var(--text-primary)",
+                        letterSpacing: "0.05em",
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      Bronze Partners
+                    </h2>
+                    <div
+                      style={{
+                        flex: 1,
+                        height: "1px",
+                        background:
+                          "linear-gradient(90deg, var(--glass-border), transparent)",
+                      }}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    {bronzePartners.map((p) => (
+                      <PartnerCard
+                        key={p.domain || p.name}
+                        partner={p}
+                        isLight={isLight}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          ) : (
+            /* Unified Sponsors Directory Grid */
+            <div>
               <div
                 style={{
-                  flex: 1,
-                  height: "1px",
-                  background:
-                    "linear-gradient(90deg, var(--glass-border), transparent)",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "16px",
+                  marginBottom: "32px",
                 }}
-              />
-            </div>
-
-            {/* IEEE Gold Partner Explanation Callout */}
-            <div
-              className="glass-card"
-              style={{
-                padding: "20px 24px",
-                marginBottom: "28px",
-                borderLeft: "4px solid var(--cyber-gold)",
-                display: "flex",
-                alignItems: "flex-start",
-                gap: "16px",
-                background: "rgba(235, 211, 169, 0.04)",
-              }}
-            >
-              <Award
-                size={20}
-                style={{
-                  color: "var(--cyber-gold)",
-                  flexShrink: 0,
-                  marginTop: "2px",
-                }}
-              />
-              <div>
-                <p
+              >
+                <Award style={{ color: "var(--cyber-gold)" }} size={24} />
+                <h2
                   style={{
                     fontFamily: "var(--font-headline)",
-                    fontSize: "14px",
-                    fontWeight: 700,
-                    color: "var(--cyber-gold)",
-                    marginBottom: "4px",
-                    letterSpacing: "0.03em",
+                    fontSize: "1.5rem",
+                    color: "var(--text-primary)",
+                    letterSpacing: "0.05em",
+                    textTransform: "uppercase",
                   }}
                 >
-                  IEEE Exemplary Student Branch — Gold Partner Recognition
-                </p>
-                <p
+                  Our Corporate Partners & Sponsors
+                </h2>
+                <div
                   style={{
-                    fontFamily: "var(--font-body)",
-                    fontSize: "13px",
-                    color: "var(--text-secondary)",
-                    lineHeight: 1.65,
-                    margin: 0,
+                    flex: 1,
+                    height: "1px",
+                    background:
+                      "linear-gradient(90deg, var(--glass-border), transparent)",
                   }}
-                >
-                  Gold Partner status is awarded by IEEE to student branches
-                  that demonstrate exceptional technical activity, community
-                  impact, and organizational excellence. Purdue IEEE has earned
-                  this recognition through consistent leadership in engineering
-                  education, record member engagement, and nationally recognized
-                  technical projects. Gold Partners receive premium placement at
-                  our recruiting events and direct access to our most
-                  accomplished members.
-                </p>
+                />
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
+                {partners.map((p) => (
+                  <PartnerCard
+                    key={p.domain || p.name}
+                    partner={p}
+                    isLight={isLight}
+                  />
+                ))}
               </div>
             </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {goldPartners.map((p) => (
-                <PartnerCard
-                  key={p.domain || p.name}
-                  partner={p}
-                  isLight={isLight}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Silver Tier */}
-          <div style={{ marginBottom: "80px" }}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "16px",
-                marginBottom: "32px",
-              }}
-            >
-              <Shield style={{ color: "var(--text-secondary)" }} size={24} />
-              <h2
-                style={{
-                  fontFamily: "var(--font-headline)",
-                  fontSize: "1.25rem",
-                  color: "var(--text-primary)",
-                  letterSpacing: "0.05em",
-                  textTransform: "uppercase",
-                }}
-              >
-                Silver Partners
-              </h2>
-              <div
-                style={{
-                  flex: 1,
-                  height: "1px",
-                  background:
-                    "linear-gradient(90deg, var(--glass-border), transparent)",
-                }}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
-              {silverPartners.map((p) => (
-                <PartnerCard
-                  key={p.domain || p.name}
-                  partner={p}
-                  isLight={isLight}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Bronze Tier */}
-          <div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "16px",
-                marginBottom: "32px",
-              }}
-            >
-              <Cpu style={{ color: "#CD7F32" }} size={24} />
-              <h2
-                style={{
-                  fontFamily: "var(--font-headline)",
-                  fontSize: "1.1rem",
-                  color: "var(--text-primary)",
-                  letterSpacing: "0.05em",
-                  textTransform: "uppercase",
-                }}
-              >
-                Bronze Partners
-              </h2>
-              <div
-                style={{
-                  flex: 1,
-                  height: "1px",
-                  background:
-                    "linear-gradient(90deg, var(--glass-border), transparent)",
-                }}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {bronzePartners.map((p) => (
-                <PartnerCard
-                  key={p.domain || p.name}
-                  partner={p}
-                  isLight={isLight}
-                />
-              ))}
-            </div>
-          </div>
+          )}
         </div>
       </section>
 
@@ -425,7 +505,7 @@ function PartnerCard({
   const [logoError, setLogoError] = useState(false);
   const [useFavicon, setUseFavicon] = useState(false);
 
-  // Resolve source: Sanity URL -> unavatar clearbit proxy (bypasses adblockers) -> Google S2 favicon
+  // Resolve source: Sanity URL -> unavatar clearbit proxy -> Google S2 favicon
   let logoSrc = partner.logoUrl;
   if (!logoSrc && partner.domain) {
     if (useFavicon) {
@@ -444,23 +524,24 @@ function PartnerCard({
   };
 
   const showLogo = logoSrc && !logoError;
+  const destinationUrl = partner.websiteUrl || (partner.domain ? `https://${partner.domain}` : undefined);
 
   const cardContent = (
     <motion.div
       className="glass-card"
       whileHover={{ y: -5 }}
       style={{
-        padding: "32px",
+        padding: "24px",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        gap: "16px",
+        gap: "14px",
         background: isLight
           ? "rgba(255,255,255,0.5)"
           : "rgba(255,255,255,0.02)",
         height: "100%",
-        minHeight: partner.tier === "Gold" ? "180px" : "140px",
+        minHeight: "130px",
       }}
     >
       {showLogo ? (
@@ -470,8 +551,8 @@ function PartnerCard({
           loading="lazy"
           onError={handleImageError}
           style={{
-            maxHeight: partner.tier === "Gold" ? "60px" : "40px",
-            maxWidth: "80%",
+            maxHeight: "48px",
+            maxWidth: "85%",
             filter:
               isLight || partner.logoUrl
                 ? "none"
@@ -483,12 +564,12 @@ function PartnerCard({
         <div
           style={{
             width: "100%",
-            height: partner.tier === "Gold" ? "60px" : "40px",
+            height: "48px",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             fontWeight: "bold",
-            fontSize: "1.15rem",
+            fontSize: "1.05rem",
             color: "var(--cyber-gold)",
             textAlign: "center",
           }}
@@ -501,10 +582,10 @@ function PartnerCard({
         <span
           style={{
             fontFamily: "var(--font-mono)",
-            fontSize: "0.7rem",
+            fontSize: "0.68rem",
             color: "var(--text-muted)",
             textTransform: "uppercase",
-            letterSpacing: "0.1em",
+            letterSpacing: "0.08em",
             textAlign: "center",
           }}
         >
@@ -514,10 +595,10 @@ function PartnerCard({
     </motion.div>
   );
 
-  if (partner.websiteUrl) {
+  if (destinationUrl) {
     return (
       <a
-        href={partner.websiteUrl}
+        href={destinationUrl}
         target="_blank"
         rel="noopener noreferrer"
         aria-label={`Visit ${partner.name} website`}
