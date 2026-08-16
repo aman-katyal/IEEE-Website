@@ -286,6 +286,7 @@ pwsh ./scripts/issue-start.ps1 <issue-id>
 **When multiple independent issues exist:** dispatch parallel subagents with isolated workspace branches, one per issue. Each subagent receives the issue body as its spec.
 
 **AI agent safety rules:**
+- Commit immediately after every discrete change or task (`git commit -m "<type>(<scope>): <desc> (#<id>)"`).
 - Draft changes; do not force-push to master without a PR review.
 - Check for an existing open PR for the same issue before creating a new branch.
 - Ensure idempotency: if a branch already exists, check it out rather than creating a duplicate.

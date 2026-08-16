@@ -70,6 +70,14 @@ To deploy to Cloudflare Pages:
 8.  **Sanity Image URL Safety:** Before appending query parameters (e.g., `?w=1400`) to Sanity CDN URLs in components, inspect `url.includes('?')` to prevent generating malformed double-query parameters.
 9.  **TypeScript 7.0 Alignment:** Keep `tsconfig.json` free of deprecated options like `baseUrl` or `ignoreDeprecations`. Use explicit relative path aliases (`"@/*": ["./src/*"]`).
 10. **Sanity Studio Schema Workflow:** Whenever schemas in `studio/schema/` are modified, always build (`cd studio && npm run build`) and deploy the updated studio to Sanity (`npx sanity deploy`).
+11. **Strict GitHub Issue & PR Workflow (MANDATORY):**
+    - **NEVER** run bare/raw `gh issue create`, `gh issue list`, `gh pr create` commands directly.
+    - **ALWAYS** execute commands via the repository Python tool: `python -m gh_tool <issue|pr|label> ...` (under `.agents/tools/`) or via `npm run issue:*` / `npm run pr:*` scripts.
+    - All issues MUST adhere to the 4-dimension label taxonomy (`type:`, `priority:`, `status:`, `area:`) and required Markdown template sections validated by `python -m gh_tool issue lint`.
+12. **Atomic Commits After Every Change (MANDATORY):**
+    - Create a git commit immediately after completing every discrete change, bugfix, or sub-task.
+    - Use clear, conventional commit messages (e.g., `feat: ...`, `fix: ...`, `refactor: ...`, `docs: ...`, `chore: ...`) referencing the relevant issue number (e.g., `fix(committees): resolve image path (#72)`).
+    - Never leave accumulated uncommitted edits across multiple tasks.
 
 ## 📁 Key Files
 

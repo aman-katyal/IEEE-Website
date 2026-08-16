@@ -11,7 +11,14 @@
     "coverage": "vitest run --coverage",
     "deploy": "npm run build && wrangler deploy",
     "preview": "npm run build && wrangler dev",
-    "issue:start": "pwsh ./scripts/issue-start.ps1"
+    "issue:start": "pwsh ./scripts/issue-start.ps1",
+    "issue:lint": "python .agents/tools/gh_tool issue lint",
+    "issue:suggest": "python .agents/tools/gh_tool issue suggest-labels",
+    "issue:create": "python .agents/tools/gh_tool issue create",
+    "issue:port": "python .agents/tools/gh_tool issue port",
+    "pr:lint": "python .agents/tools/gh_tool pr lint",
+    "pr:create": "python .agents/tools/gh_tool pr create",
+    "labels:sync": "python .agents/tools/gh_tool label sync"
   },
   "dependencies": {
     "@popperjs/core": "2.11.8",
