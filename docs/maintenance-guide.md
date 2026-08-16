@@ -6,8 +6,9 @@ This guide covers the ongoing maintenance, manual deployment, and schema managem
 
 We use Cloudflare Pages for our production and preview environments. While GitHub Actions handles most deployments, you may need to deploy manually or verify settings.
 
-### 🌎 Project URL
-**[https://ieee-website-9ix.pages.dev](https://ieee-website-9ix.pages.dev)**
+### 🌎 Project URLs
+- **Live Deployment:** **[https://purdue-ieee-website.ieeepurdueweb.workers.dev](https://purdue-ieee-website.ieeepurdueweb.workers.dev)**
+- **Cloudflare Pages:** **[https://ieee-website-9ix.pages.dev](https://ieee-website-9ix.pages.dev)**
 
 ### 🛠️ Build Settings
 If configuring from scratch in the Cloudflare Dashboard:
