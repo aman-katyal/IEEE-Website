@@ -81,20 +81,22 @@ function CommitteeCard({ c }: { c: Committee }) {
             />
 
             {/* Status Badge */}
-            <div
-              className="status-badge"
-              style={{
-                position: "absolute",
-                top: "12px",
-                right: "0",
-                background: c.statusBg,
-                color: c.statusColor,
-                backdropFilter: "blur(6px)",
-              }}
-            >
-              <span className="dot" />
-              {c.status === "Active" ? "Active · 2025–26" : c.status}
-            </div>
+            {c.status && c.status.toLowerCase() !== "active" && (
+              <div
+                className="status-badge"
+                style={{
+                  position: "absolute",
+                  top: "12px",
+                  right: "0",
+                  background: c.statusBg,
+                  color: c.statusColor,
+                  backdropFilter: "blur(6px)",
+                }}
+              >
+                <span className="dot" />
+                {c.status}
+              </div>
+            )}
           </div>
 
           {/* Body */}
