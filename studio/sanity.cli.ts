@@ -5,5 +5,8 @@ export default defineCliConfig({
     projectId: 'vq0v7yv4',
     dataset: 'production'
   },
-  studioHost: 'purdue-ieee-website'
+  studioHost: 'purdue-ieee-website',
+  deployment: {
+    appId: 'nh94fiulsazccla7cu80cmu2',
+  },
 })
