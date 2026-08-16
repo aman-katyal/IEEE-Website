@@ -81,6 +81,9 @@ To deploy to Cloudflare Pages:
 13. **Branch Pruning & Cleanup (MANDATORY):**
     - Always delete local and remote branches immediately upon merging PRs or closing issues (`git branch -d <branch>`, `git remote prune origin`, `npm run branch:prune`).
     - Keep git workspace clean with zero stale feature branches lingering after completion.
+14. **Direct Issue Closing on Confident Verification (MANDATORY):**
+    - For issues that the agent can conclusively verify independently (e.g., automated browser tests pass, visual screenshot confirmation, deterministic type/build checks), **directly close the issue** with a clear completion comment instead of leaving it in `status:awaiting-review`.
+    - Only leave in `status:awaiting-review` if human verification/copy sign-off is genuinely required.
 
 ## 📁 Key Files
 
