@@ -285,11 +285,12 @@ export function Navigation() {
                         width: link.label === "Committees" ? "220px" : "180px",
                         background: "var(--boiler-black)",
                         border: "1px solid var(--glass-border)",
-                        borderRadius: "4px",
-                        padding: "8px 0",
-                        marginTop: "-8px",
-                        boxShadow: isLight ? "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)" : "0 10px 30px rgba(0,0,0,0.4)",
-                        backdropFilter: "blur(10px)",
+                        borderRadius: "8px",
+                        padding: "4px 0",
+                        marginTop: "-4px",
+                        boxShadow: isLight ? "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)" : "0 10px 30px rgba(0,0,0,0.5)",
+                        backdropFilter: "blur(12px)",
+                        overflow: "hidden",
                         zIndex: 110
                       }}
                     >
@@ -303,16 +304,23 @@ export function Navigation() {
                               display: "flex",
                               alignItems: "center",
                               justifyContent: "space-between",
-                              padding: "12px 20px",
+                              padding: "10px 16px",
                               color: "var(--electric-blue)",
                               textDecoration: "none",
-                              fontSize: "0.85rem",
+                              fontSize: "0.8rem",
                               fontFamily: "var(--font-mono)",
                               fontWeight: 700,
                               textTransform: "uppercase",
                               letterSpacing: "0.05em",
                               borderBottom: "1px solid var(--glass-border)",
                               background: isLight ? "rgba(0, 90, 135, 0.05)" : "rgba(0, 98, 155, 0.08)",
+                              transition: "background 0.2s ease",
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.background = isLight ? "rgba(0, 90, 135, 0.12)" : "rgba(0, 98, 155, 0.16)";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.background = isLight ? "rgba(0, 90, 135, 0.05)" : "rgba(0, 98, 155, 0.08)";
                             }}
                             onClick={(e) => { e.preventDefault(); handleNav("/committees"); }}
                           >
@@ -322,44 +330,44 @@ export function Navigation() {
                         </>
                       )}
                       
-                      {link.dropdown.map((subItem) => (
-                        <a
-                          key={subItem.href}
-                          href={subItem.href}
-                          style={{
-                            display: "block",
-                            padding: "10px 20px",
-                            color: location.pathname === subItem.href ? "var(--electric-blue)" : "var(--text-secondary)",
-                            textDecoration: "none",
-                            fontSize: "0.85rem",
-                            fontFamily: "var(--font-body)",
-                            transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-                            background: location.pathname === subItem.href ? (isLight ? "rgba(0, 90, 135, 0.05)" : "rgba(0, 98, 155, 0.05)") : "transparent",
-                            transformOrigin: "left",
-                          }}
-                          onMouseEnter={(e) => {
-                            handleLinkHover(subItem.href, subItem.id);
-                            const el = e.currentTarget;
-                            el.style.transform = "scale(1.03) translateX(4px)";
-                            el.style.color = "var(--electric-blue)";
-                            el.style.background = isLight ? "rgba(0, 90, 135, 0.05)" : "rgba(0, 98, 155, 0.08)";
-                          }}
-                          onMouseLeave={(e) => {
-                            const el = e.currentTarget;
-                            if (location.pathname !== subItem.href) {
-                              el.style.transform = "scale(1) translateX(0)";
-                              el.style.color = "var(--text-secondary)";
-                              el.style.background = "transparent";
-                            } else {
-                              el.style.transform = "scale(1) translateX(0)";
-                              el.style.background = isLight ? "rgba(0, 90, 135, 0.05)" : "rgba(0, 98, 155, 0.05)";
-                            }
-                          }}
-                          onClick={(e) => { e.preventDefault(); handleNav(subItem.href); }}
-                        >
-                          {subItem.label}
-                        </a>
-                      ))}
+                      <div style={{ padding: "4px" }}>
+                        {link.dropdown.map((subItem) => (
+                          <a
+                            key={subItem.href}
+                            href={subItem.href}
+                            style={{
+                              display: "block",
+                              padding: "8px 12px",
+                              borderRadius: "4px",
+                              color: location.pathname === subItem.href ? "var(--electric-blue)" : "var(--text-secondary)",
+                              textDecoration: "none",
+                              fontSize: "0.85rem",
+                              fontFamily: "var(--font-body)",
+                              transition: "color 0.2s ease, background 0.2s ease",
+                              background: location.pathname === subItem.href ? (isLight ? "rgba(0, 90, 135, 0.08)" : "rgba(0, 98, 155, 0.1)") : "transparent",
+                            }}
+                            onMouseEnter={(e) => {
+                              handleLinkHover(subItem.href, subItem.id);
+                              const el = e.currentTarget;
+                              el.style.color = "var(--electric-blue)";
+                              el.style.background = isLight ? "rgba(0, 90, 135, 0.08)" : "rgba(0, 98, 155, 0.12)";
+                            }}
+                            onMouseLeave={(e) => {
+                              const el = e.currentTarget;
+                              if (location.pathname !== subItem.href) {
+                                el.style.color = "var(--text-secondary)";
+                                el.style.background = "transparent";
+                              } else {
+                                el.style.color = "var(--electric-blue)";
+                                el.style.background = isLight ? "rgba(0, 90, 135, 0.08)" : "rgba(0, 98, 155, 0.1)";
+                              }
+                            }}
+                            onClick={(e) => { e.preventDefault(); handleNav(subItem.href); }}
+                          >
+                            {subItem.label}
+                          </a>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
