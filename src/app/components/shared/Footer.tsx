@@ -82,12 +82,15 @@ export function Footer() {
 
   // dynamically update discord url if overridden in sanity
   const footerLinksToUse = useMemo(() => {
-    if (settings?.discordUrl && settings.discordUrl !== "https://discord.gg/sPPQequ9ws") {
+    if (
+      settings?.discordUrl &&
+      settings.discordUrl !== "https://discord.gg/sPPQequ9ws"
+    ) {
       const updated = { ...FOOTER_LINKS };
       updated.Connect = FOOTER_LINKS.Connect.map((link) =>
         link.label === "Community Discord"
-          ? { ...link, href: settings.discordUrl }
-          : link
+          ? { ...link, href: settings.discordUrl as string }
+          : link,
       );
       return updated;
     }

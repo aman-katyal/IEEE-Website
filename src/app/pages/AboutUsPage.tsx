@@ -296,8 +296,8 @@ export function AboutUsPage() {
                     : `// ${section.eyebrow}`}
                 </p>
                 <SectionTitle
-                  title={section.title}
-                  colorTheme={section.colorTheme}
+                  title={section.title || ""}
+                  colorTheme={section.colorTheme || ""}
                 />
                 <div
                   style={{
