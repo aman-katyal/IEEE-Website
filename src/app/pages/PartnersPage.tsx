@@ -530,6 +530,7 @@ function PartnerCard({
     <motion.div
       className="glass-card"
       whileHover={{ y: -5 }}
+      title={`${partner.name}${partner.tier ? ` — ${partner.tier} Partner` : ""}`}
       style={{
         padding: "24px",
         display: "flex",

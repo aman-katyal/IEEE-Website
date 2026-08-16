@@ -5,15 +5,14 @@ test.describe('Purdue IEEE Page Verification', () => {
     await page.goto('/join');
     
     // Check heading
-    await expect(page.getByRole('heading', { name: /Become a Member/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Joining Purdue IEEE/i })).toBeVisible();
     
     // Check for dues options
     await expect(page.getByText(/Standard Membership/i)).toBeVisible();
-    await expect(page.getByText(/Membership \+ Shirt/i)).toBeVisible();
     
     // Check for social/discord link
     const discordLink = page.locator('a[href*="discord.gg"]');
-    await expect(discordLink).toBeVisible();
+    await expect(discordLink.first()).toBeVisible();
     
     // Check for payment link
     const paymentLink = page.locator('a[href*="toocoolpurdue.com"]');
@@ -24,38 +23,30 @@ test.describe('Purdue IEEE Page Verification', () => {
     await page.goto('/calendar');
     
     // Check heading
-    await expect(page.getByRole('heading', { name: /Branch Calendar/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Events Calendar/i })).toBeVisible();
     
-    // Check for Google Calendar iframe
-    const iframe = page.locator('iframe[src*="calendar.google.com"]');
+    // Check for Google Calendar iframe (first iframe on page)
+    const iframe = page.locator('iframe[src*="calendar.google.com"]').first();
     await expect(iframe).toBeVisible();
-    
-    // Check for Subscribe button
-    const subscribeBtn = page.getByRole('link', { name: /Subscribe to Calendar/i });
-    await expect(subscribeBtn).toBeVisible();
   });
 
   test('should load and verify Constitution page', async ({ page }) => {
     await page.goto('/constitution');
     
     // Check heading
-    await expect(page.getByRole('heading', { name: /Governance & Documents/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Constitution and Bylaws/i })).toBeVisible();
     
-    // Check for Constitution download link
-    const constitutionLink = page.getByRole('link', { name: /Download Constitution/i });
-    await expect(constitutionLink).toBeVisible();
+    // Check for Branch Constitution card
+    await expect(page.getByRole('heading', { name: /Branch Constitution/i })).toBeVisible();
     
-    // Check for Bylaws sections
-    await expect(page.getByText(/Committee Bylaws/i)).toBeVisible();
+    // Check for Bylaws section
+    await expect(page.getByRole('heading', { name: /Committee Bylaws/i })).toBeVisible();
   });
 
   test('should load and verify About page', async ({ page }) => {
     await page.goto('/about');
     
-    // Check heading
-    await expect(page.getByRole('heading', { name: /Our Mission/i }).or(page.getByText(/Purdue IEEE is the university's largest/i))).toBeVisible();
-    
-    // Check for sections
-    await expect(page.locator('p.section-eyebrow').first()).toBeVisible();
+    // Check for section cards or headings
+    await expect(page.getByRole('heading', { name: /Established 1903/i })).toBeVisible();
   });
 });

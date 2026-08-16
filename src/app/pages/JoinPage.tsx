@@ -19,13 +19,13 @@ const DEFAULT_DUES_BENEFITS = [
 const DEFAULT_OPTIONS = [
   {
     name: "Standard Membership",
-    subtitle: "Local dues — Purdue West Lafayette only",
-    price: "$10",
+    subtitle: "Annual dues — Purdue West Lafayette campus",
+    price: "$10 / year",
   },
   {
     name: "Membership + Shirt",
-    subtitle: "Support the branch & gear up",
-    price: "$15",
+    subtitle: "Annual dues with official IEEE branch shirt",
+    price: "$15 / year",
   },
 ];
 
@@ -191,27 +191,37 @@ export function JoinPage() {
                 </h4>
                 <div className="flex flex-col gap-4 mb-8">
                   {duesOptions.map((option, idx) => (
-                    <div
-                      key={idx}
-                      className={`p-5 rounded-lg border transition-all ${
-                        isLight
-                          ? "bg-[rgba(255,255,255,0.8)] border-[rgba(0,90,135,0.18)]"
-                          : "bg-[rgba(10,10,12,0.4)] border-[var(--glass-border)]"
-                      }`}
-                    >
-                      <div className="font-[family-name:var(--font-mono)] text-xs font-semibold text-[var(--electric-blue)] uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                        <span className="opacity-80" aria-hidden="true">
-                          //
-                        </span>
-                        <span>{option.name}</span>
-                      </div>
+                    <div key={idx} className="flex flex-col gap-4">
+                      {idx > 0 && (
+                        <div className="flex items-center gap-3 my-1">
+                          <div className="flex-1 h-px bg-[var(--glass-border)]" />
+                          <span className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-widest text-[var(--cyber-gold)] font-bold px-2 py-0.5 rounded bg-[rgba(235,211,169,0.06)] border border-[rgba(235,211,169,0.15)]">
+                            OR
+                          </span>
+                          <div className="flex-1 h-px bg-[var(--glass-border)]" />
+                        </div>
+                      )}
                       <div
-                        className={`text-xs text-[var(--text-muted)] mb-3 ${isLight ? "opacity-90" : "opacity-80"}`}
+                        className={`p-5 rounded-lg border transition-all ${
+                          isLight
+                            ? "bg-[rgba(255,255,255,0.8)] border-[rgba(0,90,135,0.18)]"
+                            : "bg-[rgba(10,10,12,0.4)] border-[var(--glass-border)]"
+                        }`}
                       >
-                        {option.subtitle}
-                      </div>
-                      <div className="text-3xl font-bold text-[var(--text-primary)]">
-                        {option.price}
+                        <div className="font-[family-name:var(--font-mono)] text-xs font-semibold text-[var(--electric-blue)] uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                          <span className="opacity-80" aria-hidden="true">
+                            //
+                          </span>
+                          <span>{option.name}</span>
+                        </div>
+                        <div
+                          className={`text-xs text-[var(--text-muted)] mb-3 ${isLight ? "opacity-90" : "opacity-80"}`}
+                        >
+                          {option.subtitle}
+                        </div>
+                        <div className="text-3xl font-bold text-[var(--text-primary)]">
+                          {option.price}
+                        </div>
                       </div>
                     </div>
                   ))}

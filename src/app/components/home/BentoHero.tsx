@@ -658,7 +658,7 @@ export function BentoHero() {
                     marginBottom: "16px",
                   }}
                 >
-                  // Branch Telemetry
+                  // Branch Overview
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "0.7rem", color: "var(--text-secondary)" }}>
                   {hqLocation && (
