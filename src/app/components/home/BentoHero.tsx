@@ -473,10 +473,10 @@ export function BentoHero() {
   const isLight = theme === "light";
   const loading = homeLoading || committeesLoading;
 
-  // All content comes directly from Sanity — no hardcoded fallbacks
-  const heroTitle    = homeData?.heroTitle    ?? null;
-  const heroSubtitle = homeData?.heroSubtitle ?? null;
-  const rawHeroImage = homeData?.heroImage ?? "/images/general%20IEEE%20pictures/ieee%20whole%20team%20photo.webp";
+  // Hero copy with standard fallbacks
+  const heroTitle = homeData?.heroTitle || "Fostering technological innovation and excellence for the benefit of humanity.";
+  const heroSubtitle = homeData?.heroSubtitle || "The student branch of IEEE at Purdue University — West Lafayette";
+  const rawHeroImage = homeData?.heroImage || "/images/general%20IEEE%20pictures/ieee%20whole%20team%20photo.webp";
   const aboutTitle   = homeData?.aboutTitle   ?? null;
   const aboutContent = homeData?.aboutContent ?? null;
   const stats: StatItem[] = (homeData?.stats && homeData.stats.length > 0) ? homeData.stats : [];
