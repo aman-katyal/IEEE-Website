@@ -815,63 +815,6 @@ export function CommitteePage() {
                   Committees
                 </Link>
               </div>
-
-              {committee?.status && committee.status.toLowerCase() !== "active" && (
-                <div
-                  className="status-badge"
-                  style={{
-                    background: committee.statusBg || "rgba(0, 98, 155, 0.1)",
-                    color: committee.statusColor || "var(--electric-blue)",
-                    backdropFilter: "blur(12px)",
-                    margin: 0,
-                    display: "inline-flex",
-                    padding: "0 14px",
-                    fontSize: "0.6rem",
-                    fontWeight: 700,
-                    borderRadius: "100px",
-                    border: "1px solid rgba(255,255,255,0.12)",
-                    alignItems: "center",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.08em",
-                    height: "28px",
-                    lineHeight: "28px",
-                  }}
-                >
-                  <div
-                    style={{
-                      position: "relative",
-                      display: "inline-flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      marginRight: "10px",
-                    }}
-                  >
-                    <span
-                      className="animate-ping"
-                      style={{
-                        position: "absolute",
-                        display: "inline-flex",
-                        height: "8px",
-                        width: "8px",
-                        borderRadius: "50%",
-                        background: "currentColor",
-                        opacity: 0.75,
-                      }}
-                    />
-                    <span
-                      style={{
-                        position: "relative",
-                        display: "inline-flex",
-                        borderRadius: "50%",
-                        height: "6px",
-                        width: "6px",
-                        background: "currentColor",
-                      }}
-                    />
-                  </div>
-                  {committee.status}
-                </div>
-              )}
             </div>
 
             <h1

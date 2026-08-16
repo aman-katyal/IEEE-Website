@@ -208,7 +208,7 @@ function LabStatusRack({ committees, isLight }: { committees: any[]; isLight: bo
           return {
             id: c.id,
             tag: meta.tag ?? c.shortName,
-            indicator: c.status ?? meta.indicator,
+            indicator: meta.indicator,
             title: c.name,
             displayTitle: makeDisplayTitle(c.name),
             description: c.description ?? c.tagline ?? "",

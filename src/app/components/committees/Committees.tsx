@@ -79,24 +79,6 @@ function CommitteeCard({ c }: { c: Committee }) {
                   : "linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.8) 100%)",
               }}
             />
-
-            {/* Status Badge */}
-            {c.status && c.status.toLowerCase() !== "active" && (
-              <div
-                className="status-badge"
-                style={{
-                  position: "absolute",
-                  top: "12px",
-                  right: "0",
-                  background: c.statusBg,
-                  color: c.statusColor,
-                  backdropFilter: "blur(6px)",
-                }}
-              >
-                <span className="dot" />
-                {c.status}
-              </div>
-            )}
           </div>
 
           {/* Body */}

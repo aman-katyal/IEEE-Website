@@ -23,9 +23,6 @@ describe('CommitteePage Rendering', () => {
       tagline: 'Testing tagline',
       description: 'Short description',
       longDescription: 'Long description',
-      status: 'Active',
-      statusColor: '#000',
-      statusBg: '#fff',
       image: 'test-image.jpg',
       tags: ['test'],
       chair: 'Test Chair',
@@ -57,48 +54,9 @@ describe('CommitteePage Rendering', () => {
     // Verify header renders
     expect(screen.getByText('Test Committee')).toBeInTheDocument();
 
-    // Verify 'Active' status badge is not rendered
-    expect(screen.queryByText(/^Active/i)).not.toBeInTheDocument();
-
     // Verify section renders
     expect(screen.getByText(/Section Title/)).toBeInTheDocument();
     expect(screen.getByText(/This is test content/)).toBeInTheDocument();
-  });
-
-  it('should render non-active status badge when committee status is not Active', () => {
-    const mockArchivedCommittee = {
-      id: 'archived-committee',
-      name: 'Archived Committee',
-      tagline: 'Legacy tagline',
-      description: 'Legacy description',
-      longDescription: 'Legacy long description',
-      status: 'Archived',
-      statusColor: '#ff0000',
-      statusBg: '#330000',
-      image: 'test-image.jpg',
-      tags: ['legacy'],
-      chair: 'Legacy Chair',
-      email: 'legacy@example.com',
-      metrics: [],
-      sections: [],
-    };
-
-    (useSanityData.useCommittee as any).mockReturnValue({
-      committee: mockArchivedCommittee,
-      loading: false,
-      error: null,
-    });
-
-    render(
-      <MemoryRouter initialEntries={['/committee/archived-committee']}>
-        <Routes>
-          <Route path="/committee/:id" element={<CommitteePage />} />
-        </Routes>
-      </MemoryRouter>
-    );
-
-    // Verify non-active status is displayed
-    expect(screen.getByText('Archived')).toBeInTheDocument();
   });
 
   it('should not display the Flagship tag for the first project if flagship is false or undefined', () => {
@@ -108,9 +66,6 @@ describe('CommitteePage Rendering', () => {
       tagline: 'Projects tagline',
       description: 'Projects description',
       longDescription: 'Projects long description',
-      status: 'Active',
-      statusColor: '#000',
-      statusBg: '#fff',
       image: 'test-image.jpg',
       tags: ['projects'],
       chair: 'Projects Chair',
@@ -159,9 +114,6 @@ describe('CommitteePage Rendering', () => {
       tagline: 'Flagship tagline',
       description: 'Flagship description',
       longDescription: 'Flagship long description',
-      status: 'Active',
-      statusColor: '#000',
-      statusBg: '#fff',
       image: 'test-image.jpg',
       tags: ['flagship'],
       chair: 'Flagship Chair',

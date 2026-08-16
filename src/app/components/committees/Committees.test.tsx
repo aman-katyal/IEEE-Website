@@ -26,9 +26,6 @@ describe('Committees Component', () => {
         tagline: 'Underwater robotics',
         description: 'Building underwater rovs',
         longDescription: 'Long description',
-        status: 'Active',
-        statusColor: 'var(--electric-blue)',
-        statusBg: 'rgba(0, 98, 155, 0.1)',
         image: 'rov.jpg',
         tags: ['Robotics', 'Hardware'],
         chair: 'ROV Chair',
@@ -42,9 +39,6 @@ describe('Committees Component', () => {
         tagline: 'Archived team',
         description: 'Past projects',
         longDescription: 'Long description',
-        status: 'Archived',
-        statusColor: '#ff0000',
-        statusBg: '#330000',
         image: 'legacy.jpg',
         tags: ['Software'],
         chair: 'Legacy Chair',
@@ -72,9 +66,6 @@ describe('Committees Component', () => {
     // Verify 'Active' label is NOT present
     expect(screen.queryByText(/Active · 2025–26/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/^Active$/i)).not.toBeInTheDocument();
-
-    // Verify non-active status IS rendered
-    expect(screen.getByText('Archived')).toBeInTheDocument();
 
     // Verify pseudo-code count label is NOT present
     expect(screen.queryByText(/sys\.committees\.count/i)).not.toBeInTheDocument();
