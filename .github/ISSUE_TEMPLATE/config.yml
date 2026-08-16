@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Purdue IEEE Discord
+  - name: "💬 Purdue IEEE Discord"
     url: https://discord.gg/sPPQequ9ws
-    about: Ask questions or discuss branch activities on Discord
+    about: Ask questions, discuss the website, or flag urgent issues on Discord first.
+  - name: "📖 Project README"
+    url: https://github.com/aman-katyal/IEEE-Website/blob/master/README.md
+    about: Read the project README before filing issues about setup or configuration.

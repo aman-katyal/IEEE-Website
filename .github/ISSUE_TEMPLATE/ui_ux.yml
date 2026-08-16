@@ -1,0 +1,77 @@
+name: "🎨 UI / UX Polish"
+description: Report a visual, layout, typography, or interaction design issue
+title: "[UI/UX]: "
+labels: ["type:ui-ux", "priority:low", "status:ready"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## UI / UX Polish
+        Use this template for visual improvements, layout fixes, spacing adjustments,
+        copy changes, and interaction design refinements.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: "🖼 Current State"
+      description: Describe what currently exists and what feels off.
+      placeholder: "e.g., The 'Schedule: Announced on Discord' line in the committee hover card adds visual clutter and is redundant with the committee page itself."
+    validations:
+      required: true
+
+  - type: textarea
+    id: requested_changes
+    attributes:
+      label: "✏️ Requested Changes"
+      description: Describe the specific visual or interaction changes needed.
+      placeholder: |
+        - Remove the `Schedule: {meeting}` line from the committee hover detail card in `BentoHero.tsx`
+        - Keep the committee title, 'Go to Team →' link, and description
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: "📍 Affected Area"
+      options:
+        - "area:home — Home page, BentoHero, Events, Marquee"
+        - "area:committees — Committee pages and hover cards"
+        - "area:about — About page"
+        - "area:partners — Partners / Sponsors page"
+        - "area:nav — Navbar, footer, routing"
+        - "area:styles — CSS variables, Tailwind, theme"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: "🚨 Priority"
+      options:
+        - "priority:high — Blocks launch or causes a bad first impression"
+        - "priority:medium — Noticeable issue, should fix this sprint"
+        - "priority:low — Minor polish, no deadline"
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: "☑️ Acceptance Criteria"
+      description: Define what "done" looks like visually.
+      placeholder: |
+        - [ ] The Schedule line no longer appears in the hover preview
+        - [ ] Hover card layout remains clean and properly padded
+        - [ ] Verified responsive at 375px, 768px, 1280px
+        - [ ] No regressions in dark mode
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: "📌 Pre-submission Checklist"
+      options:
+        - label: I have searched existing issues and this is not a duplicate
+          required: true

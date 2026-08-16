@@ -1,0 +1,82 @@
+name: "♿ Accessibility (A11Y)"
+description: Report a WCAG violation, contrast issue, keyboard navigation bug, or ARIA problem
+title: "[A11Y]: "
+labels: ["type:a11y", "priority:high", "status:ready"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Accessibility Issue
+        Accessibility issues are high-priority by default. Use this template for contrast failures,
+        keyboard navigation problems, missing ARIA attributes, or any WCAG 2.2 AA violations.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: "♿ Issue Description"
+      description: What accessibility barrier exists?
+      placeholder: "e.g., The primary CTA buttons on the home page use blue text on a dark blue background that fails WCAG AA contrast ratio (3.2:1, minimum required 4.5:1)."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: wcag_criterion
+    attributes:
+      label: "📐 WCAG Criterion Violated"
+      description: Select the most relevant WCAG 2.2 criterion.
+      options:
+        - "1.4.3 — Contrast (Minimum) AA"
+        - "1.4.11 — Non-text Contrast AA"
+        - "2.1.1 — Keyboard Navigation"
+        - "2.2.2 — Pause, Stop, Hide (Animations)"
+        - "2.4.3 — Focus Order"
+        - "2.4.7 — Focus Visible"
+        - "4.1.2 — Name, Role, Value (ARIA)"
+        - "Other / Multiple"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: "📍 Affected Area"
+      options:
+        - "area:home — Home page, BentoHero, Events, Marquee"
+        - "area:committees — Committee pages"
+        - "area:about — About page"
+        - "area:partners — Partners page"
+        - "area:nav — Navbar, footer"
+        - "area:styles — CSS variables, Tailwind"
+    validations:
+      required: true
+
+  - type: textarea
+    id: requested_changes
+    attributes:
+      label: "🔧 Requested Changes"
+      placeholder: |
+        - Update CTA button text color from `--color-blue-400` to `--color-blue-200` to meet 4.5:1 ratio
+        - Add `aria-label` to all icon-only buttons in the navigation
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: "☑️ Acceptance Criteria"
+      placeholder: |
+        - [ ] Contrast ratio meets WCAG 2.2 AA (4.5:1 for normal text, 3:1 for large text)
+        - [ ] Verified with browser DevTools accessibility panel
+        - [ ] Keyboard navigation tested end-to-end
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: "📌 Pre-submission Checklist"
+      options:
+        - label: I have searched existing issues and this is not a duplicate
+          required: true
+        - label: I have identified the specific WCAG criterion above
+          required: true

@@ -1,21 +1,79 @@
-name: Maintenance Task / TODO
-description: Track a maintenance task, refactoring, or test suite addition
+name: "🔧 Task / Cleanup"
+description: Track a removal, refactor, config change, or maintenance item
 title: "[TASK]: "
-labels: ["task"]
+labels: ["type:task", "priority:medium", "status:ready"]
 body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Task / Cleanup
+        Use this template for removals, refactors, schema changes, config updates,
+        and any work that is not a bug fix or new feature.
+
   - type: textarea
     id: description
     attributes:
-      label: Task Summary
-      description: Overview of what needs to be done.
-      placeholder: "e.g., Add unit tests for Navbar component"
+      label: "📋 Description"
+      description: What needs to be done and why?
+      placeholder: "e.g., The 'Status & Badges' fieldgroup in the Sanity committee schema was added as an AI placeholder and is no longer used."
     validations:
       required: true
+
+  - type: textarea
+    id: requested_changes
+    attributes:
+      label: "📝 Requested Changes"
+      description: List the specific changes to be made.
+      placeholder: |
+        - Remove the `status` field group from `studio/schema/committee.ts`
+        - Remove the `statusColor` and `statusBg` field definitions
+        - Clean up unused `ShieldCheck` icon import
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: "📍 Affected Area"
+      options:
+        - "area:home — Home page, BentoHero, Events, Marquee"
+        - "area:committees — Committee pages and hover cards"
+        - "area:about — About page"
+        - "area:partners — Partners / Sponsors page"
+        - "area:nav — Navbar, footer, routing"
+        - "area:cms — Sanity Studio schema or GROQ queries"
+        - "area:styles — CSS variables, Tailwind, theme"
+        - "area:infra — Cloudflare, Vite, build config"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: "🚨 Priority"
+      options:
+        - "priority:high — Should be done before launch"
+        - "priority:medium — This sprint"
+        - "priority:low — No deadline"
+    validations:
+      required: true
+
   - type: textarea
     id: acceptance_criteria
     attributes:
-      label: Acceptance Criteria
-      description: Checklist of items that complete this task.
-      placeholder: "- [ ] Test desktop navbar\n- [ ] Test mobile menu"
+      label: "☑️ Acceptance Criteria"
+      description: Verifiable conditions that mark this task as done.
+      placeholder: |
+        - [ ] Field group no longer appears in Sanity Studio for Committees
+        - [ ] TypeScript build succeeds without errors (`npm run build`)
+        - [ ] No regressions on any committee page
     validations:
       required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: "📌 Pre-submission Checklist"
+      options:
+        - label: I have searched existing issues and this is not a duplicate
+          required: true

@@ -1,21 +1,102 @@
-name: Feature Request
-description: Propose a new feature or improvement for the website
+name: "✨ Feature Request"
+description: Propose a new capability, page section, or integration
 title: "[FEATURE]: "
-labels: ["enhancement"]
+labels: ["type:feature", "priority:medium", "status:triage"]
 body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Feature Request
+        Use this template to propose new functionality, pages, or integrations.
+        Be as specific as possible — vague requests will be moved to `status:triage` for refinement.
+
   - type: textarea
     id: problem
     attributes:
-      label: Problem Statement / Rationale
-      description: Is your feature request related to a problem or missing capability?
-      placeholder: "Describe the need for this feature..."
+      label: "🎯 Problem Statement"
+      description: What problem does this feature solve? What is currently missing or painful?
+      placeholder: "e.g., Visitors cannot quickly see which sponsors have active partnerships with IEEE because the Partners page lacks visual hierarchy."
     validations:
       required: true
+
   - type: textarea
     id: solution
     attributes:
-      label: Proposed Solution
-      description: Describe the solution or user experience you would like to see.
-      placeholder: "Describe how it should work..."
+      label: "💡 Proposed Solution"
+      description: Describe the feature you want to see. Be specific about the user experience.
+      placeholder: |
+        Add a tiered sponsor grid to the Partners page that visually distinguishes Gold, Silver, and Bronze tiers.
+        Gold partners should have a larger logo card with a prominent border.
     validations:
       required: true
+
+  - type: textarea
+    id: user_story
+    attributes:
+      label: "👤 User Story"
+      description: Complete the user story format.
+      placeholder: |
+        As a **prospective corporate partner**, I want to **see clear tier distinctions on the Partners page**
+        so that **I understand the visibility and benefits associated with each sponsorship tier**.
+    validations:
+      required: false
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: "📍 Target Area"
+      description: Which part of the site does this feature affect?
+      options:
+        - "area:home — Home page, BentoHero, Events, Marquee"
+        - "area:committees — Committee pages and hover cards"
+        - "area:about — About page"
+        - "area:partners — Partners / Sponsors page"
+        - "area:nav — Navbar, footer, routing"
+        - "area:cms — Sanity Studio schema or GROQ queries"
+        - "area:styles — CSS variables, Tailwind, theme"
+        - "area:infra — Cloudflare, Vite, build config"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: "🚨 Priority"
+      options:
+        - "priority:high — Needed before launch"
+        - "priority:medium — Important this semester"
+        - "priority:low — Nice to have, no deadline"
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: "☑️ Acceptance Criteria"
+      description: What verifiable criteria define this feature as complete?
+      placeholder: |
+        - [ ] Tiered sponsor grid renders correctly at mobile, tablet, and desktop breakpoints
+        - [ ] Gold tier logos are visually larger than Silver and Bronze
+        - [ ] Content is sourced from Sanity CMS (no hardcoded data)
+        - [ ] Dark mode renders correctly
+    validations:
+      required: true
+
+  - type: textarea
+    id: design_notes
+    attributes:
+      label: "🎨 Design Notes"
+      description: Any reference designs, wireframes, links, or constraints to guide implementation?
+      placeholder: "Reference: the existing home page marquee sponsor logos. Similar aesthetic but with tier grouping."
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: "📌 Pre-submission Checklist"
+      options:
+        - label: I have searched existing issues and this is not a duplicate
+          required: true
+        - label: This feature aligns with the Purdue IEEE brand and website goals
+          required: true

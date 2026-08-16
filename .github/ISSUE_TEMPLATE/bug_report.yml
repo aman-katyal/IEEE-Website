@@ -1,38 +1,112 @@
-name: Bug Report
-description: Report a bug or error on the Purdue IEEE Website
+name: "🐛 Bug Report"
+description: Report broken or unexpected behavior on the Purdue IEEE Website
 title: "[BUG]: "
-labels: ["bug"]
+labels: ["type:bug", "priority:medium", "status:triage"]
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to report a bug! Please fill out the details below.
+        ## Bug Report
+        Use this template to report broken functionality, visual errors, or unexpected behavior.
+        Please fill in all required fields — incomplete reports may be closed.
+
   - type: textarea
     id: description
     attributes:
-      label: Bug Description
-      description: Clear and concise description of what the bug is.
-      placeholder: "e.g., Committee card padding is squished on mobile viewport"
+      label: "🔍 Bug Description"
+      description: Clear and concise description of what the bug is. Include screenshots or screen recordings if possible.
+      placeholder: "e.g., The committee hover card on the home page overlaps the navigation on mobile viewports."
     validations:
       required: true
+
   - type: textarea
     id: reproduction
     attributes:
-      label: Steps to Reproduce
-      description: How can we reproduce this behavior?
+      label: "📋 Steps to Reproduce"
+      description: Provide exact steps so we can reproduce this consistently.
       placeholder: |
-        1. Go to '/committees'
-        2. Click on 'ROV'
-        3. Resize screen to 375px
+        1. Navigate to the home page at /
+        2. Hover over a committee slot in the Lab Status Rack
+        3. Resize window to 375px width
+        4. Observe: hover card overflows the viewport
     validations:
       required: true
-  - type: dropdown
-    id: severity
+
+  - type: textarea
+    id: expected_vs_actual
     attributes:
-      label: Severity / Priority
-      options:
-        - "P1 - Critical (Crash or Broken Functionality)"
-        - "P2 - Medium (UI or Component Degraded)"
-        - "P3 - Low (Minor Styling / Polish)"
+      label: "✅ Expected vs Actual Behavior"
+      description: Clearly describe what should happen vs what does happen.
+      placeholder: |
+        **Expected:** Hover card stays within viewport bounds on mobile
+        **Actual:** Card overflows right edge, causing horizontal scroll
     validations:
       required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: "🚨 Severity"
+      description: How severely does this affect users?
+      options:
+        - "priority:critical — Site-breaking, blocks launch"
+        - "priority:high — Major functionality broken"
+        - "priority:medium — Degraded experience, workaround exists"
+        - "priority:low — Minor cosmetic issue"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: "📍 Affected Area"
+      description: Which part of the site is affected?
+      options:
+        - "area:home — Home page, BentoHero, Events, Marquee"
+        - "area:committees — Committee pages and hover cards"
+        - "area:about — About page"
+        - "area:partners — Partners / Sponsors page"
+        - "area:nav — Navbar, footer, routing"
+        - "area:cms — Sanity Studio schema or GROQ queries"
+        - "area:styles — CSS variables, Tailwind, theme"
+        - "area:infra — Cloudflare, Vite, build config"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: browser
+    attributes:
+      label: "🌐 Browser / Environment"
+      multiple: true
+      options:
+        - "Chrome (latest)"
+        - "Firefox (latest)"
+        - "Safari (latest)"
+        - "Edge (latest)"
+        - "Mobile Safari (iOS)"
+        - "Chrome for Android"
+        - "All browsers"
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: "☑️ Acceptance Criteria"
+      description: What must be true for this bug to be considered fixed?
+      placeholder: |
+        - [ ] Hover card remains within viewport at 375px width
+        - [ ] No horizontal scroll is introduced on the home page
+        - [ ] Fix verified in Chrome and Safari
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: "📌 Pre-submission Checklist"
+      options:
+        - label: I have searched existing issues and this is not a duplicate
+          required: true
+        - label: I can reproduce this consistently
+          required: true
+        - label: I have included steps to reproduce above
+          required: true
