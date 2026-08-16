@@ -12,3 +12,8 @@
 **Vulnerability:** External links were opened in a new tab via `window.open(url)` inside an onClick handler without explicitly validating the URL protocol. An attacker could potentially supply a `javascript:` or `data:` URL which would then be executed in the context of the user's browser, leading to Cross-Site Scripting (XSS).
 **Learning:** `window.open()` is susceptible to DOM-based XSS if the input URL is not sanitized or strictly validated. While `<a href="javascript:...">` is a well-known XSS vector, programmatic navigation via `window.open()` is equally dangerous. Relying on simple string checks like `startsWith("http")` is not always robust against variations in protocol formatting.
 **Prevention:** Always parse and validate untrusted URLs using the `URL` constructor (e.g., `new URL(url)`) and explicitly check the `protocol` property to ensure it is `http:` or `https:` before passing it to `window.open()` or assigning it to `location.href`.
+
+## 2026-08-14 - Target Blank Noopener Check
+**Vulnerability:** Found issue describing missing rel="noopener noreferrer" for target="_blank" links.
+**Learning:** Sometimes reported security vulnerabilities may have already been fixed in a recent PR or by another team member. In this case, `rel="noopener noreferrer"` was already present.
+**Prevention:** Always verify the codebase state directly before applying security patches to prevent unnecessary churn or overwriting good fixes.
