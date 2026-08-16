@@ -18,7 +18,8 @@
     "issue:port": "python .agents/tools/gh_tool issue port",
     "pr:lint": "python .agents/tools/gh_tool pr lint",
     "pr:create": "python .agents/tools/gh_tool pr create",
-    "labels:sync": "python .agents/tools/gh_tool label sync"
+    "labels:sync": "python .agents/tools/gh_tool label sync",
+    "branch:prune": "pwsh -Command \"git branch --merged master | Where-Object { $_ -notmatch 'master|\\*' } | ForEach-Object { git branch -d $_.Trim() }; git remote prune origin\""
   },
   "dependencies": {
     "@popperjs/core": "2.11.8",

@@ -78,6 +78,9 @@ To deploy to Cloudflare Pages:
     - Create a git commit immediately after completing every discrete change, bugfix, or sub-task.
     - Use clear, conventional commit messages (e.g., `feat: ...`, `fix: ...`, `refactor: ...`, `docs: ...`, `chore: ...`) referencing the relevant issue number (e.g., `fix(committees): resolve image path (#72)`).
     - Never leave accumulated uncommitted edits across multiple tasks.
+13. **Branch Pruning & Cleanup (MANDATORY):**
+    - Always delete local and remote branches immediately upon merging PRs or closing issues (`git branch -d <branch>`, `git remote prune origin`, `npm run branch:prune`).
+    - Keep git workspace clean with zero stale feature branches lingering after completion.
 
 ## 📁 Key Files
 
