@@ -51,11 +51,22 @@ export interface Metric {
   value: string | number;
 }
 
+export interface HistoryItem {
+  year: string;
+  vehicleName?: string;
+  placement?: string;
+  awards?: string[];
+  description: string;
+  image?: string;
+  links?: { label: string; url: string }[];
+}
+
 export type CommitteeSection = 
   | { type: "text"; title: string; content: string; image?: string; layout?: "top" | "left" | "right"; imageStyle?: ImageStyle }
   | { type: "projects"; title: string; items: (CommitteeProject & { image?: string })[]; imageStyle?: ImageStyle }
   | { type: "gallery"; title: string; items: GalleryItem[] }
   | { type: "faq"; title: string; items: FAQ[] }
+  | { type: "timeline" | "history"; title: string; items: HistoryItem[] }
   | { type: "cta"; title: string; content: string; buttonText: string; buttonLink: string }
   | { type: "contact"; title: string; name: string; email: string; role?: string };
 

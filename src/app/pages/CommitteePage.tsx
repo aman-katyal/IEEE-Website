@@ -92,6 +92,7 @@ export function CommitteePage() {
     projectsSections,
     gallerySections,
     faqSections,
+    historySections,
     contactSections,
   } = useMemo(() => {
     if (!committee || !committee.sections) {
@@ -100,6 +101,7 @@ export function CommitteePage() {
         projectsSections: [],
         gallerySections: [],
         faqSections: [],
+        historySections: [],
         contactSections: [],
       };
     }
@@ -108,6 +110,7 @@ export function CommitteePage() {
       projectsSections: [] as CommitteeSection[],
       gallerySections: [] as CommitteeSection[],
       faqSections: [] as CommitteeSection[],
+      historySections: [] as CommitteeSection[],
       contactSections: [] as CommitteeSection[],
     };
     for (const s of committee.sections) {
@@ -115,6 +118,7 @@ export function CommitteePage() {
       else if (s.type === "projects") result.projectsSections.push(s);
       else if (s.type === "gallery") result.gallerySections.push(s);
       else if (s.type === "faq") result.faqSections.push(s);
+      else if (s.type === "history" || s.type === "timeline") result.historySections.push(s);
       else if (s.type === "contact") result.contactSections.push(s);
     }
     return result;
@@ -703,6 +707,209 @@ export function CommitteePage() {
           </div>
         );
 
+      case "timeline":
+      case "history":
+        return (
+          <div key={index} style={{ marginBottom: "64px" }}>
+            <p className="section-eyebrow" style={{ marginBottom: "20px" }}>
+              // {section.title || "History & Milestones"}
+            </p>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "24px",
+                position: "relative",
+              }}
+            >
+              <div
+                style={{
+                  position: "absolute",
+                  left: "20px",
+                  top: "24px",
+                  bottom: "24px",
+                  width: "2px",
+                  background: "var(--glass-border)",
+                }}
+                className="hidden sm:block"
+              />
+              {section.items?.map((item: any, i: number) => (
+                <div
+                  key={i}
+                  className="glass-card relative"
+                  style={{
+                    padding: "clamp(20px, 3vw, 32px)",
+                    marginLeft: "0",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "flex-start",
+                      flexWrap: "wrap",
+                      gap: "12px",
+                      marginBottom: "14px",
+                    }}
+                  >
+                    <div>
+                      <div
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          marginBottom: "4px",
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontFamily: "var(--font-mono)",
+                            fontSize: "0.8rem",
+                            fontWeight: 700,
+                            color: "var(--electric-blue)",
+                            background: "rgba(0, 98, 155, 0.12)",
+                            padding: "3px 10px",
+                            borderRadius: "4px",
+                            border: "1px solid rgba(0, 98, 155, 0.25)",
+                          }}
+                        >
+                          {item.year}
+                        </span>
+                        {item.vehicleName && (
+                          <h4
+                            style={{
+                              fontFamily: "var(--font-headline)",
+                              fontSize: "18px",
+                              fontWeight: 600,
+                              color: "var(--text-primary)",
+                            }}
+                          >
+                            {item.vehicleName}
+                          </h4>
+                        )}
+                      </div>
+                    </div>
+                    {item.placement && (
+                      <span
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "6px",
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "0.75rem",
+                          fontWeight: 600,
+                          color: "var(--cyber-gold)",
+                          background: "rgba(235, 211, 169, 0.1)",
+                          padding: "4px 12px",
+                          borderRadius: "100px",
+                          border: "1px solid rgba(235, 211, 169, 0.25)",
+                        }}
+                      >
+                        <Trophy size={13} /> {item.placement}
+                      </span>
+                    )}
+                  </div>
+
+                  {item.awards && item.awards.length > 0 && (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "8px",
+                        marginBottom: "14px",
+                      }}
+                    >
+                      {item.awards.map((award: string, idx: number) => (
+                        <span
+                          key={idx}
+                          className="tech-tag"
+                          style={{
+                            fontSize: "0.7rem",
+                            padding: "3px 8px",
+                            color: "var(--text-primary)",
+                          }}
+                        >
+                          🏅 {award}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {item.image && (
+                    <div
+                      style={{
+                        width: "100%",
+                        maxHeight: "260px",
+                        borderRadius: "8px",
+                        overflow: "hidden",
+                        marginBottom: "16px",
+                        border: "1px solid var(--glass-border)",
+                      }}
+                    >
+                      <img
+                        src={item.image}
+                        alt={item.vehicleName || item.year}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                        }}
+                      />
+                    </div>
+                  )}
+
+                  {item.description && (
+                    <div
+                      style={{
+                        fontFamily: "var(--font-body)",
+                        fontSize: "14.5px",
+                        color: "var(--text-secondary)",
+                        lineHeight: 1.75,
+                        whiteSpace: "pre-wrap",
+                      }}
+                    >
+                      <ReactMarkdown>{item.description}</ReactMarkdown>
+                    </div>
+                  )}
+
+                  {item.links && item.links.length > 0 && (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "12px",
+                        marginTop: "16px",
+                        paddingTop: "14px",
+                        borderTop: "1px solid var(--glass-border)",
+                      }}
+                    >
+                      {item.links.map((link: { label: string; url: string }, idx: number) => (
+                        <a
+                          key={idx}
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "5px",
+                            fontFamily: "var(--font-mono)",
+                            fontSize: "0.75rem",
+                            color: "var(--electric-blue)",
+                            textDecoration: "none",
+                          }}
+                        >
+                          <ExternalLink size={12} /> {link.label}
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+
       default:
         return null;
     }
@@ -1134,6 +1341,28 @@ export function CommitteePage() {
                   }
                 >
                   {projectsSections.map((section, i) =>
+                    renderSection(section, i),
+                  )}
+                </Skeleton>
+              </div>
+            )}
+
+            {/* Row: History & Milestones (Full Width) */}
+            {historySections.length > 0 && (
+              <div
+                style={{
+                  borderTop: "1px solid var(--glass-border)",
+                  paddingTop: "48px",
+                }}
+              >
+                <Skeleton
+                  name="committee-history"
+                  loading={loading}
+                  color={
+                    isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"
+                  }
+                >
+                  {historySections.map((section, i) =>
                     renderSection(section, i),
                   )}
                 </Skeleton>

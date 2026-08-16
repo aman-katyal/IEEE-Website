@@ -11,6 +11,7 @@ const SECTION_PROJECTION = `
       _type == "projectsSection" => "projects",
       _type == "faqSection" => "faq",
       _type == "gallerySection" => "gallery",
+      _type == "historySection" => "history",
       _type == "contactSection" => "contact",
       _type
     ),

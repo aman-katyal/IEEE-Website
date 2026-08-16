@@ -9,7 +9,7 @@ import { partner } from './partner'
 
 // Shared Objects
 import { socialLink, metric, imageStyle } from './objects/common'
-import { textSection, projectsSection, faqSection, gallerySection } from './objects/sections'
+import { textSection, projectsSection, faqSection, gallerySection, historySection } from './objects/sections'
 import { aboutPageSection } from './objects/aboutPageSection'
 
 export const schemaTypes = [
@@ -31,5 +31,6 @@ export const schemaTypes = [
   projectsSection,
   faqSection,
   gallerySection,
+  historySection,
   aboutPageSection,
 ]

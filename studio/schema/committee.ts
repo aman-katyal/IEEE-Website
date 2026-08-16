@@ -120,6 +120,7 @@ export const committee = defineType({
         { type: 'projectsSection' },
         { type: 'faqSection' },
         { type: 'gallerySection' },
+        { type: 'historySection' },
       ],
     }),
 

@@ -111,3 +111,52 @@ export const gallerySection = defineType({
     }),
   ],
 })
+
+export const historySection = defineType({
+  name: 'historySection',
+  title: 'History / Timeline',
+  type: 'object',
+  fields: [
+    defineField({ name: 'title', type: 'string', title: 'Section Title', initialValue: 'Competition History' }),
+    defineField({
+      name: 'items',
+      title: 'History Entries',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          name: 'historyItem',
+          fields: [
+            { name: 'year', type: 'string', title: 'Year / Season (e.g. 2023-2024)', validation: (Rule) => Rule.required() },
+            { name: 'vehicleName', type: 'string', title: 'Robot / Vehicle Name (e.g. ROV ISO-Squid)' },
+            { name: 'placement', type: 'string', title: 'Placement / Result (e.g. 6th Place Overall)' },
+            {
+              name: 'awards',
+              type: 'array',
+              title: 'Awards & Honors',
+              of: [{ type: 'string' }],
+            },
+            { name: 'description', type: 'text', title: 'Season Description & Highlights (Markdown supported)' },
+            { name: 'image', type: 'image', title: 'Photo', options: { hotspot: true } },
+            {
+              name: 'links',
+              type: 'array',
+              title: 'Related Links & Documents',
+              of: [
+                {
+                  type: 'object',
+                  name: 'historyLink',
+                  fields: [
+                    { name: 'label', type: 'string', title: 'Label' },
+                    { name: 'url', type: 'string', title: 'URL' },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    }),
+  ],
+})
+
