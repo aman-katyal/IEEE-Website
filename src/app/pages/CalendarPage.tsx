@@ -94,7 +94,7 @@ export function CalendarPage() {
           <p className="section-eyebrow" style={{ marginBottom: "16px" }}>
             // Full Schedule
           </p>
-          <h2
+          <h1
             style={{
               fontFamily: "var(--font-headline)",
               fontSize: "clamp(32px, 5vw, 56px)",
@@ -106,7 +106,7 @@ export function CalendarPage() {
             }}
           >
             Events <span style={{ color: "var(--electric-blue)" }}>Calendar</span>
-          </h2>
+          </h1>
           
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "24px" }}>
             <p
