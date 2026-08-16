@@ -62,10 +62,10 @@ describe('JoinPage', () => {
     expect(screen.getByText('Gold')).toBeInTheDocument();
     expect(screen.getByText('$20')).toBeInTheDocument();
     
-    const discordLink = screen.getByRole('link', { name: /Join Discord/i });
+    const discordLink = screen.getByRole('link', { name: /Join Purdue IEEE Discord server/i });
     expect(discordLink).toHaveAttribute('href', 'https://discord.gg/test');
 
-    const paymentLink = screen.getByRole('link', { name: /Pay via TooCool/i });
+    const paymentLink = screen.getByRole('link', { name: /Pay Purdue IEEE membership dues via TooCool/i });
     expect(paymentLink).toHaveAttribute('href', 'https://payment.test');
   });
 
