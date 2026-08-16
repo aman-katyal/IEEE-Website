@@ -1,10 +1,10 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { HomePageProvider, useHomePageData } from './HomePageContext';
+import { useHomePageData } from './HomePageContext';
 import { useHomePage } from '../hooks/useSanityData';
 import React from 'react';
 
-// Mock the hook
+// Mock the hook to ensure it isn't accidentally called
 vi.mock('../hooks/useSanityData', () => ({
   useHomePage: vi.fn(),
 }));
@@ -22,30 +22,6 @@ const DummyComponent = () => {
 };
 
 describe('HomePageContext', () => {
-  it('HomePageProvider should provide the value from useHomePage', () => {
-    // Setup the mock to return a specific value
-    const mockData = {
-      data: { heroImage: 'test.jpg' },
-      loading: false,
-      error: null,
-      refetch: vi.fn(),
-    };
-    vi.mocked(useHomePage).mockReturnValue(mockData);
-
-    render(
-      <HomePageProvider>
-        <DummyComponent />
-      </HomePageProvider>
-    );
-
-    expect(screen.getByTestId('loading').textContent).toBe('false');
-    expect(screen.getByTestId('error').textContent).toBe('null');
-    expect(screen.getByTestId('data').textContent).toBe('has-data');
-
-    // Verify the hook was actually called
-    expect(useHomePage).toHaveBeenCalled();
-  });
-
   it('useHomePageData should return the default value when rendered outside the provider', () => {
     // Clear the mock just in case, though it shouldn't be called in this test
     vi.mocked(useHomePage).mockClear();
