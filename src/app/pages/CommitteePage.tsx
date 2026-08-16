@@ -445,7 +445,7 @@ export function CommitteePage() {
                         >
                           {p.name}
                         </h3>
-                        {i === 0 && (
+                        {(p.flagship || (p as any).isFlagship) && (
                           <span
                             style={{
                               fontSize: "10px",

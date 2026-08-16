@@ -340,40 +340,40 @@ export function Committees() {
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "12px",
+              gap: "8px",
+              fontFamily: "var(--font-mono)",
+              fontSize: "0.75rem",
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
             }}
           >
-            <div
+            <span
               style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: "0.65rem",
-                letterSpacing: "0.15em",
                 color: "var(--text-muted)",
-                textTransform: "uppercase",
                 opacity: isLight ? 1 : 0.8,
               }}
             >
-              sys.committees.count
-            </div>
+              Committees:
+            </span>
             {loading ? (
               <Skeleton
                 style={{
                   height: "16px",
-                  width: "30px",
-                  background: "rgba(255,255,255,0.1)",
+                  width: "24px",
+                  background: isLight
+                    ? "rgba(0,0,0,0.08)"
+                    : "rgba(255,255,255,0.1)",
                 }}
               />
             ) : (
-              <div
+              <span
                 style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: "0.65rem",
                   color: "var(--electric-blue)",
-                  letterSpacing: "0.1em",
+                  fontWeight: 600,
                 }}
               >
-                = {committees.length}
-              </div>
+                {committees.length}
+              </span>
             )}
           </div>
         </div>

@@ -100,4 +100,109 @@ describe('CommitteePage Rendering', () => {
     // Verify non-active status is displayed
     expect(screen.getByText('Archived')).toBeInTheDocument();
   });
+
+  it('should not display the Flagship tag for the first project if flagship is false or undefined', () => {
+    const mockCommitteeWithProjects = {
+      id: 'projects-committee',
+      name: 'Projects Committee',
+      tagline: 'Projects tagline',
+      description: 'Projects description',
+      longDescription: 'Projects long description',
+      status: 'Active',
+      statusColor: '#000',
+      statusBg: '#fff',
+      image: 'test-image.jpg',
+      tags: ['projects'],
+      chair: 'Projects Chair',
+      email: 'projects@example.com',
+      metrics: [],
+      sections: [
+        {
+          type: 'projects',
+          title: 'Featured Projects',
+          items: [
+            {
+              name: 'First Standard Project',
+              description: 'Standard project without flagship tag',
+            },
+            {
+              name: 'Second Standard Project',
+              description: 'Another standard project',
+            },
+          ],
+        },
+      ],
+    };
+
+    (useSanityData.useCommittee as any).mockReturnValue({
+      committee: mockCommitteeWithProjects,
+      loading: false,
+      error: null,
+    });
+
+    render(
+      <MemoryRouter initialEntries={['/committee/projects-committee']}>
+        <Routes>
+          <Route path="/committee/:id" element={<CommitteePage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText('First Standard Project')).toBeInTheDocument();
+    expect(screen.queryByText(/★ Flagship/i)).not.toBeInTheDocument();
+  });
+
+  it('should display the Flagship tag when flagship is true', () => {
+    const mockCommitteeWithFlagship = {
+      id: 'flagship-committee',
+      name: 'Flagship Committee',
+      tagline: 'Flagship tagline',
+      description: 'Flagship description',
+      longDescription: 'Flagship long description',
+      status: 'Active',
+      statusColor: '#000',
+      statusBg: '#fff',
+      image: 'test-image.jpg',
+      tags: ['flagship'],
+      chair: 'Flagship Chair',
+      email: 'flagship@example.com',
+      metrics: [],
+      sections: [
+        {
+          type: 'projects',
+          title: 'Flagship Projects',
+          items: [
+            {
+              name: 'Standard Project',
+              description: 'Not a flagship project',
+              flagship: false,
+            },
+            {
+              name: 'Flagship Project',
+              description: 'A genuine flagship project',
+              flagship: true,
+            },
+          ],
+        },
+      ],
+    };
+
+    (useSanityData.useCommittee as any).mockReturnValue({
+      committee: mockCommitteeWithFlagship,
+      loading: false,
+      error: null,
+    });
+
+    render(
+      <MemoryRouter initialEntries={['/committee/flagship-committee']}>
+        <Routes>
+          <Route path="/committee/:id" element={<CommitteePage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText('Flagship Project')).toBeInTheDocument();
+    expect(screen.getByText(/★ Flagship/i)).toBeInTheDocument();
+  });
 });
+

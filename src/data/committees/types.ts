@@ -4,6 +4,8 @@
 export interface CommitteeProject {
   name: string;
   description: string;
+  flagship?: boolean;
+  isFlagship?: boolean;
 }
 
 export interface GalleryItem {

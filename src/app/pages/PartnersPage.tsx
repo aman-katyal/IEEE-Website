@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { motion } from "motion/react";
 import { useTheme } from "next-themes";
-import { ExternalLink, Mail, Award, Rocket, Shield, Cpu } from "lucide-react";
+import { Mail, Award, Rocket, Shield, Cpu } from "lucide-react";
 import {
   usePartners,
   useSiteSettings,
@@ -84,9 +84,6 @@ export function PartnersPage() {
   const heroSubtitle =
     settings?.partnersHeroSubtitle ||
     "Our partners provide the resources, mentorship, and opportunities that allow our members to push the boundaries of what's possible in engineering.";
-  const prospectusUrl =
-    settings?.partnersProspectusUrl ||
-    "/documents/constitution/Constitution_of_IEEE.pdf";
 
   const revealProps = {
     initial: { opacity: 0, y: 20 },
@@ -170,21 +167,6 @@ export function PartnersPage() {
               >
                 <Mail size={18} />
                 Become a Partner
-              </a>
-              <a
-                href={prospectusUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-ghost"
-                style={{
-                  textDecoration: "none",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                }}
-              >
-                Branch Constitution
-                <ExternalLink size={16} />
               </a>
             </div>
           </motion.div>

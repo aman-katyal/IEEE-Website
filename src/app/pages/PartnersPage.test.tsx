@@ -65,8 +65,8 @@ describe('PartnersPage', () => {
     expect(screen.getByText('Test Partner Title')).toBeInTheDocument();
     expect(screen.getByText('Test Partner Subtitle')).toBeInTheDocument();
     
-    const prospectusLink = screen.getByRole('link', { name: /Branch Constitution/i });
-    expect(prospectusLink).toHaveAttribute('href', 'https://prospectus.test');
+    expect(screen.queryByRole('link', { name: /Branch Constitution/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Become a Partner/i })).toHaveAttribute('href', 'mailto:industry@purdueieee.org');
   });
 
   it('renders all partner tiers correctly', () => {

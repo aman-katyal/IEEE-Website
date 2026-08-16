@@ -75,5 +75,30 @@ describe('Committees Component', () => {
 
     // Verify non-active status IS rendered
     expect(screen.getByText('Archived')).toBeInTheDocument();
+
+    // Verify pseudo-code count label is NOT present
+    expect(screen.queryByText(/sys\.committees\.count/i)).not.toBeInTheDocument();
+
+    // Verify natural count label is rendered
+    expect(screen.getByText(/Committees:/i)).toBeInTheDocument();
+    expect(screen.getByText('2')).toBeInTheDocument();
+  });
+
+  it('renders loading skeleton and does not render pseudo-code label when loading', () => {
+    (useSanityData.useCommittees as any).mockReturnValue({
+      committees: [],
+      loading: true,
+      error: null,
+    });
+
+    render(
+      <MemoryRouter>
+        <Committees />
+      </MemoryRouter>
+    );
+
+    expect(screen.queryByText(/sys\.committees\.count/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/Committees:/i)).toBeInTheDocument();
   });
 });
+
