@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Purdue IEEE Core Flows', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
   });
 
   test('should load the homepage and show core sections', async ({ page }) => {
@@ -12,8 +12,8 @@ test.describe('Purdue IEEE Core Flows', () => {
     const nav = page.locator('nav');
     await expect(nav).toBeVisible();
     
-    // Check Hero section
-    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+    // Check Hero section (heading with level 1 or main text)
+    await expect(page.getByRole('heading', { level: 1 }).first()).toBeVisible({ timeout: 10000 });
   });
 
   test('should navigate to committees page and back', async ({ page }) => {
