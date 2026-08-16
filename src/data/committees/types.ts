@@ -78,9 +78,9 @@ export interface Committee {
   tagline: string;
   description: string;
   longDescription: string;
-  status: string;
-  statusColor: string;
-  statusBg: string;
+  status?: string;
+  statusColor?: string;
+  statusBg?: string;
   image: string;
   
   /** Dynamic metrics (e.g. Members: 40, Founded: 2010) */
