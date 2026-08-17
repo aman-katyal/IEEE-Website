@@ -24,19 +24,7 @@ export function CommitteeQuickFacts({ committee, loading, isLight }: CommitteeQu
       return (
         <button
           onClick={() => navigate("/join")}
-          className="btn-primary"
-          style={{
-            width: "100%",
-            textAlign: "center",
-            padding: "12px 20px",
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "8px",
-            fontFamily: "var(--font-body)",
-            fontSize: "0.9rem",
-            fontWeight: 600,
-          }}
+          className="btn-primary w-full text-center py-3 px-5 inline-flex items-center justify-center gap-2 font-[family-name:var(--font-body)] text-sm font-semibold cursor-pointer"
         >
           Join This Committee <ChevronRight size={16} />
         </button>
@@ -64,25 +52,14 @@ export function CommitteeQuickFacts({ committee, loading, isLight }: CommitteeQu
               navigate(url || "/join");
             }
           }}
-          className="btn-primary"
-          style={{
-            width: "100%",
-            textAlign: "center",
-            padding: "12px 20px",
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "8px",
-            background: isDiscord ? "#5865F2" : "var(--electric-blue)",
-            fontFamily: "var(--font-body)",
-            fontSize: "0.9rem",
-            fontWeight: 600,
-          }}
+          className={`btn-primary w-full text-center py-3 px-5 inline-flex items-center justify-center gap-2 font-[family-name:var(--font-body)] text-sm font-semibold cursor-pointer ${
+            isDiscord ? "!bg-[#5865F2]" : "!bg-[var(--electric-blue)]"
+          }`}
         >
           {getPlatformIcon("", url, 16)}
           <span>{config.buttonText || "Join Us"}</span>
           {isExternal ? (
-            <ExternalLink size={14} style={{ opacity: 0.8 }} />
+            <ExternalLink size={14} className="opacity-80" />
           ) : (
             <ChevronRight size={16} />
           )}
@@ -92,33 +69,12 @@ export function CommitteeQuickFacts({ committee, loading, isLight }: CommitteeQu
 
     if (config.type === "message") {
       return (
-        <div
-          style={{
-            padding: "12px 16px",
-            background: "rgba(235, 211, 169, 0.05)",
-            border: "1px solid var(--glass-border)",
-            borderRadius: "6px",
-            display: "flex",
-            alignItems: "flex-start",
-            gap: "10px",
-          }}
-        >
+        <div className="p-3.5 bg-[rgba(235,211,169,0.05)] border border-[var(--glass-border)] rounded-md flex items-start gap-2.5">
           <AlertCircle
             size={16}
-            style={{
-              color: "var(--cyber-gold)",
-              flexShrink: 0,
-              marginTop: "2px",
-            }}
+            className="text-[var(--cyber-gold)] shrink-0 mt-0.5"
           />
-          <div
-            style={{
-              fontFamily: "var(--font-body)",
-              fontSize: "12.5px",
-              color: "var(--text-secondary)",
-              lineHeight: 1.45,
-            }}
-          >
+          <div className="font-[family-name:var(--font-body)] text-xs text-[var(--text-secondary)] leading-snug">
             {config.message ||
               "We are not currently accepting new members. Please check back later!"}
           </div>
@@ -140,61 +96,24 @@ export function CommitteeQuickFacts({ committee, loading, isLight }: CommitteeQu
       color={isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}
     >
       <div
-        className="glass-card"
-        style={{
-          padding: "24px 32px",
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-          gap: "24px",
-          alignItems: "center",
-          marginBottom: "48px",
-          background: isLight ? "rgba(255,255,255,0.8)" : "rgba(10, 15, 25, 0.65)",
-          borderColor: isLight ? "rgba(0, 90, 135, 0.15)" : "rgba(0, 98, 155, 0.2)",
-        }}
+        className={`glass-card p-6 sm:p-8 grid grid-cols-1 md:grid-cols-3 gap-6 items-center mb-12 ${
+          isLight
+            ? "bg-white/80 border-[rgba(0,90,135,0.15)]"
+            : "bg-[rgba(10,15,25,0.65)] border-[rgba(0,98,155,0.2)]"
+        }`}
       >
         {/* Metric Counter Columns */}
         {hasMetrics && (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-around",
-              gap: "16px",
-              paddingRight: "16px",
-              borderRight: "1px solid var(--glass-border)",
-            }}
-          >
+          <div className="flex items-center justify-around gap-4 pr-0 md:pr-4 md:border-r border-[var(--glass-border)]">
             {committee.metrics!.map((m) => (
               <div
                 key={m.label}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: "4px",
-                }}
+                className="flex flex-col items-center gap-1"
               >
-                <span
-                  style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: "24px",
-                    fontWeight: 700,
-                    color: "var(--electric-blue)",
-                    lineHeight: 1,
-                  }}
-                >
+                <span className="font-[family-name:var(--font-mono)] text-2xl font-bold text-[var(--electric-blue)] leading-none">
                   {m.value}
                 </span>
-                <span
-                  style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: "0.62rem",
-                    color: "var(--text-muted)",
-                    letterSpacing: "0.1em",
-                    textTransform: "uppercase",
-                    fontWeight: 600,
-                  }}
-                >
+                <span className="font-[family-name:var(--font-mono)] text-[0.62rem] text-[var(--text-muted)] tracking-widest uppercase font-semibold">
                   {m.label}
                 </span>
               </div>
@@ -204,52 +123,19 @@ export function CommitteeQuickFacts({ committee, loading, isLight }: CommitteeQu
 
         {/* Leadership / Contact Info */}
         {hasChair && (
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "4px",
-              paddingRight: "16px",
-              borderRight: "1px solid var(--glass-border)",
-            }}
-          >
-            <div
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: "0.6rem",
-                letterSpacing: "0.12em",
-                color: "var(--text-muted)",
-                textTransform: "uppercase",
-                fontWeight: 600,
-              }}
-            >
+          <div className="flex flex-col gap-1 pr-0 md:pr-4 md:border-r border-[var(--glass-border)] text-center md:text-left">
+            <div className="font-[family-name:var(--font-mono)] text-[0.6rem] tracking-widest text-[var(--text-muted)] uppercase font-semibold">
               // Contact Leadership
             </div>
-            <div
-              style={{
-                fontFamily: "var(--font-headline)",
-                fontSize: "17px",
-                fontWeight: 600,
-                color: "var(--text-primary)",
-              }}
-            >
+            <div className="font-[family-name:var(--font-headline)] text-lg font-semibold text-[var(--text-primary)]">
               {committee?.chair}
             </div>
             {committee?.email && (
               <a
                 href={`mailto:${committee.email}`}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  fontFamily: "var(--font-mono)",
-                  fontSize: "0.75rem",
-                  color: "var(--electric-blue)",
-                  textDecoration: "none",
-                  marginTop: "2px",
-                }}
+                className="inline-flex items-center justify-center md:justify-start gap-1.5 font-[family-name:var(--font-mono)] text-xs text-[var(--electric-blue)] no-underline mt-0.5 hover:underline"
               >
-                <Mail size={13} style={{ flexShrink: 0 }} />
+                <Mail size={13} className="shrink-0" />
                 {committee.email}
               </a>
             )}
@@ -257,41 +143,21 @@ export function CommitteeQuickFacts({ committee, loading, isLight }: CommitteeQu
         )}
 
         {/* Action Button & Social Tags */}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "12px",
-            justifyContent: "center",
-          }}
-        >
+        <div className="flex flex-col gap-3 justify-center">
           {renderJoinButton()}
 
           {hasSocials && (
-            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", justifyContent: "center" }}>
+            <div className="flex gap-2 flex-wrap justify-center">
               {committee.socialLinks!.map((social) => (
                 <a
                   key={social.url}
                   href={social.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="social-tag"
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    padding: "4px 10px",
-                    borderRadius: "4px",
-                    border: "1px solid var(--glass-border)",
-                    color: "var(--text-secondary)",
-                    textDecoration: "none",
-                    fontFamily: "var(--font-mono)",
-                    fontSize: "0.65rem",
-                    transition: "all 0.2s ease",
-                  }}
+                  className="social-tag inline-flex items-center gap-1.5 py-1 px-2.5 rounded border border-[var(--glass-border)] text-[var(--text-secondary)] no-underline font-[family-name:var(--font-mono)] text-xs transition-all hover:text-[var(--electric-blue)] hover:border-[var(--electric-blue)]"
                 >
                   {getPlatformIcon(social.platform, social.url, 12)}
-                  <span style={{ textTransform: "capitalize" }}>
+                  <span className="capitalize">
                     {social.platform || "Link"}
                   </span>
                 </a>

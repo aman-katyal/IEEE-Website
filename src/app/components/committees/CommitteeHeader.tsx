@@ -17,203 +17,85 @@ export function CommitteeHeader({ committee, loading, isLight }: CommitteeHeader
       loading={loading}
       color={isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}
     >
-      <section
-        style={{
-          position: "relative",
-          minHeight: "380px",
-          display: "flex",
-          alignItems: "flex-end",
-          overflow: "hidden",
-        }}
-      >
+      <section className="relative min-h-[380px] flex items-end overflow-hidden">
         {/* Background Banner Image */}
         <div
+          className={`absolute inset-0 bg-cover bg-[center_40%] ${
+            isLight
+              ? "brightness-90 saturate-110"
+              : "brightness-35 saturate-70"
+          }`}
           style={{
-            position: "absolute",
-            inset: 0,
             backgroundImage: committee?.image ? `url('${committee.image}')` : "none",
-            backgroundSize: "cover",
-            backgroundPosition: "center 40%",
-            filter: isLight
-              ? "brightness(0.9) saturate(1.1)"
-              : "brightness(0.35) saturate(0.7)",
           }}
         />
 
         {/* Gradient Overlay */}
         <div
+          className={`absolute inset-0 ${
+            isLight
+              ? "bg-gradient-to-b from-white/10 via-transparent via-30% to-slate-100/85 to-80%"
+              : "bg-gradient-to-b from-black/20 via-transparent via-30% to-black/85 to-80%"
+          }`}
           style={{
-            position: "absolute",
-            inset: 0,
-            background: isLight
-              ? "linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 30%, rgba(248,250,252,0.85) 80%, var(--boiler-black) 100%)"
-              : "linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0.85) 80%, var(--boiler-black) 100%)",
+            backgroundColor: "transparent",
           }}
         />
 
         {/* IEEE PCB Grid Texture */}
-        <div
-          className="ieee-grid-bg"
-          style={{
-            position: "absolute",
-            inset: 0,
-            opacity: isLight ? 0.4 : 0.6,
-          }}
-        />
+        <div className={`ieee-grid-bg absolute inset-0 ${isLight ? "opacity-40" : "opacity-60"}`} />
 
         {/* Hero Title & Breadcrumbs */}
-        <div
-          style={{
-            position: "relative",
-            zIndex: 5,
-            maxWidth: "1280px",
-            margin: "0 auto",
-            padding: "120px clamp(16px, 4vw, 32px) 32px",
-            width: "100%",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: "24px",
-              gap: "24px",
-              flexWrap: "wrap",
-            }}
-          >
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-8 w-full">
+          <div className="flex items-center justify-between mb-6 gap-6 flex-wrap">
             {/* Breadcrumb Navigation */}
-            <div
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "8px",
-                fontFamily: "var(--font-mono)",
-                fontSize: "0.65rem",
-                letterSpacing: "0.12em",
-                textTransform: "uppercase",
-                height: "28px",
-              }}
-            >
+            <div className="inline-flex items-center gap-2 font-[family-name:var(--font-mono)] text-xs tracking-widest uppercase h-7">
               <Link
                 to="/"
-                style={{
-                  color: "var(--text-secondary)",
-                  textDecoration: "none",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  opacity: isLight ? 1 : 0.75,
-                }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.color = "var(--electric-blue)")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.color = "var(--text-secondary)")
-                }
+                className="text-[var(--text-muted)] no-underline flex items-center gap-1.5 transition-colors hover:text-[var(--electric-blue)]"
               >
-                <ArrowLeft size={14} /> Home
+                <ArrowLeft size={12} />
+                Home
               </Link>
-              <span style={{ color: "var(--text-muted)" }}>/</span>
+              <span className="text-[var(--text-muted)] opacity-40">/</span>
               <Link
                 to="/committees"
-                style={{
-                  color: "var(--electric-blue)",
-                  textDecoration: "none",
-                  fontWeight: 600,
-                }}
+                className="text-[var(--electric-blue)] no-underline transition-colors hover:underline"
               >
                 Committees
               </Link>
             </div>
 
-            {/* Non-Active Status Badge (Archived / Inactive only) */}
-            {committee?.status && committee.status.toLowerCase() !== "active" && (
-              <div
-                className="status-badge"
-                style={{
-                  background: committee.statusBg || "rgba(0, 98, 155, 0.1)",
-                  color: committee.statusColor || "var(--electric-blue)",
-                  backdropFilter: "blur(12px)",
-                  margin: 0,
-                  display: "inline-flex",
-                  padding: "0 14px",
-                  fontSize: "0.6rem",
-                  fontWeight: 700,
-                  borderRadius: "100px",
-                  border: "1px solid rgba(255,255,255,0.12)",
-                  alignItems: "center",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.08em",
-                  height: "28px",
-                  lineHeight: "28px",
-                }}
-              >
+            <div className="flex items-center gap-3 flex-wrap">
+              {/* Non-Active Status Badge */}
+              {committee?.status && committee.status.toLowerCase() !== "active" && (
                 <div
+                  className="status-badge"
                   style={{
-                    position: "relative",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    marginRight: "10px",
+                    background: committee.statusBg || "rgba(255, 0, 0, 0.2)",
+                    color: committee.statusColor || "#ff5555",
                   }}
                 >
-                  <span
-                    className="animate-ping"
-                    style={{
-                      position: "absolute",
-                      display: "inline-flex",
-                      height: "8px",
-                      width: "8px",
-                      borderRadius: "50%",
-                      background: "currentColor",
-                      opacity: 0.75,
-                    }}
-                  />
-                  <span
-                    style={{
-                      position: "relative",
-                      display: "inline-flex",
-                      borderRadius: "50%",
-                      height: "6px",
-                      width: "6px",
-                      background: "currentColor",
-                    }}
-                  />
+                  <span className="dot" />
+                  {committee.status}
                 </div>
-                {committee.status}
-              </div>
-            )}
+              )}
+
+              {/* Founded Year Tag */}
+              {committee?.foundedYear && (
+                <span className="font-[family-name:var(--font-mono)] text-xs text-[var(--cyber-gold)] tracking-widest uppercase border border-[var(--cyber-gold)]/30 px-3 py-1 rounded bg-[rgba(235,211,169,0.05)]">
+                  EST. {committee.foundedYear}
+                </span>
+              )}
+            </div>
           </div>
 
-          <h1
-            style={{
-              fontFamily: "var(--font-headline)",
-              fontSize: "clamp(36px, 5.5vw, 68px)",
-              fontWeight: 700,
-              color: "var(--text-primary)",
-              lineHeight: 1.1,
-              letterSpacing: "-0.02em",
-              marginBottom: "12px",
-              maxWidth: "900px",
-            }}
-          >
-            {committee?.name}
+          <h1 className="font-[family-name:var(--font-headline)] text-3xl sm:text-5xl lg:text-6xl font-bold text-[var(--text-primary)] mb-3 leading-tight tracking-tight">
+            {committee?.name || "Committee"}
           </h1>
 
-          <p
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: "0.85rem",
-              color: "var(--cyber-gold)",
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              opacity: isLight ? 1 : 0.9,
-              fontWeight: isLight ? 600 : 500,
-            }}
-          >
+          <p className="font-[family-name:var(--font-mono)] text-xs sm:text-sm text-[var(--cyber-gold)] tracking-widest uppercase mb-6 max-w-3xl opacity-90">
             {committee?.tagline}
-            {committee?.foundedYear ? ` • Est. ${committee.foundedYear}` : ""}
           </p>
         </div>
       </section>
