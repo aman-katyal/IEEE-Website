@@ -408,6 +408,17 @@
   width: max-content;
 }
 
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+    overflow-x: auto;
+  }
+}
+
 /* ─── Responsive Grid Utilities ──────────────────────────────────── */
 .ieee-grid-auto {
   display: grid;

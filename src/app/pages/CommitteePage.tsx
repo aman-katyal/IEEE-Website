@@ -1277,7 +1277,7 @@ export function CommitteePage() {
                       </div>
                     )}
 
-                    {/* Chair */}
+                    {/* Chair / Questions */}
                     <div style={{ marginBottom: "24px" }}>
                       <div
                         style={{
@@ -1289,19 +1289,31 @@ export function CommitteePage() {
                           marginBottom: "8px",
                         }}
                       >
-                        Committee Chair
+                        Have questions? Contact Leadership
                       </div>
-                      <h3
+                      <div
                         style={{
                           fontFamily: "var(--font-headline)",
-                          fontSize: "18px",
+                          fontSize: "17px",
                           fontWeight: 600,
                           color: "var(--text-primary)",
-                          marginBottom: "6px",
+                          marginBottom: "4px",
                         }}
                       >
                         {committee?.chair}
-                      </h3>
+                      </div>
+                      <div
+                        style={{
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "0.65rem",
+                          color: "var(--text-muted)",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.08em",
+                          marginBottom: "8px",
+                        }}
+                      >
+                        Committee Chair
+                      </div>
                       <a
                         href={`mailto:${committee?.email}`}
                         style={{
@@ -1309,12 +1321,12 @@ export function CommitteePage() {
                           alignItems: "center",
                           gap: "6px",
                           fontFamily: "var(--font-mono)",
-                          fontSize: "0.7rem",
+                          fontSize: "0.75rem",
                           color: "var(--electric-blue)",
                           textDecoration: "none",
                         }}
                       >
-                        <Mail size={12} style={{ flexShrink: 0 }} />{" "}
+                        <Mail size={13} style={{ flexShrink: 0 }} />{" "}
                         {committee?.email}
                       </a>
                     </div>

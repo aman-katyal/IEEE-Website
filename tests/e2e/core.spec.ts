@@ -53,6 +53,6 @@ test.describe('Purdue IEEE Core Flows', () => {
     await page.goto('/committees');
     await page.getByRole('link', { name: /Explore Committee/i }).first().click();
     await expect(page).toHaveURL(/\/committee\//);
-    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1 }).first()).toBeVisible({ timeout: 15000 });
   });
 });

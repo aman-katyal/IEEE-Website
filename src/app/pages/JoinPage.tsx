@@ -35,6 +35,13 @@ export function JoinPage() {
   const { settings, loading } = useSiteSettings();
 
   useEffect(() => {
+    if (window.location.hash === "#dues-section") {
+      const el = document.getElementById("dues-section");
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+        return;
+      }
+    }
     window.scrollTo(0, 0);
   }, []);
 
