@@ -1,97 +1,34 @@
-import { useParams, Link, useNavigate } from "react-router";
-import {
-  ArrowLeft,
-  Mail,
-  Users,
-  Trophy,
-  Cpu,
-  ChevronRight,
-  Calendar,
-  MessageCircle,
-  ExternalLink,
-  UserCircle,
-  AlertCircle,
-  Info,
-} from "lucide-react";
+import React from "react";
+import { useParams, Link } from "react-router";
+import { ArrowLeft } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useCommittee } from "../../hooks/useSanityData";
-import { Skeleton } from "boneyard-js/react";
 import ReactMarkdown from "react-markdown";
-import type {
-  CommitteeSection,
-  GalleryItem,
-} from "../../data/committees/types";
-import { useState, useMemo, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "../components/ui/dialog";
-import { getPlatformIcon } from "../components/icons";
+import { Skeleton } from "boneyard-js/react";
+import { useCommittee } from "../../hooks/useSanityData";
+import { CommitteeHeader } from "../components/committees/CommitteeHeader";
+import { CommitteeQuickFacts } from "../components/committees/CommitteeQuickFacts";
+import { CommitteeProjects } from "../components/committees/CommitteeProjects";
+import { CommitteeGallery } from "../components/committees/CommitteeGallery";
+import { CommitteeContentSections } from "../components/committees/CommitteeContentSections";
+import type { CommitteeSection } from "../../data/committees/types";
 
 export function CommitteePage() {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const { committee, loading, error } = useCommittee(id ?? "");
+  const { committee, loading, error } = useCommittee(id || "");
   const { theme } = useTheme();
   const isLight = theme === "light";
-  const [selectedProject, setSelectedProject] = useState<{
-    name: string;
-    description?: string;
-    image?: string;
-  } | null>(null);
 
-  const {
-    textSections,
-    projectsSections,
-    gallerySections,
-    faqSections,
-    historySections,
-    contactSections,
-  } = useMemo(() => {
-    if (!committee || !committee.sections) {
-      return {
-        textSections: [],
-        projectsSections: [],
-        gallerySections: [],
-        faqSections: [],
-        historySections: [],
-        contactSections: [],
-      };
-    }
-    const result = {
-      textSections: [] as CommitteeSection[],
-      projectsSections: [] as CommitteeSection[],
-      gallerySections: [] as CommitteeSection[],
-      faqSections: [] as CommitteeSection[],
-      historySections: [] as CommitteeSection[],
-      contactSections: [] as CommitteeSection[],
-    };
-    for (const s of committee.sections) {
-      if (s.type === "text") result.textSections.push(s);
-      else if (s.type === "projects") result.projectsSections.push(s);
-      else if (s.type === "gallery") result.gallerySections.push(s);
-      else if (s.type === "faq") result.faqSections.push(s);
-      else if (s.type === "history" || s.type === "timeline") result.historySections.push(s);
-      else if (s.type === "contact") result.contactSections.push(s);
-    }
-    return result;
-  }, [committee]);
-
-  if (error || (!loading && !committee)) {
+  if (!loading && (error || !committee)) {
     return (
       <section
         style={{
-          minHeight: "100vh",
+          minHeight: "80vh",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          padding: "120px 32px 80px",
           textAlign: "center",
+          padding: "120px 24px",
           background: "var(--boiler-black)",
         }}
       >
@@ -139,1286 +76,150 @@ export function CommitteePage() {
     );
   }
 
-  const renderJoinButton = () => {
-    if (!committee) return null;
-    const config = committee.joinConfig;
-
-    if (!config || config.type === "default") {
-      return (
-        <button
-          onClick={() => navigate("/join")}
-          className="btn-primary"
-          style={{
-            width: "100%",
-            textAlign: "center",
-            padding: "18px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "12px",
-          }}
-        >
-          Join This Committee <ChevronRight size={18} />
-        </button>
-      );
-    }
-
-    if (config.type === "link") {
-      const url = config.url || "";
-      const isExternal = url.startsWith("http");
-      const isDiscord = url.toLowerCase().includes("discord");
-
-      return (
-        <button
-          onClick={() => {
-            if (isExternal) {
-              try {
-                const urlObj = new URL(url);
-                if (urlObj.protocol === "http:" || urlObj.protocol === "https:") {
-                  window.open(urlObj.href, "_blank", "noopener,noreferrer");
-                }
-              } catch (e) {
-                // Invalid URL
-              }
-            } else {
-              navigate(url || "/join");
-            }
-          }}
-          className="btn-primary"
-          style={{
-            width: "100%",
-            textAlign: "center",
-            padding: "18px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "12px",
-            background: isDiscord ? "#5865F2" : "var(--electric-blue)",
-          }}
-        >
-          {getPlatformIcon("", url, 20)}
-          <span style={{ fontWeight: 600 }}>
-            {config.buttonText || "Join Us"}
-          </span>
-          {isExternal ? (
-            <ExternalLink size={16} style={{ opacity: 0.8 }} />
-          ) : (
-            <ChevronRight size={18} />
-          )}
-        </button>
-      );
-    }
-
-    if (config.type === "message") {
-      return (
-        <div
-          style={{
-            padding: "20px",
-            background: "rgba(235, 211, 169, 0.05)",
-            border: "1px solid var(--glass-border)",
-            borderRadius: "4px",
-            display: "flex",
-            alignItems: "flex-start",
-            gap: "12px",
-          }}
-        >
-          <AlertCircle
-            size={18}
-            style={{
-              color: "var(--cyber-gold)",
-              flexShrink: 0,
-              marginTop: "2px",
-            }}
-          />
-          <div
-            style={{
-              fontFamily: "var(--font-body)",
-              fontSize: "13.5px",
-              color: "var(--text-secondary)",
-              lineHeight: 1.5,
-              whiteSpace: "pre-wrap",
-            }}
-          >
-            {config.message ||
-              "We are not currently accepting new members. Please check back later!"}
-          </div>
-        </div>
-      );
-    }
-
-    return null;
-  };
-
-  const renderSection = (section: CommitteeSection, index: number) => {
-    switch (section.type) {
-      case "text":
-        const layout = section.layout || "top";
-        const isCrop = section.imageStyle?.crop !== false;
-        const size = section.imageStyle?.size || "large";
-        const widthMap = {
-          small: "250px",
-          medium: "400px",
-          large: "600px",
-          full: "100%",
-        };
-
-        return (
-          <div key={index} style={{ marginBottom: "64px" }}>
-            <p className="section-eyebrow" style={{ marginBottom: "20px" }}>
-              // {section.title || "Information"}
-            </p>
-            <div
-              className="glass-card"
-              style={{
-                padding: "clamp(20px, 4vw, 32px)",
-                display: "flex",
-                flexDirection:
-                  layout === "top"
-                    ? "column"
-                    : layout === "left"
-                      ? "row"
-                      : "row-reverse",
-                gap: "32px",
-                alignItems: "flex-start",
-                flexWrap: "wrap",
-              }}
-            >
-              {section.image && (
-                <div
-                  style={{
-                    flex:
-                      layout === "top" ? "1 1 100%" : `0 0 ${widthMap[size]}`,
-                    width: "100%",
-                    maxWidth: "100%",
-                    borderRadius: "4px",
-                    overflow: "hidden",
-                    border: "1px solid var(--glass-border)",
-                    background: "rgba(0,0,0,0.1)",
-                  }}
-                >
-                  <img
-                    src={section.image}
-                    alt={section.title}
-                    style={{
-                      width: "100%",
-                      height: "auto",
-                      maxHeight: layout === "top" ? "500px" : "600px",
-                      objectFit: isCrop ? "cover" : "contain",
-                      display: "block",
-                    }}
-                  />
-                </div>
-              )}
-              <div
-                style={{ flex: "1 1 300px", width: "100%", maxWidth: "100%" }}
-              >
-                <div
-                  style={{
-                    fontFamily: "var(--font-body)",
-                    fontSize: "15.5px",
-                    color: "var(--text-secondary)",
-                    lineHeight: 1.85,
-                  }}
-                >
-                  <ReactMarkdown>{section.content}</ReactMarkdown>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-
-      case "projects":
-        const projCrop = section.imageStyle?.crop !== false;
-        return (
-          <div key={index} style={{ marginBottom: "64px" }}>
-            <p className="section-eyebrow" style={{ marginBottom: "20px" }}>
-              // {section.title || "Projects"}
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {section.items?.map((p, i) => (
-                <div
-                  key={i}
-                  className="glass-card transition-all duration-200 hover:scale-[1.02] hover:border-[var(--electric-blue)]"
-                  onClick={() => setSelectedProject(p)}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => e.key === "Enter" && setSelectedProject(p)}
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    overflow: "hidden",
-                    cursor: "pointer",
-                  }}
-                >
-                  {p.image && (
-                    <div
-                      style={{
-                        height: "180px",
-                        width: "100%",
-                        borderBottom: "1px solid var(--glass-border)",
-                      }}
-                    >
-                      <img
-                        src={p.image}
-                        alt={p.name}
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: projCrop ? "cover" : "contain",
-                          background: "rgba(0,0,0,0.05)",
-                        }}
-                      />
-                    </div>
-                  )}
-                  <div
-                    style={{
-                      padding: "24px",
-                      display: "flex",
-                      flexDirection: "column",
-                      flex: 1,
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        marginBottom: "10px",
-                        flexWrap: "wrap",
-                        gap: "6px",
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "8px",
-                          flexWrap: "wrap",
-                        }}
-                      >
-                        <h3
-                          style={{
-                            fontFamily: "var(--font-headline)",
-                            fontSize: "18px",
-                            fontWeight: 600,
-                            color: "var(--text-primary)",
-                          }}
-                        >
-                          {p.name}
-                        </h3>
-                        {(p.flagship || (p as any).isFlagship) && (
-                          <span
-                            style={{
-                              fontSize: "10px",
-                              fontWeight: 700,
-                              fontFamily: "var(--font-mono)",
-                              color: "var(--cyber-gold)",
-                              background: "rgba(235, 211, 169, 0.12)",
-                              border: "1px solid rgba(235, 211, 169, 0.3)",
-                              padding: "2px 8px",
-                              borderRadius: "9999px",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.08em",
-                            }}
-                          >
-                            ★ Flagship
-                          </span>
-                        )}
-                      </div>
-                      <span
-                        style={{
-                          fontFamily: "var(--font-mono)",
-                          fontSize: "11px",
-                          color: "var(--electric-blue)",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.05em",
-                        }}
-                      >
-                        View Details →
-                      </span>
-                    </div>
-                    <div
-                      style={{
-                        fontFamily: "var(--font-body)",
-                        fontSize: "14px",
-                        color: "var(--text-secondary)",
-                        lineHeight: 1.65,
-                        whiteSpace: "pre-wrap",
-                      }}
-                    >
-                      <ReactMarkdown>{p.description}</ReactMarkdown>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-
-      case "contact":
-        return (
-          <div key={index} style={{ marginBottom: "64px" }}>
-            <p className="section-eyebrow" style={{ marginBottom: "8px" }}>
-              // {section.title || "Contact"}
-            </p>
-            <p
-              style={{
-                fontFamily: "var(--font-body)",
-                fontSize: "14px",
-                color: "var(--text-secondary)",
-                marginBottom: "20px",
-              }}
-            >
-              Have questions? Get in touch with our committee leads:
-            </p>
-            <div
-              className="glass-card"
-              style={{
-                padding: "32px",
-                display: "flex",
-                alignItems: "center",
-                gap: "24px",
-              }}
-            >
-              <div
-                style={{
-                  width: "64px",
-                  height: "64px",
-                  borderRadius: "50%",
-                  background: "rgba(0, 98, 155, 0.1)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  border: "1px solid var(--glass-border)",
-                }}
-              >
-                <UserCircle
-                  size={32}
-                  style={{ color: "var(--electric-blue)" }}
-                />
-              </div>
-              <div>
-                <h4
-                  style={{
-                    fontFamily: "var(--font-headline)",
-                    fontSize: "18px",
-                    fontWeight: 600,
-                    color: "var(--text-primary)",
-                    marginBottom: "4px",
-                  }}
-                >
-                  {section.name}
-                </h4>
-                {section.role && (
-                  <p
-                    style={{
-                      fontFamily: "var(--font-mono)",
-                      fontSize: "0.7rem",
-                      color: "var(--cyber-gold)",
-                      textTransform: "uppercase",
-                      marginBottom: "8px",
-                    }}
-                  >
-                    {section.role}
-                  </p>
-                )}
-                <a
-                  href={`mailto:${section.email}`}
-                  style={{
-                    color: "var(--electric-blue)",
-                    textDecoration: "none",
-                    fontSize: "14px",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                  }}
-                >
-                  <Mail size={14} /> {section.email}
-                </a>
-              </div>
-            </div>
-          </div>
-        );
-
-      case "gallery":
-        return (
-          <div key={index} style={{ marginBottom: "64px" }}>
-            <p className="section-eyebrow" style={{ marginBottom: "20px" }}>
-              // {section.title || "Gallery"}
-            </p>
-            <div style={{ columns: "2 300px", columnGap: "16px" }}>
-              {section.items?.map(
-                (img: GalleryItem & { image?: string }, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      breakInside: "avoid",
-                      marginBottom: "16px",
-                      position: "relative",
-                      borderRadius: "8px",
-                      overflow: "hidden",
-                      border: "1px solid var(--glass-border)",
-                      cursor: "pointer",
-                    }}
-                    className="gallery-item-container"
-                  >
-                    <img
-                      src={img.image || img.src}
-                      alt={img.caption}
-                      style={{
-                        width: "100%",
-                        height: "auto",
-                        display: "block",
-                        transition: "transform 0.6s ease",
-                        filter: isLight ? "brightness(1)" : "brightness(0.85)",
-                      }}
-                    />
-                    {img.caption && (
-                      <div
-                        className="caption-overlay"
-                        style={{
-                          position: "absolute",
-                          bottom: 0,
-                          left: 0,
-                          right: 0,
-                          background:
-                            "linear-gradient(transparent, rgba(0,0,0,0.9))",
-                          padding: "24px 16px 12px",
-                          fontFamily: "var(--font-mono)",
-                          fontSize: "0.65rem",
-                          color: "#FFFFFF",
-                          letterSpacing: "0.06em",
-                          opacity: 0,
-                          transform: "translateY(10px)",
-                          transition: "all 0.3s ease",
-                        }}
-                      >
-                        {img.caption}
-                      </div>
-                    )}
-                  </div>
-                ),
-              )}
-            </div>
-          </div>
-        );
-
-      case "faq":
-        return (
-          <div key={index} style={{ marginBottom: "64px" }}>
-            <p className="section-eyebrow" style={{ marginBottom: "20px" }}>
-              // {section.title || "FAQ"}
-            </p>
-            <div
-              style={{ display: "flex", flexDirection: "column", gap: "10px" }}
-            >
-              {section.items?.map((faq, i) => (
-                <div
-                  key={i}
-                  className="glass-card"
-                  style={{ padding: "24px 32px" }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "flex-start",
-                      gap: "12px",
-                      marginBottom: "10px",
-                    }}
-                  >
-                    <MessageCircle
-                      size={16}
-                      style={{
-                        color: "var(--electric-blue)",
-                        flexShrink: 0,
-                        marginTop: "2px",
-                      }}
-                    />
-                    <h4
-                      style={{
-                        fontFamily: "var(--font-headline)",
-                        fontSize: "15px",
-                        fontWeight: 600,
-                        color: "var(--text-primary)",
-                        lineHeight: 1.45,
-                      }}
-                    >
-                      {faq.question}
-                    </h4>
-                  </div>
-                  <div
-                    style={{
-                      fontFamily: "var(--font-body)",
-                      fontSize: "14px",
-                      color: "var(--text-secondary)",
-                      lineHeight: 1.7,
-                      paddingLeft: "28px",
-                      whiteSpace: "pre-wrap",
-                    }}
-                  >
-                    <ReactMarkdown>{faq.answer}</ReactMarkdown>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-
-      case "timeline":
-      case "history":
-        return (
-          <div key={index} style={{ marginBottom: "64px" }}>
-            <p className="section-eyebrow" style={{ marginBottom: "20px" }}>
-              // {section.title || "History & Milestones"}
-            </p>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "24px",
-                position: "relative",
-              }}
-            >
-              <div
-                style={{
-                  position: "absolute",
-                  left: "20px",
-                  top: "24px",
-                  bottom: "24px",
-                  width: "2px",
-                  background: "var(--glass-border)",
-                }}
-                className="hidden sm:block"
-              />
-              {section.items?.map((item: any, i: number) => (
-                <div
-                  key={i}
-                  className="glass-card relative"
-                  style={{
-                    padding: "clamp(20px, 3vw, 32px)",
-                    marginLeft: "0",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "flex-start",
-                      flexWrap: "wrap",
-                      gap: "12px",
-                      marginBottom: "14px",
-                    }}
-                  >
-                    <div>
-                      <div
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: "8px",
-                          marginBottom: "4px",
-                        }}
-                      >
-                        <span
-                          style={{
-                            fontFamily: "var(--font-mono)",
-                            fontSize: "0.8rem",
-                            fontWeight: 700,
-                            color: "var(--electric-blue)",
-                            background: "rgba(0, 98, 155, 0.12)",
-                            padding: "3px 10px",
-                            borderRadius: "4px",
-                            border: "1px solid rgba(0, 98, 155, 0.25)",
-                          }}
-                        >
-                          {item.year}
-                        </span>
-                        {item.vehicleName && (
-                          <h4
-                            style={{
-                              fontFamily: "var(--font-headline)",
-                              fontSize: "18px",
-                              fontWeight: 600,
-                              color: "var(--text-primary)",
-                            }}
-                          >
-                            {item.vehicleName}
-                          </h4>
-                        )}
-                      </div>
-                    </div>
-                    {item.placement && (
-                      <span
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: "6px",
-                          fontFamily: "var(--font-mono)",
-                          fontSize: "0.75rem",
-                          fontWeight: 600,
-                          color: "var(--cyber-gold)",
-                          background: "rgba(235, 211, 169, 0.1)",
-                          padding: "4px 12px",
-                          borderRadius: "100px",
-                          border: "1px solid rgba(235, 211, 169, 0.25)",
-                        }}
-                      >
-                        <Trophy size={13} /> {item.placement}
-                      </span>
-                    )}
-                  </div>
-
-                  {item.awards && item.awards.length > 0 && (
-                    <div
-                      style={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        gap: "8px",
-                        marginBottom: "14px",
-                      }}
-                    >
-                      {item.awards.map((award: string, idx: number) => (
-                        <span
-                          key={idx}
-                          className="tech-tag"
-                          style={{
-                            fontSize: "0.7rem",
-                            padding: "3px 8px",
-                            color: "var(--text-primary)",
-                          }}
-                        >
-                          🏅 {award}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  {item.image && (
-                    <div
-                      style={{
-                        width: "100%",
-                        maxHeight: "260px",
-                        borderRadius: "8px",
-                        overflow: "hidden",
-                        marginBottom: "16px",
-                        border: "1px solid var(--glass-border)",
-                      }}
-                    >
-                      <img
-                        src={item.image}
-                        alt={item.vehicleName || item.year}
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                        }}
-                      />
-                    </div>
-                  )}
-
-                  {item.description && (
-                    <div
-                      style={{
-                        fontFamily: "var(--font-body)",
-                        fontSize: "14.5px",
-                        color: "var(--text-secondary)",
-                        lineHeight: 1.75,
-                        whiteSpace: "pre-wrap",
-                      }}
-                    >
-                      <ReactMarkdown>{item.description}</ReactMarkdown>
-                    </div>
-                  )}
-
-                  {item.links && item.links.length > 0 && (
-                    <div
-                      style={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        gap: "12px",
-                        marginTop: "16px",
-                        paddingTop: "14px",
-                        borderTop: "1px solid var(--glass-border)",
-                      }}
-                    >
-                      {item.links.map((link: { label: string; url: string }, idx: number) => (
-                        <a
-                          key={idx}
-                          href={link.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: "5px",
-                            fontFamily: "var(--font-mono)",
-                            fontSize: "0.75rem",
-                            color: "var(--electric-blue)",
-                            textDecoration: "none",
-                          }}
-                        >
-                          <ExternalLink size={12} /> {link.label}
-                        </a>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-
-      default:
-        return null;
-    }
-  };
+  // Partition sections by category
+  const rawSections: CommitteeSection[] = committee?.sections || [];
+  const textSections = rawSections.filter((s) => s.type === "text" || !s.type);
+  const projectsSections = rawSections.filter((s) => s.type === "projects");
+  const gallerySections = rawSections.filter((s) => s.type === "gallery");
+  const historySections = rawSections.filter((s) => s.type === "history" || s.type === "timeline");
+  const faqAndContactSections = rawSections.filter((s) => s.type === "faq" || s.type === "contact");
 
   return (
     <>
-      <Skeleton
-        name="committee-banner"
+      {/* Hero Banner with Title, Tagline, Est. Year, Breadcrumbs */}
+      <CommitteeHeader
+        committee={committee}
         loading={loading}
-        color={isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}
-      >
-        <section
-          style={{
-            position: "relative",
-            minHeight: "360px",
-            display: "flex",
-            alignItems: "flex-end",
-            overflow: "hidden",
-          }}
-        >
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              backgroundImage: `url('${committee?.image}')`,
-              backgroundSize: "cover",
-              backgroundPosition: "center 40%",
-              filter: isLight
-                ? "brightness(0.9) saturate(1.1)"
-                : "brightness(0.35) saturate(0.7)",
-            }}
-          />
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              background: isLight
-                ? "linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 30%, rgba(248,250,252,0.85) 80%, var(--boiler-black) 100%)"
-                : "linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0.85) 80%, var(--boiler-black) 100%)",
-            }}
-          />
-          <div
-            className="ieee-grid-bg"
-            style={{
-              position: "absolute",
-              inset: 0,
-              opacity: isLight ? 0.4 : 0.6,
-            }}
-          />
-          <div
-            style={{
-              position: "relative",
-              zIndex: 5,
-              maxWidth: "1280px",
-              margin: "0 auto",
-              padding: "120px clamp(16px, 4vw, 32px) 24px",
-              width: "100%",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginBottom: "32px",
-                gap: "40px",
-              }}
-            >
-              <div
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  fontFamily: "var(--font-mono)",
-                  fontSize: "0.65rem",
-                  letterSpacing: "0.12em",
-                  textTransform: "uppercase",
-                  height: "28px",
-                }}
-              >
-                <Link
-                  to="/"
-                  style={{
-                    color: "var(--text-secondary)",
-                    textDecoration: "none",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    opacity: isLight ? 1 : 0.75,
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.color = "var(--electric-blue)")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.color = "var(--text-secondary)")
-                  }
-                >
-                  <ArrowLeft size={14} /> Home
-                </Link>
-                <span style={{ color: "var(--text-muted)" }}>/</span>
-                <Link
-                  to="/committees"
-                  style={{
-                    color: "var(--electric-blue)",
-                    textDecoration: "none",
-                    fontWeight: 600,
-                  }}
-                >
-                  Committees
-                </Link>
-              </div>
+        isLight={isLight}
+      />
 
-              {committee?.status && committee.status.toLowerCase() !== "active" && (
-                <div
-                  className="status-badge"
-                  style={{
-                    background: committee.statusBg || "rgba(0, 98, 155, 0.1)",
-                    color: committee.statusColor || "var(--electric-blue)",
-                    backdropFilter: "blur(12px)",
-                    margin: 0,
-                    display: "inline-flex",
-                    padding: "0 14px",
-                    fontSize: "0.6rem",
-                    fontWeight: 700,
-                    borderRadius: "100px",
-                    border: "1px solid rgba(255,255,255,0.12)",
-                    alignItems: "center",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.08em",
-                    height: "28px",
-                    lineHeight: "28px",
-                  }}
-                >
-                  <div
-                    style={{
-                      position: "relative",
-                      display: "inline-flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      marginRight: "10px",
-                    }}
-                  >
-                    <span
-                      className="animate-ping"
-                      style={{
-                        position: "absolute",
-                        display: "inline-flex",
-                        height: "8px",
-                        width: "8px",
-                        borderRadius: "50%",
-                        background: "currentColor",
-                        opacity: 0.75,
-                      }}
-                    />
-                    <span
-                      style={{
-                        position: "relative",
-                        display: "inline-flex",
-                        borderRadius: "50%",
-                        height: "6px",
-                        width: "6px",
-                        background: "currentColor",
-                      }}
-                    />
-                  </div>
-                  {committee.status}
-                </div>
-              )}
-            </div>
-
-            <h1
-              style={{
-                fontFamily: "var(--font-headline)",
-                fontSize: "clamp(32px, 5vw, 64px)",
-                fontWeight: 700,
-                color: "var(--text-primary)",
-                lineHeight: 1.1,
-                letterSpacing: "-0.02em",
-                marginBottom: "12px",
-                maxWidth: "800px",
-              }}
-            >
-              {committee?.name}
-            </h1>
-            <p
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: "0.85rem",
-                color: "var(--cyber-gold)",
-                letterSpacing: "0.12em",
-                textTransform: "uppercase",
-                opacity: isLight ? 1 : 0.8,
-                fontWeight: isLight ? 600 : 400,
-              }}
-            >
-              {committee?.tagline}{" "}
-              {committee?.foundedYear ? `• Est. ${committee.foundedYear}` : ""}
-            </p>
-          </div>
-        </section>
-      </Skeleton>
-
+      {/* Main Content Area: Centered, Full-Width Layout */}
       <section
         style={{
           background: "var(--boiler-black)",
-          padding: "56px 0 120px",
+          padding: "40px 0 120px",
           position: "relative",
         }}
       >
         <div
           style={{
-            maxWidth: "1280px",
+            maxWidth: "1160px",
             margin: "0 auto",
             padding: "0 clamp(16px, 4vw, 32px)",
           }}
         >
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "56px" }}
-          >
-            {/* Row 1: About & Details Sidebar */}
-            <div className="ieee-grid-sidebar">
-              {/* Left Column: About & Text Sections */}
-              <div>
-                <Skeleton
-                  name="committee-content"
-                  loading={loading}
-                  color={
-                    isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"
-                  }
-                >
-                  <div style={{ marginBottom: "32px" }}>
-                    <p
-                      className="section-eyebrow"
-                      style={{ marginBottom: "16px" }}
-                    >
-                      // About This Committee
-                    </p>
-                    <div
-                      className="glass-card"
-                      style={{ padding: "clamp(20px, 4vw, 32px)" }}
-                    >
-                      <div
-                        style={{
-                          fontFamily: "var(--font-body)",
-                          fontSize: "15.5px",
-                          color: "var(--text-secondary)",
-                          lineHeight: 1.85,
-                        }}
-                      >
-                        <ReactMarkdown>
-                          {committee?.longDescription || ""}
-                        </ReactMarkdown>
-                      </div>
-                    </div>
-                  </div>
-                  {textSections.map((section, i) => renderSection(section, i))}
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: "8px",
-                      flexWrap: "wrap",
-                      marginTop: "20px",
-                    }}
-                  >
-                    {committee?.tags?.map((tag) => (
-                      <span
-                        key={tag}
-                        className="tech-tag"
-                        style={{
-                          opacity: isLight ? 1 : 0.9,
-                          padding: "5px 10px",
-                        }}
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </Skeleton>
-              </div>
+          {/* Quick Facts Bento Bar: Key Metrics, Leadership Contact, Join Action */}
+          <CommitteeQuickFacts
+            committee={committee}
+            loading={loading}
+            isLight={isLight}
+          />
 
-              {/* Right Column: Key Details & Join CTA */}
-              <aside>
-                <Skeleton
-                  name="committee-sidebar"
-                  loading={loading}
-                  color={
-                    isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"
-                  }
-                >
+          <div style={{ display: "flex", flexDirection: "column", gap: "56px" }}>
+            {/* About This Committee Card */}
+            {committee?.longDescription && (
+              <Skeleton
+                name="committee-about"
+                loading={loading}
+                color={isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}
+              >
+                <div>
+                  <p className="section-eyebrow" style={{ marginBottom: "16px" }}>
+                    // About This Committee
+                  </p>
                   <div
                     className="glass-card"
                     style={{
-                      padding: "28px",
-                      position: "sticky",
-                      top: "112px",
+                      padding: "clamp(24px, 4vw, 36px)",
+                      background: isLight ? "rgba(255,255,255,0.7)" : "rgba(0, 0, 0, 0.2)",
                     }}
                   >
                     <div
                       style={{
-                        fontFamily: "var(--font-mono)",
-                        fontSize: "0.6rem",
-                        letterSpacing: "0.18em",
-                        color: "var(--electric-blue)",
-                        textTransform: "uppercase",
-                        marginBottom: "20px",
-                        opacity: isLight ? 1 : 0.9,
+                        fontFamily: "var(--font-body)",
+                        fontSize: "15.5px",
+                        color: "var(--text-secondary)",
+                        lineHeight: 1.85,
                       }}
                     >
-                      // Committee Details
+                      <ReactMarkdown>{committee.longDescription}</ReactMarkdown>
                     </div>
 
-                    {/* Metrics */}
-                    {committee?.metrics && committee.metrics.length > 0 && (
+                    {committee?.tags && committee.tags.length > 0 && (
                       <div
                         style={{
-                          display: "grid",
-                          gridTemplateColumns: `repeat(${committee.metrics.length}, 1fr)`,
-                          gap: "0",
+                          display: "flex",
+                          gap: "8px",
+                          flexWrap: "wrap",
+                          marginTop: "24px",
+                          paddingTop: "16px",
                           borderTop: "1px solid var(--glass-border)",
-                          borderBottom: "1px solid var(--glass-border)",
-                          padding: "16px 0",
-                          marginBottom: "24px",
                         }}
                       >
-                        {committee.metrics.map((m, i) => (
-                          <div
-                            key={m.label}
+                        {committee.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="tech-tag"
                             style={{
-                              display: "flex",
-                              flexDirection: "column",
-                              alignItems: "center",
-                              gap: "4px",
-                              borderRight:
-                                i < (committee.metrics?.length || 0) - 1
-                                  ? "1px solid var(--glass-border)"
-                                  : "none",
+                              opacity: isLight ? 1 : 0.9,
+                              padding: "4px 10px",
+                              fontSize: "0.7rem",
                             }}
                           >
-                            <span
-                              style={{
-                                fontFamily: "var(--font-mono)",
-                                fontSize: "17px",
-                                fontWeight: 600,
-                                color: "var(--electric-blue)",
-                                lineHeight: 1,
-                              }}
-                            >
-                              {m.value}
-                            </span>
-                            <span
-                              style={{
-                                fontFamily: "var(--font-mono)",
-                                fontSize: "0.55rem",
-                                color: "var(--text-muted)",
-                                letterSpacing: "0.1em",
-                                textTransform: "uppercase",
-                                opacity: isLight ? 1 : 0.8,
-                              }}
-                            >
-                              {m.label}
-                            </span>
-                          </div>
+                            {tag}
+                          </span>
                         ))}
                       </div>
                     )}
-
-                    {/* Chair / Questions */}
-                    <div style={{ marginBottom: "24px" }}>
-                      <div
-                        style={{
-                          fontFamily: "var(--font-mono)",
-                          fontSize: "0.6rem",
-                          letterSpacing: "0.12em",
-                          color: "var(--text-muted)",
-                          textTransform: "uppercase",
-                          marginBottom: "8px",
-                        }}
-                      >
-                        Have questions? Contact Leadership
-                      </div>
-                      <div
-                        style={{
-                          fontFamily: "var(--font-headline)",
-                          fontSize: "17px",
-                          fontWeight: 600,
-                          color: "var(--text-primary)",
-                          marginBottom: "4px",
-                        }}
-                      >
-                        {committee?.chair}
-                      </div>
-                      <div
-                        style={{
-                          fontFamily: "var(--font-mono)",
-                          fontSize: "0.65rem",
-                          color: "var(--text-muted)",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.08em",
-                          marginBottom: "8px",
-                        }}
-                      >
-                        Committee Chair
-                      </div>
-                      <a
-                        href={`mailto:${committee?.email}`}
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: "6px",
-                          fontFamily: "var(--font-mono)",
-                          fontSize: "0.75rem",
-                          color: "var(--electric-blue)",
-                          textDecoration: "none",
-                        }}
-                      >
-                        <Mail size={13} style={{ flexShrink: 0 }} />{" "}
-                        {committee?.email}
-                      </a>
-                    </div>
-
-                    {renderJoinButton()}
                   </div>
-                </Skeleton>
-              </aside>
-            </div>
+                </div>
+              </Skeleton>
+            )}
 
-            {/* Row 2: Projects (Full Width) */}
+            {/* Custom Text / Subteams Sections */}
+            {textSections.length > 0 && (
+              <CommitteeContentSections
+                sections={textSections}
+                isLight={isLight}
+              />
+            )}
+
+            {/* Featured Projects Grid */}
             {projectsSections.length > 0 && (
-              <div
-                style={{
-                  borderTop: "1px solid var(--glass-border)",
-                  paddingTop: "48px",
-                }}
-              >
-                <Skeleton
-                  name="committee-projects"
-                  loading={loading}
-                  color={
-                    isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"
-                  }
-                >
-                  {projectsSections.map((section, i) =>
-                    renderSection(section, i),
-                  )}
-                </Skeleton>
-              </div>
+              <CommitteeProjects
+                sections={projectsSections}
+                loading={loading}
+                isLight={isLight}
+              />
             )}
 
-            {/* Row: History & Milestones (Full Width) */}
+            {/* History & Milestones Timeline */}
             {historySections.length > 0 && (
-              <div
-                style={{
-                  borderTop: "1px solid var(--glass-border)",
-                  paddingTop: "48px",
-                }}
-              >
-                <Skeleton
-                  name="committee-history"
-                  loading={loading}
-                  color={
-                    isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"
-                  }
-                >
-                  {historySections.map((section, i) =>
-                    renderSection(section, i),
-                  )}
-                </Skeleton>
-              </div>
+              <CommitteeContentSections
+                sections={historySections}
+                isLight={isLight}
+              />
             )}
 
-            {/* Row 3: Media & FAQ/Contact (Split Column Row) */}
-            {(gallerySections.length > 0 ||
-              faqSections.length > 0 ||
-              contactSections.length > 0) && (
-              <div
-                style={{
-                  borderTop: "1px solid var(--glass-border)",
-                  paddingTop: "48px",
-                }}
-                className="ieee-grid-sidebar"
-              >
-                {/* Left Column: Gallery/Media */}
-                {gallerySections.length > 0 && (
-                  <div>
-                    <Skeleton
-                      name="committee-gallery"
-                      loading={loading}
-                      color={
-                        isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"
-                      }
-                    >
-                      {gallerySections.map((section, i) =>
-                        renderSection(section, i),
-                      )}
-                    </Skeleton>
-                  </div>
-                )}
+            {/* Media Gallery */}
+            {gallerySections.length > 0 && (
+              <CommitteeGallery
+                sections={gallerySections}
+                loading={loading}
+                isLight={isLight}
+              />
+            )}
 
-                {/* Right Column: FAQ & Contacts */}
-                {(faqSections.length > 0 || contactSections.length > 0) && (
-                  <div>
-                    <Skeleton
-                      name="committee-faq"
-                      loading={loading}
-                      color={
-                        isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"
-                      }
-                    >
-                      {faqSections.map((section, i) =>
-                        renderSection(section, i),
-                      )}
-                      {contactSections.map((section, i) =>
-                        renderSection(section, i),
-                      )}
-                    </Skeleton>
-                  </div>
-                )}
-              </div>
+            {/* FAQs & Contact Channels */}
+            {faqAndContactSections.length > 0 && (
+              <CommitteeContentSections
+                sections={faqAndContactSections}
+                isLight={isLight}
+              />
             )}
           </div>
         </div>
       </section>
-      <Dialog
-        open={!!selectedProject}
-        onOpenChange={(open) => !open && setSelectedProject(null)}
-      >
-        <DialogContent className="max-w-2xl bg-[var(--boiler-black)] border-[var(--glass-border)] text-[var(--text-primary)]">
-          {selectedProject && (
-            <>
-              <DialogHeader>
-                <DialogTitle className="font-[family-name:var(--font-headline)] text-2xl font-bold text-[var(--text-primary)]">
-                  {selectedProject.name}
-                </DialogTitle>
-              </DialogHeader>
-              {selectedProject.image && (
-                <div className="w-full h-64 rounded-lg overflow-hidden my-3 border border-[var(--glass-border)]">
-                  <img
-                    src={selectedProject.image}
-                    alt={selectedProject.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              )}
-              <DialogDescription className="font-[family-name:var(--font-body)] text-base text-[var(--text-secondary)] leading-relaxed whitespace-pre-wrap">
-                <ReactMarkdown>{selectedProject.description}</ReactMarkdown>
-              </DialogDescription>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
-      <style>{`.gallery-item-container:hover .caption-overlay { opacity: 1 !important; transform: translateY(0) !important; } .gallery-item-container:hover img { filter: brightness(1) !important; transform: scale(1.05); } .social-tag:hover { border-color: var(--electric-blue); color: var(--electric-blue); background: rgba(0, 98, 155, 0.05); }`}</style>
     </>
   );
 }
