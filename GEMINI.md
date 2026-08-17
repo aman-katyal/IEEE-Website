@@ -84,6 +84,9 @@ To deploy to Cloudflare Pages:
 14. **Direct Issue Closing on Confident Verification (MANDATORY):**
     - For issues that the agent can conclusively verify independently (e.g., automated browser tests pass, visual screenshot confirmation, deterministic type/build checks), **directly close the issue** with a clear completion comment instead of leaving it in `status:awaiting-review`.
     - Only leave in `status:awaiting-review` if human verification/copy sign-off is genuinely required.
+15. **Production Benchmarks & Optimization Checklist (MANDATORY):**
+    - Adhere strictly to the targets in `PRODUCTION_STANDARDS.md` (LCP ≤ 2.5s, INP ≤ 200ms, CLS ≤ 0.1, WCAG 2.2 AA accessibility, zero bundle secrets, canonical SEO metadata).
+    - Always validate changes through the 5-step suite (`tsc`, `vitest`, `vite build`, `playwright`, `audit_sanity.py`).
 
 ## 📁 Key Files
 
@@ -92,3 +95,4 @@ To deploy to Cloudflare Pages:
 - `src/hooks/useSanityData.ts`: React hooks used to query optimized dataset payloads from Sanity.
 - `studio/schema/`: Local definitions for Sanity CMS document and object types.
 - `vite.config.ts`: Vite configuration with Tailwind CSS v4 and image optimizer plugins.
+- `PRODUCTION_STANDARDS.md`: Official production launch, benchmarking, and optimization reference.
