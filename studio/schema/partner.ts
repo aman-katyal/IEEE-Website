@@ -20,6 +20,12 @@ export const partner = defineType({
       description: 'e.g. intel.com (used for automated logo fetching)',
     }),
     defineField({
+      name: 'websiteUrl',
+      title: 'Website URL',
+      type: 'url',
+      description: 'Official partner website URL (e.g. https://www.intel.com)',
+    }),
+    defineField({
       name: 'tier',
       title: 'Tier',
       type: 'string',

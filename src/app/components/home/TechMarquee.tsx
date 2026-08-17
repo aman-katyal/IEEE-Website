@@ -3,14 +3,11 @@ import { Link } from "react-router";
 import { ArrowRight } from "lucide-react";
 import { useTheme } from "next-themes";
 import { usePartners } from "../../../hooks/useSanityData";
-import { STATIC_PARTNERS } from "../../../data/partners";
 
 export function TechMarquee() {
   const { theme } = useTheme();
-  const { partners: sanityPartners } = usePartners();
+  const { partners } = usePartners();
   const isLight = theme === "light";
-
-  const partners = sanityPartners.length > 0 ? sanityPartners : STATIC_PARTNERS;
 
   return (
     <div

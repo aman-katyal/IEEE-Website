@@ -3,7 +3,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PartnersPage } from './PartnersPage';
 import { MemoryRouter } from 'react-router';
 import * as useSanityData from '../../hooks/useSanityData';
-import { STATIC_PARTNERS } from '../../data/partners';
 
 // Mock hooks
 vi.mock('../../hooks/useSanityData', () => ({
@@ -122,9 +121,11 @@ describe('PartnersPage', () => {
     expect(screen.getByText(/IEEE Exemplary Student Branch — Gold Partner Recognition/i)).toBeInTheDocument();
   });
 
-  it('renders fallback partners from STATIC_PARTNERS when sanityPartners is empty', () => {
+  it('renders partners provided from Sanity CMS', () => {
     (useSanityData.usePartners as any).mockReturnValue({
-      partners: [],
+      partners: [
+        { name: 'Texas Instruments', domain: 'ti.com', websiteUrl: 'https://www.ti.com', tier: 'Gold' }
+      ],
       loading: false,
       error: null
     });
@@ -135,7 +136,7 @@ describe('PartnersPage', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText(STATIC_PARTNERS[0].name)).toBeInTheDocument();
+    expect(screen.getByText('Texas Instruments')).toBeInTheDocument();
   });
 
   it('renders fallback content when settings are missing', () => {

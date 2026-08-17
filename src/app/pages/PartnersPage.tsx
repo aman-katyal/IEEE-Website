@@ -7,21 +7,14 @@ import {
   useSiteSettings,
   Partner,
 } from "../../hooks/useSanityData";
-import { STATIC_PARTNERS } from "../../data/partners";
 
 export function PartnersPage() {
   const { theme } = useTheme();
   const isLight = theme === "light";
   const { settings, loading: settingsLoading } = useSiteSettings();
-  const { partners: sanityPartners, loading: partnersLoading } = usePartners();
+  const { partners, loading: partnersLoading } = usePartners();
 
   const loading = settingsLoading || partnersLoading;
-
-  // Use Sanity partners if populated, otherwise use centralized static partners
-  const partners = useMemo(
-    () => (sanityPartners && sanityPartners.length > 0 ? sanityPartners : STATIC_PARTNERS),
-    [sanityPartners]
-  );
 
   const showCorporateTiers = settings?.showCorporateTiers === true;
 
