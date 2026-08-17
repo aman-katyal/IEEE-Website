@@ -1,24 +1,25 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { Menu, X, ChevronDown, ArrowUpRight } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { useTheme } from "next-themes";
-import { IeeePurdueLogo } from "./IeeePurdueLogo";
-import { useCommittees, prefetchData, useSiteSettings } from "../../../hooks/useSanityData";
-import { MagneticWrapper } from "../ui/MagneticWrapper";
-import { MagneticButton } from "./MagneticButton";
-import { DiscordIcon } from "../icons";
 import groq from "groq";
 
-interface NavDropdownItem { label: string; href: string; id?: string }
-interface NavLinkItem { label: string; href: string; dropdown?: NavDropdownItem[] }
+import { IeeePurdueLogo } from "./IeeePurdueLogo";
+import { useCommittees, prefetchData, useSiteSettings } from "../../../hooks/useSanityData";
+import {
+  useScrollHeader,
+  DesktopNav,
+  MobileNavMenu,
+  type NavLinkItem,
+} from "./navigation/index";
 
 export function Navigation() {
   const { committees } = useCommittees();
   const { settings } = useSiteSettings();
-  const [scrolled, setScrolled] = useState(false);
+  const scrolled = useScrollHeader(40);
   const [menuOpen, setMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const [activeLink, setActiveLink] = useState("");
+  const [, setActiveLink] = useState("");
   const dropdownTimeoutRef = useRef<number | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
@@ -27,7 +28,6 @@ export function Navigation() {
   const isHome = location.pathname === "/";
 
   const discordUrl = settings?.discordUrl || "https://discord.gg/sPPQequ9ws";
-
 
   const navLinks: NavLinkItem[] = useMemo(() => [
     { 
@@ -42,18 +42,12 @@ export function Navigation() {
     { 
       label: "Committees", 
       href: "/committees",
-      dropdown: committees.map(c => ({ label: c.shortName, href: `/committee/${c.id}`, id: c.id }))
+      dropdown: committees.map((c) => ({ label: c.shortName, href: `/committee/${c.id}`, id: c.id }))
     },
     { label: "Events", href: "/calendar" },
     { label: "Officers", href: "/officers" },
     { label: "Join", href: "/join" },
   ], [committees]);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   const handleMouseEnter = (label: string) => {
     if (dropdownTimeoutRef.current) window.clearTimeout(dropdownTimeoutRef.current);
@@ -231,186 +225,17 @@ export function Navigation() {
           </Link>
 
           {/* Desktop Nav */}
-          <div
-            className="nav-desktop-container"
-            style={{
-              alignItems: "center",
-              gap: "24px",
-            }}
-          >
-            {navLinks.slice(0, -1).map((link) => (
-              link.dropdown ? (
-                <div 
-                  key={link.label} 
-                  style={{ position: "relative" }}
-                  onMouseEnter={() => handleMouseEnter(link.label)}
-                  onMouseLeave={handleMouseLeave}
-                >
-                  <a
-                    href={link.href}
-                    className="nav-link"
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "4px",
-                      background: openDropdown === link.label ? (isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)") : "none",
-                      border: "none",
-                      cursor: "pointer",
-                      padding: "8px 16px",
-                      margin: "16px -16px",
-                      borderRadius: "4px",
-                      textDecoration: "none",
-                      transition: "all 0.3s ease",
-                      color: location.pathname.startsWith(link.href) || (link.label === "About" && location.pathname === "/constitution")
-                        ? "var(--text-primary)"
-                        : "var(--text-secondary)",
-                    }}
-                    onClick={(e) => { e.preventDefault(); handleNav(link.href); }}
-                  >
-                    {link.label}
-                    <ChevronDown size={14} style={{ transform: openDropdown === link.label ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
-                  </a>
-                  
-                  {openDropdown === link.label && (
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: "100%",
-                        left: "0",
-                        width: link.label === "Committees" ? "220px" : "180px",
-                        background: "var(--boiler-black)",
-                        border: "1px solid var(--glass-border)",
-                        borderRadius: "8px",
-                        marginTop: "-4px",
-                        boxShadow: isLight ? "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)" : "0 10px 30px rgba(0,0,0,0.5)",
-                        backdropFilter: "blur(12px)",
-                        overflow: "hidden",
-                        zIndex: 110
-                      }}
-                    >
-                      <div style={{ position: "absolute", top: "-20px", left: 0, right: 0, height: "20px" }} />
-                      
-                      {link.label === "Committees" && (
-                        <>
-                          <a
-                            href="/committees"
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "space-between",
-                              padding: "10px 16px",
-                              color: "var(--electric-blue)",
-                              textDecoration: "none",
-                              fontSize: "0.8rem",
-                              fontFamily: "var(--font-mono)",
-                              fontWeight: 700,
-                              textTransform: "uppercase",
-                              letterSpacing: "0.05em",
-                              borderBottom: "1px solid var(--glass-border)",
-                              background: isLight ? "rgba(0, 90, 135, 0.05)" : "rgba(0, 98, 155, 0.08)",
-                              transition: "background 0.2s ease",
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.background = isLight ? "rgba(0, 90, 135, 0.12)" : "rgba(0, 98, 155, 0.16)";
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.background = isLight ? "rgba(0, 90, 135, 0.05)" : "rgba(0, 98, 155, 0.08)";
-                            }}
-                            onClick={(e) => { e.preventDefault(); handleNav("/committees"); }}
-                          >
-                            View All Committees
-                            <ArrowUpRight size={14} />
-                          </a>
-                        </>
-                      )}
-                      
-                      <div style={{ padding: "4px" }}>
-                        {link.dropdown.map((subItem) => (
-                          <a
-                            key={subItem.href}
-                            href={subItem.href}
-                            style={{
-                              display: "block",
-                              padding: "8px 12px",
-                              borderRadius: "4px",
-                              color: location.pathname === subItem.href ? "var(--electric-blue)" : "var(--text-secondary)",
-                              textDecoration: "none",
-                              fontSize: "0.85rem",
-                              fontFamily: "var(--font-body)",
-                              transition: "color 0.2s ease, background 0.2s ease",
-                              background: location.pathname === subItem.href ? (isLight ? "rgba(0, 90, 135, 0.08)" : "rgba(0, 98, 155, 0.1)") : "transparent",
-                            }}
-                            onMouseEnter={(e) => {
-                              handleLinkHover(subItem.href, subItem.id);
-                              const el = e.currentTarget;
-                              el.style.color = "var(--electric-blue)";
-                              el.style.background = isLight ? "rgba(0, 90, 135, 0.08)" : "rgba(0, 98, 155, 0.12)";
-                            }}
-                            onMouseLeave={(e) => {
-                              const el = e.currentTarget;
-                              if (location.pathname !== subItem.href) {
-                                el.style.color = "var(--text-secondary)";
-                                el.style.background = "transparent";
-                              } else {
-                                el.style.color = "var(--electric-blue)";
-                                el.style.background = isLight ? "rgba(0, 90, 135, 0.08)" : "rgba(0, 98, 155, 0.1)";
-                              }
-                            }}
-                            onClick={(e) => { e.preventDefault(); handleNav(subItem.href); }}
-                          >
-                            {subItem.label}
-                          </a>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  className="nav-link"
-                  style={{
-                    color: location.pathname === link.href
-                      ? "var(--text-primary)"
-                      : "var(--text-secondary)",
-                  }}
-                  onMouseEnter={() => handleLinkHover(link.href)}
-                  onClick={(e) => { e.preventDefault(); handleNav(link.href); }}
-                >
-                  {link.label}
-                </a>
-              )
-            ))}
-
-            <MagneticWrapper strength={0.1}>
-              <a
-                href={discordUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-ghost hover-glow-gold"
-                style={{ 
-                  padding: "9px 16px", 
-                  fontSize: "0.8rem", 
-                  display: "flex", 
-                  alignItems: "center", 
-                  gap: "8px",
-                  textDecoration: "none"
-                }}
-              >
-                <DiscordIcon size={16} />
-                Discord
-              </a>
-            </MagneticWrapper>
-
-            <MagneticButton
-              variant="primary"
-              style={{ padding: "9px 22px", fontSize: "0.8rem" }}
-              onClick={() => handleNav("/join")}
-            >
-              Join IEEE
-            </MagneticButton>
-          </div>
+          <DesktopNav
+            navLinks={navLinks}
+            openDropdown={openDropdown}
+            isLight={isLight}
+            currentPath={location.pathname}
+            discordUrl={discordUrl}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            onLinkHover={handleLinkHover}
+            onNavigate={handleNav}
+          />
 
           {/* Mobile Hamburger */}
           <div className="nav-mobile-toggle-group" style={{ alignItems: "center", gap: "12px" }}>
@@ -438,127 +263,14 @@ export function Navigation() {
         </div>
 
         {/* Mobile Menu Drawer */}
-        {menuOpen && (
-          <div
-            style={{
-              background: "var(--boiler-black)",
-              borderTop: "1px solid var(--glass-border)",
-              padding: "16px 24px 48px",
-              maxHeight: "calc(100vh - 72px)",
-              overflowY: "auto",
-              position: "absolute",
-              top: "72px",
-              left: 0,
-              right: 0,
-              display: "flex",
-              flexDirection: "column",
-              gap: "8px",
-              boxShadow: isLight ? "0 20px 25px -5px rgba(0, 0, 0, 0.1)" : "0 20px 40px rgba(0,0,0,0.4)",
-              backdropFilter: "blur(20px)"
-            }}
-          >
-            {navLinks.map((link) => (
-              <div key={link.label}>
-                {link.dropdown ? (
-                  <div style={{ marginBottom: "12px" }}>
-                    <div 
-                      onClick={() => handleNav(link.href)}
-                      style={{ 
-                        fontFamily: "var(--font-body)", 
-                        fontSize: "0.8rem", 
-                        color: "var(--cyber-gold)", 
-                        padding: "20px 0 8px",
-                        textTransform: "uppercase",
-                        letterSpacing: "0.15em",
-                        fontWeight: 600,
-                        cursor: "pointer",
-                        opacity: isLight ? 1 : 0.9
-                      }}
-                    >
-                      {link.label}
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                      {link.dropdown.map((subItem) => (
-                        <a
-                          key={subItem.href}
-                          href={subItem.href}
-                          style={{
-                            display: "block",
-                            fontFamily: "var(--font-body)",
-                            fontSize: "1.1rem",
-                            color: location.pathname === subItem.href ? "var(--text-primary)" : "var(--text-secondary)",
-                            textDecoration: "none",
-                            padding: "14px 16px",
-                            background: location.pathname === subItem.href ? (isLight ? "rgba(0, 90, 135, 0.08)" : "rgba(0, 98, 155, 0.1)") : (isLight ? "rgba(0,0,0,0.03)" : "rgba(128,128,128,0.05)"),
-                            borderRadius: "6px",
-                            borderLeft: location.pathname === subItem.href ? "3px solid var(--electric-blue)" : "3px solid transparent"
-                          }}
-                          onClick={(e) => { e.preventDefault(); handleNav(subItem.href); }}
-                        >
-                          {subItem.label}
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <a
-                    key={link.href}
-                    href={link.href}
-                    style={{
-                      display: "block",
-                      fontFamily: "var(--font-body)",
-                      fontSize: "1.2rem",
-                      fontWeight: 500,
-                      color: location.pathname === link.href ? "var(--text-primary)" : "var(--text-secondary)",
-                      letterSpacing: "0.05em",
-                      textDecoration: "none",
-                      padding: "18px 16px",
-                      background: location.pathname === link.href ? (isLight ? "rgba(0, 90, 135, 0.08)" : "rgba(0, 98, 155, 0.1)") : (isLight ? "rgba(0,0,0,0.03)" : "rgba(128,128,128,0.05)"),
-                      borderRadius: "6px",
-                      marginBottom: "8px",
-                      textTransform: "uppercase",
-                    }}
-                    onClick={(e) => { e.preventDefault(); handleNav(link.href); }}
-                  >
-                    {link.label}
-                  </a>
-                )}
-              </div>
-            ))}
-            
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "32px" }}>
-              <MagneticWrapper strength={0.1} className="w-full">
-                <a
-                  href={discordUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-ghost hover-glow-gold w-full"
-                  style={{ 
-                    padding: "18px", 
-                    fontSize: "1rem", 
-                    display: "flex", 
-                    alignItems: "center", 
-                    justifyContent: "center",
-                    gap: "10px",
-                    textDecoration: "none"
-                  }}
-                >
-                  <DiscordIcon size={20} />
-                  Join Discord
-                </a>
-              </MagneticWrapper>
-              <MagneticWrapper strength={0.1} className="w-full">
-                <button
-                  className="btn-primary hover-glow-blue w-full"
-                  style={{ padding: "20px", fontSize: "1rem" }}
-                  onClick={() => handleNav("/join")}
-                >
-                  Join IEEE
-                </button>
-              </MagneticWrapper>
-            </div>
-          </div>
-        )}
+        <MobileNavMenu
+          isOpen={menuOpen}
+          isLight={isLight}
+          navLinks={navLinks}
+          currentPath={location.pathname}
+          discordUrl={discordUrl}
+          onNavigate={handleNav}
+        />
       </nav>
 
       <style>{`
