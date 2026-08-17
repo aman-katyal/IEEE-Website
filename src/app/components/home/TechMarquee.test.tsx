@@ -18,7 +18,14 @@ describe('TechMarquee', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     (nextThemes.useTheme as any).mockReturnValue({ theme: 'dark' });
-    (sanityHooks.usePartners as any).mockReturnValue({ partners: [] }); // Defaults to static partners
+    (sanityHooks.usePartners as any).mockReturnValue({
+      partners: [
+        { name: 'Texas Instruments', domain: 'ti.com', tier: 'Gold' },
+        { name: 'SpaceX', domain: 'spacex.com', tier: 'Gold' },
+        { name: 'Intel', domain: 'intel.com', tier: 'Silver' },
+      ],
+      loading: false,
+    });
   });
 
   const renderComponent = () => render(
