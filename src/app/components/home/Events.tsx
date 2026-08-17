@@ -12,6 +12,7 @@ import {
   useGoogleCalendarEvents,
   type CalendarEvent,
 } from "../../../hooks/useGoogleCalendarEvents";
+import { fmtDate, fmtDay, fmtYear, fmtTime } from "../../../lib/dateUtils";
 
 // ─── Fallback events (used if Google Calendar API fails) ────────
 const fallbackEvents = [
@@ -49,44 +50,6 @@ const fallbackEvents = [
     htmlLink: "#",
   },
 ] satisfies CalendarEvent[];
-
-// ─── Date formatting helpers ────────────────────────────────────
-const MONTHS = [
-  "JAN",
-  "FEB",
-  "MAR",
-  "APR",
-  "MAY",
-  "JUN",
-  "JUL",
-  "AUG",
-  "SEP",
-  "OCT",
-  "NOV",
-  "DEC",
-];
-const DAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-
-function fmtDate(d: Date) {
-  return `${MONTHS[d.getMonth()]} ${String(d.getDate()).padStart(2, "0")}`;
-}
-function fmtDay(d: Date) {
-  return DAYS[d.getDay()];
-}
-function fmtYear(d: Date) {
-  return String(d.getFullYear());
-}
-function fmtTime(start: Date, end: Date) {
-  const f = (d: Date) =>
-    d
-      .toLocaleTimeString("en-US", {
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true,
-      })
-      .toUpperCase();
-  return `${f(start)} – ${f(end)}`;
-}
 
 // ─── Loading skeleton ───────────────────────────────────────────
 function EventSkeleton() {

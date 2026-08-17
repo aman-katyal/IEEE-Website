@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { client, previewClient } from '../lib/sanity';
 import groq from 'groq';
 import type { Committee, CornerstoneCommittee } from '../data/committees/types';
+import type { Leader, OfficersConfig, HomePageData, AboutPageData } from '../data/sanity-types';
 
 const SECTION_PROJECTION = `
   sections[]{
@@ -113,7 +114,7 @@ export function useLeaders() {
     ...,
     "image": coalesce(image.asset->url + "?auto=format&w=480&q=75", image)
   }`;
-  const { data, loading, error } = useSanityQuery<any[]>(query);
+  const { data, loading, error } = useSanityQuery<Leader[]>(query);
   return { leaders: data || [], loading, error };
 }
 
@@ -125,7 +126,7 @@ export function useOfficersConfig() {
     operationsOrder[]->{ _id },
     memberOrder[]->{ _id }
   }`;
-  const { data, loading, error } = useSanityQuery<any>(query);
+  const { data, loading, error } = useSanityQuery<OfficersConfig>(query);
   return { config: data, loading, error };
 }
 
@@ -135,7 +136,7 @@ export function useHomePage() {
     "heroImage": coalesce(heroImage.asset->url + "?auto=format&w=1600&q=75", heroImage.asset->url),
     "aboutImage": coalesce(aboutImage.asset->url + "?auto=format&w=1000&q=75", aboutImage.asset->url)
   }`;
-  const { data, loading, error, refetch } = useSanityQuery<any>(query);
+  const { data, loading, error, refetch } = useSanityQuery<HomePageData>(query);
   return { data, loading, error, refetch };
 }
 
@@ -147,7 +148,7 @@ export function useAboutPage() {
       "image": coalesce(image.asset->url + "?auto=format&w=1000&q=75", image.asset->url)
     }
   }`;
-  const { data, loading, error } = useSanityQuery<any>(query);
+  const { data, loading, error } = useSanityQuery<AboutPageData>(query);
   return { data, loading, error };
 }
 
