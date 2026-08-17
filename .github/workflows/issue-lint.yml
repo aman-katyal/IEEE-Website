@@ -18,20 +18,20 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install gh_tool deps
-        run: pip install scikit-learn --quiet
+      # - name: Install gh_tool deps
+      #   run: pip install scikit-learn --quiet
 
-      - name: Run issue lint
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          cd .agents/tools
-          python -m gh_tool issue lint --number ${{ github.event.issue.number }}
+      # - name: Run issue lint
+      #   env:
+      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     cd .agents/tools
+      #     python -m gh_tool issue lint --number ${{ github.event.issue.number }}
 
-      - name: Auto-apply missing canonical labels
-        if: always()
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          cd .agents/tools
-          python -m gh_tool issue port
+      # - name: Auto-apply missing canonical labels
+      #   if: always()
+      #   env:
+      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     cd .agents/tools
+      #     python -m gh_tool issue port

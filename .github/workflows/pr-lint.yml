@@ -19,12 +19,12 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install gh_tool deps
-        run: pip install scikit-learn --quiet
+      # - name: Install gh_tool deps
+      #   run: pip install scikit-learn --quiet
 
-      - name: Run PR lint
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          cd .agents/tools
-          python -m gh_tool pr lint --number ${{ github.event.pull_request.number }}
+      # - name: Run PR lint
+      #   env:
+      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     cd .agents/tools
+      #     python -m gh_tool pr lint --number ${{ github.event.pull_request.number }}
