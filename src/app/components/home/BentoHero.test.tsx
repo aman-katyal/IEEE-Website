@@ -30,10 +30,10 @@ vi.mock('boneyard-js/react', () => ({
 }));
 
 // Mock child components that might have complex logic/animations
-vi.mock('./CyclingStat', () => ({
+vi.mock('./hero/CyclingStat', () => ({
   CyclingStat: () => <div data-testid="cycling-stat" />,
 }));
-vi.mock('./LabStatusRack', () => ({
+vi.mock('./hero/LabStatusRack', () => ({
   LabStatusRack: () => <div data-testid="lab-status-rack" />,
 }));
 vi.mock('../shared/MagneticButton', () => ({
