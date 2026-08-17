@@ -732,7 +732,7 @@ export function BentoHero() {
                   >
                     // Who we are
                   </div>
-                  <h3
+                  <h2
                     style={{
                       fontFamily: "var(--font-headline)",
                       fontSize: "clamp(16px, 2.5vw, 20px)",
@@ -750,7 +750,7 @@ export function BentoHero() {
                         {aboutTitle.split("Student Organization")[1]}
                       </>
                     ) : aboutTitle)}
-                  </h3>
+                  </h2>
                   {aboutContent && (
                     <div
                       style={{
