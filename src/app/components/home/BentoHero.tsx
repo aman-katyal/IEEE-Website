@@ -169,7 +169,6 @@ function CyclingStat({ stats, isLight }: { stats: StatItem[]; isLight: boolean }
 interface RackSlot {
   id: string;
   tag: string;
-  indicator: string;
   title: string;
   displayTitle: string; // Pre-computed: title with parenthetical suffix stripped
   description: string;
@@ -177,23 +176,9 @@ interface RackSlot {
   link: string;
 }
 
-const COMMITTEE_STATUS_METADATA: Record<string, { tag: string; indicator: string }> = {
-  rov:                  { tag: "ROV",    indicator: "RUNNING" },
-  csociety:             { tag: "CS",     indicator: "STABLE"  },
-  aesc:                 { tag: "AESC",   indicator: "ACTIVE"  },
-  "software-saturdays": { tag: "SWSAT",  indicator: "ONLINE"  },
-  racing:               { tag: "RACING", indicator: "RUNNING" },
-  mtts:                 { tag: "MTTS",   indicator: "ONLINE"  },
-  embs:                 { tag: "EMBS",   indicator: "STABLE"  },
-  eds:                  { tag: "EDS",    indicator: "ACTIVE"  },
-  smc:                  { tag: "SMC",    indicator: "RUNNING" },
-};
-
 function makeDisplayTitle(title: string) {
   return title.replace(/\(.*\)/, "").trim();
 }
-
-
 
 function LabStatusRack({ committees, isLight }: { committees: any[]; isLight: boolean }) {
   const [hoveredSlot, setHoveredSlot] = useState<RackSlot | null>(null);
@@ -201,14 +186,9 @@ function LabStatusRack({ committees, isLight }: { committees: any[]; isLight: bo
   const activeSlots: RackSlot[] = useMemo(() => {
     return (committees && committees.length > 0)
       ? committees.map((c) => {
-          const meta = COMMITTEE_STATUS_METADATA[c.id.toLowerCase()] ?? {
-            tag: c.shortName,
-            indicator: "ONLINE",
-          };
           return {
             id: c.id,
-            tag: meta.tag ?? c.shortName,
-            indicator: c.status ?? meta.indicator,
+            tag: c.shortName ?? c.id.toUpperCase(),
             title: c.name,
             displayTitle: makeDisplayTitle(c.name),
             description: c.description ?? c.tagline ?? "",
@@ -268,14 +248,6 @@ function LabStatusRack({ committees, isLight }: { committees: any[]; isLight: bo
             activeSlots.map((slot) => {
               const isHovered = hoveredSlot?.id === slot.id;
 
-              // Color-code by indicator status
-              const statusColor =
-                slot.indicator === "RUNNING" ? "#4FC3F7" :
-                slot.indicator === "STABLE"  ? "#00C853" :
-                slot.indicator === "ACTIVE"  ? "#EBD3A9" :
-                slot.indicator === "ONLINE"  ? "#69F0AE" :
-                                               "#00C853";
-
               return (
                 <Link
                   key={slot.id}
@@ -290,10 +262,10 @@ function LabStatusRack({ committees, isLight }: { committees: any[]; isLight: bo
                     gap: "10px",
                     padding: "10px 12px",
                     borderRadius: "6px",
-                    border: `1px solid ${isHovered ? statusColor : "rgba(255,255,255,0.06)"}`,
-                    borderLeft: `3px solid ${isHovered ? statusColor : "rgba(255,255,255,0.12)"}`,
+                    border: `1px solid ${isHovered ? "var(--electric-blue)" : "rgba(255,255,255,0.06)"}`,
+                    borderLeft: `3px solid ${isHovered ? "var(--electric-blue)" : "rgba(255,255,255,0.12)"}`,
                     background: isHovered
-                      ? `rgba(${slot.indicator === "RUNNING" ? "79,195,247" : "0,200,83"},0.06)`
+                      ? "rgba(0, 98, 155, 0.1)"
                       : "rgba(255,255,255,0.02)",
                     cursor: "pointer",
                     transition: "all 0.18s cubic-bezier(0.16, 1, 0.3, 1)",
@@ -308,16 +280,16 @@ function LabStatusRack({ committees, isLight }: { committees: any[]; isLight: bo
                     alignItems: "center",
                     flexShrink: 0,
                     background: isHovered
-                      ? `${statusColor}22`
+                      ? "rgba(0, 98, 155, 0.28)"
                       : "rgba(0, 98, 155, 0.18)",
-                    border: `1px solid ${isHovered ? statusColor : "rgba(0,98,155,0.4)"}`,
+                    border: `1px solid ${isHovered ? "var(--electric-blue)" : "rgba(0,98,155,0.4)"}`,
                     borderRadius: "4px",
                     padding: "2px 7px",
                     fontFamily: "var(--font-mono)",
                     fontSize: "0.58rem",
                     fontWeight: 700,
                     letterSpacing: "0.06em",
-                    color: isHovered ? statusColor : "var(--electric-blue)",
+                    color: "var(--electric-blue)",
                     whiteSpace: "nowrap",
                     transition: "all 0.18s ease",
                   }}>
@@ -340,23 +312,6 @@ function LabStatusRack({ committees, isLight }: { committees: any[]; isLight: bo
                   }}>
                     {slot.displayTitle}
                   </span>
-
-                  {/* Status indicator dot */}
-                  <div 
-                    title={`Status: Active Committee (${slot.displayTitle})`}
-                    aria-label={`Active status indicator for ${slot.displayTitle}`}
-                    style={{ display: "flex", alignItems: "center", gap: "5px", flexShrink: 0 }}
-                  >
-                    <div style={{
-                      width: "6px",
-                      height: "6px",
-                      borderRadius: "50%",
-                      background: statusColor,
-                      boxShadow: `0 0 ${isHovered ? "8px" : "4px"} ${statusColor}`,
-                      transition: "box-shadow 0.18s ease",
-                      animation: "pulse-dot 2.5s ease-in-out infinite",
-                    }} />
-                  </div>
                 </Link>
               );
             })
