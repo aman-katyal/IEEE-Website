@@ -56,6 +56,16 @@ const DiscordIcon = ({ size = 16 }: { size?: number }) => (
 /**
  * Intelligent icon detection based on platform name or URL
  */
+// ⚡ Bolt Performance Optimization:
+// Moved the static width mapping dictionary out of the render loop into the module scope.
+// Why: Prevents unnecessary memory allocations and garbage collection overhead during every render cycle.
+const WIDTH_MAP = {
+  small: "250px",
+  medium: "400px",
+  large: "600px",
+  full: "100%",
+} as const;
+
 function getPlatformIcon(
   platform: string = "",
   url: string = "",
@@ -118,7 +128,8 @@ export function CommitteePage() {
       else if (s.type === "projects") result.projectsSections.push(s);
       else if (s.type === "gallery") result.gallerySections.push(s);
       else if (s.type === "faq") result.faqSections.push(s);
-      else if (s.type === "history" || s.type === "timeline") result.historySections.push(s);
+      else if (s.type === "history" || s.type === "timeline")
+        result.historySections.push(s);
       else if (s.type === "contact") result.contactSections.push(s);
     }
     return result;
@@ -217,7 +228,10 @@ export function CommitteePage() {
             if (isExternal) {
               try {
                 const urlObj = new URL(url);
-                if (urlObj.protocol === "http:" || urlObj.protocol === "https:") {
+                if (
+                  urlObj.protocol === "http:" ||
+                  urlObj.protocol === "https:"
+                ) {
                   window.open(urlObj.href, "_blank", "noopener,noreferrer");
                 }
               } catch (e) {
@@ -298,12 +312,6 @@ export function CommitteePage() {
         const layout = section.layout || "top";
         const isCrop = section.imageStyle?.crop !== false;
         const size = section.imageStyle?.size || "large";
-        const widthMap = {
-          small: "250px",
-          medium: "400px",
-          large: "600px",
-          full: "100%",
-        };
 
         return (
           <div key={index} style={{ marginBottom: "64px" }}>
@@ -330,7 +338,7 @@ export function CommitteePage() {
                 <div
                   style={{
                     flex:
-                      layout === "top" ? "1 1 100%" : `0 0 ${widthMap[size]}`,
+                      layout === "top" ? "1 1 100%" : `0 0 ${WIDTH_MAP[size]}`,
                     width: "100%",
                     maxWidth: "100%",
                     borderRadius: "4px",
@@ -883,25 +891,27 @@ export function CommitteePage() {
                         borderTop: "1px solid var(--glass-border)",
                       }}
                     >
-                      {item.links.map((link: { label: string; url: string }, idx: number) => (
-                        <a
-                          key={idx}
-                          href={link.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: "5px",
-                            fontFamily: "var(--font-mono)",
-                            fontSize: "0.75rem",
-                            color: "var(--electric-blue)",
-                            textDecoration: "none",
-                          }}
-                        >
-                          <ExternalLink size={12} /> {link.label}
-                        </a>
-                      ))}
+                      {item.links.map(
+                        (link: { label: string; url: string }, idx: number) => (
+                          <a
+                            key={idx}
+                            href={link.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "5px",
+                              fontFamily: "var(--font-mono)",
+                              fontSize: "0.75rem",
+                              color: "var(--electric-blue)",
+                              textDecoration: "none",
+                            }}
+                          >
+                            <ExternalLink size={12} /> {link.label}
+                          </a>
+                        ),
+                      )}
                     </div>
                   )}
                 </div>
@@ -1023,62 +1033,63 @@ export function CommitteePage() {
                 </Link>
               </div>
 
-              {committee?.status && committee.status.toLowerCase() !== "active" && (
-                <div
-                  className="status-badge"
-                  style={{
-                    background: committee.statusBg || "rgba(0, 98, 155, 0.1)",
-                    color: committee.statusColor || "var(--electric-blue)",
-                    backdropFilter: "blur(12px)",
-                    margin: 0,
-                    display: "inline-flex",
-                    padding: "0 14px",
-                    fontSize: "0.6rem",
-                    fontWeight: 700,
-                    borderRadius: "100px",
-                    border: "1px solid rgba(255,255,255,0.12)",
-                    alignItems: "center",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.08em",
-                    height: "28px",
-                    lineHeight: "28px",
-                  }}
-                >
+              {committee?.status &&
+                committee.status.toLowerCase() !== "active" && (
                   <div
+                    className="status-badge"
                     style={{
-                      position: "relative",
+                      background: committee.statusBg || "rgba(0, 98, 155, 0.1)",
+                      color: committee.statusColor || "var(--electric-blue)",
+                      backdropFilter: "blur(12px)",
+                      margin: 0,
                       display: "inline-flex",
+                      padding: "0 14px",
+                      fontSize: "0.6rem",
+                      fontWeight: 700,
+                      borderRadius: "100px",
+                      border: "1px solid rgba(255,255,255,0.12)",
                       alignItems: "center",
-                      justifyContent: "center",
-                      marginRight: "10px",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.08em",
+                      height: "28px",
+                      lineHeight: "28px",
                     }}
                   >
-                    <span
-                      className="animate-ping"
-                      style={{
-                        position: "absolute",
-                        display: "inline-flex",
-                        height: "8px",
-                        width: "8px",
-                        borderRadius: "50%",
-                        background: "currentColor",
-                        opacity: 0.75,
-                      }}
-                    />
-                    <span
+                    <div
                       style={{
                         position: "relative",
                         display: "inline-flex",
-                        borderRadius: "50%",
-                        height: "6px",
-                        width: "6px",
-                        background: "currentColor",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        marginRight: "10px",
                       }}
-                    />
+                    >
+                      <span
+                        className="animate-ping"
+                        style={{
+                          position: "absolute",
+                          display: "inline-flex",
+                          height: "8px",
+                          width: "8px",
+                          borderRadius: "50%",
+                          background: "currentColor",
+                          opacity: 0.75,
+                        }}
+                      />
+                      <span
+                        style={{
+                          position: "relative",
+                          display: "inline-flex",
+                          borderRadius: "50%",
+                          height: "6px",
+                          width: "6px",
+                          background: "currentColor",
+                        }}
+                      />
+                    </div>
+                    {committee.status}
                   </div>
-                  {committee.status}
-                </div>
-              )}
+                )}
             </div>
 
             <h1

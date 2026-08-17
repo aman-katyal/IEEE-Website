@@ -25,3 +25,6 @@
 ## 2026-08-10 - Synchronous Scroll Blocking
 **Learning:** Binding scroll event listeners without `{ passive: true }` blocks the main thread from scrolling the page until the event handler completes, causing jank and layout thrashing, especially when components update layout state on scroll.
 **Action:** Always add `{ passive: true }` to `addEventListener('scroll')` to allow the browser to scroll smoothly independently of script execution.
+## 2026-08-17 - Hoisting Static Data in React
+**Learning:** Defining static arrays or configuration objects inside a React component body forces the JavaScript engine to allocate new memory on every single render. This triggers frequent Garbage Collection (GC) pauses and negatively impacts rendering performance.
+**Action:** Always move static arrays and objects (that do not depend on props or component state) completely out of the component function's body into the file's outer scope. Use UPPER_SNAKE_CASE for these constants to clearly distinguish them.
