@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo, memo } from "react";
 import { Link } from "react-router";
 import { ArrowRight } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -8,6 +8,9 @@ export function TechMarquee() {
   const { theme } = useTheme();
   const { partners } = usePartners();
   const isLight = theme === "light";
+
+  // ⚡ Bolt: Cache duplicated array to prevent O(N) allocation on every render
+  const displayPartners = useMemo(() => [...partners, ...partners], [partners]);
 
   return (
     <div
@@ -50,7 +53,7 @@ export function TechMarquee() {
       />
 
       <div className="marquee-track" style={{ willChange: "transform" }}>
-        {[...partners, ...partners].map((p, i) => (
+        {displayPartners.map((p, i) => (
           <div
             key={`${p.domain || p.name}-${i}`}
             style={{
@@ -130,7 +133,13 @@ export function TechMarquee() {
   );
 }
 
-function MarqueeItem({ partner, isLight }: { partner: any; isLight: boolean }) {
+const MarqueeItem = memo(function MarqueeItem({
+  partner,
+  isLight,
+}: {
+  partner: any;
+  isLight: boolean;
+}) {
   const [logoError, setLogoError] = useState(false);
   const [useFavicon, setUseFavicon] = useState(false);
 
@@ -210,4 +219,4 @@ function MarqueeItem({ partner, isLight }: { partner: any; isLight: boolean }) {
       )}
     </div>
   );
-}
+});
