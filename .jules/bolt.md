@@ -25,7 +25,3 @@
 ## 2026-08-10 - Synchronous Scroll Blocking
 **Learning:** Binding scroll event listeners without `{ passive: true }` blocks the main thread from scrolling the page until the event handler completes, causing jank and layout thrashing, especially when components update layout state on scroll.
 **Action:** Always add `{ passive: true }` to `addEventListener('scroll')` to allow the browser to scroll smoothly independently of script execution.
-
-## 2024-08-19 - Extracted Inline Arrays from JSX Scope
-**Learning:** Arrays constructed dynamically inside JSX element props or component bodies (e.g. `[...items, ...items]`) are recreated on every React render phase, silently undermining list virtualization and breaking downstream `React.memo` assumptions.
-**Action:** Always wrap dynamically generated, computed arrays within `useMemo` hooks or extract fully static references outside the component body to maintain referential identity across renders.

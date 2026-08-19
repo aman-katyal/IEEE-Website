@@ -4,6 +4,94 @@ import { ArrowRight } from "lucide-react";
 import { useTheme } from "next-themes";
 import { usePartners } from "../../../hooks/useSanityData";
 
+const MarqueeItem = memo(function MarqueeItem({
+  partner,
+  isLight,
+}: {
+  partner: any;
+  isLight: boolean;
+}) {
+  const [logoError, setLogoError] = useState(false);
+  const [useFavicon, setUseFavicon] = useState(false);
+
+  // Resolve source: Sanity URL -> unavatar clearbit proxy (bypasses adblockers) -> Google S2 favicon
+  let logoSrc = partner.logoUrl;
+  if (!logoSrc && partner.domain) {
+    if (useFavicon) {
+      logoSrc = `https://www.google.com/s2/favicons?domain=${partner.domain}&sz=128`;
+    } else {
+      logoSrc = `https://unavatar.io/clearbit/${partner.domain}`;
+    }
+  }
+
+  const handleImageError = () => {
+    if (!useFavicon && partner.domain) {
+      setUseFavicon(true);
+    } else {
+      setLogoError(true);
+    }
+  };
+
+  const showLogo = logoSrc && !logoError;
+
+  return (
+    <div
+      style={{
+        position: "relative",
+        height: "32px",
+        display: "flex",
+        alignItems: "center",
+      }}
+    >
+      {showLogo ? (
+        <img
+          src={logoSrc}
+          alt={partner.name}
+          title={partner.name}
+          aria-label={partner.name}
+          loading="lazy"
+          onError={handleImageError}
+          style={{
+            height: "32px",
+            width: "auto",
+            maxWidth: "140px",
+            filter: isLight
+              ? "grayscale(1) opacity(0.6)"
+              : "grayscale(1) invert(1) brightness(1.5) opacity(0.5)",
+            transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+            cursor: "pointer",
+            willChange: "transform, filter",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.filter = "grayscale(0) opacity(1)";
+            e.currentTarget.style.transform = "scale(1.05)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.filter = isLight
+              ? "grayscale(1) opacity(0.6)"
+              : "grayscale(1) invert(1) brightness(1.5) opacity(0.5)";
+            e.currentTarget.style.transform = "scale(1)";
+          }}
+        />
+      ) : (
+        <span
+          style={{
+            fontSize: "14px",
+            fontWeight: 600,
+            color: isLight
+              ? "var(--text-secondary)"
+              : "rgba(255, 255, 255, 0.5)",
+            fontFamily: "var(--font-headline)",
+            letterSpacing: "0.05em",
+          }}
+        >
+          {partner.name}
+        </span>
+      )}
+    </div>
+  );
+});
+
 export function TechMarquee() {
   const { theme } = useTheme();
   const { partners } = usePartners();
@@ -132,91 +220,3 @@ export function TechMarquee() {
     </div>
   );
 }
-
-const MarqueeItem = memo(function MarqueeItem({
-  partner,
-  isLight,
-}: {
-  partner: any;
-  isLight: boolean;
-}) {
-  const [logoError, setLogoError] = useState(false);
-  const [useFavicon, setUseFavicon] = useState(false);
-
-  // Resolve source: Sanity URL -> unavatar clearbit proxy (bypasses adblockers) -> Google S2 favicon
-  let logoSrc = partner.logoUrl;
-  if (!logoSrc && partner.domain) {
-    if (useFavicon) {
-      logoSrc = `https://www.google.com/s2/favicons?domain=${partner.domain}&sz=128`;
-    } else {
-      logoSrc = `https://unavatar.io/clearbit/${partner.domain}`;
-    }
-  }
-
-  const handleImageError = () => {
-    if (!useFavicon && partner.domain) {
-      setUseFavicon(true);
-    } else {
-      setLogoError(true);
-    }
-  };
-
-  const showLogo = logoSrc && !logoError;
-
-  return (
-    <div
-      style={{
-        position: "relative",
-        height: "32px",
-        display: "flex",
-        alignItems: "center",
-      }}
-    >
-      {showLogo ? (
-        <img
-          src={logoSrc}
-          alt={partner.name}
-          title={partner.name}
-          aria-label={partner.name}
-          loading="lazy"
-          onError={handleImageError}
-          style={{
-            height: "32px",
-            width: "auto",
-            maxWidth: "140px",
-            filter: isLight
-              ? "grayscale(1) opacity(0.6)"
-              : "grayscale(1) invert(1) brightness(1.5) opacity(0.5)",
-            transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
-            cursor: "pointer",
-            willChange: "transform, filter",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.filter = "grayscale(0) opacity(1)";
-            e.currentTarget.style.transform = "scale(1.05)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.filter = isLight
-              ? "grayscale(1) opacity(0.6)"
-              : "grayscale(1) invert(1) brightness(1.5) opacity(0.5)";
-            e.currentTarget.style.transform = "scale(1)";
-          }}
-        />
-      ) : (
-        <span
-          style={{
-            fontSize: "14px",
-            fontWeight: 600,
-            color: isLight
-              ? "var(--text-secondary)"
-              : "rgba(255, 255, 255, 0.5)",
-            fontFamily: "var(--font-headline)",
-            letterSpacing: "0.05em",
-          }}
-        >
-          {partner.name}
-        </span>
-      )}
-    </div>
-  );
-});
