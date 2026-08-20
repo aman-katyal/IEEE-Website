@@ -48,7 +48,8 @@ commit_message.txt
 !.env.example
 
 # Antigravity agent configurations & design system files
-.agents/
+# .agents/
+!.agents/tools/gh_tool/__main__.py
 design-system/
 graphify-out/
 **/graphify-out/
