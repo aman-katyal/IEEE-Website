@@ -17,3 +17,8 @@
 **Vulnerability:** Found issue describing missing rel="noopener noreferrer" for target="_blank" links.
 **Learning:** Sometimes reported security vulnerabilities may have already been fixed in a recent PR or by another team member. In this case, `rel="noopener noreferrer"` was already present.
 **Prevention:** Always verify the codebase state directly before applying security patches to prevent unnecessary churn or overwriting good fixes.
+
+## 2026-08-14 - Target Blank Noopener Already Fixed
+**Vulnerability:** A reported issue flagged `src/app/components/home/JoinCTA.tsx:261` as missing `rel='noopener noreferrer'` on a `target="_blank"` Discord link.
+**Learning:** After thorough review of the codebase, it was discovered that this issue was already resolved; the `rel="noopener noreferrer"` attribute was already present on that anchor tag and all other external links. This highlights that reported security vulnerabilities might already be fixed due to concurrent updates or PRs.
+**Prevention:** Always verify the codebase state directly (e.g., using `grep` or manual inspection) before attempting to apply security patches to prevent unnecessary churn or overwriting existing valid fixes.
