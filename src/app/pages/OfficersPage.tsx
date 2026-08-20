@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { Mail, Users, User, ChevronDown } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useLeaders, useOfficersConfig } from "../../hooks/useSanityData";
@@ -87,7 +87,232 @@ export function OfficersPage() {
   // Define how many skeleton cards to show per section
   const skeletonCards = Array.from({ length: 4 });
 
-  const renderOfficerCard = (officer: Leader) => (
+  return (
+    <section
+      style={{
+        background: "var(--boiler-black)",
+        minHeight: "100vh",
+        padding: "120px 0 96px",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      {/* Subtle grid */}
+      <div
+        className="ieee-grid-bg"
+        style={{ position: "absolute", inset: 0, opacity: 0.25 }}
+      />
+
+      <div
+        style={{
+          position: "relative",
+          zIndex: 5,
+          maxWidth: "1280px",
+          margin: "0 auto",
+          padding: "0 clamp(16px, 4vw, 32px)",
+        }}
+      >
+        {/* Header */}
+        <div style={{ marginBottom: "72px", textAlign: "center" }}>
+          <p className="section-eyebrow" style={{ marginBottom: "16px" }}>
+            // Leadership Team
+          </p>
+          <h2
+            style={{
+              fontFamily: "var(--font-headline)",
+              fontSize: "clamp(32px, 5vw, 56px)",
+              fontWeight: 700,
+              color: "var(--text-primary)",
+              lineHeight: 1.1,
+              letterSpacing: "-0.03em",
+              marginBottom: "24px",
+            }}
+          >
+            Meet Our{" "}
+            <span style={{ color: "var(--electric-blue)" }}>Officers</span>
+          </h2>
+          <p
+            style={{
+              fontFamily: "var(--font-body)",
+              fontSize: "18px",
+              color: "var(--text-secondary)",
+              lineHeight: 1.6,
+              maxWidth: "700px",
+              margin: "0 auto",
+            }}
+          >
+            The dedicated students who keep Purdue IEEE running smoothly across
+            all technical and administrative operations.
+          </p>
+        </div>
+
+        <Skeleton
+          name="officers-list"
+          loading={loading}
+          color={isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}
+        >
+          {isMobile ? (
+            <Accordion.Root
+              type="multiple"
+              className="AccordionRoot"
+              defaultValue={["executive"]}
+            >
+              {CATEGORIES.map((cat) => {
+                const sectionLeaders = categorizedLeaders[cat.id] ?? [];
+                if (sectionLeaders.length === 0) return null;
+
+                return (
+                  <Accordion.Item
+                    key={cat.id}
+                    value={cat.id}
+                    className="AccordionItem"
+                    style={{
+                      borderBottom: "1px solid var(--glass-border)",
+                      marginBottom: "12px",
+                    }}
+                  >
+                    <Accordion.Header className="AccordionHeader">
+                      <Accordion.Trigger
+                        className="AccordionTrigger"
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          padding: "20px 0",
+                          background: "none",
+                          border: "none",
+                          color: "var(--text-primary)",
+                          cursor: "pointer",
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontFamily: "var(--font-headline)",
+                            fontSize: "20px",
+                            fontWeight: 600,
+                          }}
+                        >
+                          {cat.name}
+                        </span>
+                        <ChevronDown className="AccordionChevron" aria-hidden />
+                      </Accordion.Trigger>
+                    </Accordion.Header>
+                    <Accordion.Content className="AccordionContent">
+                      <p
+                        style={{
+                          fontFamily: "var(--font-body)",
+                          fontSize: "14px",
+                          color: "var(--text-muted)",
+                          marginBottom: "24px",
+                        }}
+                      >
+                        {cat.description}
+                      </p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-8">
+                        {sectionLeaders.map((officer) => (
+                          <LeaderCard
+                            key={officer._id || officer.name + officer.role}
+                            officer={officer}
+                            isLight={isLight}
+                          />
+                        ))}
+                      </div>
+                    </Accordion.Content>
+                  </Accordion.Item>
+                );
+              })}
+            </Accordion.Root>
+          ) : (
+            CATEGORIES.map((cat) => {
+              const sectionLeaders = categorizedLeaders[cat.id] ?? [];
+              if (sectionLeaders.length === 0) return null;
+
+              return (
+                <div key={cat.id} style={{ marginBottom: "80px" }}>
+                  <div style={{ marginBottom: "32px" }}>
+                    <h3
+                      style={{
+                        fontFamily: "var(--font-headline)",
+                        fontSize: "28px",
+                        fontWeight: 600,
+                        color: "var(--text-primary)",
+                        marginBottom: "8px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "12px",
+                      }}
+                    >
+                      <span
+                        style={{
+                          color:
+                            cat.id === "executive"
+                              ? "var(--cyber-gold)"
+                              : "var(--electric-blue)",
+                        }}
+                      >
+                        //
+                      </span>
+                      {cat.name}
+                    </h3>
+                    <p
+                      style={{
+                        fontFamily: "var(--font-body)",
+                        fontSize: "15px",
+                        color: "var(--text-muted)",
+                        maxWidth: "800px",
+                      }}
+                    >
+                      {cat.description}
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {sectionLeaders.map((officer) => (
+                      <LeaderCard
+                        key={officer._id || officer.name + officer.role}
+                        officer={officer}
+                        isLight={isLight}
+                      />
+                    ))}
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </Skeleton>
+      </div>
+      <style>{`
+        .AccordionTrigger[data-state='open'] .AccordionChevron {
+          transform: rotate(180deg);
+        }
+        .AccordionChevron {
+          transition: transform 300ms cubic-bezier(0.87, 0, 0.13, 1);
+          color: var(--electric-blue);
+        }
+        .AccordionContent {
+          overflow: hidden;
+        }
+        .AccordionContent[data-state='open'] {
+          animation: slideDown 300ms cubic-bezier(0.87, 0, 0.13, 1);
+        }
+        .AccordionContent[data-state='closed'] {
+          animation: slideUp 300ms cubic-bezier(0.87, 0, 0.13, 1);
+        }
+        @keyframes slideDown {
+          from { height: 0; }
+          to { height: var(--radix-accordion-content-height); }
+        }
+        @keyframes slideUp {
+          from { height: var(--radix-accordion-content-height); }
+          to { height: 0; }
+        }
+      `}</style>
+    </section>
+  );
+}
+
+const LeaderCard = React.memo(
+  ({ officer, isLight }: { officer: Leader; isLight: boolean }) => (
     <MagneticWrapper
       key={officer._id || officer.name + officer.role}
       strength={0.05}
@@ -324,216 +549,5 @@ export function OfficersPage() {
         </div>
       </div>
     </MagneticWrapper>
-  );
-
-  return (
-    <section
-      style={{
-        background: "var(--boiler-black)",
-        minHeight: "100vh",
-        padding: "120px 0 96px",
-        position: "relative",
-        overflow: "hidden",
-      }}
-    >
-      {/* Subtle grid */}
-      <div
-        className="ieee-grid-bg"
-        style={{ position: "absolute", inset: 0, opacity: 0.25 }}
-      />
-
-      <div
-        style={{
-          position: "relative",
-          zIndex: 5,
-          maxWidth: "1280px",
-          margin: "0 auto",
-          padding: "0 clamp(16px, 4vw, 32px)",
-        }}
-      >
-        {/* Header */}
-        <div style={{ marginBottom: "72px", textAlign: "center" }}>
-          <p className="section-eyebrow" style={{ marginBottom: "16px" }}>
-            // Leadership Team
-          </p>
-          <h2
-            style={{
-              fontFamily: "var(--font-headline)",
-              fontSize: "clamp(32px, 5vw, 56px)",
-              fontWeight: 700,
-              color: "var(--text-primary)",
-              lineHeight: 1.1,
-              letterSpacing: "-0.03em",
-              marginBottom: "24px",
-            }}
-          >
-            Meet Our{" "}
-            <span style={{ color: "var(--electric-blue)" }}>Officers</span>
-          </h2>
-          <p
-            style={{
-              fontFamily: "var(--font-body)",
-              fontSize: "18px",
-              color: "var(--text-secondary)",
-              lineHeight: 1.6,
-              maxWidth: "700px",
-              margin: "0 auto",
-            }}
-          >
-            The dedicated students who keep Purdue IEEE running smoothly across
-            all technical and administrative operations.
-          </p>
-        </div>
-
-        <Skeleton
-          name="officers-list"
-          loading={loading}
-          color={isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}
-        >
-          {isMobile ? (
-            <Accordion.Root
-              type="multiple"
-              className="AccordionRoot"
-              defaultValue={["executive"]}
-            >
-              {CATEGORIES.map((cat) => {
-                const sectionLeaders = categorizedLeaders[cat.id] ?? [];
-                if (sectionLeaders.length === 0) return null;
-
-                return (
-                  <Accordion.Item
-                    key={cat.id}
-                    value={cat.id}
-                    className="AccordionItem"
-                    style={{
-                      borderBottom: "1px solid var(--glass-border)",
-                      marginBottom: "12px",
-                    }}
-                  >
-                    <Accordion.Header className="AccordionHeader">
-                      <Accordion.Trigger
-                        className="AccordionTrigger"
-                        style={{
-                          width: "100%",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          padding: "20px 0",
-                          background: "none",
-                          border: "none",
-                          color: "var(--text-primary)",
-                          cursor: "pointer",
-                        }}
-                      >
-                        <span
-                          style={{
-                            fontFamily: "var(--font-headline)",
-                            fontSize: "20px",
-                            fontWeight: 600,
-                          }}
-                        >
-                          {cat.name}
-                        </span>
-                        <ChevronDown className="AccordionChevron" aria-hidden />
-                      </Accordion.Trigger>
-                    </Accordion.Header>
-                    <Accordion.Content className="AccordionContent">
-                      <p
-                        style={{
-                          fontFamily: "var(--font-body)",
-                          fontSize: "14px",
-                          color: "var(--text-muted)",
-                          marginBottom: "24px",
-                        }}
-                      >
-                        {cat.description}
-                      </p>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-8">
-                        {sectionLeaders.map(renderOfficerCard)}
-                      </div>
-                    </Accordion.Content>
-                  </Accordion.Item>
-                );
-              })}
-            </Accordion.Root>
-          ) : (
-            CATEGORIES.map((cat) => {
-              const sectionLeaders = categorizedLeaders[cat.id] ?? [];
-              if (sectionLeaders.length === 0) return null;
-
-              return (
-                <div key={cat.id} style={{ marginBottom: "80px" }}>
-                  <div style={{ marginBottom: "32px" }}>
-                    <h3
-                      style={{
-                        fontFamily: "var(--font-headline)",
-                        fontSize: "28px",
-                        fontWeight: 600,
-                        color: "var(--text-primary)",
-                        marginBottom: "8px",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "12px",
-                      }}
-                    >
-                      <span
-                        style={{
-                          color:
-                            cat.id === "executive"
-                              ? "var(--cyber-gold)"
-                              : "var(--electric-blue)",
-                        }}
-                      >
-                        //
-                      </span>
-                      {cat.name}
-                    </h3>
-                    <p
-                      style={{
-                        fontFamily: "var(--font-body)",
-                        fontSize: "15px",
-                        color: "var(--text-muted)",
-                        maxWidth: "800px",
-                      }}
-                    >
-                      {cat.description}
-                    </p>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {sectionLeaders.map(renderOfficerCard)}
-                  </div>
-                </div>
-              );
-            })
-          )}
-        </Skeleton>
-      </div>
-      <style>{`
-        .AccordionTrigger[data-state='open'] .AccordionChevron {
-          transform: rotate(180deg);
-        }
-        .AccordionChevron {
-          transition: transform 300ms cubic-bezier(0.87, 0, 0.13, 1);
-          color: var(--electric-blue);
-        }
-        .AccordionContent {
-          overflow: hidden;
-        }
-        .AccordionContent[data-state='open'] {
-          animation: slideDown 300ms cubic-bezier(0.87, 0, 0.13, 1);
-        }
-        .AccordionContent[data-state='closed'] {
-          animation: slideUp 300ms cubic-bezier(0.87, 0, 0.13, 1);
-        }
-        @keyframes slideDown {
-          from { height: 0; }
-          to { height: var(--radix-accordion-content-height); }
-        }
-        @keyframes slideUp {
-          from { height: var(--radix-accordion-content-height); }
-          to { height: 0; }
-        }
-      `}</style>
-    </section>
-  );
-}
+  ),
+);

@@ -42,8 +42,10 @@ Labels are organized into **four dimensions** using a prefix system. Always appl
 | `status:ready` | `#0e8a16` 🟢 | Spec complete, ready to implement |
 | `status:in-progress` | `#9BCC65` 🍏 | Actively being worked on |
 | `status:blocked` | `#d93f0b` 🔴 | Waiting on decision, asset, or dependency |
-| `status:awaiting-review` | `#e99695` 🩺 | Implemented, merged — needs human verification |
+| `status:awaiting-review` | `#e99695` 🩺 | Implemented, merged — ONLY when subjective/external human sign-off is needed |
 | `status:wontfix` | `#ffffff` ⬜ | Explicitly out of scope, closed |
+
+> **⚡ Direct Issue Closing Policy:** When an issue is implemented and verified by automated browser tests, visual checks, or unit tests, **directly close the issue** with `gh_tool issue close <N>` (or via python `gh.close_issue`) with a completion comment. Do NOT leave self-verified issues in `status:awaiting-review`.
 
 ### Dimension 4 — `area:` (Which part of the codebase?)
 

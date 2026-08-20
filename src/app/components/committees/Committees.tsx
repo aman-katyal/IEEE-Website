@@ -19,78 +19,38 @@ function CommitteeCard({ c }: { c: Committee }) {
     <MagneticWrapper strength={0.05} className="w-full h-full">
       <Link
         to={`/committee/${c.id}`}
-        style={{ textDecoration: "none", color: "inherit" }}
+        className="no-underline text-inherit block h-full"
       >
-        <div
-          className="glass-card hover-glow-blue hover-scale hover-border-blue group relative"
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            overflow: "hidden",
-            cursor: "pointer",
-            height: "100%",
-          }}
-        >
+        <div className="glass-card hover-glow-blue hover-scale hover-border-blue group relative flex flex-col overflow-hidden cursor-pointer h-full">
           {/* Image */}
-          <div
-            style={{
-              position: "relative",
-              height: "180px",
-              overflow: "hidden",
-            }}
-          >
+          <div className="relative h-[180px] overflow-hidden">
             <img
               src={c.image}
               alt={c.name}
               loading="lazy"
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                filter: isLight
-                  ? "brightness(0.9) saturate(1.1)"
-                  : "brightness(0.65) saturate(0.8)",
-                transition: "transform 0.5s ease, filter 0.4s ease",
-                willChange: "transform, filter",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLImageElement).style.transform =
-                  "scale(1.06)";
-                (e.currentTarget as HTMLImageElement).style.filter = isLight
-                  ? "brightness(1) saturate(1.2)"
-                  : "brightness(0.8) saturate(0.9)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLImageElement).style.transform =
-                  "scale(1)";
-                (e.currentTarget as HTMLImageElement).style.filter = isLight
-                  ? "brightness(0.9) saturate(1.1)"
-                  : "brightness(0.65) saturate(0.8)";
-              }}
+              className={`w-full h-full object-cover transition-all duration-500 will-change-transform group-hover:scale-105 ${
+                isLight
+                  ? "brightness-90 saturate-110 group-hover:brightness-100 group-hover:saturate-120"
+                  : "brightness-75 saturate-80 group-hover:brightness-90 group-hover:saturate-90"
+              }`}
             />
 
             {/* Theme-aware overlay */}
             <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                background: isLight
-                  ? "linear-gradient(to bottom, transparent 50%, rgba(241,245,249,0.3) 100%)"
-                  : "linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.8) 100%)",
-              }}
+              className={`absolute inset-0 ${
+                isLight
+                  ? "bg-gradient-to-b from-transparent via-transparent to-slate-100/30"
+                  : "bg-gradient-to-b from-transparent via-transparent to-black/80"
+              }`}
             />
 
-            {/* Status Badge */}
+            {/* Non-Active Status Badge */}
             {c.status && c.status.toLowerCase() !== "active" && (
               <div
-                className="status-badge"
+                className="status-badge absolute top-3 right-3"
                 style={{
-                  position: "absolute",
-                  top: "12px",
-                  right: "0",
-                  background: c.statusBg,
-                  color: c.statusColor,
-                  backdropFilter: "blur(6px)",
+                  background: c.statusBg || "rgba(255, 0, 0, 0.2)",
+                  color: c.statusColor || "#ff5555",
                 }}
               >
                 <span className="dot" />
@@ -100,102 +60,39 @@ function CommitteeCard({ c }: { c: Committee }) {
           </div>
 
           {/* Body */}
-          <div
-            style={{
-              padding: "24px",
-              flex: 1,
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            <h3
-              style={{
-                fontFamily: "var(--font-headline)",
-                fontSize: "17px",
-                fontWeight: 700,
-                color: "var(--text-primary)",
-                marginBottom: "4px",
-                lineHeight: 1.3,
-              }}
-            >
+          <div className="p-6 flex-1 flex flex-col">
+            <h3 className="font-[family-name:var(--font-headline)] text-[17px] font-bold text-[var(--text-primary)] mb-1 leading-snug">
               {c.shortName}
             </h3>
-            <p
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: "0.65rem",
-                color: "var(--cyber-gold)",
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
-                marginBottom: "14px",
-                opacity: isLight ? 1 : 0.8,
-              }}
-            >
+            <p className="font-[family-name:var(--font-mono)] text-[0.65rem] text-[var(--cyber-gold)] tracking-[0.1em] uppercase mb-3.5 opacity-90">
               {c.tagline}
             </p>
 
-            <div
-              style={{
-                fontFamily: "var(--font-body)",
-                fontSize: "13px",
-                color: "var(--text-secondary)",
-                lineHeight: 1.65,
-                marginBottom: "20px",
-                flex: 1,
-                whiteSpace: "pre-wrap",
-              }}
-            >
+            <div className="font-[family-name:var(--font-body)] text-[13px] text-[var(--text-secondary)] leading-relaxed mb-5 flex-1 whitespace-pre-wrap line-clamp-3">
               {c.description}
             </div>
 
             {/* Dynamic Metrics Row */}
             {displayMetrics.length > 0 && (
               <div
+                className="grid gap-0 border-y border-[var(--glass-border)] mb-5 py-3"
                 style={{
-                  display: "grid",
                   gridTemplateColumns: `repeat(${displayMetrics.length}, 1fr)`,
-                  gap: "0",
-                  borderTop: "1px solid var(--glass-border)",
-                  borderBottom: "1px solid var(--glass-border)",
-                  marginBottom: "20px",
-                  padding: "12px 0",
                 }}
               >
                 {displayMetrics.map((m, i) => (
                   <div
                     key={m.label}
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      gap: "3px",
-                      borderRight:
-                        i < displayMetrics.length - 1
-                          ? "1px solid var(--glass-border)"
-                          : "none",
-                      padding: "0 8px",
-                    }}
+                    className={`flex flex-col items-center gap-0.5 px-2 ${
+                      i < displayMetrics.length - 1
+                        ? "border-r border-[var(--glass-border)]"
+                        : ""
+                    }`}
                   >
-                    <span
-                      style={{
-                        fontFamily: "var(--font-mono)",
-                        fontSize: "15px",
-                        fontWeight: 600,
-                        color: "var(--electric-blue)",
-                        lineHeight: 1,
-                      }}
-                    >
+                    <span className="font-[family-name:var(--font-mono)] text-[15px] font-semibold text-[var(--electric-blue)] leading-none">
                       {m.value}
                     </span>
-                    <span
-                      style={{
-                        fontFamily: "var(--font-mono)",
-                        fontSize: "0.58rem",
-                        color: "var(--text-muted)",
-                        letterSpacing: "0.12em",
-                        textTransform: "uppercase",
-                      }}
-                    >
+                    <span className="font-[family-name:var(--font-mono)] text-[0.58rem] text-[var(--text-muted)] tracking-[0.12em] uppercase">
                       {m.label}
                     </span>
                   </div>
@@ -204,45 +101,16 @@ function CommitteeCard({ c }: { c: Committee }) {
             )}
 
             {/* Tags Row */}
-            <div
-              style={{
-                display: "flex",
-                gap: "6px",
-                flexWrap: "wrap",
-                marginBottom: "20px",
-              }}
-            >
+            <div className="flex gap-1.5 flex-wrap mb-5">
               {c.tags?.slice(0, 3).map((tag) => (
-                <span key={tag} className="tech-tag">
+                <span key={tag} className="tech-tag text-xs">
                   {tag}
                 </span>
               ))}
             </div>
 
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginTop: "auto",
-                paddingTop: "12px",
-              }}
-            >
-              <span
-                className="learn-more-link"
-                style={{
-                  fontFamily: "var(--font-body)",
-                  fontSize: "0.85rem",
-                  fontWeight: 600,
-                  color: "var(--electric-blue)",
-                  letterSpacing: "0.05em",
-                  textTransform: "uppercase",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  transition: "gap 0.3s ease, color 0.3s ease",
-                }}
-              >
+            <div className="flex justify-between items-center mt-auto pt-3">
+              <span className="learn-more-link font-[family-name:var(--font-body)] text-[0.85rem] font-semibold text-[var(--electric-blue)] tracking-[0.05em] uppercase flex items-center gap-2 transition-all duration-300">
                 Explore Committee
                 <ArrowUpRight
                   size={16}
@@ -250,27 +118,12 @@ function CommitteeCard({ c }: { c: Committee }) {
                 />
               </span>
 
-              <div
-                style={{
-                  width: "6px",
-                  height: "6px",
-                  borderRadius: "50%",
-                  background: "var(--cyber-gold)",
-                  opacity: isLight ? 1 : 0.5,
-                  boxShadow: isLight ? "none" : "0 0 10px var(--cyber-gold)",
-                }}
-              />
+              <div className="w-1.5 h-1.5 rounded-full bg-[var(--cyber-gold)] opacity-60 shadow-[0_0_10px_var(--cyber-gold)]" />
             </div>
           </div>
 
           {/* Hover overlay effect */}
-          <div
-            className="absolute inset-0 opacity-0 group-hover:opacity-10 pointer-events-none transition-opacity duration-500"
-            style={{
-              background:
-                "linear-gradient(45deg, var(--electric-blue), transparent)",
-            }}
-          />
+          <div className="absolute inset-0 opacity-0 group-hover:opacity-10 pointer-events-none transition-opacity duration-500 bg-gradient-to-tr from-[var(--electric-blue)] to-transparent" />
         </div>
       </Link>
     </MagneticWrapper>
@@ -284,13 +137,7 @@ export function Committees() {
 
   if (error) {
     return (
-      <div
-        style={{
-          padding: "48px 0",
-          textAlign: "center",
-          color: "var(--text-secondary)",
-        }}
-      >
+      <div className="py-12 text-center text-[var(--text-secondary)]">
         Error loading committees: {error.message}
       </div>
     );
@@ -299,79 +146,20 @@ export function Committees() {
   return (
     <section
       id="committees"
-      style={{
-        background: "var(--boiler-black)",
-        padding: "16px 0 96px",
-        position: "relative",
-        overflow: "hidden",
-      }}
+      className="bg-[var(--boiler-black)] pt-4 pb-24 relative overflow-hidden"
     >
-      <div
-        className="electric-glow-orb"
-        style={{
-          width: "600px",
-          height: "600px",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          opacity: isLight ? 0 : 0.5,
-        }}
-      />
+      <div className="electric-glow-orb w-[600px] h-[600px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 dark:opacity-50" />
 
-      <div
-        style={{
-          position: "relative",
-          zIndex: 5,
-          maxWidth: "1280px",
-          margin: "0 auto",
-          padding: "0 clamp(16px, 4vw, 32px)",
-        }}
-      >
-
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            alignItems: "center",
-            marginBottom: "32px",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              fontFamily: "var(--font-mono)",
-              fontSize: "0.75rem",
-              letterSpacing: "0.1em",
-              textTransform: "uppercase",
-            }}
-          >
-            <span
-              style={{
-                color: "var(--text-muted)",
-                opacity: isLight ? 1 : 0.8,
-              }}
-            >
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-end items-center mb-8">
+          <div className="flex items-center gap-2 font-[family-name:var(--font-mono)] text-xs tracking-widest uppercase">
+            <span className="text-[var(--text-muted)] opacity-80">
               Committees:
             </span>
             {loading ? (
-              <Skeleton
-                style={{
-                  height: "16px",
-                  width: "24px",
-                  background: isLight
-                    ? "rgba(0,0,0,0.08)"
-                    : "rgba(255,255,255,0.1)",
-                }}
-              />
+              <Skeleton className="h-4 w-6 bg-white/10" />
             ) : (
-              <span
-                style={{
-                  color: "var(--electric-blue)",
-                  fontWeight: 600,
-                }}
-              >
+              <span className="text-[var(--electric-blue)] font-semibold">
                 {committees.length}
               </span>
             )}
@@ -383,10 +171,7 @@ export function Committees() {
           loading={loading}
           color={isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}
         >
-          <div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            style={{ minHeight: "200px" }}
-          >
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 min-h-[200px]">
             <AnimatePresence mode="popLayout">
               {committees.map((c) => (
                 <motion.div

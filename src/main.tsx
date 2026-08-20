@@ -1,3 +1,4 @@
+import React, { Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -6,16 +7,20 @@ import "./styles/index.css";
 import "./bones/registry";
 
 import { Layout } from "./app/components/shared/Layout";
-import { HomePage } from "./app/pages/HomePage";
-import { CommitteePage } from "./app/pages/CommitteePage";
-import { CommitteesPage } from "./app/pages/CommitteesPage";
-import { OfficersPage } from "./app/pages/OfficersPage";
-import { CalendarPage } from "./app/pages/CalendarPage";
-import { JoinPage } from "./app/pages/JoinPage";
-import { AboutUsPage } from "./app/pages/AboutUsPage";
-import { PartnersPage } from "./app/pages/PartnersPage";
-import { ConstitutionPage } from "./app/pages/ConstitutionPage";
 import { PageTransition } from "./app/components/shared/PageTransition";
+import { ErrorBoundary } from "./app/components/shared/ErrorBoundary";
+import { PageSkeleton } from "./app/components/shared/PageSkeleton";
+
+const HomePage = React.lazy(() => import('./app/pages/HomePage').then(m => ({ default: m.HomePage })));
+const CommitteePage = React.lazy(() => import('./app/pages/CommitteePage').then(m => ({ default: m.CommitteePage })));
+const CommitteesPage = React.lazy(() => import('./app/pages/CommitteesPage').then(m => ({ default: m.CommitteesPage })));
+const OfficersPage = React.lazy(() => import('./app/pages/OfficersPage').then(m => ({ default: m.OfficersPage })));
+const CalendarPage = React.lazy(() => import('./app/pages/CalendarPage').then(m => ({ default: m.CalendarPage })));
+const JoinPage = React.lazy(() => import('./app/pages/JoinPage').then(m => ({ default: m.JoinPage })));
+const AboutUsPage = React.lazy(() => import('./app/pages/AboutUsPage').then(m => ({ default: m.AboutUsPage })));
+const PartnersPage = React.lazy(() => import('./app/pages/PartnersPage').then(m => ({ default: m.PartnersPage })));
+const ConstitutionPage = React.lazy(() => import('./app/pages/ConstitutionPage').then(m => ({ default: m.ConstitutionPage })));
+const NotFoundPage = React.lazy(() => import('./app/pages/NotFoundPage').then(m => ({ default: m.NotFoundPage })));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -33,16 +38,16 @@ const router = createBrowserRouter([
       {
         element: <Layout />,
         children: [
-          { path: "/", element: <PageTransition><HomePage /></PageTransition> },
-          { path: "/about", element: <PageTransition><AboutUsPage /></PageTransition> },
-          { path: "/committees", element: <PageTransition><CommitteesPage /></PageTransition> },
-          { path: "/committee/:id", element: <PageTransition><CommitteePage /></PageTransition> },
-          { path: "/officers", element: <PageTransition><OfficersPage /></PageTransition> },
-          { path: "/calendar", element: <PageTransition><CalendarPage /></PageTransition> },
-          { path: "/join", element: <PageTransition><JoinPage /></PageTransition> },
-          { path: "/partners", element: <PageTransition><PartnersPage /></PageTransition> },
-          { path: "/constitution", element: <PageTransition><ConstitutionPage /></PageTransition> },
-          { path: "*", element: <div style={{ color: 'white', padding: '100px' }}>404 - Page Not Found</div> },
+          { path: "/", element: <PageTransition><Suspense fallback={<PageSkeleton />}><HomePage /></Suspense></PageTransition> },
+          { path: "/about", element: <PageTransition><Suspense fallback={<PageSkeleton />}><AboutUsPage /></Suspense></PageTransition> },
+          { path: "/committees", element: <PageTransition><Suspense fallback={<PageSkeleton />}><CommitteesPage /></Suspense></PageTransition> },
+          { path: "/committee/:id", element: <PageTransition><Suspense fallback={<PageSkeleton />}><CommitteePage /></Suspense></PageTransition> },
+          { path: "/officers", element: <PageTransition><Suspense fallback={<PageSkeleton />}><OfficersPage /></Suspense></PageTransition> },
+          { path: "/calendar", element: <PageTransition><Suspense fallback={<PageSkeleton />}><CalendarPage /></Suspense></PageTransition> },
+          { path: "/join", element: <PageTransition><Suspense fallback={<PageSkeleton />}><JoinPage /></Suspense></PageTransition> },
+          { path: "/partners", element: <PageTransition><Suspense fallback={<PageSkeleton />}><PartnersPage /></Suspense></PageTransition> },
+          { path: "/constitution", element: <PageTransition><Suspense fallback={<PageSkeleton />}><ConstitutionPage /></Suspense></PageTransition> },
+          { path: "*", element: <PageTransition><Suspense fallback={<PageSkeleton />}><NotFoundPage /></Suspense></PageTransition> },
         ]
       }
     ]
@@ -50,7 +55,9 @@ const router = createBrowserRouter([
 ]);
 
 createRoot(document.getElementById("root")!).render(
-  <QueryClientProvider client={queryClient}>
-    <RouterProvider router={router} />
-  </QueryClientProvider>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
+  </ErrorBoundary>
 );

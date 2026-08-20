@@ -4,13 +4,21 @@
 export interface CommitteeProject {
   name: string;
   description: string;
+  shortDescription?: string;
+  longDescription?: string;
   flagship?: boolean;
   isFlagship?: boolean;
+  image?: string;
+  url?: string;
+  link?: string;
+  tags?: string[];
 }
 
 export interface GalleryItem {
-  src: string;
-  caption: string;
+  src?: string;
+  image?: string;
+  caption?: string;
+  name?: string;
 }
 
 export interface FAQ {
@@ -53,6 +61,7 @@ export interface Metric {
 
 export interface HistoryItem {
   year: string;
+  title?: string;
   vehicleName?: string;
   placement?: string;
   awards?: string[];

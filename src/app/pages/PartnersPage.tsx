@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { motion } from "motion/react";
 import { useTheme } from "next-themes";
 import { Mail, Award, Rocket, Shield, Cpu, Download } from "lucide-react";
@@ -244,14 +244,14 @@ export function PartnersPage() {
                   margin: 0,
                 }}
               >
-                Gold Partner status is awarded by IEEE to student branches
-                that demonstrate exceptional technical activity, community
-                impact, and organizational excellence. Purdue IEEE has earned
-                this recognition through consistent leadership in engineering
+                Gold Partner status is awarded by IEEE to student branches that
+                demonstrate exceptional technical activity, community impact,
+                and organizational excellence. Purdue IEEE has earned this
+                recognition through consistent leadership in engineering
                 education, record member engagement, and nationally recognized
                 technical projects. Gold Partners receive premium placement at
-                our recruiting events and direct access to our most
-                accomplished members.
+                our recruiting events and direct access to our most accomplished
+                members.
               </p>
             </div>
           </div>
@@ -315,7 +315,10 @@ export function PartnersPage() {
                       marginBottom: "32px",
                     }}
                   >
-                    <Shield style={{ color: "var(--text-secondary)" }} size={24} />
+                    <Shield
+                      style={{ color: "var(--text-secondary)" }}
+                      size={24}
+                    />
                     <h2
                       style={{
                         fontFamily: "var(--font-headline)",
@@ -488,7 +491,7 @@ export function PartnersPage() {
   );
 }
 
-function PartnerCard({
+const PartnerCard = React.memo(function PartnerCard({
   partner,
   isLight,
 }: {
@@ -508,16 +511,22 @@ function PartnerCard({
     }
   }
 
-  const handleImageError = () => {
-    if (!useFavicon && partner.domain) {
-      setUseFavicon(true);
+  const handleImageError = React.useCallback(() => {
+    if (partner.domain) {
+      setUseFavicon((prev) => {
+        if (!prev) return true;
+        setLogoError(true);
+        return prev;
+      });
     } else {
       setLogoError(true);
     }
-  };
+  }, [partner.domain]);
 
   const showLogo = logoSrc && !logoError;
-  const destinationUrl = partner.websiteUrl || (partner.domain ? `https://${partner.domain}` : undefined);
+  const destinationUrl =
+    partner.websiteUrl ||
+    (partner.domain ? `https://${partner.domain}` : undefined);
 
   const cardContent = (
     <motion.div
@@ -604,4 +613,4 @@ function PartnerCard({
   }
 
   return cardContent;
-}
+});

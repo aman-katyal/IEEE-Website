@@ -7,15 +7,15 @@ export function CornerstoneCommittees({ filterId }: { filterId?: "involvement" |
 
   if (loading) {
     return (
-      <div style={{ minHeight: "300px", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--boiler-black)" }}>
-        <Loader2 className="animate-spin" size={32} style={{ color: "var(--electric-blue)" }} />
+      <div className="min-h-[300px] flex items-center justify-center bg-[var(--boiler-black)]">
+        <Loader2 className="animate-spin text-[var(--electric-blue)]" size={32} />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div style={{ padding: "48px 0", textAlign: "center", color: "var(--text-secondary)" }}>
+      <div className="py-12 text-center text-[var(--text-secondary)]">
         Error loading cornerstone committees: {error.message}
       </div>
     );
@@ -24,60 +24,29 @@ export function CornerstoneCommittees({ filterId }: { filterId?: "involvement" |
   const displayedSections = filterId 
     ? cornerstoneCommittees.filter((section) => section.id.toLowerCase().includes(filterId))
     : cornerstoneCommittees;
+
   return (
     <section
       id="cornerstone"
-      style={{
-        background: "var(--boiler-black)",
-        padding: "16px 0 96px",
-        position: "relative",
-        overflow: "hidden",
-      }}
+      className="bg-[var(--boiler-black)] pt-4 pb-24 relative overflow-hidden"
     >
       {/* Background Grid */}
-      <div
-        className="ieee-grid-bg"
-        style={{ position: "absolute", inset: 0, opacity: 0.25 }}
-      />
+      <div className="ieee-grid-bg absolute inset-0 opacity-25" />
 
-      <div
-        style={{
-          position: "relative",
-          zIndex: 5,
-          maxWidth: "1280px",
-          margin: "0 auto",
-          padding: "0 clamp(16px, 4vw, 32px)",
-        }}
-      >
-
-        <div style={{ display: "flex", flexDirection: "column", gap: "64px" }}>
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-16">
           {displayedSections.map((section) => (
             <div key={section.id}>
-              <div style={{ marginBottom: "32px", maxWidth: "800px" }}>
-                <h3
-                  style={{
-                    fontFamily: "var(--font-headline)",
-                    fontSize: "28px",
-                    fontWeight: 600,
-                    color: "var(--text-primary)",
-                    marginBottom: "16px",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "12px",
-                  }}
-                >
-                  {section.id === "operations" ? <Layout size={24} style={{ color: "var(--electric-blue)" }} /> : <Users size={24} style={{ color: "var(--cyber-gold)" }} />}
+              <div className="mb-8 max-w-3xl">
+                <h3 className="font-[family-name:var(--font-headline)] text-2xl sm:text-3xl font-semibold text-[var(--text-primary)] mb-4 flex items-center gap-3">
+                  {section.id === "operations" ? (
+                    <Layout size={24} className="text-[var(--electric-blue)]" />
+                  ) : (
+                    <Users size={24} className="text-[var(--cyber-gold)]" />
+                  )}
                   {section.name}
                 </h3>
-                <div
-                  style={{
-                    fontFamily: "var(--font-body)",
-                    fontSize: "17px",
-                    color: "var(--text-secondary)",
-                    lineHeight: 1.6,
-                    whiteSpace: "pre-wrap",
-                  }}
-                >
+                <div className="font-[family-name:var(--font-body)] text-base sm:text-lg text-[var(--text-secondary)] leading-relaxed whitespace-pre-wrap">
                   <ReactMarkdown>{section.description}</ReactMarkdown>
                 </div>
               </div>
@@ -86,73 +55,34 @@ export function CornerstoneCommittees({ filterId }: { filterId?: "involvement" |
                 {section.leads.map((lead, index) => (
                   <div
                     key={lead.role}
-                    className="glass-card animate-fade-in-up opacity-0-init"
+                    className="glass-card animate-fade-in-up p-8 flex flex-col h-full bg-white/[0.03] border-[var(--glass-border)]"
                     style={{
-                      padding: "32px",
-                      display: "flex",
-                      flexDirection: "column",
-                      height: "100%",
-                      background: "rgba(128, 128, 128, 0.05)",
                       animationDelay: `${index * 150}ms`
                     }}
                   >
-                    <div style={{ marginBottom: "20px" }}>
-                      <h4
-                        style={{
-                          fontFamily: "var(--font-headline)",
-                          fontSize: "22px",
-                          fontWeight: 600,
-                          color: "var(--text-primary)",
-                          marginBottom: "6px",
-                        }}
-                      >
+                    <div className="mb-5">
+                      <h4 className="font-[family-name:var(--font-headline)] text-lg font-bold text-[var(--text-primary)] mb-1">
                         {lead.role}
                       </h4>
-                      <p
-                        style={{
-                          fontFamily: "var(--font-mono)",
-                          fontSize: "13px",
-                          fontWeight: 600,
-                          color: "var(--cyber-gold)",
-                          letterSpacing: "0.03em",
-                        }}
-                      >
+                      <p className="font-[family-name:var(--font-mono)] text-xs text-[var(--cyber-gold)] tracking-wide mb-3 font-semibold">
                         Chair: {lead.name}
                       </p>
+                      {lead.email && (
+                        <a
+                          href={`mailto:${lead.email}`}
+                          className="font-[family-name:var(--font-mono)] text-xs text-[var(--electric-blue)] flex items-center gap-1.5 hover:underline"
+                        >
+                          <Mail size={12} />
+                          {lead.email}
+                        </a>
+                      )}
                     </div>
 
-                    <div
-                      style={{
-                        fontFamily: "var(--font-body)",
-                        fontSize: "14px",
-                        color: "var(--text-secondary)",
-                        lineHeight: 1.6,
-                        marginBottom: "24px",
-                        flexGrow: 1,
-                        whiteSpace: "pre-wrap",
-                      }}
-                    >
-                      <ReactMarkdown>{lead.description || ""}</ReactMarkdown>
-                    </div>
-
-                    <div style={{ display: "flex", gap: "10px", alignItems: "center", borderTop: "1px solid var(--glass-border)", paddingTop: "16px" }}>
-                      <Mail size={16} style={{ color: "var(--electric-blue)", flexShrink: 0 }} />
-                      <a
-                        href={`mailto:${lead.email}`}
-                        style={{
-                          fontFamily: "var(--font-mono)",
-                          fontSize: "13px",
-                          color: "var(--text-secondary)",
-                          textDecoration: "none",
-                          wordBreak: "break-all",
-                          transition: "color 0.2s ease",
-                        }}
-                        onMouseEnter={(e) => (e.currentTarget.style.color = "var(--electric-blue)")}
-                        onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-secondary)")}
-                      >
-                        {lead.email}
-                      </a>
-                    </div>
+                    {lead.description && (
+                      <div className="mt-auto pt-4 border-t border-[var(--glass-border)] font-[family-name:var(--font-body)] text-xs text-[var(--text-secondary)] leading-relaxed">
+                        <ReactMarkdown>{lead.description}</ReactMarkdown>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

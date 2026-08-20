@@ -81,12 +81,16 @@ To deploy to Cloudflare Pages:
 13. **Branch Pruning & Cleanup (MANDATORY):**
     - Always delete local and remote branches immediately upon merging PRs or closing issues (`git branch -d <branch>`, `git remote prune origin`, `npm run branch:prune`).
     - Keep git workspace clean with zero stale feature branches lingering after completion.
-14. **Direct Issue Closing on Confident Verification (MANDATORY):**
-    - For issues that the agent can conclusively verify independently (e.g., automated browser tests pass, visual screenshot confirmation, deterministic type/build checks), **directly close the issue** with a clear completion comment instead of leaving it in `status:awaiting-review`.
+14. **Direct Issue Closing & Visual Screenshot Verification (MANDATORY):**
+    - For any visual, styling, layout, or interactive UI issue, the agent **MUST** capture and inspect a Playwright browser screenshot (including hover/active states) before closing.
+    - For issues conclusively verified independently via screenshot, unit tests, and build checks, **directly close the issue** with a completion comment detailing the verification.
     - Only leave in `status:awaiting-review` if human verification/copy sign-off is genuinely required.
 15. **Production Benchmarks & Optimization Checklist (MANDATORY):**
     - Adhere strictly to the targets in `PRODUCTION_STANDARDS.md` (LCP ≤ 2.5s, INP ≤ 200ms, CLS ≤ 0.1, WCAG 2.2 AA accessibility, zero bundle secrets, canonical SEO metadata).
     - Always validate changes through the 5-step suite (`tsc`, `vitest`, `vite build`, `playwright`, `audit_sanity.py`).
+16. **Zero Mock / Fake Status Indicators (MANDATORY):**
+    - All committees and branches on the website are active by default. Never introduce hardcoded mock operational statuses (e.g. "RUNNING", "STABLE", "ACTIVE", "ONLINE") or fake status indicator dots.
+    - When deprecating status fields, ensure complete removal across all components, hero bento grids, and ticker racks.
 
 ## 📁 Key Files
 

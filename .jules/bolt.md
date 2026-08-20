@@ -25,3 +25,6 @@
 ## 2026-08-10 - Synchronous Scroll Blocking
 **Learning:** Binding scroll event listeners without `{ passive: true }` blocks the main thread from scrolling the page until the event handler completes, causing jank and layout thrashing, especially when components update layout state on scroll.
 **Action:** Always add `{ passive: true }` to `addEventListener('scroll')` to allow the browser to scroll smoothly independently of script execution.
+## 2026-08-20 - Memoize repetitive components in large lists
+**Learning:** When rendering dozens of cards (e.g., Leaders, Partners, Events) within loops, failing to memoize the card components and stabilize their callback props causes severe re-render cascades when unrelated state updates occur.
+**Action:** Always wrap heavy list item components in React.memo() and stabilize all callbacks passed as props (e.g., using useCallback) to ensure efficient list virtualization and rendering.
