@@ -164,6 +164,7 @@ export interface SiteSettings {
   paymentUrl?: string;
   calendarUrl?: string;
   calendarId?: string;
+  calendarIcalUrl?: string;
   partnersHeroTitle?: string;
   partnersHeroSubtitle?: string;
   partnersProspectusUrl?: string;

@@ -112,6 +112,17 @@
   border-radius: 2px;
 }
 
+.btn-primary:focus-visible,
+.btn-ghost:focus-visible,
+.btn-gold:focus-visible,
+button:focus-visible,
+a.btn-primary:focus-visible,
+a.btn-ghost:focus-visible {
+  outline: 2px solid var(--electric-blue);
+  outline-offset: 3px;
+  box-shadow: 0 0 12px rgba(0, 98, 155, 0.6);
+}
+
 /* ─── Navigation ──────────────────────────────────── */
 .nav-link {
   position: relative;

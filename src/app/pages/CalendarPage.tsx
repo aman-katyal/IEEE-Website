@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronLeft, Calendar as CalendarIcon, ExternalLink, Info } from "lucide-react";
+import { ChevronLeft, Calendar as CalendarIcon, ExternalLink, Download, Info } from "lucide-react";
 import { Link } from "react-router";
 import { useTheme } from "next-themes";
 import { useSiteSettings } from "../../hooks/useSanityData";
@@ -16,6 +16,7 @@ export function CalendarPage() {
   const calendarId = settings?.calendarId || "7e80819a448e91ef81721772e0c6d9236076b45ad51343474265c1b7d4a363f1%40group.calendar.google.com";
   const calendarBaseUrl = settings?.calendarUrl || `https://calendar.google.com/calendar/embed?src=${calendarId}&ctz=America%2FIndiana%2FIndianapolis&color=%23${calendarColor}`;
   const subscribeUrl = `https://calendar.google.com/calendar/u/0/r?cid=${calendarId}`;
+  const icalUrl = settings?.calendarIcalUrl || `https://calendar.google.com/calendar/ical/${calendarId}/public/basic.ics`;
 
   // CSS Filter to make Google Calendar look dark
   const darkCalendarFilter = "invert(90%) hue-rotate(180deg) brightness(1.1) contrast(90%)";
@@ -125,16 +126,28 @@ export function CalendarPage() {
               Click on an event to see more details and add it to your own calendar.
             </p>
 
-            <a
-              href={subscribeUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-primary"
-              style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }}
-            >
-              <ExternalLink size={16} />
-              Subscribe to Calendar
-            </a>
+            <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", alignItems: "center" }}>
+              <a
+                href={subscribeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary"
+                style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }}
+              >
+                <ExternalLink size={16} />
+                Subscribe to Calendar
+              </a>
+              <a
+                href={icalUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-ghost"
+                style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }}
+              >
+                <Download size={16} />
+                Export .iCal / .ics
+              </a>
+            </div>
           </div>
         </div>
 

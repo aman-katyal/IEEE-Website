@@ -50,9 +50,13 @@ describe('CalendarPage', () => {
 
     expect(screen.getByText('Back to Home')).toBeInTheDocument();
     expect(screen.getByText('Subscribe to Calendar')).toBeInTheDocument();
+    expect(screen.getByText(/Export \.iCal \/ \.ics/i)).toBeInTheDocument();
 
     const subscribeLink = screen.getByRole('link', { name: /Subscribe to Calendar/i });
     expect(subscribeLink).toHaveAttribute('href', expect.stringContaining('7e80819a448e91ef81721772e0c6d9236076b45ad51343474265c1b7d4a363f1'));
+
+    const icalLink = screen.getByRole('link', { name: /Export \.iCal \/ \.ics/i });
+    expect(icalLink).toHaveAttribute('href', expect.stringContaining('basic.ics'));
 
     const iframes = container.querySelectorAll('iframe');
     expect(iframes.length).toBe(2);
