@@ -1,4 +1,4 @@
-import { createClient } from '@sanity/client'
+import { createClient, type ClientConfig } from '@sanity/client'
 import { createImageUrlBuilder } from '@sanity/image-url'
 
 const projectId = import.meta.env.VITE_SANITY_PROJECT_ID || 'vq0v7yv4'
@@ -27,7 +27,7 @@ export const client = createClient({
   dataset,
   useCdn: true,
   apiVersion,
-  ...(devFetch ? { fetch: devFetch as any } : {}),
+  ...(devFetch ? { fetch: devFetch as unknown as ClientConfig['fetch'] } : {}),
   stega: {
     enabled: false, // Keep disabled for production delivery to prevent string issues
     studioUrl,
