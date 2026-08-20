@@ -100,6 +100,21 @@ To deploy to Cloudflare Pages:
 19. **Standardized Tooling Over Ad-hoc Scripts (MANDATORY):**
     - **NEVER** write one-off scratch scripts for standard repository actions (creating/closing issues, listing PRs, branch cleanup, running builds).
     - **ALWAYS** invoke existing repository tooling (`python -m gh_tool`, `npm run issue:*`, `npm run pr:*`, `npm run branch:prune`) directly.
+20. **Zero GitHub Actions / Workflows (MANDATORY):**
+    - **NEVER** create, commit, or configure `.github/workflows/` files.
+    - All compilation, test suites, bundle builds, PR linting, and issue validation MUST run 100% locally via CLI (`npx tsc`, `npm test`, `npm run build`, `python -m gh_tool`).
+
+## 🏛️ Three Tiers of Customization
+
+To maintain strict codebase hygiene and prevent context bloating, repository knowledge is structured across three distinct tiers:
+
+1. **Tier 1 — Invariant Rules (`GEMINI.md`):**
+   * High-level, non-negotiable constraints injected on every prompt (e.g. Zero GitHub Actions, atomic commits, strict typing).
+   * Kept strictly concise, high-signal, and free of procedural code/scripts.
+2. **Tier 2 — Modular Skills (`.agents/skills/<name>/SKILL.md`):**
+   * Step-by-step procedures, cheatsheets, and domain-specific workflows loaded dynamically only when relevant (e.g. `github-issues`, `boilerbooks-finance`, `ui-ux-testing`).
+3. **Tier 3 — Deterministic Tools (`.agents/tools/` & `scripts/`):**
+   * Tested, executable Python/CLI scripts (e.g. `gh_tool`, `audit_sanity.py`, migration runners) ensuring consistent execution without ad-hoc guesswork.
 
 ## 📁 Key Files
 
