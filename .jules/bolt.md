@@ -25,3 +25,7 @@
 ## 2026-08-10 - Synchronous Scroll Blocking
 **Learning:** Binding scroll event listeners without `{ passive: true }` blocks the main thread from scrolling the page until the event handler completes, causing jank and layout thrashing, especially when components update layout state on scroll.
 **Action:** Always add `{ passive: true }` to `addEventListener('scroll')` to allow the browser to scroll smoothly independently of script execution.
+
+## 2026-08-20 - Map Population Optimization
+**Learning:** When creating a Map from an array of objects, avoid intermediate array mapping operations which incur additional memory allocations and iteration overhead.
+**Action:** Iterate directly over the source array using `forEach` or `reduce` to populate the Map in a single pass.
