@@ -17,7 +17,16 @@ export const partner = defineType({
       name: 'domain',
       title: 'Domain',
       type: 'string',
-      description: 'e.g. intel.com (used for automated logo fetching)',
+      description: 'e.g. intel.com (used for automated logo fetching - do not include https:// or slashes)',
+      validation: (Rule) =>
+        Rule.custom((domain) => {
+          if (!domain) return true
+          const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-_.]+\.[a-zA-Z]{2,}$/
+          if (!domainRegex.test(domain) || domain.includes('://') || domain.includes('/')) {
+            return 'Please enter a clean domain name without protocols or slashes (e.g. intel.com, ti.com)'
+          }
+          return true
+        }),
     }),
     defineField({
       name: 'websiteUrl',

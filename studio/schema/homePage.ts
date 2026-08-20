@@ -94,20 +94,6 @@ export const homePage = defineType({
 
     // --- SYSTEM GROUP ---
     defineField({
-      name: 'semester',
-      title: 'Active Semester',
-      type: 'string',
-      group: 'system',
-      description: 'e.g., SP_2026',
-    }),
-    defineField({
-      name: 'sysUptime',
-      title: 'System Uptime Status',
-      type: 'string',
-      group: 'system',
-      description: 'e.g., ACTIVE, OFFLINE',
-    }),
-    defineField({
       name: 'hqLocation',
       title: 'HQ Location',
       type: 'string',
