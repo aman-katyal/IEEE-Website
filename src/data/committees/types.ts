@@ -31,19 +31,13 @@ export interface SocialLink {
   url: string;
 }
 
-export interface CustomSection {
-  title: string;
-  /** Supports plain text or markdown-like content */
-  content: string;
-}
-
 export interface ImageStyle {
   crop?: boolean; // true = cover, false = contain
   size?: "small" | "medium" | "large" | "full";
 }
 
 export interface JoinConfig {
-  /** 
+  /**
    * 'default' -> Links to /join
    * 'link' -> Links to a custom URL (Discord, etc.)
    * 'message' -> Shows a text message instead of a button
@@ -70,14 +64,38 @@ export interface HistoryItem {
   links?: { label: string; url: string }[];
 }
 
-export type CommitteeSection = 
-  | { type: "text"; title: string; content: string; image?: string; layout?: "top" | "left" | "right"; imageStyle?: ImageStyle }
-  | { type: "projects"; title: string; items: (CommitteeProject & { image?: string })[]; imageStyle?: ImageStyle }
+export type CommitteeSection =
+  | {
+      type: "text";
+      title: string;
+      content: string;
+      image?: string;
+      layout?: "top" | "left" | "right";
+      imageStyle?: ImageStyle;
+    }
+  | {
+      type: "projects";
+      title: string;
+      items: (CommitteeProject & { image?: string })[];
+      imageStyle?: ImageStyle;
+    }
   | { type: "gallery"; title: string; items: GalleryItem[] }
   | { type: "faq"; title: string; items: FAQ[] }
   | { type: "timeline" | "history"; title: string; items: HistoryItem[] }
-  | { type: "cta"; title: string; content: string; buttonText: string; buttonLink: string }
-  | { type: "contact"; title: string; name: string; email: string; role?: string };
+  | {
+      type: "cta";
+      title: string;
+      content: string;
+      buttonText: string;
+      buttonLink: string;
+    }
+  | {
+      type: "contact";
+      title: string;
+      name: string;
+      email: string;
+      role?: string;
+    };
 
 export interface Committee {
   /** URL slug — used in routes like /committee/rov */
@@ -91,7 +109,7 @@ export interface Committee {
   statusColor?: string;
   statusBg?: string;
   image: string;
-  
+
   /** Dynamic metrics (e.g. Members: 40, Founded: 2010) */
   metrics?: Metric[];
 
@@ -113,7 +131,6 @@ export interface Committee {
   recruitmentInfo?: string;
   meetingSchedule?: string;
   socialLinks?: SocialLink[];
-  customSections?: CustomSection[];
 }
 
 // Cornerstone (support) committees — shown separately on the site
