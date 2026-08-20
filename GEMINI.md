@@ -94,6 +94,12 @@ To deploy to Cloudflare Pages:
 17. **Proactive Issue Creation (MANDATORY):**
     - After conducting a codebase audit or identifying new actionable tasks, bugs, or feature ideas, the agent MUST proactively summarize them and explicitly offer to batch-create the corresponding GitHub issues.
     - If the user approves, leverage the `github-issues` skill (using `python -m gh_tool issue create` or `npm run issue:create`) to instantly file them with canonical labels.
+18. **Periodic Progress Checkpoints (MANDATORY):**
+    - When executing batches of tasks or working through multiple issues, provide a structured check-in every 1–2 issues.
+    - Summarize completed changes, verification results (`tsc`, `vitest`, `vite build`), and next intended actions before proceeding.
+19. **Standardized Tooling Over Ad-hoc Scripts (MANDATORY):**
+    - **NEVER** write one-off scratch scripts for standard repository actions (creating/closing issues, listing PRs, branch cleanup, running builds).
+    - **ALWAYS** invoke existing repository tooling (`python -m gh_tool`, `npm run issue:*`, `npm run pr:*`, `npm run branch:prune`) directly.
 
 ## 📁 Key Files
 
