@@ -25,3 +25,6 @@
 ## 2026-08-10 - Synchronous Scroll Blocking
 **Learning:** Binding scroll event listeners without `{ passive: true }` blocks the main thread from scrolling the page until the event handler completes, causing jank and layout thrashing, especially when components update layout state on scroll.
 **Action:** Always add `{ passive: true }` to `addEventListener('scroll')` to allow the browser to scroll smoothly independently of script execution.
+## 2024-06-25 - Redundant Map population allocations
+**Learning:** Using `Array.prototype.map` to create an intermediate array solely to iterate over it again with `Array.prototype.forEach` to populate a `Map` wastes CPU cycles and GC pressure.
+**Action:** Always populate Maps directly by iterating over the source collection using a single loop (`for`, `for...of`, or `reduce`), avoiding intermediate array allocations.

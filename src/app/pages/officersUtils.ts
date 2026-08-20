@@ -1,6 +1,10 @@
 import { Leader, LeaderReference, OfficersConfig } from "../../data/leadership";
 
-export const getOrderedLeaders = (leaders: Leader[], config: OfficersConfig | null | undefined, categoryId: string) => {
+export const getOrderedLeaders = (
+  leaders: Leader[],
+  config: OfficersConfig | null | undefined,
+  categoryId: string,
+) => {
   const categoryLeaders = leaders.filter((l: Leader) => {
     // Use explicit category if available
     if (l.category) return l.category === categoryId;
@@ -52,11 +56,11 @@ export const getOrderedLeaders = (leaders: Leader[], config: OfficersConfig | nu
 
   if (!orderArray || orderArray.length === 0) return categoryLeaders;
 
-  // Map _id from orderArray
-  const orderedIds = orderArray?.map((ref: LeaderReference) => ref._id) || [];
-
+  // Map _id from orderArray directly to their indices
   const orderMap = new Map<string, number>();
-  orderedIds.forEach((id: string, index: number) => orderMap.set(id, index));
+  for (let i = 0; i < orderArray.length; i++) {
+    orderMap.set(orderArray[i]._id, i);
+  }
 
   // Sort categoryLeaders based on orderedIds
   const sorted = categoryLeaders.sort((a, b) => {
