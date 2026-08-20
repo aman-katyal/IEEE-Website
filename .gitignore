@@ -54,3 +54,6 @@ graphify-out/
 **/graphify-out/
 .htpasswd
 coverage/
+!.agents/tools/gh_tool/
+!.agents/tools/gh_tool/__main__.py
+!.agents/tools/gh_tool/__init__.py
