@@ -91,6 +91,9 @@ To deploy to Cloudflare Pages:
 16. **Zero Mock / Fake Status Indicators (MANDATORY):**
     - All committees and branches on the website are active by default. Never introduce hardcoded mock operational statuses (e.g. "RUNNING", "STABLE", "ACTIVE", "ONLINE") or fake status indicator dots.
     - When deprecating status fields, ensure complete removal across all components, hero bento grids, and ticker racks.
+17. **Proactive Issue Creation (MANDATORY):**
+    - After conducting a codebase audit or identifying new actionable tasks, bugs, or feature ideas, the agent MUST proactively summarize them and explicitly offer to batch-create the corresponding GitHub issues.
+    - If the user approves, leverage the `github-issues` skill (using `python -m gh_tool issue create` or `npm run issue:create`) to instantly file them with canonical labels.
 
 ## 📁 Key Files
 
