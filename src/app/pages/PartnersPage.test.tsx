@@ -137,6 +137,14 @@ describe('PartnersPage', () => {
     );
 
     expect(screen.getByText('Texas Instruments')).toBeInTheDocument();
+    const logo = screen.getByRole('img', { name: /Texas Instruments logo/i });
+    expect(logo).toHaveAttribute('width', '180');
+    expect(logo).toHaveAttribute('height', '48');
+    expect(logo).toHaveAttribute('loading', 'lazy');
+    expect(logo).toHaveAttribute('decoding', 'async');
+
+    const websiteLink = screen.getByRole('link', { name: /Visit Texas Instruments \(Gold Partner\) website/i });
+    expect(websiteLink).toHaveAttribute('href', 'https://www.ti.com');
   });
 
   it('renders fallback content when settings are missing', () => {

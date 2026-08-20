@@ -541,8 +541,11 @@ function PartnerCard({
       {showLogo ? (
         <img
           src={logoSrc}
-          alt={partner.name}
+          alt={`${partner.name} logo`}
+          width={180}
+          height={48}
           loading="lazy"
+          decoding="async"
           onError={handleImageError}
           style={{
             maxHeight: "48px",
@@ -595,7 +598,7 @@ function PartnerCard({
         href={destinationUrl}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label={`Visit ${partner.name} website`}
+        aria-label={`Visit ${partner.name}${partner.tier ? ` (${partner.tier} Partner)` : ""} website`}
         style={{ display: "block", height: "100%", textDecoration: "none" }}
       >
         {cardContent}
