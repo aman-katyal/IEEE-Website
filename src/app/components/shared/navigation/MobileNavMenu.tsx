@@ -23,6 +23,7 @@ export function MobileNavMenu({
 
   return (
     <div
+      id="mobile-nav-menu"
       data-testid="mobile-nav-drawer"
       style={{
         background: "var(--boiler-black)",

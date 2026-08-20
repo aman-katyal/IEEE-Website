@@ -50,6 +50,8 @@ describe('Layout', () => {
     expect(screen.getByTestId('mock-navigation')).toBeInTheDocument();
     expect(screen.getByTestId('mock-footer')).toBeInTheDocument();
     expect(screen.getByTestId('mock-outlet')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /skip to main content/i })).toHaveAttribute('href', '#main-content');
+    expect(screen.getByRole('main')).toHaveAttribute('id', 'main-content');
   });
 
   it('scrolls to top on route change', async () => {

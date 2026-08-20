@@ -201,12 +201,14 @@ describe("Navigation", () => {
     renderNav();
 
     const toggleButton = screen.getByRole("button", { name: /open navigation menu/i });
+    expect(toggleButton).toHaveAttribute("aria-expanded", "false");
+    expect(toggleButton).toHaveAttribute("aria-controls", "mobile-nav-menu");
     expect(screen.queryByTestId("mobile-nav-drawer")).not.toBeInTheDocument();
 
     // Open drawer
     fireEvent.click(toggleButton);
-    expect(screen.getByRole("button", { name: /close navigation menu/i })).toBeInTheDocument();
-    expect(screen.getByTestId("mobile-nav-drawer")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /close navigation menu/i })).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByTestId("mobile-nav-drawer")).toHaveAttribute("id", "mobile-nav-menu");
 
     // Mobile drawer renders links & dropdown items
     expect(screen.getByText("About Us")).toBeInTheDocument();

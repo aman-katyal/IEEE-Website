@@ -244,6 +244,7 @@ export function Navigation() {
               onClick={() => setMenuOpen(!menuOpen)}
               aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
               aria-expanded={menuOpen}
+              aria-controls="mobile-nav-menu"
               style={{
                 background: isLight ? "rgba(0, 0, 0, 0.05)" : "rgba(128, 128, 128, 0.1)",
                 border: "1px solid var(--glass-border)",
