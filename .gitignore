@@ -49,6 +49,7 @@ commit_message.txt
 
 # Antigravity agent configurations & design system files
 .agents/
+!.agents/tools/gh_tool/
 design-system/
 graphify-out/
 **/graphify-out/
