@@ -4,7 +4,7 @@
  */
 
 // Status Enums & Unions
-export type PurchaseRequestStatus = 'PENDING' | 'APPROVED' | 'REIMBURSED' | 'REJECTED';
+export type PurchaseRequestStatus = 'PENDING' | 'APPROVED' | 'PURCHASED' | 'REIMBURSED' | 'REJECTED';
 export type BankStatus = 'Active' | 'Inactive' | 'Read-Only';
 export type DuesStatus = 'Active' | 'Inactive';
 export type PaymentMethod = 'TooCOOL' | 'Cash' | 'Card' | 'Other';
