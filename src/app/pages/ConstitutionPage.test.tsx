@@ -3,40 +3,27 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ConstitutionPage } from './ConstitutionPage';
 import { MemoryRouter } from 'react-router';
 import * as useSanityData from '../../hooks/useSanityData';
+import * as nextThemes from 'next-themes';
 
-// Mock hooks
+// Mock dependencies
 vi.mock('../../hooks/useSanityData', () => ({
   useSiteSettings: vi.fn(),
 }));
 
 vi.mock('next-themes', () => ({
-  useTheme: vi.fn(() => ({ theme: 'dark' })),
+  useTheme: vi.fn(),
 }));
 
 describe('ConstitutionPage', () => {
-  const mockSettings = {
-    branchConstitution: {
-      name: 'Custom Branch Constitution',
-      description: 'Custom foundational governing document.',
-      pdfUrl: '/custom-branch.pdf'
-    },
-    committeeBylaws: [
-      { name: 'Custom Committee 1', pdfUrl: '/custom-committee-1.pdf' },
-      { name: 'Custom Committee 2', pdfUrl: '/custom-committee-2.pdf' }
-    ]
-  };
-
   beforeEach(() => {
     vi.clearAllMocks();
 
-    (useSanityData.useSiteSettings as any).mockReturnValue({
-      settings: mockSettings,
-      loading: false,
-      error: null
+    (nextThemes.useTheme as any).mockReturnValue({
+      theme: 'light',
     });
   });
 
-  it('renders loading state when data is fetching', () => {
+  it('renders loading state initially', () => {
     (useSanityData.useSiteSettings as any).mockReturnValue({
       settings: null,
       loading: true,
@@ -49,25 +36,46 @@ describe('ConstitutionPage', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText(/Loading.../i)).toBeInTheDocument();
+    expect(screen.getByText('Loading...')).toBeInTheDocument();
   });
 
   it('renders correctly with custom site settings', () => {
+    const mockSettings = {
+      branchConstitution: {
+        name: 'Custom Branch Constitution',
+        description: 'Custom description for the constitution.',
+        pdfUrl: '/custom-constitution.pdf'
+      },
+      committeeBylaws: [
+        { name: 'Custom Committee 1', pdfUrl: '/custom-committee-1.pdf' },
+        { name: 'Custom Committee 2', pdfUrl: '/custom-committee-2.pdf' }
+      ]
+    };
+
+    (useSanityData.useSiteSettings as any).mockReturnValue({
+      settings: mockSettings,
+      loading: false,
+      error: null
+    });
+
     render(
       <MemoryRouter>
         <ConstitutionPage />
       </MemoryRouter>
     );
 
-    // Header
-    expect(screen.getByText('Constitution and')).toBeInTheDocument();
-
-    // Core Constitution
+    // Verify Core Constitution Section
+    expect(screen.getByText('Branch Constitution')).toBeInTheDocument();
     expect(screen.getByText('Custom Branch Constitution')).toBeInTheDocument();
-    expect(screen.getByText('Custom foundational governing document.')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /View PDF/i })).toHaveAttribute('href', '/custom-branch.pdf');
+    expect(screen.getByText('Custom description for the constitution.')).toBeInTheDocument();
+    
+    // Check View PDF button
+    const viewPdfBtn = screen.getByRole('link', { name: /View PDF/i });
+    expect(viewPdfBtn).toBeInTheDocument();
+    expect(viewPdfBtn).toHaveAttribute('href', '/custom-constitution.pdf');
 
-    // Committee Bylaws
+    // Verify Committee Bylaws Section
+    expect(screen.getByText('Technical Committee Bylaws')).toBeInTheDocument();
     expect(screen.getByText('Custom Committee 1')).toBeInTheDocument();
     const link1 = screen.getAllByRole('link').find(el => el.getAttribute('href') === '/custom-committee-1.pdf');
     expect(link1).toBeInTheDocument();
@@ -77,7 +85,7 @@ describe('ConstitutionPage', () => {
     expect(link2).toBeInTheDocument();
   });
 
-  it('renders fallback content when site settings are missing', () => {
+  it('renders cleanly without hardcoded fallback documents when site settings are empty', () => {
     (useSanityData.useSiteSettings as any).mockReturnValue({
       settings: {},
       loading: false,
@@ -90,17 +98,7 @@ describe('ConstitutionPage', () => {
       </MemoryRouter>
     );
 
-    // Core Constitution Fallback
-    expect(screen.getByText('Purdue IEEE Constitution')).toBeInTheDocument();
-    expect(screen.getByText('The foundational governing document of the Purdue IEEE Student Branch.')).toBeInTheDocument();
-
-    // Committee Bylaws Fallbacks
-    expect(screen.getByText('CSociety Bylaws')).toBeInTheDocument();
-    expect(screen.getByText('EMBS Bylaws')).toBeInTheDocument();
-    expect(screen.getByText('MTT-S Bylaws')).toBeInTheDocument();
-    expect(screen.getByText('SMC Bylaws')).toBeInTheDocument();
-    expect(screen.getByText('Racing Bylaws')).toBeInTheDocument();
-    expect(screen.getByText('ROV Bylaws')).toBeInTheDocument();
-    expect(screen.getByText('Software Saturdays Bylaws')).toBeInTheDocument();
+    expect(screen.queryByText('Purdue IEEE Constitution')).not.toBeInTheDocument();
+    expect(screen.queryByText('CSociety Bylaws')).not.toBeInTheDocument();
   });
 });

@@ -42,7 +42,7 @@ describe('JoinCTA', () => {
     </MemoryRouter>
   );
 
-  it('renders fallback benefits and default discord URL when settings are missing', () => {
+  it('renders correctly when settings are missing without hardcoded fallback lists', () => {
     (sanityHooks.useCommittees as any).mockReturnValue({
       committees: [{ id: '1' }, { id: '2' }, { id: '3' }],
     });
@@ -52,14 +52,9 @@ describe('JoinCTA', () => {
 
     renderComponent();
 
-    // Check fallback benefits
-    expect(screen.getByText('Access to 3 technical committees')).toBeInTheDocument();
-    expect(screen.getByText('Industry networking & recruitment events')).toBeInTheDocument();
-    expect(screen.getByText('Hands-on workshops & training')).toBeInTheDocument();
-
-    // Check default discord URL
-    const discordLink = screen.getByRole('link', { name: /Jump into Discord/i });
-    expect(discordLink).toHaveAttribute('href', 'https://discord.gg/sPPQequ9ws');
+    // No hardcoded fallback benefits rendered
+    expect(screen.queryByText('Access to 3 technical committees')).not.toBeInTheDocument();
+    expect(screen.queryByText('Industry networking & recruitment events')).not.toBeInTheDocument();
   });
 
   it('renders custom benefits and custom discord URL from settings', () => {
@@ -78,7 +73,6 @@ describe('JoinCTA', () => {
     // Check custom benefits
     expect(screen.getByText('Custom benefit 1')).toBeInTheDocument();
     expect(screen.getByText('Custom benefit 2')).toBeInTheDocument();
-    expect(screen.queryByText('Industry networking & recruitment events')).not.toBeInTheDocument();
 
     // Check custom discord URL
     const discordLink = screen.getByRole('link', { name: /Jump into Discord/i });

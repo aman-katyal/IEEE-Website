@@ -7,21 +7,8 @@ import { useSiteSettings, useCommittees } from "../../../hooks/useSanityData";
 export function JoinCTA() {
   const navigate = useNavigate();
   const { settings } = useSiteSettings();
-  const { committees } = useCommittees();
 
-  const fallbackBenefits = useMemo(
-    () => [
-      `Access to ${committees.length} technical committees`,
-      "Industry networking & recruitment events",
-      "Hands-on workshops & training",
-      "National competition opportunities",
-      "Research lab access & mentorship",
-      "IEEE Student Membership discount",
-    ],
-    [committees.length],
-  );
-
-  const benefits = settings?.ctaBenefits || fallbackBenefits;
+  const benefits = settings?.ctaBenefits || [];
   const discordUrl = settings?.discordUrl || "https://discord.gg/sPPQequ9ws";
 
   return (

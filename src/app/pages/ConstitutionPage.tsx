@@ -16,19 +16,8 @@ export function ConstitutionPage() {
     return <div style={{ minHeight: "100vh", display: "flex", justifyContent: "center", alignItems: "center", background: "var(--boiler-black)", color: "var(--text-primary)" }}>Loading...</div>;
   }
 
-  const coreDocs = settings?.branchConstitution ? [settings.branchConstitution] : [
-    { name: "Purdue IEEE Constitution", description: "The foundational governing document of the Purdue IEEE Student Branch.", pdfUrl: "/documents/constitution/Constitution_of_IEEE.pdf" },
-  ];
-
-  const committeeBylaws = settings?.committeeBylaws || [
-    { name: "CSociety Bylaws", pdfUrl: "/documents/constitution/csociety_bylaws.pdf" },
-    { name: "EMBS Bylaws", pdfUrl: "/documents/constitution/embs_bylaws.pdf" },
-    { name: "MTT-S Bylaws", pdfUrl: "/documents/constitution/mtt-s_bylaws.pdf" },
-    { name: "SMC Bylaws", pdfUrl: "/documents/constitution/IEEE_ByLaws_SMC_at_Purdue.pdf" },
-    { name: "Racing Bylaws", pdfUrl: "/documents/constitution/racing_bylaws.pdf" },
-    { name: "ROV Bylaws", pdfUrl: "/documents/constitution/rov_bylaws.pdf" },
-    { name: "Software Saturdays Bylaws", pdfUrl: "/documents/constitution/swsat_bylaws.pdf" },
-  ];
+  const coreDocs = settings?.branchConstitution ? [settings.branchConstitution] : [];
+  const committeeBylaws = settings?.committeeBylaws || [];
 
   return (
     <section

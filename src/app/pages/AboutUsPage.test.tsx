@@ -45,7 +45,7 @@ describe('AboutUsPage', () => {
     expect(window.scrollTo).toHaveBeenCalledWith(0, 0);
   });
 
-  it('renders fallback content when no CMS data is provided', () => {
+  it('renders clean structure when no CMS data is provided', () => {
     (useSanityData.useAboutPage as any).mockReturnValue({
       data: null,
       loading: false,
@@ -57,15 +57,12 @@ describe('AboutUsPage', () => {
       </MemoryRouter>
     );
 
-    // Static sections (heritage & impact)
+    // Static layout sections (heritage & impact)
     expect(screen.getByText('Established 1903')).toBeInTheDocument();
     expect(screen.getByText('Professional Growth')).toBeInTheDocument();
 
-    // Fallback dynamic sections
-    // Note: title is broken into spans, so we can test the h2 role with its text content
-    // use a custom matcher since text is split across multiple spans
-    expect(screen.getByText((content, element) => element?.textContent === 'At Purdue, we strive to be the best ')).toBeInTheDocument();
-    expect(screen.getByText((content, element) => element?.textContent === 'Applying academics to extracurriculars ')).toBeInTheDocument();
+    // No hardcoded fallback sections
+    expect(screen.queryByText((_, element) => element?.textContent === 'At Purdue, we strive to be the best ')).not.toBeInTheDocument();
   });
 
   it('renders custom CMS content when provided', () => {
@@ -91,12 +88,7 @@ describe('AboutUsPage', () => {
     );
 
     expect(screen.getByText('// Custom Eyebrow')).toBeInTheDocument();
-
-    expect(screen.getByText((content, element) => element?.textContent === 'Custom Title Here ')).toBeInTheDocument();
-
+    expect(screen.getByText((_, element) => element?.textContent === 'Custom Title Here ')).toBeInTheDocument();
     expect(screen.getByText('Custom content body here.')).toBeInTheDocument();
-
-    // Fallback content shouldn't be present
-    expect(screen.queryByText((content, element) => element?.textContent === 'At Purdue, we strive to be the best ')).not.toBeInTheDocument();
   });
 });

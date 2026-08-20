@@ -62,13 +62,6 @@ const PLATFORM_ICONS: Record<string, any> = {
   x: Twitter,
 };
 
-const FALLBACK_SOCIALS = [
-  { platform: "github", url: "https://github.com/PurdueIEEE" },
-  { platform: "linkedin", url: "https://linkedin.com/company/purdue-ieee" },
-  { platform: "instagram", url: "https://instagram.com/purdueieee" },
-  { platform: "twitter", url: "https://twitter.com/purdueieee" },
-];
-
 export function Footer() {
   const { committees } = useCommittees();
   const { settings } = useSiteSettings();
@@ -97,10 +90,7 @@ export function Footer() {
     return FOOTER_LINKS;
   }, [settings?.discordUrl]);
 
-  const currentSocials =
-    settings?.socialLinks && settings.socialLinks.length > 0
-      ? settings.socialLinks
-      : FALLBACK_SOCIALS;
+  const currentSocials = settings?.socialLinks || [];
 
   const footerCommitteeLinks = useMemo(() => {
     return committees.map((c) => ({

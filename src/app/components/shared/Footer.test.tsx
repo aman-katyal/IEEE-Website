@@ -90,7 +90,7 @@ describe('Footer', () => {
     expect(linkedinLink).toHaveAttribute('href', 'https://linkedin.com/custom-linkedin');
   });
 
-  it('renders fallback social links when settings are missing', () => {
+  it('handles missing social links gracefully when settings are missing', () => {
     (useSanityData.useSiteSettings as any).mockReturnValue({
       settings: {},
       loading: false,
@@ -103,8 +103,7 @@ describe('Footer', () => {
       </MemoryRouter>
     );
 
-    const githubLink = screen.getByLabelText('github');
-    expect(githubLink).toHaveAttribute('href', 'https://github.com/PurdueIEEE');
+    expect(screen.queryByLabelText('github')).not.toBeInTheDocument();
   });
 
   it('renders committee links', () => {

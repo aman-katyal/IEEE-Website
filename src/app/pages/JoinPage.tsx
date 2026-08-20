@@ -9,26 +9,6 @@ import { useEffect } from "react";
 import { useTheme } from "next-themes";
 import { useSiteSettings } from "../../hooks/useSanityData";
 
-const DEFAULT_DUES_BENEFITS = [
-  "Access to industry networks and exclusive company info sessions",
-  "Trip expense coverage for committee competitions and social events",
-  "Free food at General Assemblies",
-  "Recognition for contributed work with final projects",
-];
-
-const DEFAULT_OPTIONS = [
-  {
-    name: "Standard Membership",
-    subtitle: "Annual dues — Purdue West Lafayette campus",
-    price: "$10 / year",
-  },
-  {
-    name: "Membership + Shirt",
-    subtitle: "Annual dues with official IEEE branch shirt",
-    price: "$15 / year",
-  },
-];
-
 export function JoinPage() {
   const { theme } = useTheme();
   const isLight = theme === "light";
@@ -45,16 +25,11 @@ export function JoinPage() {
     window.scrollTo(0, 0);
   }, []);
 
-  const duesBenefits = settings?.duesBenefits || DEFAULT_DUES_BENEFITS;
-  const discordUrl = settings?.discordUrl || "https://discord.gg/sPPQequ9ws";
-  const paymentUrl =
-    settings?.paymentUrl ||
-    "https://www.toocoolpurdue.com/TooCOOLPurdueWL/vECItemCatalogOrganizationItems/OrganizationItemsGallery.aspx";
-  const duesDescription =
-    settings?.duesDescription ||
-    'Purdue IEEE Student Branch requires payment of dues for membership. To pay, follow the link below and search for "IEEE" in the catalog search box. Payment gives access to:';
-
-  const duesOptions = settings?.duesOptions || DEFAULT_OPTIONS;
+  const duesBenefits = settings?.duesBenefits || [];
+  const discordUrl = settings?.discordUrl || "";
+  const paymentUrl = settings?.paymentUrl || "";
+  const duesDescription = settings?.duesDescription || "";
+  const duesOptions = settings?.duesOptions || [];
 
   if (loading) {
     return (
