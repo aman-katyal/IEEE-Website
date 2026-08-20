@@ -130,17 +130,13 @@ describe('Footer', () => {
     expect(screen.getByText(/All rights reserved/i)).toBeInTheDocument();
     
     const privacyLink = screen.getByText('Privacy Policy').closest('a');
-    expect(privacyLink).toHaveAttribute('href', 'https://www.ieee.org/security-privacy.html');
-    expect(privacyLink).toHaveAttribute('target', '_blank');
-    expect(privacyLink).toHaveAttribute('rel', 'noopener noreferrer');
+    expect(privacyLink).toHaveAttribute('href', '/privacy');
 
     const termsLink = screen.getByText('Terms of Use').closest('a');
-    expect(termsLink).toHaveAttribute('href', 'https://www.ieee.org/about/help/terms-conditions.html');
-    expect(termsLink).toHaveAttribute('target', '_blank');
+    expect(termsLink).toHaveAttribute('href', '/terms');
 
     const a11yLink = screen.getByText('Accessibility').closest('a');
-    expect(a11yLink).toHaveAttribute('href', 'https://www.ieee.org/accessibility-statement.html');
-    expect(a11yLink).toHaveAttribute('target', '_blank');
+    expect(a11yLink).toHaveAttribute('href', '/accessibility');
   });
 
   it('renders navigation columns', () => {

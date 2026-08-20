@@ -50,15 +50,15 @@ const PLATFORM_ICONS: Record<string, any> = {
 const LEGAL_LINKS = [
   {
     label: "Privacy Policy",
-    href: "https://www.ieee.org/security-privacy.html",
+    href: "/privacy",
   },
   {
     label: "Terms of Use",
-    href: "https://www.ieee.org/about/help/terms-conditions.html",
+    href: "/terms",
   },
   {
     label: "Accessibility",
-    href: "https://www.ieee.org/accessibility-statement.html",
+    href: "/accessibility",
   },
 ];
 
@@ -418,11 +418,9 @@ export function Footer() {
 
           <div style={{ display: "flex", gap: "24px", alignItems: "center" }}>
             {LEGAL_LINKS.map((item) => (
-              <a
+              <Link
                 key={item.label}
-                href={item.href}
-                target="_blank"
-                rel="noopener noreferrer"
+                to={item.href}
                 style={{
                   fontFamily: "var(--font-mono)",
                   fontSize: "0.58rem",
@@ -433,16 +431,16 @@ export function Footer() {
                   opacity: isLight ? 1 : 0.8,
                 }}
                 onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.color =
+                  (e.currentTarget as HTMLElement).style.color =
                     "var(--text-secondary)";
                 }}
                 onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.color =
+                  (e.currentTarget as HTMLElement).style.color =
                     "var(--text-muted)";
                 }}
               >
                 {item.label}
-              </a>
+              </Link>
             ))}
           </div>
         </div>

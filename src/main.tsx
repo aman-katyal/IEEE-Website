@@ -20,6 +20,9 @@ const JoinPage = React.lazy(() => import('./app/pages/JoinPage').then(m => ({ de
 const AboutUsPage = React.lazy(() => import('./app/pages/AboutUsPage').then(m => ({ default: m.AboutUsPage })));
 const PartnersPage = React.lazy(() => import('./app/pages/PartnersPage').then(m => ({ default: m.PartnersPage })));
 const ConstitutionPage = React.lazy(() => import('./app/pages/ConstitutionPage').then(m => ({ default: m.ConstitutionPage })));
+const PrivacyPage = React.lazy(() => import('./app/pages/PrivacyPage').then(m => ({ default: m.PrivacyPage })));
+const TermsPage = React.lazy(() => import('./app/pages/TermsPage').then(m => ({ default: m.TermsPage })));
+const AccessibilityPage = React.lazy(() => import('./app/pages/AccessibilityPage').then(m => ({ default: m.AccessibilityPage })));
 const NotFoundPage = React.lazy(() => import('./app/pages/NotFoundPage').then(m => ({ default: m.NotFoundPage })));
 
 const queryClient = new QueryClient({
@@ -47,6 +50,9 @@ const router = createBrowserRouter([
           { path: "/join", element: <PageTransition><Suspense fallback={<PageSkeleton />}><JoinPage /></Suspense></PageTransition> },
           { path: "/partners", element: <PageTransition><Suspense fallback={<PageSkeleton />}><PartnersPage /></Suspense></PageTransition> },
           { path: "/constitution", element: <PageTransition><Suspense fallback={<PageSkeleton />}><ConstitutionPage /></Suspense></PageTransition> },
+          { path: "/privacy", element: <PageTransition><Suspense fallback={<PageSkeleton />}><PrivacyPage /></Suspense></PageTransition> },
+          { path: "/terms", element: <PageTransition><Suspense fallback={<PageSkeleton />}><TermsPage /></Suspense></PageTransition> },
+          { path: "/accessibility", element: <PageTransition><Suspense fallback={<PageSkeleton />}><AccessibilityPage /></Suspense></PageTransition> },
           { path: "*", element: <PageTransition><Suspense fallback={<PageSkeleton />}><NotFoundPage /></Suspense></PageTransition> },
         ]
       }
