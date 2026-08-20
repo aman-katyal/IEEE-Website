@@ -1,0 +1,6 @@
+{
+  "title": "🧹 Remove unused STATIC_PARTNERS export",
+  "body": "🎯 **What:** Deleted `src/data/partners.ts` which contained an unused `STATIC_PARTNERS` export, and removed its outdated reference in a python tooling script (`.agents/tools/audit_sanity.py`).\n💡 **Why:** Removing completely unused files reduces technical debt and cognitive load for future maintainers.\n✅ **Verification:** Ran full test suite to ensure no components actually relied on the static data.\n✨ **Result:** Cleaner source tree with no dead data exports.",
+  "head": "jules-11264549790739478015-77421a4b",
+  "base": "main"
+}
