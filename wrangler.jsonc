@@ -15,5 +15,13 @@
   "vars": {
     "VITE_SANITY_PROJECT_ID": "vq0v7yv4",
     "VITE_SANITY_DATASET": "production"
-  }
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "boilerbooks",
+      "database_id": "boilerbooks-db",
+      "migrations_dir": "migrations"
+    }
+  ]
 }
