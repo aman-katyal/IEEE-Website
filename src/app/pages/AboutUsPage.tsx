@@ -48,6 +48,13 @@ export interface AboutSectionData {
   colorTheme?: "gold" | string;
 }
 
+const REVEAL_PROPS = {
+  initial: { opacity: 0, y: 40 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: "-100px" },
+  transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as const },
+};
+
 export function AboutUsPage() {
   const { data, loading } = useAboutPage();
   const { theme } = useTheme();
@@ -56,13 +63,6 @@ export function AboutUsPage() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
-  const revealProps = {
-    initial: { opacity: 0, y: 40 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, margin: "-100px" },
-    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as const },
-  };
 
   const sections = data?.sections || [];
 
@@ -259,7 +259,7 @@ export function AboutUsPage() {
                 maxWidth: section.image ? "none" : "800px",
                 margin: section.image ? "0 auto 120px" : "0 auto 120px",
               }}
-              {...revealProps}
+              {...REVEAL_PROPS}
             >
               <div style={{ order: section.layout === "reversed" ? 2 : 1 }}>
                 <p className="section-eyebrow" style={{ marginBottom: "16px" }}>

@@ -8,6 +8,13 @@ import {
   Partner,
 } from "../../hooks/useSanityData";
 
+const REVEAL_PROPS = {
+  initial: { opacity: 0, y: 20 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as const },
+};
+
 export function PartnersPage() {
   const { theme } = useTheme();
   const isLight = theme === "light";
@@ -87,13 +94,6 @@ export function PartnersPage() {
     settings?.partnersHeroSubtitle ||
     "Our partners provide the resources, mentorship, and opportunities that allow our members to push the boundaries of what's possible in engineering.";
 
-  const revealProps = {
-    initial: { opacity: 0, y: 20 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true },
-    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as const },
-  };
-
   return (
     <div
       style={{
@@ -124,7 +124,7 @@ export function PartnersPage() {
             zIndex: 10,
           }}
         >
-          <motion.div {...revealProps}>
+          <motion.div {...REVEAL_PROPS}>
             <p className="section-eyebrow" style={{ marginBottom: "16px" }}>
               // Corporate Relations
             </p>
@@ -244,14 +244,14 @@ export function PartnersPage() {
                   margin: 0,
                 }}
               >
-                Gold Partner status is awarded by IEEE to student branches
-                that demonstrate exceptional technical activity, community
-                impact, and organizational excellence. Purdue IEEE has earned
-                this recognition through consistent leadership in engineering
+                Gold Partner status is awarded by IEEE to student branches that
+                demonstrate exceptional technical activity, community impact,
+                and organizational excellence. Purdue IEEE has earned this
+                recognition through consistent leadership in engineering
                 education, record member engagement, and nationally recognized
                 technical projects. Gold Partners receive premium placement at
-                our recruiting events and direct access to our most
-                accomplished members.
+                our recruiting events and direct access to our most accomplished
+                members.
               </p>
             </div>
           </div>
@@ -315,7 +315,10 @@ export function PartnersPage() {
                       marginBottom: "32px",
                     }}
                   >
-                    <Shield style={{ color: "var(--text-secondary)" }} size={24} />
+                    <Shield
+                      style={{ color: "var(--text-secondary)" }}
+                      size={24}
+                    />
                     <h2
                       style={{
                         fontFamily: "var(--font-headline)",
@@ -517,7 +520,9 @@ function PartnerCard({
   };
 
   const showLogo = logoSrc && !logoError;
-  const destinationUrl = partner.websiteUrl || (partner.domain ? `https://${partner.domain}` : undefined);
+  const destinationUrl =
+    partner.websiteUrl ||
+    (partner.domain ? `https://${partner.domain}` : undefined);
 
   const cardContent = (
     <motion.div

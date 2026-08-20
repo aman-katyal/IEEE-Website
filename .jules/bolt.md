@@ -25,3 +25,7 @@
 ## 2026-08-10 - Synchronous Scroll Blocking
 **Learning:** Binding scroll event listeners without `{ passive: true }` blocks the main thread from scrolling the page until the event handler completes, causing jank and layout thrashing, especially when components update layout state on scroll.
 **Action:** Always add `{ passive: true }` to `addEventListener('scroll')` to allow the browser to scroll smoothly independently of script execution.
+
+## 2024-08-20 - Memoization out of render
+**Learning:** Moving constants outside of component functions prevents unnecessary re-creations and is a simple performance win.
+**Action:** Lift `revealProps` out of `PartnersPage` and `AboutUsPage` to the module level.
