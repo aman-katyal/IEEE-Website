@@ -4,10 +4,13 @@
 export interface CommitteeProject {
   name: string;
   description: string;
+  shortDescription?: string;
+  longDescription?: string;
   flagship?: boolean;
   isFlagship?: boolean;
   image?: string;
   url?: string;
+  link?: string;
   tags?: string[];
 }
 

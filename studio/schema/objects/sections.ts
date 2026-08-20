@@ -55,8 +55,12 @@ export const projectsSection = defineType({
           name: 'projectItem',
           fields: [
             { name: 'name', type: 'string', title: 'Project Name' },
-            { name: 'description', type: 'text', title: 'Project Description' },
+            { name: 'description', type: 'text', title: 'Summary / Short Description (Shown on card)' },
+            { name: 'longDescription', type: 'text', title: 'Detailed Write-up (Shown in expanded modal, Markdown supported)' },
+            { name: 'url', type: 'url', title: 'Project Link / Longer Page (Opens in new tab)' },
             { name: 'image', type: 'image', title: 'Project Image', options: { hotspot: true } },
+            { name: 'flagship', type: 'boolean', title: 'Flagship Project' },
+            { name: 'tags', type: 'array', title: 'Tags / Technologies', of: [{ type: 'string' }] },
           ],
         },
       ],
