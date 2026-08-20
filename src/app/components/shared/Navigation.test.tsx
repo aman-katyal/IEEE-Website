@@ -251,6 +251,7 @@ describe("Navigation", () => {
 
     const eventsLink = screen.getByRole("link", { name: /^events/i, hidden: true });
     expect(eventsLink.style.color).toBe("var(--text-primary)");
+    expect(eventsLink).toHaveAttribute("aria-current", "page");
   });
 
   it("supports light mode styles without errors", () => {

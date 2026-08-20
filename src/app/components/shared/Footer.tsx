@@ -219,13 +219,16 @@ export function Footer() {
               {currentSocials.map((social: any) => {
                 const Icon =
                   PLATFORM_ICONS[social.platform.toLowerCase()] || ExternalLink;
+                const platformName =
+                  social.platform.charAt(0).toUpperCase() +
+                  social.platform.slice(1);
                 return (
                   <MagneticWrapper key={social.platform} strength={0.15}>
                     <a
                       href={social.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      aria-label={social.platform}
+                      aria-label={`Visit Purdue IEEE on ${platformName}`}
                       className="hover-glow-blue"
                       style={{
                         width: "44px",

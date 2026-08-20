@@ -37,6 +37,7 @@ export function NavDropdown({
         className="nav-link"
         aria-expanded={isOpen}
         aria-haspopup="true"
+        aria-current={isLinkActive ? "page" : undefined}
         style={{
           display: "flex",
           alignItems: "center",
@@ -104,6 +105,7 @@ export function NavDropdown({
           {link.label === "Committees" && (
             <a
               href="/committees"
+              aria-current={currentPath === "/committees" ? "page" : undefined}
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -149,6 +151,7 @@ export function NavDropdown({
                 <a
                   key={subItem.href}
                   href={subItem.href}
+                  aria-current={isSubItemActive ? "page" : undefined}
                   style={{
                     display: "block",
                     padding: "8px 12px",

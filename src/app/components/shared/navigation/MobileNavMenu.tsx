@@ -76,6 +76,7 @@ export function MobileNavMenu({
                   <a
                     key={subItem.href}
                     href={subItem.href}
+                    aria-current={currentPath === subItem.href ? "page" : undefined}
                     style={{
                       display: "block",
                       fontFamily: "var(--font-body)",
@@ -114,6 +115,7 @@ export function MobileNavMenu({
             <a
               key={link.href}
               href={link.href}
+              aria-current={currentPath === link.href ? "page" : undefined}
               style={{
                 display: "block",
                 fontFamily: "var(--font-body)",

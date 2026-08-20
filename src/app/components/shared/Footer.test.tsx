@@ -83,10 +83,10 @@ describe('Footer', () => {
       </MemoryRouter>
     );
 
-    const githubLink = screen.getByLabelText('github');
+    const githubLink = screen.getByLabelText(/Visit Purdue IEEE on Github/i);
     expect(githubLink).toHaveAttribute('href', 'https://github.com/custom-github');
 
-    const linkedinLink = screen.getByLabelText('linkedin');
+    const linkedinLink = screen.getByLabelText(/Visit Purdue IEEE on Linkedin/i);
     expect(linkedinLink).toHaveAttribute('href', 'https://linkedin.com/custom-linkedin');
   });
 
@@ -103,7 +103,7 @@ describe('Footer', () => {
       </MemoryRouter>
     );
 
-    expect(screen.queryByLabelText('github')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/Visit Purdue IEEE on Github/i)).not.toBeInTheDocument();
   });
 
   it('renders committee links', () => {

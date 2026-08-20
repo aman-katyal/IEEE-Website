@@ -53,6 +53,7 @@ export function DesktopNav({
             key={link.href}
             href={link.href}
             className="nav-link"
+            aria-current={currentPath === link.href ? "page" : undefined}
             style={{
               color:
                 currentPath === link.href
