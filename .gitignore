@@ -54,3 +54,4 @@ graphify-out/
 **/graphify-out/
 .htpasswd
 coverage/
+!.agents/tools/gh_tool/
