@@ -31,12 +31,6 @@ export interface SocialLink {
   url: string;
 }
 
-export interface CustomSection {
-  title: string;
-  /** Supports plain text or markdown-like content */
-  content: string;
-}
-
 export interface ImageStyle {
   crop?: boolean; // true = cover, false = contain
   size?: "small" | "medium" | "large" | "full";
@@ -113,7 +107,6 @@ export interface Committee {
   recruitmentInfo?: string;
   meetingSchedule?: string;
   socialLinks?: SocialLink[];
-  customSections?: CustomSection[];
 }
 
 // Cornerstone (support) committees — shown separately on the site

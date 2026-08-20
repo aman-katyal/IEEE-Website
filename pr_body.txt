@@ -1,0 +1,4 @@
+🎯 **What:** Removed the unused `CustomSection` interface definition from `src/data/committees/types.ts` and its optional usage within the `Committee` interface (`customSections`).
+💡 **Why:** Having dead, unused type definitions adds unnecessary bloat. Removing them improves code maintainability and ensures our data models strictly reflect what is actually utilized in the codebase.
+✅ **Verification:** Verified that neither `CustomSection` nor `customSections` are used anywhere else in the `src/` directory using grep. Ran the entire test suite and TypeScript compiler to confirm no types or tests were broken.
+✨ **Result:** A cleaner, leaner `types.ts` file without unused legacy code.
