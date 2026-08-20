@@ -49,7 +49,7 @@ export interface AboutSectionData {
 }
 
 export function AboutUsPage() {
-  const { data, loading } = useAboutPage();
+  const { data } = useAboutPage();
   const { theme } = useTheme();
   const isLight = theme === "light";
 

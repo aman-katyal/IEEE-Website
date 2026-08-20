@@ -39,21 +39,6 @@ const FOOTER_LINKS = {
   ],
 };
 
-const socials = [
-  { Icon: Github, label: "GitHub", href: "https://github.com/PurdueIEEE" },
-  {
-    Icon: Linkedin,
-    label: "LinkedIn",
-    href: "https://linkedin.com/company/purdue-ieee",
-  },
-  {
-    Icon: Instagram,
-    label: "Instagram",
-    href: "https://instagram.com/purdueieee",
-  },
-  { Icon: Twitter, label: "Twitter", href: "https://twitter.com/purdueieee" },
-];
-
 const PLATFORM_ICONS: Record<string, any> = {
   github: Github,
   linkedin: Linkedin,
@@ -70,8 +55,6 @@ export function Footer() {
   const { theme } = useTheme();
   const isLight = theme === "light";
   const isHome = location.pathname === "/";
-
-  const discordUrl = settings?.discordUrl || "https://discord.gg/sPPQequ9ws";
 
   // dynamically update discord url if overridden in sanity
   const footerLinksToUse = useMemo(() => {

@@ -1,4 +1,4 @@
-import { FileText, Shield, Download, ExternalLink } from "lucide-react";
+import { FileText, Shield, ExternalLink } from "lucide-react";
 import { useEffect } from "react";
 import { useTheme } from "next-themes";
 import { useSiteSettings } from "../../hooks/useSanityData";

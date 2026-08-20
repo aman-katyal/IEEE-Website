@@ -1,11 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Skeleton } from "boneyard-js/react";
-import { Maximize2, X } from "lucide-react";
+import { Maximize2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
 } from "../ui/dialog";
 import type { CommitteeSection, GalleryItem } from "../../../data/committees/types";
 

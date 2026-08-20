@@ -40,7 +40,7 @@ export interface CyclingStatProps {
   isLight?: boolean;
 }
 
-export function CyclingStat({ stats, isLight }: CyclingStatProps) {
+export function CyclingStat({ stats }: CyclingStatProps) {
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = useState(false);
   const [isPaused, setIsPaused] = useState(false);

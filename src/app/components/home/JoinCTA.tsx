@@ -1,8 +1,7 @@
 import { ExternalLink, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router";
-import { useMemo } from "react";
 import { MagneticButton } from "../shared/MagneticButton";
-import { useSiteSettings, useCommittees } from "../../../hooks/useSanityData";
+import { useSiteSettings } from "../../../hooks/useSanityData";
 
 export function JoinCTA() {
   const navigate = useNavigate();

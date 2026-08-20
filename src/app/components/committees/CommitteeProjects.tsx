@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { Skeleton } from "boneyard-js/react";
 import { ExternalLink, Tag, Sparkles } from "lucide-react";

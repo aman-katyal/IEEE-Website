@@ -84,9 +84,6 @@ export function OfficersPage() {
     );
   }, [leaders, config]);
 
-  // Define how many skeleton cards to show per section
-  const skeletonCards = Array.from({ length: 4 });
-
   const renderOfficerCard = (officer: Leader) => (
     <MagneticWrapper
       key={officer._id || officer.name + officer.role}

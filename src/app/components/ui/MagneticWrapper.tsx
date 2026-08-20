@@ -1,4 +1,4 @@
-import { useRef, useState, ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
 import { motion, useMotionValue, useSpring } from "motion/react";
 
 interface MagneticWrapperProps {

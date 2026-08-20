@@ -1,5 +1,3 @@
-import React from "react";
-
 export function PageSkeleton() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] p-8 w-full">

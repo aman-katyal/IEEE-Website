@@ -1,4 +1,3 @@
-import React from "react";
 import { useNavigate } from "react-router";
 import { Mail, ChevronRight, ExternalLink, AlertCircle } from "lucide-react";
 import { Skeleton } from "boneyard-js/react";

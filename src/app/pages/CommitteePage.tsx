@@ -1,4 +1,3 @@
-import React from "react";
 import { useParams, Link } from "react-router";
 import { ArrowLeft } from "lucide-react";
 import { useTheme } from "next-themes";

@@ -1,4 +1,3 @@
-import React from "react";
 import ReactMarkdown from "react-markdown";
 import { MessageCircle, Mail } from "lucide-react";
 import type { CommitteeSection } from "../../../data/committees/types";
