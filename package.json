@@ -8,6 +8,7 @@
     "build": "vite build",
     "dev": "vite",
     "test": "vitest",
+    "test:coverage": "vitest run --coverage",
     "coverage": "vitest run --coverage",
     "deploy": "npm run build && wrangler deploy",
     "preview": "npm run build && wrangler dev",

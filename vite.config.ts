@@ -103,4 +103,22 @@ export default defineConfig({
   },
   // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
   assetsInclude: ['**/*.svg', '**/*.csv'],
+  test: {
+    globals: true,
+    environment: 'happy-dom',
+    setupFiles: './src/test/setup.ts',
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      exclude: [
+        'node_modules/**',
+        'dist/**',
+        'studio/**',
+        'src/test/**',
+        '**/*.d.ts',
+        '**/*.test.{ts,tsx}',
+        'vite.config.ts',
+      ],
+    },
+  },
 })

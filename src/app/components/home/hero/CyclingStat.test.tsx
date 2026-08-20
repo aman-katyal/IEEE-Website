@@ -12,8 +12,9 @@ describe('CyclingStat', () => {
     vi.clearAllMocks();
   });
 
-  it('renders initial stat item', () => {
+  it('renders initial stat item with accessibility attributes', () => {
     render(<CyclingStat stats={mockStats} isLight={false} />);
+    expect(screen.getByRole('region', { name: /Branch statistic: Active Members/i })).toBeInTheDocument();
     expect(screen.getByText('Active Members')).toBeInTheDocument();
     expect(screen.getByText('Branch Wide')).toBeInTheDocument();
   });

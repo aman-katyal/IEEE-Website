@@ -81,6 +81,10 @@ export function CyclingStat({ stats }: CyclingStatProps) {
     <div
       ref={ref}
       className="glass-card"
+      role="region"
+      aria-label={`Branch statistic: ${currentStat.label}`}
+      aria-live="polite"
+      aria-atomic="true"
       style={{
         padding: "24px",
         display: "flex",
