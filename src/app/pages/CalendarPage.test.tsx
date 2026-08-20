@@ -57,8 +57,16 @@ describe('CalendarPage', () => {
     const iframes = container.querySelectorAll('iframe');
     expect(iframes.length).toBe(2);
     expect(iframes[0].src).toContain('mode=MONTH');
+    expect(iframes[0]).toHaveAttribute('loading', 'lazy');
+    expect(iframes[0]).toHaveAttribute('title', 'Purdue IEEE Monthly Events Calendar');
     expect(iframes[1].src).toContain('mode=AGENDA');
+    expect(iframes[1]).toHaveAttribute('loading', 'lazy');
+    expect(iframes[1]).toHaveAttribute('title', 'Purdue IEEE Agenda and Upcoming Overview');
     expect(iframes[0].style.filter).toBe('none');
+
+    // Skeletons are visible initially
+    expect(screen.getByTestId('month-calendar-skeleton')).toBeInTheDocument();
+    expect(screen.getByTestId('agenda-calendar-skeleton')).toBeInTheDocument();
   });
 
   it('renders custom calendar from CMS and applies dark theme filter', () => {
@@ -87,5 +95,6 @@ describe('CalendarPage', () => {
     expect(iframes.length).toBe(2);
     expect(iframes[0].src).toContain('https://custom.calendar.url');
     expect(iframes[0].style.filter).toContain('invert(90%)');
+    expect(iframes[0]).toHaveAttribute('loading', 'lazy');
   });
 });

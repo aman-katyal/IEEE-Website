@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { ChevronLeft, Calendar as CalendarIcon, ExternalLink, Info } from "lucide-react";
 import { Link } from "react-router";
 import { useTheme } from "next-themes";
@@ -7,6 +8,8 @@ export function CalendarPage() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const { settings, loading } = useSiteSettings();
+  const [monthLoaded, setMonthLoaded] = useState(false);
+  const [agendaLoaded, setAgendaLoaded] = useState(false);
   
   // Official IEEE Blue for the calendar accents
   const calendarColor = "00629B";
@@ -55,7 +58,7 @@ export function CalendarPage() {
         style={{
           position: "relative",
           zIndex: 5,
-          maxWidth: "1400px", // Slightly wider for full calendar
+          maxWidth: "1400px",
           margin: "0 auto",
           padding: "0 32px",
         }}
@@ -151,16 +154,50 @@ export function CalendarPage() {
             overflow: "hidden", 
             background: isDark ? "#111" : "#fff", 
             minWidth: "600px",
+            position: "relative",
+            minHeight: "clamp(500px, 70vh, 800px)",
             transition: "all 0.4s ease"
           }}>
+            {!monthLoaded && (
+              <div 
+                data-testid="month-calendar-skeleton"
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  display: "flex",
+                  flexDirection: "column",
+                  padding: "24px",
+                  gap: "16px",
+                  background: isDark ? "#111" : "#fafafa",
+                  zIndex: 2,
+                }}
+              >
+                <div className="animate-pulse" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", height: "40px", borderBottom: "1px solid var(--glass-border)", paddingBottom: "12px" }}>
+                  <div style={{ width: "180px", height: "24px", background: "rgba(255,255,255,0.08)", borderRadius: "4px" }} />
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <div style={{ width: "60px", height: "24px", background: "rgba(255,255,255,0.08)", borderRadius: "4px" }} />
+                    <div style={{ width: "60px", height: "24px", background: "rgba(255,255,255,0.08)", borderRadius: "4px" }} />
+                  </div>
+                </div>
+                <div className="animate-pulse" style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "8px", flex: 1 }}>
+                  {Array.from({ length: 35 }).map((_, i) => (
+                    <div key={i} style={{ background: "rgba(255,255,255,0.04)", borderRadius: "4px", minHeight: "60px" }} />
+                  ))}
+                </div>
+              </div>
+            )}
             <iframe
               src={`${calendarBaseUrl}&mode=MONTH&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=1&showCalendars=0&showTz=0`}
+              title="Purdue IEEE Monthly Events Calendar"
+              loading="lazy"
+              onLoad={() => setMonthLoaded(true)}
               style={{ 
                 border: 0, 
                 width: "100%", 
                 height: "clamp(500px, 70vh, 800px)",
                 filter: isDark ? darkCalendarFilter : "none",
-                transition: "filter 0.4s ease"
+                transition: "filter 0.4s ease",
+                display: "block"
               }}
               frameBorder="0"
               scrolling="no"
@@ -194,16 +231,45 @@ export function CalendarPage() {
             borderRadius: "4px", 
             overflow: "hidden", 
             background: isDark ? "#111" : "#fff",
+            position: "relative",
+            minHeight: "500px",
             transition: "all 0.4s ease"
           }}>
+            {!agendaLoaded && (
+              <div 
+                data-testid="agenda-calendar-skeleton"
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  display: "flex",
+                  flexDirection: "column",
+                  padding: "24px",
+                  gap: "12px",
+                  background: isDark ? "#111" : "#fafafa",
+                  zIndex: 2,
+                }}
+              >
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="animate-pulse" style={{ display: "flex", gap: "16px", alignItems: "center", padding: "12px 0", borderBottom: "1px solid var(--glass-border)" }}>
+                    <div style={{ width: "80px", height: "20px", background: "rgba(255,255,255,0.08)", borderRadius: "4px" }} />
+                    <div style={{ flex: 1, height: "20px", background: "rgba(255,255,255,0.05)", borderRadius: "4px" }} />
+                    <div style={{ width: "100px", height: "20px", background: "rgba(255,255,255,0.04)", borderRadius: "4px" }} />
+                  </div>
+                ))}
+              </div>
+            )}
             <iframe
               src={`${calendarBaseUrl}&mode=AGENDA&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=0&showCalendars=0&showTz=0`}
+              title="Purdue IEEE Agenda and Upcoming Overview"
+              loading="lazy"
+              onLoad={() => setAgendaLoaded(true)}
               style={{ 
                 border: 0, 
                 width: "100%", 
                 height: "500px",
                 filter: isDark ? darkCalendarFilter : "none",
-                transition: "filter 0.4s ease"
+                transition: "filter 0.4s ease",
+                display: "block"
               }}
               frameBorder="0"
               scrolling="no"

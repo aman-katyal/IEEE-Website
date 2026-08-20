@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useTheme } from "next-themes";
 import { Link } from "react-router";
-import { Accessibility, CheckCircle2, Eye, Sparkles, Mail, ArrowLeft, ExternalLink } from "lucide-react";
+import { Accessibility, CheckCircle2, Eye, Mail, ArrowLeft, ExternalLink } from "lucide-react";
 
 export function AccessibilityPage() {
   const { theme } = useTheme();
