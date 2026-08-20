@@ -1,0 +1,5 @@
+Title: 🛡️ Sentinel: [security improvement] Verify noopener noreferrer on target blank links
+Body:
+🎯 What: The user reported a missing rel="noopener noreferrer" on a partner website link at src/app/pages/PartnersPage.tsx:539.
+⚠️ Risk: Missing noopener noreferrer on target="_blank" links allows the newly opened tab to potentially exploit the window.opener API, leading to reverse tabnabbing and phishing attacks.
+🛡️ Solution: After investigating the file and the surrounding codebase, we confirmed that rel="noopener noreferrer" is already present on all target="_blank" links, including the specific partner website link at src/app/pages/PartnersPage.tsx. The vulnerability has already been fixed in a previous commit. No codebase changes were necessary, but all tests were run and confirmed to pass.
