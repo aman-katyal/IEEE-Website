@@ -47,6 +47,21 @@ const PLATFORM_ICONS: Record<string, any> = {
   x: Twitter,
 };
 
+const LEGAL_LINKS = [
+  {
+    label: "Privacy Policy",
+    href: "https://www.ieee.org/security-privacy.html",
+  },
+  {
+    label: "Terms of Use",
+    href: "https://www.ieee.org/about/help/terms-conditions.html",
+  },
+  {
+    label: "Accessibility",
+    href: "https://www.ieee.org/accessibility-statement.html",
+  },
+];
+
 export function Footer() {
   const { committees } = useCommittees();
   const { settings } = useSiteSettings();
@@ -402,10 +417,10 @@ export function Footer() {
           </span>
 
           <div style={{ display: "flex", gap: "24px", alignItems: "center" }}>
-            {["Privacy Policy", "Terms of Use", "Accessibility"].map((item) => (
+            {LEGAL_LINKS.map((item) => (
               <a
-                key={item}
-                href="https://ieee.org"
+                key={item.label}
+                href={item.href}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -426,22 +441,9 @@ export function Footer() {
                     "var(--text-muted)";
                 }}
               >
-                {item}
+                {item.label}
               </a>
             ))}
-          </div>
-
-          {/* Version tag */}
-          <div
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: "0.58rem",
-              letterSpacing: "0.12em",
-              color: "var(--text-muted)",
-              opacity: isLight ? 0.8 : 0.6,
-            }}
-          >
-            v2.6.0 · SPRING_2026
           </div>
         </div>
       </div>

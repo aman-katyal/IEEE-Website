@@ -120,6 +120,29 @@ describe('Footer', () => {
     expect(rovLink).toHaveAttribute('href', '/committee/rov');
   });
 
+  it('renders copyright and bottom legal links', () => {
+    render(
+      <MemoryRouter>
+        <Footer />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText(/All rights reserved/i)).toBeInTheDocument();
+    
+    const privacyLink = screen.getByText('Privacy Policy').closest('a');
+    expect(privacyLink).toHaveAttribute('href', 'https://www.ieee.org/security-privacy.html');
+    expect(privacyLink).toHaveAttribute('target', '_blank');
+    expect(privacyLink).toHaveAttribute('rel', 'noopener noreferrer');
+
+    const termsLink = screen.getByText('Terms of Use').closest('a');
+    expect(termsLink).toHaveAttribute('href', 'https://www.ieee.org/about/help/terms-conditions.html');
+    expect(termsLink).toHaveAttribute('target', '_blank');
+
+    const a11yLink = screen.getByText('Accessibility').closest('a');
+    expect(a11yLink).toHaveAttribute('href', 'https://www.ieee.org/accessibility-statement.html');
+    expect(a11yLink).toHaveAttribute('target', '_blank');
+  });
+
   it('renders navigation columns', () => {
     render(
       <MemoryRouter>
@@ -242,16 +265,5 @@ describe('Footer', () => {
     
     // navigate should NOT be called for external links
     expect(mockNavigate).not.toHaveBeenCalled();
-  });
-
-  it('renders version information', () => {
-    render(
-      <MemoryRouter>
-        <Footer />
-      </MemoryRouter>
-    );
-
-    expect(screen.getByText(/v2.6.0/i)).toBeInTheDocument();
-    expect(screen.getByText(/SPRING_2026/i)).toBeInTheDocument();
   });
 });
