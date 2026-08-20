@@ -11,7 +11,11 @@ interface CommitteeQuickFactsProps {
   isLight: boolean;
 }
 
-export function CommitteeQuickFacts({ committee, loading, isLight }: CommitteeQuickFactsProps) {
+export function CommitteeQuickFacts({
+  committee,
+  loading,
+  isLight,
+}: CommitteeQuickFactsProps) {
   const navigate = useNavigate();
 
   if (!committee && !loading) return null;
@@ -26,7 +30,7 @@ export function CommitteeQuickFacts({ committee, loading, isLight }: CommitteeQu
           onClick={() => navigate("/join")}
           className="btn-primary w-full text-center py-3 px-5 inline-flex items-center justify-center gap-2 font-[family-name:var(--font-body)] text-sm font-semibold cursor-pointer"
         >
-          Join This Committee <ChevronRight size={16} />
+          Join This Committee <ChevronRight size={16} aria-hidden="true" />
         </button>
       );
     }
@@ -42,7 +46,10 @@ export function CommitteeQuickFacts({ committee, loading, isLight }: CommitteeQu
             if (isExternal) {
               try {
                 const urlObj = new URL(url);
-                if (urlObj.protocol === "http:" || urlObj.protocol === "https:") {
+                if (
+                  urlObj.protocol === "http:" ||
+                  urlObj.protocol === "https:"
+                ) {
                   window.open(urlObj.href, "_blank", "noopener,noreferrer");
                 }
               } catch (e) {
@@ -59,9 +66,9 @@ export function CommitteeQuickFacts({ committee, loading, isLight }: CommitteeQu
           {getPlatformIcon("", url, 16)}
           <span>{config.buttonText || "Join Us"}</span>
           {isExternal ? (
-            <ExternalLink size={14} className="opacity-80" />
+            <ExternalLink size={14} className="opacity-80" aria-hidden="true" />
           ) : (
-            <ChevronRight size={16} />
+            <ChevronRight size={16} aria-hidden="true" />
           )}
         </button>
       );
@@ -73,6 +80,7 @@ export function CommitteeQuickFacts({ committee, loading, isLight }: CommitteeQu
           <AlertCircle
             size={16}
             className="text-[var(--cyber-gold)] shrink-0 mt-0.5"
+            aria-hidden="true"
           />
           <div className="font-[family-name:var(--font-body)] text-xs text-[var(--text-secondary)] leading-snug">
             {config.message ||
@@ -106,10 +114,7 @@ export function CommitteeQuickFacts({ committee, loading, isLight }: CommitteeQu
         {hasMetrics && (
           <div className="flex items-center justify-around gap-4 pr-0 md:pr-4 md:border-r border-[var(--glass-border)]">
             {committee.metrics!.map((m) => (
-              <div
-                key={m.label}
-                className="flex flex-col items-center gap-1"
-              >
+              <div key={m.label} className="flex flex-col items-center gap-1">
                 <span className="font-[family-name:var(--font-mono)] text-2xl font-bold text-[var(--electric-blue)] leading-none">
                   {m.value}
                 </span>
@@ -135,7 +140,7 @@ export function CommitteeQuickFacts({ committee, loading, isLight }: CommitteeQu
                 href={`mailto:${committee.email}`}
                 className="inline-flex items-center justify-center md:justify-start gap-1.5 font-[family-name:var(--font-mono)] text-xs text-[var(--electric-blue)] no-underline mt-0.5 hover:underline"
               >
-                <Mail size={13} className="shrink-0" />
+                <Mail size={13} className="shrink-0" aria-hidden="true" />
                 {committee.email}
               </a>
             )}
