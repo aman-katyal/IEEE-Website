@@ -79,7 +79,7 @@ print("\n--- 5. Auditing Partners / Sponsors ---")
 partners = query_sanity('*[_type == "partner"]{_id, name, tier, domain, websiteUrl, logo}')
 print(f"  Total Partners in CMS: {len(partners)}")
 if len(partners) == 0:
-    print("  [NOTE]: 0 partner documents in Sanity CMS; website is safely using STATIC_PARTNERS from src/data/partners.ts")
+    print("  [NOTE]: 0 partner documents in Sanity CMS.")
 for p in partners:
     print(f"  • {p.get('name'):<25} | Tier: {p.get('tier'):<8} | Domain: {p.get('domain') or 'none':<20} | Logo: {'YES' if p.get('logo') else 'NO'}")
 
