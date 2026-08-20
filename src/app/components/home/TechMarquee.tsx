@@ -1,136 +1,16 @@
-import { useState } from "react";
+import { useState, useMemo, memo } from "react";
 import { Link } from "react-router";
 import { ArrowRight } from "lucide-react";
 import { useTheme } from "next-themes";
 import { usePartners } from "../../../hooks/useSanityData";
 
-export function TechMarquee() {
-  const { theme } = useTheme();
-  const { partners } = usePartners();
-  const isLight = theme === "light";
-
-  return (
-    <div
-      style={{
-        background: "var(--boiler-black)",
-        borderTop: "1px solid var(--glass-border)",
-        borderBottom: "1px solid var(--glass-border)",
-        padding: "32px 0",
-        overflow: "hidden",
-        position: "relative",
-        transition: "background 0.3s ease",
-      }}
-    >
-      {/* Fade edges */}
-      <div
-        style={{
-          position: "absolute",
-          left: 0,
-          top: 0,
-          bottom: 0,
-          width: "150px",
-          background: isLight
-            ? "linear-gradient(to right, #F8FAFC, transparent)"
-            : "linear-gradient(to right, var(--boiler-black), transparent)",
-          zIndex: 5,
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          right: 0,
-          top: 0,
-          bottom: 0,
-          width: "150px",
-          background: isLight
-            ? "linear-gradient(to left, #F8FAFC, transparent)"
-            : "linear-gradient(to left, var(--boiler-black), transparent)",
-          zIndex: 5,
-        }}
-      />
-
-      <div className="marquee-track" style={{ willChange: "transform" }}>
-        {[...partners, ...partners].map((p, i) => (
-          <div
-            key={`${p.domain || p.name}-${i}`}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "48px",
-              padding: "0 48px",
-              flexShrink: 0,
-            }}
-          >
-            <MarqueeItem partner={p} isLight={isLight} />
-
-            <div
-              style={{
-                width: "4px",
-                height: "4px",
-                borderRadius: "50%",
-                background: "var(--electric-blue)",
-                flexShrink: 0,
-                opacity: 0.4,
-              }}
-            />
-          </div>
-        ))}
-      </div>
-
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: "16px",
-          flexWrap: "wrap",
-          marginTop: "24px",
-          position: "relative",
-          zIndex: 10,
-        }}
-      >
-        <Link
-          to="/partners"
-          className="btn-secondary"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "8px",
-            fontSize: "0.8rem",
-            fontFamily: "var(--font-mono)",
-            textTransform: "uppercase",
-            letterSpacing: "0.08em",
-            padding: "8px 18px",
-            borderRadius: "6px",
-            textDecoration: "none",
-          }}
-        >
-          Corporate Partners <ArrowRight size={14} />
-        </Link>
-        <Link
-          to="/committees"
-          className="btn-secondary"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "8px",
-            fontSize: "0.8rem",
-            fontFamily: "var(--font-mono)",
-            textTransform: "uppercase",
-            letterSpacing: "0.08em",
-            padding: "8px 18px",
-            borderRadius: "6px",
-            textDecoration: "none",
-          }}
-        >
-          Active Committees <ArrowRight size={14} />
-        </Link>
-      </div>
-    </div>
-  );
-}
-
-function MarqueeItem({ partner, isLight }: { partner: any; isLight: boolean }) {
+const MarqueeItem = memo(function MarqueeItem({
+  partner,
+  isLight,
+}: {
+  partner: any;
+  isLight: boolean;
+}) {
   const [logoError, setLogoError] = useState(false);
   const [useFavicon, setUseFavicon] = useState(false);
 
@@ -208,6 +88,135 @@ function MarqueeItem({ partner, isLight }: { partner: any; isLight: boolean }) {
           {partner.name}
         </span>
       )}
+    </div>
+  );
+});
+
+export function TechMarquee() {
+  const { theme } = useTheme();
+  const { partners } = usePartners();
+  const isLight = theme === "light";
+
+  // ⚡ Bolt: Cache duplicated array to prevent O(N) allocation on every render
+  const displayPartners = useMemo(() => [...partners, ...partners], [partners]);
+
+  return (
+    <div
+      style={{
+        background: "var(--boiler-black)",
+        borderTop: "1px solid var(--glass-border)",
+        borderBottom: "1px solid var(--glass-border)",
+        padding: "32px 0",
+        overflow: "hidden",
+        position: "relative",
+        transition: "background 0.3s ease",
+      }}
+    >
+      {/* Fade edges */}
+      <div
+        style={{
+          position: "absolute",
+          left: 0,
+          top: 0,
+          bottom: 0,
+          width: "150px",
+          background: isLight
+            ? "linear-gradient(to right, #F8FAFC, transparent)"
+            : "linear-gradient(to right, var(--boiler-black), transparent)",
+          zIndex: 5,
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          right: 0,
+          top: 0,
+          bottom: 0,
+          width: "150px",
+          background: isLight
+            ? "linear-gradient(to left, #F8FAFC, transparent)"
+            : "linear-gradient(to left, var(--boiler-black), transparent)",
+          zIndex: 5,
+        }}
+      />
+
+      <div className="marquee-track" style={{ willChange: "transform" }}>
+        {displayPartners.map((p, i) => (
+          <div
+            key={`${p.domain || p.name}-${i}`}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "48px",
+              padding: "0 48px",
+              flexShrink: 0,
+            }}
+          >
+            <MarqueeItem partner={p} isLight={isLight} />
+
+            <div
+              style={{
+                width: "4px",
+                height: "4px",
+                borderRadius: "50%",
+                background: "var(--electric-blue)",
+                flexShrink: 0,
+                opacity: 0.4,
+              }}
+            />
+          </div>
+        ))}
+      </div>
+
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: "16px",
+          flexWrap: "wrap",
+          marginTop: "24px",
+          position: "relative",
+          zIndex: 10,
+        }}
+      >
+        <Link
+          to="/partners"
+          className="btn-secondary"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            fontSize: "0.8rem",
+            fontFamily: "var(--font-mono)",
+            textTransform: "uppercase",
+            letterSpacing: "0.08em",
+            padding: "8px 18px",
+            borderRadius: "6px",
+            textDecoration: "none",
+          }}
+        >
+          Corporate Partners <ArrowRight size={14} />
+        </Link>
+        <Link
+          to="/committees"
+          className="btn-secondary"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            fontSize: "0.8rem",
+            fontFamily: "var(--font-mono)",
+            textTransform: "uppercase",
+            letterSpacing: "0.08em",
+            padding: "8px 18px",
+            borderRadius: "6px",
+            textDecoration: "none",
+          }}
+        >
+          Active Committees <ArrowRight size={14} />
+        </Link>
+      </div>
     </div>
   );
 }
