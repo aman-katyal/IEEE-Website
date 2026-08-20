@@ -96,6 +96,9 @@ export default defineConfig({
             if (id.includes('@radix-ui')) {
               return 'vendor-radix';
             }
+            if (id.includes('lucide-react')) {
+              return 'vendor-icons';
+            }
           }
         },
       },

@@ -16,7 +16,7 @@
   
   --text-primary: #F8F9FA;
   --text-secondary: #F8F9FA;
-  --text-muted: rgba(248, 249, 250, 0.78);
+  --text-muted: rgba(248, 249, 250, 0.85);
   
   --glass-bg: rgba(26, 26, 27, 0.7);
   --glass-border: rgba(235, 211, 169, 0.1);
@@ -398,12 +398,13 @@ a.btn-ghost:focus-visible {
 /* ─── Tag Chip ──────────────────────────────────── */
 .tech-tag {
   font-family: var(--font-mono);
-  font-size: 0.65rem;
+  font-size: 0.68rem;
   letter-spacing: 0.1em;
   padding: 3px 8px;
   border: 1px solid var(--glass-border);
   border-radius: 2px;
-  color: var(--text-secondary);
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
   text-transform: uppercase;
 }
 
