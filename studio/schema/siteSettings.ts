@@ -119,12 +119,14 @@ export const siteSettings = defineType({
       title: 'Partners Hero Title',
       type: 'string',
       group: 'partners',
+      validation: (Rule) => Rule.max(80).warning('Partners hero title should be under 80 characters.'),
     }),
     defineField({
       name: 'partnersHeroSubtitle',
       title: 'Partners Hero Subtitle',
       type: 'text',
       group: 'partners',
+      validation: (Rule) => Rule.max(280).warning('Partners hero subtitle should stay under 280 characters for optimal display.'),
     }),
     defineField({
       name: 'partnersProspectusFile',

@@ -25,7 +25,7 @@ describe('Sanity Schema Validations', () => {
     expect(nameField.validation).toBeDefined();
   });
 
-  it('should have required validation on committee shortName and description', () => {
+  it('should have required validation and character limits on committee fields', () => {
     const shortNameField = committee.fields.find((f: any) => f.name === 'shortName');
     expect(shortNameField).toBeDefined();
     expect(shortNameField.validation).toBeDefined();
@@ -33,5 +33,9 @@ describe('Sanity Schema Validations', () => {
     const descField = committee.fields.find((f: any) => f.name === 'description');
     expect(descField).toBeDefined();
     expect(descField.validation).toBeDefined();
+
+    const taglineField = committee.fields.find((f: any) => f.name === 'tagline');
+    expect(taglineField).toBeDefined();
+    expect(taglineField.validation).toBeDefined();
   });
 });

@@ -31,20 +31,24 @@ export const committee = defineType({
       title: 'Full Name',
       type: 'string',
       group: 'info',
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) =>
+        Rule.required().max(96).warning('Names over 96 characters may truncate in header navigation.'),
     }),
     defineField({
       name: 'shortName',
       title: 'Short Name',
       type: 'string',
       group: 'info',
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) =>
+        Rule.required().max(32).warning('Short names should stay under 32 characters for compact card badges.'),
     }),
     defineField({
       name: 'tagline',
       title: 'Tagline',
       type: 'string',
       group: 'info',
+      validation: (Rule) =>
+        Rule.max(120).warning('Taglines should be concise (max 120 chars) for optimal SEO and card rendering.'),
     }),
     defineField({
       name: 'description',
@@ -52,7 +56,8 @@ export const committee = defineType({
       type: 'text',
       group: 'info',
       rows: 3,
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) =>
+        Rule.required().max(300).warning('Short descriptions should be under 300 characters for meta descriptions and search snippets.'),
     }),
     defineField({
       name: 'longDescription',

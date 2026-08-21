@@ -11,13 +11,13 @@ export const leader = defineType({
       name: 'name',
       title: 'Full Name',
       type: 'string',
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) => Rule.required().max(64).warning('Officer names should be under 64 characters.'),
     }),
     defineField({
       name: 'role',
       title: 'Role',
       type: 'string',
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) => Rule.required().max(80).warning('Officer roles should be under 80 characters for card layouts.'),
     }),
     defineField({
       name: 'committees',
