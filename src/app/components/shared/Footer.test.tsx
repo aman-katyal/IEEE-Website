@@ -151,6 +151,7 @@ describe('Footer', () => {
     expect(screen.getByText('Connect')).toBeInTheDocument();
 
     expect(screen.getByText('About Us')).toBeInTheDocument();
+    expect(screen.getByText('Finance & Reimbursements')).toBeInTheDocument();
     expect(screen.getByText('Event Calendar')).toBeInTheDocument();
     expect(screen.getByText('Join Purdue IEEE')).toBeInTheDocument();
   });

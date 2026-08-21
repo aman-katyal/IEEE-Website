@@ -20,6 +20,7 @@ const FOOTER_LINKS = {
     { label: "Corporate Partners", href: "/partners" },
   ],
   Resources: [
+    { label: "Finance & Reimbursements", href: "/finance" },
     { label: "IEEE.org", href: "https://ieee.org", external: true },
     { label: "Event Calendar", href: "/calendar" },
     {
