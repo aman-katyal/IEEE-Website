@@ -5,7 +5,6 @@ import { useFinanceApi } from '@/hooks/useFinanceApi';
 import {
   ShieldCheck,
   Building,
-  Lock,
   ArrowRightLeft,
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -115,17 +114,6 @@ export function FinancePortalPage() {
         {!session ? (
           <div className="py-12 flex flex-col items-center justify-center">
             <FinanceAuthModal onLogin={handleLogin} />
-
-            {/* Quick Demo Assist Banner */}
-            <div className="mt-8 p-4 max-w-md w-full rounded-xl bg-slate-900/60 border border-slate-800 text-xs text-slate-400 text-center space-y-1">
-              <div className="font-semibold text-slate-300 flex items-center justify-center gap-1.5">
-                <Lock className="w-3.5 h-3.5 text-sky-400" />
-                <span>Quick Access Test Credentials</span>
-              </div>
-              <p className="text-[11px] text-slate-400">
-                Enter PIN <span className="font-mono text-sky-300 font-bold">1903</span> or <span className="font-mono text-sky-300 font-bold">1234</span> for Committee Lead or Master PIN for Treasurer Admin.
-              </p>
-            </div>
           </div>
         ) : session.role === 'COMMITTEE_LEAD' ? (
           <CommitteeFinanceView

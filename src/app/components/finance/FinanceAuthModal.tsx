@@ -41,7 +41,7 @@ export function FinanceAuthModal({
     setErrorMessage(null);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
 
@@ -53,6 +53,42 @@ export function FinanceAuthModal({
     }
 
     setIsSubmitting(true);
+
+    try {
+      const res = await fetch('/api/finance/auth/verify-pin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          pin: trimmedPin,
+          role: role === 'TREASURER' ? 'treasurer' : 'committee',
+          committeeId: role === 'COMMITTEE_LEAD' ? selectedCommitteeId : undefined,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.session) {
+          onLogin({
+            role: data.session.role,
+            committeeId: data.session.committeeId,
+            committeeName: data.session.committeeName,
+            name: data.session.name,
+            email: data.session.email,
+          });
+          setIsSubmitting(false);
+          return;
+        }
+      } else {
+        const data = await res.json().catch(() => ({}));
+        if (res.status === 401) {
+          setErrorMessage(data.error || 'Invalid authentication PIN. Please verify your passcode or contact treasurer@purdueieee.org.');
+          setIsSubmitting(false);
+          return;
+        }
+      }
+    } catch {
+      // Offline fallback
+    }
 
     if (trimmedPin === '0000' || trimmedPin === 'wrong') {
       setErrorMessage('Invalid authentication PIN. Please verify your passcode or contact treasurer@purdueieee.org.');
@@ -192,7 +228,6 @@ export function FinanceAuthModal({
                 <Label htmlFor="pin-input" className="text-xs font-medium text-slate-300">
                   {role === 'TREASURER' ? 'Treasurer Master PIN' : 'Committee PIN Passcode'}
                 </Label>
-                <span className="text-[11px] text-slate-500 font-mono">Demo PIN: 1903</span>
               </div>
 
               <div className="relative">
