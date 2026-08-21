@@ -21,6 +21,8 @@
     "pr:create": "python .agents/tools/gh_tool pr create",
     "labels:sync": "python .agents/tools/gh_tool label sync",
     "audit:sanity": "python .agents/tools/audit_sanity.py",
+    "pin:set": "node scripts/set_pin.mjs",
+    "pin:hash": "node scripts/set_pin.mjs --hash",
     "branch:prune": "pwsh -Command \"git branch --merged master | Where-Object { $_ -notmatch 'master|\\*' } | ForEach-Object { git branch -d $_.Trim() }; git remote prune origin\""
   },
   "dependencies": {
