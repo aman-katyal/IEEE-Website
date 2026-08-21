@@ -143,6 +143,10 @@ export function useHomePage() {
 export function useAboutPage() {
   const query = groq`*[_type == "aboutPage"][0]{
     ...,
+    timeline[]{
+      ...,
+      "gold": coalesce(isGoldAccent, false)
+    },
     sections[]{
       ...,
       "image": coalesce(image.asset->url + "?auto=format&w=1000&q=75", image.asset->url)

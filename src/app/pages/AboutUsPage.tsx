@@ -226,193 +226,140 @@ export function AboutUsPage() {
         </div>
       </section>
 
-      {/* Historical Lineage & Committee Origins Timeline */}
-      <section
-        id="history"
-        style={{
-          padding: "60px 0 80px",
-          position: "relative",
-          background: isLight ? "#f8fafc" : "rgba(10, 10, 12, 0.6)",
-          borderTop: "1px solid var(--glass-border)",
-          borderBottom: "1px solid var(--glass-border)",
-        }}
-      >
-        <div
+      {/* Historical Lineage & Committee Origins Timeline (CMS-Driven) */}
+      {data?.timeline && data.timeline.length > 0 && (
+        <section
+          id="history"
           style={{
-            maxWidth: "1280px",
-            margin: "0 auto",
-            padding: "0 clamp(16px, 4vw, 32px)",
+            padding: "60px 0 80px",
+            position: "relative",
+            background: isLight ? "#f8fafc" : "rgba(10, 10, 12, 0.6)",
+            borderTop: "1px solid var(--glass-border)",
+            borderBottom: "1px solid var(--glass-border)",
           }}
         >
-          <div style={{ textAlign: "center", maxWidth: "700px", margin: "0 auto 48px" }}>
-            <p className="section-eyebrow" style={{ marginBottom: "12px" }}>
-              // HISTORICAL LINEAGE & ROOTS
-            </p>
-            <h2
-              style={{
-                fontFamily: "var(--font-headline)",
-                fontSize: "clamp(26px, 3.5vw, 38px)",
-                fontWeight: 700,
-                color: "var(--text-primary)",
-                lineHeight: 1.2,
-                marginBottom: "16px",
-              }}
-            >
-              Over 120 Years of <span style={{ color: "var(--cyber-gold)" }}>Boilermaker Innovation</span>
-            </h2>
-            <p
-              style={{
-                fontFamily: "var(--font-body)",
-                fontSize: "15px",
-                color: "var(--text-secondary)",
-                lineHeight: 1.6,
-              }}
-            >
-              From our founding under the American Institute of Electrical Engineers (AIEE) in 1903 through historic committee launches and society mergers, Purdue IEEE has stood at the vanguard of hands-on student engineering.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              {
-                year: "1903",
-                title: "AIEE Purdue Branch Founded",
-                category: "Branch Origin",
-                description: "The American Institute of Electrical Engineers charters the Purdue Student Branch, inaugurating over a century of Boilermaker technical leadership.",
-                gold: true,
-              },
-              {
-                year: "1950s",
-                title: "Grand Prix & Racing Heritage",
-                category: "Motorsports",
-                description: "Purdue IEEE members engineer early electric and combustion vehicles for the Purdue Grand Prix, creating the foundation for IEEE Racing.",
-                gold: false,
-              },
-              {
-                year: "1963",
-                title: "Historic IEEE Merger",
-                category: "Global Unity",
-                description: "AIEE merges with the Institute of Radio Engineers (IRE) to create IEEE, uniting power, radio, electronics, and computing under one banner.",
-                gold: true,
-              },
-              {
-                year: "1990s",
-                title: "Computer Society (CS)",
-                category: "Computing",
-                description: "Chartered to pioneer student software systems, servers, microcontrollers, and modern computing workshops across campus.",
-                gold: false,
-              },
-              {
-                year: "1996",
-                title: "Aerial Robotics (AESS)",
-                category: "Aviation & UAVs",
-                description: "Launched to design, manufacture, and fly autonomous drones and unmanned aerial systems for national payload competitions.",
-                gold: false,
-              },
-              {
-                year: "2008",
-                title: "ROV Underwater Robotics",
-                category: "Marine Robotics",
-                description: "Founded to engineer custom submersibles with advanced buoyancy control and machine vision for the international MATE ROV competition.",
-                gold: false,
-              },
-              {
-                year: "2016",
-                title: "EMBS & MTT-S Expansions",
-                category: "Biotech & RF",
-                description: "Dual expansion into biomedical instrumentation (EMBS) and high-frequency microwave, antenna, and radar engineering (MTT-S).",
-                gold: true,
-              },
-              {
-                year: "2020s+",
-                title: "Cornerstones & Modern Era",
-                category: "Modern Expansion",
-                description: "Democratizing foundational engineering skills with Hardware, Software, Learning, Social, and IR Cornerstones across 14 committees.",
-                gold: true,
-              },
-            ].map((milestone, idx) => (
-              <motion.div
-                key={idx}
-                className="glass-card hover-glow-blue"
+          <div
+            style={{
+              maxWidth: "1280px",
+              margin: "0 auto",
+              padding: "0 clamp(16px, 4vw, 32px)",
+            }}
+          >
+            <div style={{ textAlign: "center", maxWidth: "700px", margin: "0 auto 48px" }}>
+              <p className="section-eyebrow" style={{ marginBottom: "12px" }}>
+                // HISTORICAL LINEAGE & ROOTS
+              </p>
+              <h2
                 style={{
-                  padding: "24px",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  borderRadius: "10px",
-                  borderLeft: milestone.gold ? "3px solid var(--cyber-gold)" : "3px solid var(--electric-blue)",
-                  background: isLight ? "#ffffff" : "rgba(18, 18, 20, 0.75)",
-                  transition: "transform 0.2s ease, box-shadow 0.2s ease",
+                  fontFamily: "var(--font-headline)",
+                  fontSize: "clamp(26px, 3.5vw, 38px)",
+                  fontWeight: 700,
+                  color: "var(--text-primary)",
+                  lineHeight: 1.2,
+                  marginBottom: "16px",
                 }}
-                {...revealProps}
               >
-                <div>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      marginBottom: "12px",
-                    }}
-                  >
-                    <span
+                Over 120 Years of <span style={{ color: "var(--cyber-gold)" }}>Boilermaker Innovation</span>
+              </h2>
+              <p
+                style={{
+                  fontFamily: "var(--font-body)",
+                  fontSize: "15px",
+                  color: "var(--text-secondary)",
+                  lineHeight: 1.6,
+                }}
+              >
+                From our founding under the American Institute of Electrical Engineers (AIEE) in 1903 through historic committee launches and society mergers, Purdue IEEE has stood at the vanguard of hands-on student engineering.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {data.timeline.map((milestone, idx) => (
+                <motion.div
+                  key={milestone._key || idx}
+                  className="glass-card hover-glow-blue"
+                  style={{
+                    padding: "24px",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    borderRadius: "10px",
+                    borderLeft: milestone.isGoldAccent ? "3px solid var(--cyber-gold)" : "3px solid var(--electric-blue)",
+                    background: isLight ? "#ffffff" : "rgba(18, 18, 20, 0.75)",
+                    transition: "transform 0.2s ease, box-shadow 0.2s ease",
+                  }}
+                  {...revealProps}
+                >
+                  <div>
+                    <div
                       style={{
-                        fontFamily: "var(--font-mono)",
-                        fontSize: "18px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        marginBottom: "12px",
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "18px",
+                          fontWeight: 700,
+                          color: milestone.isGoldAccent ? "var(--cyber-gold)" : "var(--electric-blue)",
+                          letterSpacing: "0.05em",
+                        }}
+                      >
+                        {milestone.year}
+                      </span>
+                      {milestone.category && (
+                        <span
+                          style={{
+                            fontFamily: "var(--font-mono)",
+                            fontSize: "10px",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.1em",
+                            padding: "2px 8px",
+                            borderRadius: "9999px",
+                            background: milestone.isGoldAccent ? "rgba(235, 211, 169, 0.12)" : "rgba(0, 98, 155, 0.12)",
+                            color: milestone.isGoldAccent ? "var(--cyber-gold)" : "var(--electric-blue)",
+                            border: milestone.isGoldAccent ? "1px solid rgba(235, 211, 169, 0.25)" : "1px solid rgba(0, 98, 155, 0.25)",
+                          }}
+                        >
+                          {milestone.category}
+                        </span>
+                      )}
+                    </div>
+
+                    <h3
+                      style={{
+                        fontFamily: "var(--font-headline)",
+                        fontSize: "16px",
                         fontWeight: 700,
-                        color: milestone.gold ? "var(--cyber-gold)" : "var(--electric-blue)",
-                        letterSpacing: "0.05em",
+                        color: "var(--text-primary)",
+                        marginBottom: "10px",
+                        lineHeight: 1.3,
                       }}
                     >
-                      {milestone.year}
-                    </span>
-                    <span
+                      {milestone.title}
+                    </h3>
+
+                    <p
                       style={{
-                        fontFamily: "var(--font-mono)",
-                        fontSize: "10px",
-                        textTransform: "uppercase",
-                        letterSpacing: "0.1em",
-                        padding: "2px 8px",
-                        borderRadius: "9999px",
-                        background: milestone.gold ? "rgba(235, 211, 169, 0.12)" : "rgba(0, 98, 155, 0.12)",
-                        color: milestone.gold ? "var(--cyber-gold)" : "var(--electric-blue)",
-                        border: milestone.gold ? "1px solid rgba(235, 211, 169, 0.25)" : "1px solid rgba(0, 98, 155, 0.25)",
+                        fontFamily: "var(--font-body)",
+                        fontSize: "13px",
+                        color: "var(--text-secondary)",
+                        lineHeight: 1.6,
+                        margin: 0,
                       }}
                     >
-                      {milestone.category}
-                    </span>
+                      {milestone.description}
+                    </p>
                   </div>
-
-                  <h3
-                    style={{
-                      fontFamily: "var(--font-headline)",
-                      fontSize: "16px",
-                      fontWeight: 700,
-                      color: "var(--text-primary)",
-                      marginBottom: "10px",
-                      lineHeight: 1.3,
-                    }}
-                  >
-                    {milestone.title}
-                  </h3>
-
-                  <p
-                    style={{
-                      fontFamily: "var(--font-body)",
-                      fontSize: "13px",
-                      color: "var(--text-secondary)",
-                      lineHeight: 1.6,
-                      margin: 0,
-                    }}
-                  >
-                    {milestone.description}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section
         id="about"

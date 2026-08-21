@@ -4,7 +4,7 @@ import { cornerstone } from './cornerstone'
 import { officersConfig } from './officersConfig'
 import { siteSettings } from './siteSettings'
 import { homePage } from './homePage'
-import { aboutPage } from './aboutPage'
+import { aboutPage, timelineMilestone } from './aboutPage'
 import { partner } from './partner'
 
 // Shared Objects
@@ -33,4 +33,5 @@ export const schemaTypes = [
   gallerySection,
   historySection,
   aboutPageSection,
+  timelineMilestone,
 ]

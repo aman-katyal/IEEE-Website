@@ -92,9 +92,33 @@ describe('AboutUsPage', () => {
     expect(screen.getByText('Custom content body here.')).toBeInTheDocument();
   });
 
-  it('renders historical timeline milestones and committee origins', () => {
+  it('renders historical timeline milestones dynamically from Sanity CMS data', () => {
+    const mockTimeline = [
+      {
+        year: '1903',
+        title: 'AIEE Purdue Branch Founded',
+        category: 'Branch Origin',
+        description: 'The American Institute of Electrical Engineers charters the Purdue Student Branch.',
+        isGoldAccent: true,
+      },
+      {
+        year: '1950s',
+        title: 'Grand Prix & Racing Heritage',
+        category: 'Motorsports',
+        description: 'Purdue IEEE members engineer early electric and combustion vehicles.',
+        isGoldAccent: false,
+      },
+      {
+        year: '2008',
+        title: 'ROV Underwater Robotics',
+        category: 'Marine Robotics',
+        description: 'Founded to engineer custom submersibles.',
+        isGoldAccent: false,
+      },
+    ];
+
     (useSanityData.useAboutPage as any).mockReturnValue({
-      data: null,
+      data: { timeline: mockTimeline },
       loading: false,
     });
 
@@ -107,11 +131,21 @@ describe('AboutUsPage', () => {
     expect(screen.getByText('// HISTORICAL LINEAGE & ROOTS')).toBeInTheDocument();
     expect(screen.getByText('AIEE Purdue Branch Founded')).toBeInTheDocument();
     expect(screen.getByText('Grand Prix & Racing Heritage')).toBeInTheDocument();
-    expect(screen.getByText('Historic IEEE Merger')).toBeInTheDocument();
-    expect(screen.getByText('Computer Society (CS)')).toBeInTheDocument();
-    expect(screen.getByText('Aerial Robotics (AESS)')).toBeInTheDocument();
     expect(screen.getByText('ROV Underwater Robotics')).toBeInTheDocument();
-    expect(screen.getByText('EMBS & MTT-S Expansions')).toBeInTheDocument();
-    expect(screen.getByText('Cornerstones & Modern Era')).toBeInTheDocument();
+  });
+
+  it('does not render timeline section when CMS data is empty (zero hardcoding)', () => {
+    (useSanityData.useAboutPage as any).mockReturnValue({
+      data: { timeline: [] },
+      loading: false,
+    });
+
+    render(
+      <MemoryRouter>
+        <AboutUsPage />
+      </MemoryRouter>
+    );
+
+    expect(screen.queryByText('// HISTORICAL LINEAGE & ROOTS')).not.toBeInTheDocument();
   });
 });

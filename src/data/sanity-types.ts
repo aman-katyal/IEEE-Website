@@ -52,9 +52,24 @@ export interface AboutSectionData {
   colorTheme?: "gold" | string;
 }
 
+export interface TimelineMilestone {
+  _key?: string;
+  year: string;
+  title: string;
+  category?: string;
+  description: string;
+  isGoldAccent?: boolean;
+}
+
 export interface AboutPageData {
   _id?: string;
+  quote?: {
+    text?: string;
+    author?: string;
+    authorTitle?: string;
+  };
   quoteAuthor?: string;
   quoteAuthorTitle?: string;
+  timeline?: TimelineMilestone[];
   sections?: AboutSectionData[];
 }
