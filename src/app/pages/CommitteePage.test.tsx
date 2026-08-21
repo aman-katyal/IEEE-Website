@@ -55,7 +55,7 @@ describe('CommitteePage Rendering', () => {
     );
 
     // Verify header renders
-    expect(screen.getByText('Test Committee')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Test Committee' })).toBeInTheDocument();
 
     // Verify 'Active' status badge is not rendered
     expect(screen.queryByText(/^Active/i)).not.toBeInTheDocument();
