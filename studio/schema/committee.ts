@@ -38,6 +38,7 @@ export const committee = defineType({
       title: 'Short Name',
       type: 'string',
       group: 'info',
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'tagline',
@@ -51,6 +52,7 @@ export const committee = defineType({
       type: 'text',
       group: 'info',
       rows: 3,
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'longDescription',

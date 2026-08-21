@@ -10,11 +10,13 @@ export const socialLink = defineType({
       title: 'Platform',
       type: 'string',
       description: 'e.g., Discord, GitHub, Instagram',
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'url',
       title: 'URL',
       type: 'url',
+      validation: (Rule) => Rule.required(),
     }),
   ],
 })
@@ -24,8 +26,8 @@ export const metric = defineType({
   title: 'Metric',
   type: 'object',
   fields: [
-    defineField({ name: 'label', type: 'string', title: 'Label' }),
-    defineField({ name: 'value', type: 'string', title: 'Value' }),
+    defineField({ name: 'label', type: 'string', title: 'Label', validation: (Rule) => Rule.required() }),
+    defineField({ name: 'value', type: 'string', title: 'Value', validation: (Rule) => Rule.required() }),
   ],
 })
 

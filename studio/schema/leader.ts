@@ -17,6 +17,7 @@ export const leader = defineType({
       name: 'role',
       title: 'Role',
       type: 'string',
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'committees',

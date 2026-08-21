@@ -15,11 +15,13 @@ export const cornerstone = defineType({
         source: 'name',
         maxLength: 96,
       },
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'name',
       title: 'Committee Name',
       type: 'string',
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'description',

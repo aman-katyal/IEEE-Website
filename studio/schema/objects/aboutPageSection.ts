@@ -6,7 +6,7 @@ export const aboutPageSection = defineType({
   type: 'object',
   fields: [
     defineField({ name: 'eyebrow', title: 'Eyebrow', type: 'string' }),
-    defineField({ name: 'title', title: 'Title', type: 'string' }),
+    defineField({ name: 'title', title: 'Title', type: 'string', validation: (Rule) => Rule.required() }),
     defineField({ name: 'content', title: 'Content', type: 'text' }),
     defineField({ name: 'cardTitle', title: 'Card Title', type: 'string' }),
     defineField({ name: 'cardContent', title: 'Card Content', type: 'text' }),
