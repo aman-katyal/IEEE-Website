@@ -1,19 +1,7 @@
-import { useState } from 'react';
 import { FinanceAuthModal } from '../components/finance/FinanceAuthModal';
 import { CommitteeFinanceView } from '../components/finance/CommitteeFinanceView';
 import { TreasurerFinanceView } from '../components/finance/TreasurerFinanceView';
-import {
-  INITIAL_PURCHASES,
-  INITIAL_MEMBER_DUES,
-  INITIAL_FUNDING_INFLOWS,
-  REAL_COMMITTEES,
-  type AuthSessionData,
-  type PurchaseItem,
-  type MemberDuesRecord,
-  type CommitteeFundingInflow,
-  type CommitteeInfo,
-  type PurchaseStatus,
-} from '../components/finance/financeData';
+import { useFinanceApi } from '@/hooks/useFinanceApi';
 import {
   ShieldCheck,
   Building,
@@ -24,61 +12,28 @@ import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 
 export function FinancePortalPage() {
-  const [session, setSession] = useState<AuthSessionData | null>(null);
-  const [purchases, setPurchases] = useState<PurchaseItem[]>(INITIAL_PURCHASES);
-  const [memberDues, setMemberDues] = useState<MemberDuesRecord[]>(INITIAL_MEMBER_DUES);
-  const [committees, setCommittees] = useState<CommitteeInfo[]>(REAL_COMMITTEES);
-  const [fundingInflows, setFundingInflows] = useState<CommitteeFundingInflow[]>(INITIAL_FUNDING_INFLOWS);
+  const {
+    session,
+    setSession,
+    purchases,
+    memberDues,
+    committees,
+    fundingInflows,
+    logout,
+    addPurchase,
+    updatePurchaseStatus,
+    importMemberDues,
+    updateCommittee,
+    addFundingInflow,
+    deleteFundingInflow,
+  } = useFinanceApi();
 
-  const handleLogin = (newSession: AuthSessionData) => {
+  const handleLogin = (newSession: any) => {
     setSession(newSession);
   };
 
   const handleLogout = () => {
-    setSession(null);
-  };
-
-  const handleAddPurchase = (newPurchase: PurchaseItem) => {
-    setPurchases((prev) => [newPurchase, ...prev]);
-  };
-
-  const handleUpdatePurchaseStatus = (
-    id: string,
-    status: PurchaseStatus,
-    notes?: string,
-    coolAccountNumber?: string
-  ) => {
-    setPurchases((prev) =>
-      prev.map((item) => {
-        if (item.id !== id) return item;
-        return {
-          ...item,
-          status,
-          treasurerNotes: notes !== undefined ? notes : item.treasurerNotes,
-          coolAccountNumber: coolAccountNumber !== undefined ? coolAccountNumber : item.coolAccountNumber,
-          approvedAt: status === 'APPROVED' ? new Date().toISOString() : item.approvedAt,
-          reimbursedAt: status === 'REIMBURSED' ? new Date().toISOString() : item.reimbursedAt,
-        };
-      })
-    );
-  };
-
-  const handleImportMemberDues = (records: MemberDuesRecord[]) => {
-    setMemberDues((prev) => [...records, ...prev]);
-  };
-
-  const handleUpdateCommittee = (committeeId: string, updated: Partial<CommitteeInfo>) => {
-    setCommittees((prev) =>
-      prev.map((c) => (c.id === committeeId ? { ...c, ...updated } : c))
-    );
-  };
-
-  const handleAddFundingInflow = (newInflow: CommitteeFundingInflow) => {
-    setFundingInflows((prev) => [newInflow, ...prev]);
-  };
-
-  const handleDeleteFundingInflow = (inflowId: string) => {
-    setFundingInflows((prev) => prev.filter((item) => item.id !== inflowId));
+    logout();
   };
 
   return (
@@ -93,6 +48,11 @@ export function FinancePortalPage() {
               </span>
               <span className="text-slate-600">·</span>
               <span className="font-mono text-xs text-[#EBD3A9]">BoilerBooks 3.0</span>
+              <span className="text-slate-600">·</span>
+              <div className="inline-flex items-center gap-1.5 text-[11px] font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20 shadow-sm">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>Cloudflare D1 Synced</span>
+              </div>
             </div>
             <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white font-['Space_Grotesk']">
               Purdue IEEE Finance Portal
@@ -173,7 +133,7 @@ export function FinancePortalPage() {
             purchases={purchases}
             memberDues={memberDues}
             fundingInflows={fundingInflows}
-            onAddPurchase={handleAddPurchase}
+            onAddPurchase={addPurchase}
             onLogout={handleLogout}
           />
         ) : (
@@ -183,11 +143,11 @@ export function FinancePortalPage() {
             memberDues={memberDues}
             committees={committees}
             fundingInflows={fundingInflows}
-            onUpdatePurchaseStatus={handleUpdatePurchaseStatus}
-            onImportMemberDues={handleImportMemberDues}
-            onUpdateCommittee={handleUpdateCommittee}
-            onAddFundingInflow={handleAddFundingInflow}
-            onDeleteFundingInflow={handleDeleteFundingInflow}
+            onUpdatePurchaseStatus={updatePurchaseStatus}
+            onImportMemberDues={importMemberDues}
+            onUpdateCommittee={updateCommittee}
+            onAddFundingInflow={addFundingInflow}
+            onDeleteFundingInflow={deleteFundingInflow}
             onLogout={handleLogout}
           />
         )}

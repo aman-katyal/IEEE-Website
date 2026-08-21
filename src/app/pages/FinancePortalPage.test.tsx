@@ -17,6 +17,7 @@ if (typeof window.URL.createObjectURL === 'undefined') {
 describe('FinancePortalPage Integration Suite', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    localStorage.clear();
   });
 
   describe('1. Authentication & Role Switching', () => {
