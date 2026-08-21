@@ -75,7 +75,7 @@ export function CyclingStat({ stats }: CyclingStatProps) {
       setIndex((prev) => (prev + 1) % stats.length);
     }, 4500);
     return () => clearInterval(timer);
-  }, [stats, isPaused]);
+  }, [stats.length, isPaused]);
 
   return (
     <div
