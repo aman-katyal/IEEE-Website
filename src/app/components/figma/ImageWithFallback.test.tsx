@@ -14,15 +14,14 @@ describe('ImageWithFallback', () => {
     expect(img).toHaveAttribute('src', 'test.jpg')
   })
 
-  it('falls back to error image on error', () => {
+  it('falls back to error placeholder on error', () => {
     render(<ImageWithFallback src="test.jpg" alt="test image" />)
     const img = screen.getByAltText('test image')
 
     fireEvent.error(img)
 
-    const fallbackImg = screen.getByAltText('Error loading image')
-    expect(fallbackImg).toBeInTheDocument()
-    expect(fallbackImg).toHaveAttribute('src', ERROR_IMG_SRC)
-    expect(fallbackImg).toHaveAttribute('data-original-url', 'test.jpg')
+    const fallback = screen.getByTestId('image-fallback')
+    expect(fallback).toBeInTheDocument()
+    expect(fallback).toHaveAttribute('data-original-url', 'test.jpg')
   })
 })
