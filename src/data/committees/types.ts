@@ -79,6 +79,14 @@ export type CommitteeSection =
   | { type: "cta"; title: string; content: string; buttonText: string; buttonLink: string }
   | { type: "contact"; title: string; name: string; email: string; role?: string };
 
+export interface MeetingSchedule {
+  dayOfWeek?: string;
+  time?: string;
+  location?: string;
+  frequency?: string;
+  notes?: string;
+}
+
 export interface Committee {
   /** URL slug — used in routes like /committee/rov */
   id: string;
@@ -111,7 +119,7 @@ export interface Committee {
   gallery?: GalleryItem[];
   faqs?: FAQ[];
   recruitmentInfo?: string;
-  meetingSchedule?: string;
+  meetingSchedule?: string | MeetingSchedule;
   socialLinks?: SocialLink[];
   customSections?: CustomSection[];
 }

@@ -80,6 +80,19 @@ export const committee = defineType({
       group: 'info',
       rows: 5,
     }),
+    defineField({
+      name: 'meetingSchedule',
+      title: 'Meeting Schedule',
+      type: 'object',
+      group: 'info',
+      fields: [
+        defineField({ name: 'dayOfWeek', title: 'Day of Week', type: 'string', description: 'e.g. Tuesdays' }),
+        defineField({ name: 'time', title: 'Time', type: 'string', description: 'e.g. 6:30 PM - 7:30 PM' }),
+        defineField({ name: 'location', title: 'Location / Room', type: 'string', description: 'e.g. EE 129' }),
+        defineField({ name: 'frequency', title: 'Frequency', type: 'string', description: 'e.g. Weekly' }),
+        defineField({ name: 'notes', title: 'Notes', type: 'string', description: 'e.g. Open to all majors' }),
+      ],
+    }),
 
     // --- MEDIA GROUP ---
     defineField({

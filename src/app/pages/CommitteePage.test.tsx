@@ -30,6 +30,7 @@ describe('CommitteePage Rendering', () => {
       tags: ['test'],
       chair: 'Test Chair',
       email: 'test@example.com',
+      meetingSchedule: { dayOfWeek: 'Tuesdays', time: '6:30 PM', location: 'EE 129' },
       metrics: [{ label: 'Members', value: '10' }],
       sections: [
         {
@@ -56,6 +57,9 @@ describe('CommitteePage Rendering', () => {
 
     // Verify header renders
     expect(screen.getByRole('heading', { name: 'Test Committee' })).toBeInTheDocument();
+
+    // Verify meeting schedule renders
+    expect(screen.getByText(/Tuesdays 6:30 PM @ EE 129/i)).toBeInTheDocument();
 
     // Verify 'Active' status badge is not rendered
     expect(screen.queryByText(/^Active/i)).not.toBeInTheDocument();

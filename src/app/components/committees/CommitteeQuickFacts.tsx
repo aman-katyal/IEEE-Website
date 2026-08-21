@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router";
-import { Mail, ChevronRight, ExternalLink, AlertCircle } from "lucide-react";
+import { Mail, ChevronRight, ExternalLink, AlertCircle, Clock } from "lucide-react";
 import { Skeleton } from "boneyard-js/react";
 import { getPlatformIcon } from "../icons/getPlatformIcon";
 import type { Committee } from "../../../data/committees/types";
@@ -59,13 +59,14 @@ export function CommitteeQuickFacts({
             }
           }}
           className={`btn-primary w-full text-center py-3 px-5 inline-flex items-center justify-center gap-2 font-[family-name:var(--font-body)] text-sm font-semibold cursor-pointer ${
-            isDiscord ? "!bg-[#5865F2]" : "!bg-[var(--electric-blue)]"
+            isDiscord
+              ? "bg-[#5865F2] hover:bg-[#4752C4] border-transparent text-white"
+              : ""
           }`}
         >
-          {getPlatformIcon("", url, 16)}
-          <span>{config.buttonText || "Join Us"}</span>
+          {config.buttonText || "Join Committee"}
           {isExternal ? (
-            <ExternalLink size={14} className="opacity-80" aria-hidden="true" />
+            <ExternalLink size={16} aria-hidden="true" />
           ) : (
             <ChevronRight size={16} aria-hidden="true" />
           )}
@@ -75,16 +76,9 @@ export function CommitteeQuickFacts({
 
     if (config.type === "message") {
       return (
-        <div className="p-3.5 bg-[rgba(235,211,169,0.05)] border border-[var(--glass-border)] rounded-md flex items-start gap-2.5">
-          <AlertCircle
-            size={16}
-            className="text-[var(--cyber-gold)] shrink-0 mt-0.5"
-            aria-hidden="true"
-          />
-          <div className="font-[family-name:var(--font-body)] text-xs text-[var(--text-secondary)] leading-snug">
-            {config.message ||
-              "We are not currently accepting new members. Please check back later!"}
-          </div>
+        <div className="p-3 bg-[rgba(235,211,169,0.05)] border border-[rgba(235,211,169,0.2)] rounded text-xs text-[var(--cyber-gold)] flex items-start gap-2 text-left font-[family-name:var(--font-mono)]">
+          <AlertCircle size={14} className="shrink-0 mt-0.5" aria-hidden="true" />
+          <span>{config.message || "Contact committee chair for info."}</span>
         </div>
       );
     }
@@ -93,8 +87,8 @@ export function CommitteeQuickFacts({
   };
 
   const hasMetrics = committee?.metrics && committee.metrics.length > 0;
-  const hasChair = !!committee?.chair;
   const hasSocials = committee?.socialLinks && committee.socialLinks.length > 0;
+  const hasChair = !!committee?.chair;
 
   return (
     <Skeleton
@@ -102,14 +96,8 @@ export function CommitteeQuickFacts({
       loading={loading}
       color={isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}
     >
-      <div
-        className={`glass-card p-6 sm:p-8 grid grid-cols-1 md:grid-cols-3 gap-6 items-center mb-12 ${
-          isLight
-            ? "bg-white/80 border-[rgba(0,90,135,0.15)]"
-            : "bg-[rgba(10,15,25,0.65)] border-[rgba(0,98,155,0.2)]"
-        }`}
-      >
-        {/* Metric Counter Columns */}
+      <div className="glass-card p-6 sm:p-8 grid grid-cols-1 md:grid-cols-3 gap-6 items-center mb-12 bg-[rgba(10,15,25,0.65)] border-[rgba(0,98,155,0.2)]">
+        {/* Metrics Column */}
         {hasMetrics && (
           <div className="flex items-center justify-around gap-4 pr-0 md:pr-4 md:border-r border-[var(--glass-border)]">
             {committee.metrics!.map((m) => (
@@ -125,7 +113,7 @@ export function CommitteeQuickFacts({
           </div>
         )}
 
-        {/* Leadership / Contact Info */}
+        {/* Leadership / Contact & Meeting Info */}
         {hasChair && (
           <div className="flex flex-col gap-1 pr-0 md:pr-4 md:border-r border-[var(--glass-border)] text-center md:text-left">
             <div className="font-[family-name:var(--font-mono)] text-[0.6rem] tracking-widest text-[var(--text-muted)] uppercase font-semibold">
@@ -142,6 +130,18 @@ export function CommitteeQuickFacts({
                 <Mail size={13} className="shrink-0" aria-hidden="true" />
                 {committee.email}
               </a>
+            )}
+            {committee?.meetingSchedule && (
+              <div className="inline-flex items-center justify-center md:justify-start gap-1.5 font-[family-name:var(--font-mono)] text-[11px] text-[var(--cyber-gold)] mt-1.5 opacity-90">
+                <Clock size={11} className="shrink-0" aria-hidden="true" />
+                <span>
+                  {typeof committee.meetingSchedule === "string"
+                    ? committee.meetingSchedule
+                    : `${committee.meetingSchedule.dayOfWeek || ""} ${committee.meetingSchedule.time || ""} ${
+                        committee.meetingSchedule.location ? `@ ${committee.meetingSchedule.location}` : ""
+                      }`.trim()}
+                </span>
+              </div>
             )}
           </div>
         )}
