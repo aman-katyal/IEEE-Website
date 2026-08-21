@@ -486,7 +486,7 @@ export async function recordCommitteeFundingInflow(
   }
 
   const d1 = toD1Database(db);
-  const inflowId = payload.id || `inflow-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+  const inflowId = payload.id || `inflow-${crypto.randomUUID()}`;
   const receivedDate = payload.receivedDate || new Date().toISOString().split('T')[0];
   const sourceType = (payload.sourceType as string) || 'Other';
   const referenceNumber = payload.referenceNumber?.trim() || null;

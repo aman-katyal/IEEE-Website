@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Outlet, useLocation } from "react-router";
+import { Outlet, useLocation, useSearchParams } from "react-router";
 import { AnimatePresence } from "motion/react";
 import { ThemeProvider } from "next-themes";
 import { enableVisualEditing } from "@sanity/visual-editing";
@@ -7,32 +7,36 @@ import { BackToTop } from "./components/shared/BackToTop";
 
 import { ToastProvider } from "./components/ui/toast";
 import { OfflineNotifier } from "./components/shared/OfflineNotifier";
+import { ScrollToTop } from "./components/shared/ScrollToTop";
 
 export default function App() {
   const location = useLocation();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     // Only enable visual editing if we're in an iframe or have a preview parameter
     const isIframe = window.self !== window.top;
-    const isPreview = new URLSearchParams(window.location.search).has('preview');
+    const isPreview = searchParams.has('preview');
 
-    if (isIframe || isPreview) {
-      const disable = enableVisualEditing({
-        zIndex: 1000,
-        onPublish: () => {
-          window.location.reload();
-        }
-      } as any);
+    if (!(isIframe || isPreview)) return;
 
-      return () => {
-        disable();
-      };
-    }
+    const disable = enableVisualEditing({
+      zIndex: 1000,
+      onPublish: () => {
+        window.location.reload();
+      }
+    } as any);
+
+    return () => {
+      disable();
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark">
       <ToastProvider>
+        <ScrollToTop />
         <OfflineNotifier />
         <BackToTop />
         
