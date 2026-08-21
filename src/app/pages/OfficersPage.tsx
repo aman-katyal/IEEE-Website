@@ -90,229 +90,68 @@ export function OfficersPage() {
       strength={0.05}
       className="w-full h-full"
     >
-      <div
-        className="glass-card hover-glow-gold hover-scale hover-border-gold"
-        style={{
-          padding: "20px",
-          display: "flex",
-          flexDirection: "column",
-          height: "100%",
-          transition: "all 0.3s ease",
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
+      <div className="glass-card hover-glow-gold hover-scale hover-border-gold p-5 flex flex-col h-full rounded-md relative overflow-hidden transition-all duration-300">
         {/* Image Container with masked fade */}
-        <div
-          style={{
-            width: "100%",
-            aspectRatio: "1/1",
-            background: isLight ? "rgba(0, 0, 0, 0.03)" : "rgba(0, 0, 0, 0.2)",
-            borderRadius: "4px",
-            marginBottom: "24px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            border: "1px solid var(--glass-border)",
-            position: "relative",
-            overflow: "hidden",
-          }}
-        >
+        <div className="w-full aspect-square bg-black/5 dark:bg-black/30 rounded mb-6 flex items-center justify-center border border-(--glass-border) relative overflow-hidden">
           {officer.image ? (
             <>
               <img
                 src={officer.image}
                 alt={officer.name}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  transition: "transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
-                }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.transform = "scale(1.05)")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.transform = "scale(1)")
-                }
+                className="w-full h-full object-cover transition-transform duration-500 ease-out hover:scale-105"
               />
 
-              {/* Bottom Gradient Fade - Softer in Light Mode */}
+              {/* Bottom Gradient Fade */}
               <div
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  background: isLight
-                    ? "linear-gradient(to bottom, transparent 80%, rgba(248, 250, 252, 0.5) 100%)"
-                    : "linear-gradient(to bottom, transparent 60%, rgba(10, 10, 12, 0.9) 100%)",
-                  pointerEvents: "none",
-                }}
+                className={`absolute inset-0 pointer-events-none ${
+                  isLight
+                    ? "bg-gradient-to-b from-transparent via-transparent to-slate-100/50"
+                    : "bg-gradient-to-b from-transparent via-transparent to-[#0a0a0c]/90"
+                }`}
               />
 
-              {/* Subtle Inner Shadow - Much lighter in Light Mode */}
-              <div
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  boxShadow: isLight
-                    ? "inset 0 0 20px rgba(0,0,0,0.03)"
-                    : "inset 0 0 40px rgba(0,0,0,0.2)",
-                  pointerEvents: "none",
-                }}
-              />
-
-              {/* Stylized Tech Accents - More prominent */}
-              <div
-                style={{
-                  position: "absolute",
-                  top: "10px",
-                  left: "10px",
-                  width: "16px",
-                  height: "16px",
-                  borderTop: "2px solid var(--electric-blue)",
-                  borderLeft: "2px solid var(--electric-blue)",
-                  opacity: 0.8,
-                  zIndex: 2,
-                }}
-              />
-              <div
-                style={{
-                  position: "absolute",
-                  bottom: "10px",
-                  right: "10px",
-                  width: "16px",
-                  height: "16px",
-                  borderBottom: "2px solid var(--cyber-gold)",
-                  borderRight: "2px solid var(--cyber-gold)",
-                  opacity: 0.8,
-                  zIndex: 2,
-                }}
-              />
+              {/* Stylized Tech Accents */}
+              <div className="absolute top-2.5 left-2.5 w-4 h-4 border-t-2 border-l-2 border-(--electric-blue) opacity-80 z-2" />
+              <div className="absolute bottom-2.5 right-2.5 w-4 h-4 border-b-2 border-r-2 border-(--cyber-gold) opacity-80 z-2" />
             </>
           ) : (
-            <User
-              size={48}
-              style={{ color: "var(--text-muted)", opacity: 0.3 }}
-            />
+            <User size={48} className="text-(--text-muted) opacity-30" />
           )}
         </div>
 
-        <div style={{ marginBottom: "20px" }}>
-          <h3
-            style={{
-              fontFamily: "var(--font-headline)",
-              fontSize: "20px",
-              fontWeight: 600,
-              color: "var(--text-primary)",
-              marginBottom: "6px",
-            }}
-          >
+        <div className="mb-5">
+          <h3 className="font-headline text-xl font-semibold text-(--text-primary) mb-1.5">
             {officer.name}
           </h3>
-          <div
-            style={{
-              display: "inline-block",
-              padding: "3px 10px",
-              background: "rgba(0, 98, 155, 0.1)",
-              border: "1px solid var(--glass-border)",
-              borderRadius: "2px",
-              color: "var(--electric-blue)",
-              fontSize: "11px",
-              fontWeight: 600,
-              textTransform: "uppercase",
-              letterSpacing: "0.08em",
-            }}
-          >
+          <div className="inline-block px-2.5 py-0.5 bg-[rgba(0,98,155,0.1)] border border-(--glass-border) rounded text-(--electric-blue) text-[11px] font-semibold uppercase tracking-wider">
             {officer.role}
           </div>
         </div>
 
-        <div
-          style={{
-            flexGrow: 1,
-            display: "flex",
-            flexDirection: "column",
-            gap: "16px",
-          }}
-        >
+        <div className="grow flex flex-col gap-4">
           {officer.committees && (
-            <div
-              style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}
-            >
-              <Users
-                size={15}
-                style={{
-                  color: "var(--cyber-gold)",
-                  marginTop: "3px",
-                  flexShrink: 0,
-                }}
-              />
+            <div className="flex gap-3 items-start">
+              <Users size={15} className="text-(--cyber-gold) mt-1 shrink-0" />
               <div>
-                <p
-                  style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: "10px",
-                    color: "var(--text-muted)",
-                    marginBottom: "2px",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.1em",
-                  }}
-                >
+                <p className="font-mono text-[10px] text-(--text-muted) mb-0.5 uppercase tracking-widest">
                   Committees
                 </p>
-                <p
-                  style={{
-                    fontFamily: "var(--font-body)",
-                    fontSize: "13px",
-                    color: "var(--text-secondary)",
-                    lineHeight: 1.5,
-                  }}
-                >
+                <p className="font-body text-xs text-(--text-secondary) leading-relaxed">
                   {officer.committees}
                 </p>
               </div>
             </div>
           )}
 
-          <div
-            style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}
-          >
-            <Mail
-              size={15}
-              style={{
-                color: "var(--electric-blue)",
-                marginTop: "3px",
-                flexShrink: 0,
-              }}
-            />
+          <div className="flex gap-3 items-start">
+            <Mail size={15} className="text-(--electric-blue) mt-1 shrink-0" />
             <div>
-              <p
-                style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: "10px",
-                  color: "var(--text-muted)",
-                  marginBottom: "2px",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.1em",
-                }}
-              >
+              <p className="font-mono text-[10px] text-(--text-muted) mb-0.5 uppercase tracking-widest">
                 Contact
               </p>
               <a
                 href={`mailto:${officer.email}`}
-                style={{
-                  fontFamily: "var(--font-body)",
-                  fontSize: "13px",
-                  color: "var(--text-secondary)",
-                  textDecoration: "none",
-                  transition: "color 0.2s ease",
-                }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.color = "var(--electric-blue)")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.color = "var(--text-secondary)")
-                }
+                className="font-body text-xs text-(--text-secondary) hover:text-(--electric-blue) transition-colors duration-200"
               >
                 {officer.email}
               </a>
@@ -324,59 +163,18 @@ export function OfficersPage() {
   );
 
   return (
-    <section
-      style={{
-        background: "var(--boiler-black)",
-        minHeight: "100vh",
-        padding: "120px 0 96px",
-        position: "relative",
-        overflow: "hidden",
-      }}
-    >
+    <section className="bg-(--boiler-black) min-h-screen pt-28 pb-24 relative overflow-hidden">
       {/* Subtle grid */}
-      <div
-        className="ieee-grid-bg"
-        style={{ position: "absolute", inset: 0, opacity: 0.25 }}
-      />
+      <div className="ieee-grid-bg absolute inset-0 opacity-25" />
 
-      <div
-        style={{
-          position: "relative",
-          zIndex: 5,
-          maxWidth: "1280px",
-          margin: "0 auto",
-          padding: "0 clamp(16px, 4vw, 32px)",
-        }}
-      >
+      <div className="relative z-5 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div style={{ marginBottom: "72px", textAlign: "center" }}>
-          <p className="section-eyebrow" style={{ marginBottom: "16px" }}>
-            // Leadership Team
-          </p>
-          <h2
-            style={{
-              fontFamily: "var(--font-headline)",
-              fontSize: "clamp(32px, 5vw, 56px)",
-              fontWeight: 700,
-              color: "var(--text-primary)",
-              lineHeight: 1.1,
-              letterSpacing: "-0.03em",
-              marginBottom: "24px",
-            }}
-          >
-            Meet Our{" "}
-            <span style={{ color: "var(--electric-blue)" }}>Officers</span>
+        <div className="mb-16 text-center">
+          <p className="section-eyebrow mb-4">// Leadership Team</p>
+          <h2 className="font-headline text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-(--text-primary) leading-tight tracking-tight mb-6">
+            Meet Our <span className="text-(--electric-blue)">Officers</span>
           </h2>
-          <p
-            style={{
-              fontFamily: "var(--font-body)",
-              fontSize: "18px",
-              color: "var(--text-secondary)",
-              lineHeight: 1.6,
-              maxWidth: "700px",
-              margin: "0 auto",
-            }}
-          >
+          <p className="font-body text-lg text-(--text-secondary) leading-relaxed max-w-2xl mx-auto">
             The dedicated students who keep Purdue IEEE running smoothly across
             all technical and administrative operations.
           </p>
@@ -401,48 +199,18 @@ export function OfficersPage() {
                   <Accordion.Item
                     key={cat.id}
                     value={cat.id}
-                    className="AccordionItem"
-                    style={{
-                      borderBottom: "1px solid var(--glass-border)",
-                      marginBottom: "12px",
-                    }}
+                    className="AccordionItem border-b border-(--glass-border) mb-3"
                   >
                     <Accordion.Header className="AccordionHeader">
-                      <Accordion.Trigger
-                        className="AccordionTrigger"
-                        style={{
-                          width: "100%",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          padding: "20px 0",
-                          background: "none",
-                          border: "none",
-                          color: "var(--text-primary)",
-                          cursor: "pointer",
-                        }}
-                      >
-                        <span
-                          style={{
-                            fontFamily: "var(--font-headline)",
-                            fontSize: "20px",
-                            fontWeight: 600,
-                          }}
-                        >
+                      <Accordion.Trigger className="AccordionTrigger w-full flex items-center justify-between py-5 bg-transparent border-none text-(--text-primary) cursor-pointer">
+                        <span className="font-headline text-xl font-semibold">
                           {cat.name}
                         </span>
                         <ChevronDown className="AccordionChevron" aria-hidden />
                       </Accordion.Trigger>
                     </Accordion.Header>
                     <Accordion.Content className="AccordionContent">
-                      <p
-                        style={{
-                          fontFamily: "var(--font-body)",
-                          fontSize: "14px",
-                          color: "var(--text-muted)",
-                          marginBottom: "24px",
-                        }}
-                      >
+                      <p className="font-body text-sm text-(--text-muted) mb-6">
                         {cat.description}
                       </p>
                       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-8">
@@ -459,40 +227,21 @@ export function OfficersPage() {
               if (sectionLeaders.length === 0) return null;
 
               return (
-                <div key={cat.id} style={{ marginBottom: "80px" }}>
-                  <div style={{ marginBottom: "32px" }}>
-                    <h3
-                      style={{
-                        fontFamily: "var(--font-headline)",
-                        fontSize: "28px",
-                        fontWeight: 600,
-                        color: "var(--text-primary)",
-                        marginBottom: "8px",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "12px",
-                      }}
-                    >
+                <div key={cat.id} className="mb-20">
+                  <div className="mb-8">
+                    <h3 className="font-headline text-2xl md:text-3xl font-semibold text-(--text-primary) mb-2 flex items-center gap-3">
                       <span
-                        style={{
-                          color:
-                            cat.id === "executive"
-                              ? "var(--cyber-gold)"
-                              : "var(--electric-blue)",
-                        }}
+                        className={
+                          cat.id === "executive"
+                            ? "text-(--cyber-gold)"
+                            : "text-(--electric-blue)"
+                        }
                       >
                         //
                       </span>
                       {cat.name}
                     </h3>
-                    <p
-                      style={{
-                        fontFamily: "var(--font-body)",
-                        fontSize: "15px",
-                        color: "var(--text-muted)",
-                        maxWidth: "800px",
-                      }}
-                    >
+                    <p className="font-body text-sm md:text-base text-(--text-muted) max-w-3xl">
                       {cat.description}
                     </p>
                   </div>
