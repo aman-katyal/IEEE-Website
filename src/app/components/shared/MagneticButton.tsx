@@ -1,6 +1,7 @@
-import { useRef, ReactNode } from "react";
-import { motion, useMotionValue, useSpring } from "motion/react";
+import { ReactNode } from "react";
+import { motion } from "motion/react";
 import { Link } from "react-router";
+import { useMagneticSpring } from "../../../hooks/useMagneticSpring";
 
 type CommonProps = {
   children: ReactNode;
@@ -27,8 +28,6 @@ type LinkProps = CommonProps &
 export type MagneticButtonProps = ButtonProps | LinkProps;
 
 const MotionLink = motion.create(Link);
-// ⚡ Bolt: Hoisted spring configuration outside of component to prevent re-allocation on every render
-const SPRING_CONFIG = { stiffness: 150, damping: 15, mass: 0.1 };
 
 export function MagneticButton(props: MagneticButtonProps) {
   const {
@@ -40,50 +39,8 @@ export function MagneticButton(props: MagneticButtonProps) {
     ...restProps
   } = props;
 
-  const ref = useRef<HTMLButtonElement & HTMLAnchorElement>(null);
-
-  const boundsRef = useRef<{
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-  } | null>(null);
-
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  const x = useSpring(mouseX, SPRING_CONFIG);
-  const y = useSpring(mouseY, SPRING_CONFIG);
-
-  const handleMouseEnter = () => {
-    if (!ref.current) return;
-    boundsRef.current = ref.current.getBoundingClientRect();
-  };
-
-  const handleMouseMove = (
-    e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>,
-  ) => {
-    if (!ref.current) return;
-
-    // Fallback in case mouseEnter didn't fire or cache is missing
-    if (!boundsRef.current) {
-      boundsRef.current = ref.current.getBoundingClientRect();
-    }
-
-    const { clientX, clientY } = e;
-    const { left, top, width, height } = boundsRef.current;
-
-    const centerX = left + width / 2;
-    const centerY = top + height / 2;
-    mouseX.set((clientX - centerX) * strength);
-    mouseY.set((clientY - centerY) * strength);
-  };
-
-  const handleMouseLeave = () => {
-    mouseX.set(0);
-    mouseY.set(0);
-    boundsRef.current = null;
-  };
+  const { ref, x, y, onMouseEnter, onMouseMove, onMouseLeave } =
+    useMagneticSpring<HTMLButtonElement & HTMLAnchorElement>(strength);
 
   const variantClass =
     variant === "primary"
@@ -98,9 +55,9 @@ export function MagneticButton(props: MagneticButtonProps) {
       <MotionLink
         to={to}
         ref={ref}
-        onMouseEnter={handleMouseEnter}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
+        onMouseEnter={onMouseEnter}
+        onMouseMove={onMouseMove}
+        onMouseLeave={onMouseLeave}
         style={{ ...style, x, y }}
         className={`${variantClass} ${className}`}
         {...linkProps}
@@ -115,9 +72,9 @@ export function MagneticButton(props: MagneticButtonProps) {
   return (
     <motion.button
       ref={ref}
-      onMouseEnter={handleMouseEnter}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
+      onMouseEnter={onMouseEnter}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
       style={{ ...style, x, y }}
       className={`${variantClass} ${className}`}
       {...buttonProps}
