@@ -91,4 +91,27 @@ describe('AboutUsPage', () => {
     expect(screen.getByText((_, element) => element?.textContent === 'Custom Title Here ')).toBeInTheDocument();
     expect(screen.getByText('Custom content body here.')).toBeInTheDocument();
   });
+
+  it('renders historical timeline milestones and committee origins', () => {
+    (useSanityData.useAboutPage as any).mockReturnValue({
+      data: null,
+      loading: false,
+    });
+
+    render(
+      <MemoryRouter>
+        <AboutUsPage />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText('// HISTORICAL LINEAGE & ROOTS')).toBeInTheDocument();
+    expect(screen.getByText('AIEE Purdue Branch Founded')).toBeInTheDocument();
+    expect(screen.getByText('Grand Prix & Racing Heritage')).toBeInTheDocument();
+    expect(screen.getByText('Historic IEEE Merger')).toBeInTheDocument();
+    expect(screen.getByText('Computer Society (CS)')).toBeInTheDocument();
+    expect(screen.getByText('Aerial Robotics (AESS)')).toBeInTheDocument();
+    expect(screen.getByText('ROV Underwater Robotics')).toBeInTheDocument();
+    expect(screen.getByText('EMBS & MTT-S Expansions')).toBeInTheDocument();
+    expect(screen.getByText('Cornerstones & Modern Era')).toBeInTheDocument();
+  });
 });
