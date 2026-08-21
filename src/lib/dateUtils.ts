@@ -1,18 +1,5 @@
-const MONTHS = [
-  "JAN",
-  "FEB",
-  "MAR",
-  "APR",
-  "MAY",
-  "JUN",
-  "JUL",
-  "AUG",
-  "SEP",
-  "OCT",
-  "NOV",
-  "DEC",
-];
-const DAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+const monthFormatter = new Intl.DateTimeFormat("en-US", { month: "short" });
+const dayFormatter = new Intl.DateTimeFormat("en-US", { weekday: "short" });
 
 /**
  * Formats a date into "MMM DD" (e.g., "JAN 05").
@@ -20,7 +7,9 @@ const DAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
  * @returns {string} The formatted date string.
  */
 export function fmtDate(d: Date): string {
-  return `${MONTHS[d.getMonth()]} ${String(d.getDate()).padStart(2, "0")}`;
+  const month = monthFormatter.format(d).toUpperCase();
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${month} ${day}`;
 }
 
 /**
@@ -29,7 +18,7 @@ export function fmtDate(d: Date): string {
  * @returns {string} The formatted day string.
  */
 export function fmtDay(d: Date): string {
-  return DAYS[d.getDay()];
+  return dayFormatter.format(d).toUpperCase();
 }
 
 /**
