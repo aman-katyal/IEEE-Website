@@ -27,7 +27,7 @@ describe("ErrorBoundary", () => {
       </ErrorBoundary>
     );
 
-    expect(screen.getByText("Something went wrong.")).toBeInTheDocument();
+    expect(screen.getByText(/unexpected application error/i)).toBeInTheDocument();
     expect(screen.getByText("Test error")).toBeInTheDocument();
 
     spy.mockRestore();

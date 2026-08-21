@@ -200,19 +200,18 @@ describe('BoilerBooks Treasurer Master Spending Matrix', () => {
 
   describe('3. Committee Specific Funding Inflows & Grants', () => {
     it('records and persists specific committee funding inflow', async () => {
-      const result = await recordCommitteeFundingInflow(
-        db,
-        'inflow-sf-01',
-        'fy25-26',
-        'rov',
-        'SFAB Grant',
-        'SFAB Spring 2026 Vehicle Hardware Grant',
-        3500.0,
-        'SFAB-2026-ROV-01',
-        '2026-02-15',
-        'Earmarked for thrusterESC modular upgrade',
-        'user-treasurer-01'
-      );
+      const result = await recordCommitteeFundingInflow(db, {
+        id: 'inflow-sf-01',
+        fiscalYearId: 'fy25-26',
+        committeeId: 'rov',
+        sourceType: 'SFAB Grant',
+        title: 'SFAB Spring 2026 Vehicle Hardware Grant',
+        amount: 3500.0,
+        referenceNumber: 'SFAB-2026-ROV-01',
+        receivedDate: '2026-02-15',
+        notes: 'Earmarked for thrusterESC modular upgrade',
+        recordedByUserId: 'user-treasurer-01',
+      });
 
       expect(result.id).toBe('inflow-sf-01');
       expect(result.committeeId).toBe('rov');

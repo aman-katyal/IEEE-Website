@@ -137,6 +137,19 @@ export interface CommitteeFundingInflow {
   createdAt?: string;
 }
 
+export interface CreateFundingInflowPayload {
+  id?: string;
+  fiscalYearId: string;
+  committeeId: string;
+  sourceType?: InflowSourceType | string;
+  title: string;
+  amount: number;
+  referenceNumber?: string;
+  receivedDate?: string;
+  notes?: string;
+  recordedByUserId?: string;
+}
+
 export interface FiscalYear {
   id: string;
   name: string;

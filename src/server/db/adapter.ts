@@ -96,3 +96,5 @@ export function adaptDatabase(db: D1DatabaseLike | DatabaseSync): D1DatabaseLike
 
   throw new Error('Unsupported database object passed to adaptDatabase');
 }
+
+export const toD1Database = adaptDatabase;

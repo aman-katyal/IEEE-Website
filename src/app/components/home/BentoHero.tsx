@@ -10,7 +10,13 @@ import { LabStatusRack } from "./hero/LabStatusRack";
 import { BranchTelemetryCard, HeroAboutCard } from "./hero/HeroStats";
 
 export function BentoHero() {
-  const { theme } = useTheme();
+  let theme: string | undefined = "dark";
+  try {
+    const themeCtx = useTheme();
+    theme = themeCtx?.theme;
+  } catch {
+    theme = "dark";
+  }
   const { data: homeData, loading: homeLoading } = useHomePageData();
   const { committees, loading: committeesLoading } = useCommittees();
 

@@ -8,8 +8,9 @@ import "./bones/registry";
 
 import { Layout } from "./app/components/shared/Layout";
 import { PageTransition } from "./app/components/shared/PageTransition";
-import { ErrorBoundary } from "./app/components/shared/ErrorBoundary";
+import { ErrorBoundary, RouteErrorBoundary } from "./app/components/shared/ErrorBoundary";
 import { PageSkeleton } from "./app/components/shared/PageSkeleton";
+import { ThemeProvider } from "next-themes";
 
 const HomePage = React.lazy(() => import('./app/pages/HomePage').then(m => ({ default: m.HomePage })));
 const CommitteePage = React.lazy(() => import('./app/pages/CommitteePage').then(m => ({ default: m.CommitteePage })));
@@ -38,9 +39,11 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
+    errorElement: <RouteErrorBoundary />,
     children: [
       {
         element: <Layout />,
+        errorElement: <RouteErrorBoundary />,
         children: [
           { path: "/", element: <PageTransition><Suspense fallback={<PageSkeleton />}><HomePage /></Suspense></PageTransition> },
           { path: "/about", element: <PageTransition><Suspense fallback={<PageSkeleton />}><AboutUsPage /></Suspense></PageTransition> },
@@ -64,8 +67,10 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")!).render(
   <ErrorBoundary>
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
+    <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark">
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+    </ThemeProvider>
   </ErrorBoundary>
 );

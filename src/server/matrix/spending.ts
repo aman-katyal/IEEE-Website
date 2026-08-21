@@ -4,6 +4,7 @@
  */
 
 import { queryAll, queryFirst, roundCurrency, type D1DatabaseLike } from '../db/query';
+import { toD1Database } from '../db/adapter';
 import type { CommitteeId } from '../db/types';
 
 export interface CommitteeSpendingRow {
@@ -369,6 +370,8 @@ export async function updateCommitteeParameters(
   committeeId: string,
   payload: UpdateCommitteeParametersPayload
 ): Promise<{ success: boolean; message: string }> {
+  const d1 = toD1Database(db);
+
   // 1. Update budget allocation if specified
   if (payload.allocatedAmount !== undefined) {
     const existingBudget = await queryFirst<{ id: string }>(
@@ -378,13 +381,13 @@ export async function updateCommitteeParameters(
     );
 
     if (existingBudget) {
-      await db
+      await d1
         .prepare('UPDATE committee_budgets SET allocated_amount = ?, notes = ? WHERE id = ?')
         .bind(payload.allocatedAmount, payload.notes || null, existingBudget.id)
         .run();
     } else {
       const budgetId = `cb-${committeeId}-${fiscalYearId}`;
-      await db
+      await d1
         .prepare(
           'INSERT INTO committee_budgets (id, fiscal_year_id, committee_id, allocated_amount, notes) VALUES (?, ?, ?, ?, ?)'
         )
@@ -417,7 +420,7 @@ export async function updateCommitteeParameters(
 
     if (updates.length > 0) {
       params.push(committeeId);
-      await db
+      await d1
         .prepare(`UPDATE finance_committees SET ${updates.join(', ')} WHERE id = ?`)
         .bind(...params)
         .run();
@@ -427,7 +430,7 @@ export async function updateCommitteeParameters(
   // 3. Update Categories if provided
   if (payload.categories && Array.isArray(payload.categories)) {
     // Delete existing categories for committee
-    await db
+    await d1
       .prepare('DELETE FROM budget_categories WHERE committee_id = ?')
       .bind(committeeId)
       .run();
@@ -436,7 +439,7 @@ export async function updateCommitteeParameters(
     for (const cat of payload.categories) {
       if (cat.trim().length > 0) {
         const catId = `cat-${committeeId}-${cat.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
-        await db
+        await d1
           .prepare('INSERT INTO budget_categories (id, committee_id, name) VALUES (?, ?, ?)')
           .bind(catId, committeeId, cat.trim())
           .run();
@@ -451,14 +454,16 @@ export async function updateCommitteeParameters(
 }
 
 export interface CreateFundingInflowPayload {
+  id?: string;
   fiscalYearId: string;
   committeeId: string;
-  sourceType: string;
+  sourceType?: string;
   title: string;
   amount: number;
   referenceNumber?: string;
   receivedDate?: string;
   notes?: string;
+  recordedByUserId?: string;
 }
 
 /**
@@ -467,15 +472,26 @@ export interface CreateFundingInflowPayload {
 export async function recordCommitteeFundingInflow(
   db: D1DatabaseLike,
   payload: CreateFundingInflowPayload
-): Promise<{ success: boolean; id: string; message: string }> {
+): Promise<{
+  success: boolean;
+  id: string;
+  committeeId: string;
+  sourceType: string;
+  amount: number;
+  referenceNumber: string | null;
+  message: string;
+}> {
   if (!payload.committeeId || !payload.title || typeof payload.amount !== 'number' || payload.amount <= 0) {
     throw new Error('Invalid funding inflow payload: committeeId, title, and positive amount are required.');
   }
 
-  const inflowId = `inflow-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+  const d1 = toD1Database(db);
+  const inflowId = payload.id || `inflow-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
   const receivedDate = payload.receivedDate || new Date().toISOString().split('T')[0];
+  const sourceType = (payload.sourceType as string) || 'Other';
+  const referenceNumber = payload.referenceNumber?.trim() || null;
 
-  await db
+  await d1
     .prepare(
       `INSERT INTO committee_funding_inflows (
         id, fiscal_year_id, committee_id, source_type, title, amount, reference_number, received_date, notes
@@ -485,10 +501,10 @@ export async function recordCommitteeFundingInflow(
       inflowId,
       payload.fiscalYearId,
       payload.committeeId,
-      payload.sourceType || 'Other',
+      sourceType,
       payload.title.trim(),
       roundCurrency(payload.amount),
-      payload.referenceNumber?.trim() || null,
+      referenceNumber,
       receivedDate,
       payload.notes?.trim() || null
     )
@@ -497,6 +513,10 @@ export async function recordCommitteeFundingInflow(
   return {
     success: true,
     id: inflowId,
+    committeeId: payload.committeeId,
+    sourceType,
+    amount: roundCurrency(payload.amount),
+    referenceNumber,
     message: `Successfully recorded $${payload.amount.toFixed(2)} funding for ${payload.committeeId}.`,
   };
 }
