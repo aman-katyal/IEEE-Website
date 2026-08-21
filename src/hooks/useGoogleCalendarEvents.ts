@@ -156,6 +156,9 @@ export function useGoogleCalendarEvents() {
       setEvents(parsed);
       setError(null);
     } catch (err: unknown) {
+      if ((err as { name?: string }).name === "AbortError") {
+        return;
+      }
       const message =
         err instanceof Error ? err.message : "Failed to fetch events";
       console.warn("[useGoogleCalendarEvents]", message);
@@ -167,11 +170,15 @@ export function useGoogleCalendarEvents() {
   }, []);
 
   useEffect(() => {
+    const controller = new AbortController();
     fetchEvents();
 
     // Auto-refresh
     const interval = setInterval(fetchEvents, CALENDAR_CONFIG.refreshInterval);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      controller.abort();
+    };
   }, [fetchEvents]);
 
   return { events, loading, error };
