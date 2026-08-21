@@ -26,6 +26,7 @@
     "pin:hash": "node scripts/set_pin.mjs --hash",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "lint:commit": "node scripts/lint_commit_msg.mjs",
     "branch:prune": "pwsh -Command \"git branch --merged master | Where-Object { $_ -notmatch 'master|\\*' } | ForEach-Object { git branch -d $_.Trim() }; git remote prune origin\""
   },
   "dependencies": {
