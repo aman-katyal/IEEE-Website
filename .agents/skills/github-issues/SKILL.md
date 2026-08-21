@@ -274,6 +274,21 @@ gh issue create \
   --label "type:ui-ux,priority:low,status:ready,area:<subsystem>"
 ```
 
+### Batch Issue Creation (Native Tooling)
+
+When creating multiple issues (e.g. from an audit, plan, or batch backlog), **NEVER** write a scratch Python script. Use `gh_tool`'s native batch mode:
+
+```bash
+# Pass JSON file path
+python -m gh_tool issue create --batch issues.json
+
+# Or pipe JSON directly via stdin
+echo '[{"title": "[TASK]: ...", "body": "## Description\n...\n## Requested Changes\n...\n## Acceptance Criteria\n- [ ] ...", "priority": "medium", "status": "ready"}]' | python -m gh_tool issue create --batch -
+
+# Or via npm script
+npm run issue:create -- --batch issues.json
+```
+
 ---
 
 ### Step 5: Issue Branch & Task Execution
