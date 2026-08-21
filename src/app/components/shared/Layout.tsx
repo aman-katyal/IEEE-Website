@@ -2,6 +2,7 @@ import { Outlet, useLocation } from "react-router";
 import { useEffect } from "react";
 import { Navigation } from "./Navigation";
 import { Footer } from "./Footer";
+import { BackToTop } from "./BackToTop";
 
 /** Scroll to top on route change */
 function ScrollToTop() {
@@ -35,6 +36,7 @@ export function Layout() {
       <main id="main-content" tabIndex={-1} className="outline-none">
         <Outlet />
       </main>
+      <BackToTop />
       <Footer />
     </div>
   );
