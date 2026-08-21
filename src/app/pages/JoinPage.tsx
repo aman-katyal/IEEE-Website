@@ -5,7 +5,6 @@ import {
   CheckCircle2,
   ExternalLink,
 } from "lucide-react";
-import { useEffect } from "react";
 import { useTheme } from "next-themes";
 import { useSiteSettings } from "../../hooks/useSanityData";
 
@@ -14,16 +13,6 @@ export function JoinPage() {
   const isLight = theme === "light";
   const { settings, loading } = useSiteSettings();
 
-  useEffect(() => {
-    if (window.location.hash === "#dues-section") {
-      const el = document.getElementById("dues-section");
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth" });
-        return;
-      }
-    }
-    window.scrollTo(0, 0);
-  }, []);
 
   const duesBenefits = settings?.duesBenefits || [];
   const discordUrl = settings?.discordUrl || "";

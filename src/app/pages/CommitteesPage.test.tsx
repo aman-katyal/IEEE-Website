@@ -35,11 +35,6 @@ describe('CommitteesPage', () => {
     expect(screen.getByRole('button', { name: /Operations/i })).toBeInTheDocument();
   });
 
-  it('scrolls to top on mount', () => {
-    render(<CommitteesPage />);
-
-    expect(window.scrollTo).toHaveBeenCalledWith(0, 0);
-  });
 
   it('renders technical committees by default', () => {
     render(<CommitteesPage />);

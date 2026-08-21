@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useTheme } from "next-themes";
 import { Link } from "react-router";
 import { Shield, Lock, Users, Camera, Mail, ArrowLeft } from "lucide-react";
@@ -6,10 +5,6 @@ import { Shield, Lock, Users, Camera, Mail, ArrowLeft } from "lucide-react";
 export function PrivacyPage() {
   const { theme } = useTheme();
   const isLight = theme === "light";
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   return (
     <section

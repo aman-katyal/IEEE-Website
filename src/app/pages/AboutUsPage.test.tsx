@@ -14,35 +14,12 @@ vi.mock('next-themes', () => ({
 }));
 
 describe('AboutUsPage', () => {
-  const originalScrollTo = window.scrollTo;
-
   beforeEach(() => {
     vi.clearAllMocks();
-
-    window.scrollTo = vi.fn();
 
     (nextThemes.useTheme as any).mockReturnValue({
       theme: 'light',
     });
-  });
-
-  afterEach(() => {
-    window.scrollTo = originalScrollTo;
-  });
-
-  it('calls window.scrollTo on mount', () => {
-    (useSanityData.useAboutPage as any).mockReturnValue({
-      data: null,
-      loading: false,
-    });
-
-    render(
-      <MemoryRouter>
-        <AboutUsPage />
-      </MemoryRouter>
-    );
-
-    expect(window.scrollTo).toHaveBeenCalledWith(0, 0);
   });
 
   it('renders clean structure when no CMS data is provided', () => {

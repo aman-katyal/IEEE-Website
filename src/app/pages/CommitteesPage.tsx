@@ -1,7 +1,7 @@
 import { Committees } from "../components/committees/Committees";
 import { CornerstoneCommittees } from "../components/committees/CornerstoneCommittees";
 import { JoinCTA } from "../components/home/JoinCTA";
-import { useEffect, useState, startTransition } from "react";
+import { useState, startTransition } from "react";
 import { useTheme } from "next-themes";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -18,10 +18,6 @@ export function CommitteesPage() {
     });
   };
 
-  // Ensure we start at the top of the page on navigation
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   return (
     <div className="pt-20 bg-[var(--boiler-black)] min-h-screen">

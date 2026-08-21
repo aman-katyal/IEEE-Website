@@ -1,5 +1,4 @@
 import { FileText, Shield, ExternalLink } from "lucide-react";
-import { useEffect } from "react";
 import { useTheme } from "next-themes";
 import { useSiteSettings } from "../../hooks/useSanityData";
 
@@ -8,9 +7,6 @@ export function ConstitutionPage() {
   const isLight = theme === "light";
   const { settings, loading } = useSiteSettings();
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   if (loading) {
     return <div style={{ minHeight: "100vh", display: "flex", justifyContent: "center", alignItems: "center", background: "var(--boiler-black)", color: "var(--text-primary)" }}>Loading...</div>;

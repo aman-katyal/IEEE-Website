@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { motion } from "motion/react";
 import { useTheme } from "next-themes";
 import { Mail, Award, Rocket, Shield, Cpu, Download } from "lucide-react";
@@ -30,10 +30,6 @@ export function PartnersPage() {
     () => partners.filter((p) => p.tier === "Bronze"),
     [partners],
   );
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   if (loading) {
     return (

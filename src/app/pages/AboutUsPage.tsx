@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { motion } from "motion/react";
 import { useAboutPage } from "../../hooks/useSanityData";
 import { useTheme } from "next-themes";
@@ -53,9 +52,6 @@ export function AboutUsPage() {
   const { theme } = useTheme();
   const isLight = theme === "light";
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   const revealProps = {
     initial: { opacity: 0, y: 40 },

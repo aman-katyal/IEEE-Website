@@ -480,14 +480,14 @@ export function TreasurerFinanceView({
     const rows = matrixData.map((c) => [
       escapeCsv(c.id),
       escapeCsv(c.name),
-      c.allocated.toFixed(2),
-      c.inflows.toFixed(2),
+      c.baseAllocated.toFixed(2),
+      c.totalInflows.toFixed(2),
       c.totalBudget.toFixed(2),
-      c.spent.toFixed(2),
+      c.approved.toFixed(2),
       c.pending.toFixed(2),
       c.remaining.toFixed(2),
       `${c.percentSpent.toFixed(1)}%`,
-      c.requestCount.toString(),
+      c.totalRequests.toString(),
     ]);
 
     const csvContent = [headers.join(','), ...rows.map((row) => row.join(','))].join('\n');
