@@ -57,5 +57,6 @@ describe('CommitteesPage', () => {
 
     expect(screen.queryByTestId('committees-mock')).not.toBeInTheDocument();
     expect(screen.getByTestId('cornerstone-committees-mock')).toBeInTheDocument();
+    expect(screen.getByText('Showing Operations Committees')).toBeInTheDocument();
   });
 });

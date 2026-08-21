@@ -94,6 +94,13 @@ export function CommitteesPage() {
             </button>
           </div>
         </div>
+
+        {/* Live announcement region for screen readers */}
+        <div aria-live="polite" aria-atomic="true" className="sr-only">
+          {viewMode === "technical" && "Showing Technical Committees"}
+          {viewMode === "involvement" && "Showing Involvement Committees"}
+          {viewMode === "operations" && "Showing Operations Committees"}
+        </div>
       </div>
 
       <AnimatePresence mode="wait">
