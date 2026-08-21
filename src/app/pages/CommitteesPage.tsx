@@ -1,7 +1,7 @@
 import { Committees } from "../components/committees/Committees";
 import { CornerstoneCommittees } from "../components/committees/CornerstoneCommittees";
 import { JoinCTA } from "../components/home/JoinCTA";
-import { useEffect, useState } from "react";
+import { useEffect, useState, startTransition } from "react";
 import { useTheme } from "next-themes";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -11,6 +11,12 @@ export function CommitteesPage() {
   );
   const { theme } = useTheme();
   const isLight = theme === "light";
+
+  const handleModeChange = (mode: "technical" | "involvement" | "operations") => {
+    startTransition(() => {
+      setViewMode(mode);
+    });
+  };
 
   // Ensure we start at the top of the page on navigation
   useEffect(() => {
@@ -33,7 +39,7 @@ export function CommitteesPage() {
             className="flex bg-[rgba(128,128,128,0.05)] border border-[var(--glass-border)] rounded-full p-1 relative flex-wrap sm:flex-nowrap gap-1"
           >
             <button
-              onClick={() => setViewMode("technical")}
+              onClick={() => handleModeChange("technical")}
               aria-pressed={viewMode === "technical"}
               className={`relative py-2.5 px-6 rounded-full font-[family-name:var(--font-mono)] text-[11px] font-semibold uppercase tracking-[0.08em] border-none bg-transparent cursor-pointer transition-colors duration-200 z-[2] ${
                 viewMode === "technical"
@@ -53,7 +59,7 @@ export function CommitteesPage() {
               Technical Committees
             </button>
             <button
-              onClick={() => setViewMode("involvement")}
+              onClick={() => handleModeChange("involvement")}
               aria-pressed={viewMode === "involvement"}
               className={`relative py-2.5 px-6 rounded-full font-[family-name:var(--font-mono)] text-[11px] font-semibold uppercase tracking-[0.08em] border-none bg-transparent cursor-pointer transition-colors duration-200 z-[2] ${
                 viewMode === "involvement"
@@ -73,7 +79,7 @@ export function CommitteesPage() {
               Involvement
             </button>
             <button
-              onClick={() => setViewMode("operations")}
+              onClick={() => handleModeChange("operations")}
               aria-pressed={viewMode === "operations"}
               className={`relative py-2.5 px-6 rounded-full font-[family-name:var(--font-mono)] text-[11px] font-semibold uppercase tracking-[0.08em] border-none bg-transparent cursor-pointer transition-colors duration-200 z-[2] ${
                 viewMode === "operations"
