@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { OfficersPage } from './OfficersPage';
 import { getOrderedLeaders } from './officersUtils';
 import '@testing-library/jest-dom';
@@ -46,11 +46,6 @@ vi.mock('../../hooks/useSanityData', () => ({
   useOfficersConfig: () => ({ config: null, loading: false, error: null })
 }));
 
-// Mock to act as desktop
-vi.mock('../components/ui/use-mobile', () => ({
-  useIsMobile: () => false
-}));
-
 // Mock next-themes
 vi.mock('next-themes', () => ({
   useTheme: () => ({ theme: 'dark' })
@@ -67,17 +62,28 @@ vi.mock('../components/ui/MagneticWrapper', () => ({
 }));
 
 describe('OfficersPage Integration', () => {
-  it('should group officers by category and render them properly on desktop', () => {
+  it('should display executive category by default and switch view mode correctly', () => {
     render(<OfficersPage />);
 
-    expect(screen.getByText('Executive Committee')).toBeInTheDocument();
-    expect(screen.getByText('Technical Committee Chairs')).toBeInTheDocument();
-    expect(screen.getByText('Operational Leads')).toBeInTheDocument();
-    expect(screen.getByText('Member Involvement')).toBeInTheDocument();
-
+    // Default view mode is executive
     expect(screen.getByText('Executive John')).toBeInTheDocument();
+    expect(screen.queryByText('Tech Jane')).not.toBeInTheDocument();
+    expect(screen.queryByText('Ops Jim')).not.toBeInTheDocument();
+    expect(screen.queryByText('Member Jill')).not.toBeInTheDocument();
+
+    // Switch to Technical
+    fireEvent.click(screen.getByRole('button', { name: /Technical Committee Chairs/i }));
+    expect(screen.queryByText('Executive John')).not.toBeInTheDocument();
     expect(screen.getByText('Tech Jane')).toBeInTheDocument();
+
+    // Switch to Operations
+    fireEvent.click(screen.getByRole('button', { name: /Operational Leads/i }));
+    expect(screen.queryByText('Tech Jane')).not.toBeInTheDocument();
     expect(screen.getByText('Ops Jim')).toBeInTheDocument();
+
+    // Switch to Member
+    fireEvent.click(screen.getByRole('button', { name: /Member Involvement/i }));
+    expect(screen.queryByText('Ops Jim')).not.toBeInTheDocument();
     expect(screen.getByText('Member Jill')).toBeInTheDocument();
   });
 });

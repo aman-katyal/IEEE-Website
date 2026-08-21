@@ -1,12 +1,11 @@
-import { useMemo } from "react";
-import { Mail, Users, User, ChevronDown } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Mail, Users, User } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useLeaders, useOfficersConfig } from "../../hooks/useSanityData";
 import { Skeleton } from "boneyard-js/react";
 import { MagneticWrapper } from "../components/ui/MagneticWrapper";
 import { Leader } from "../../data/leadership";
-import { useIsMobile } from "../components/ui/use-mobile";
-import * as Accordion from "@radix-ui/react-accordion";
+import { motion, AnimatePresence } from "motion/react";
 
 import { getOrderedLeaders } from "./officersUtils";
 
@@ -39,6 +38,7 @@ const CATEGORIES = [
 ];
 
 export function OfficersPage() {
+  const [viewMode, setViewMode] = useState<string>("executive");
   const {
     leaders,
     loading: leadersLoading,
@@ -51,7 +51,6 @@ export function OfficersPage() {
   } = useOfficersConfig();
   const { theme } = useTheme();
   const isLight = theme === "light";
-  const isMobile = useIsMobile();
 
   const loading = leadersLoading || configLoading;
   const error = leadersError || configError;
@@ -349,7 +348,7 @@ export function OfficersPage() {
         }}
       >
         {/* Header */}
-        <div style={{ marginBottom: "72px", textAlign: "center" }}>
+        <div style={{ marginBottom: "48px", textAlign: "center" }}>
           <p className="section-eyebrow" style={{ marginBottom: "16px" }}>
             // Leadership Team
           </p>
@@ -375,11 +374,45 @@ export function OfficersPage() {
               lineHeight: 1.6,
               maxWidth: "700px",
               margin: "0 auto",
+              marginBottom: "32px",
             }}
           >
             The dedicated students who keep Purdue IEEE running smoothly across
             all technical and administrative operations.
           </p>
+
+          {/* View Mode Toggle */}
+          <div className="flex justify-center mb-6">
+            <div
+              role="group"
+              aria-label="Officer Categories"
+              className="flex bg-[rgba(128,128,128,0.05)] border border-[var(--glass-border)] rounded-full p-1 relative flex-wrap sm:flex-nowrap gap-1 max-w-full overflow-x-auto"
+            >
+              {CATEGORIES.map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => setViewMode(cat.id)}
+                  aria-pressed={viewMode === cat.id}
+                  className={`relative py-2.5 px-4 sm:px-6 rounded-full font-[family-name:var(--font-mono)] text-[11px] font-semibold uppercase tracking-[0.08em] border-none bg-transparent cursor-pointer transition-colors duration-200 z-[2] whitespace-nowrap ${
+                    viewMode === cat.id
+                      ? isLight
+                        ? "text-[var(--background)]"
+                        : "text-[var(--boiler-black)]"
+                      : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
+                  }`}
+                >
+                  {viewMode === cat.id && (
+                    <motion.div
+                      layoutId="officerViewModeIndicator"
+                      className="absolute inset-0 bg-[var(--cyber-gold)] rounded-full z-[-1]"
+                      transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                    />
+                  )}
+                  {cat.name}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
         <Skeleton
@@ -387,150 +420,50 @@ export function OfficersPage() {
           loading={loading}
           color={isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}
         >
-          {isMobile ? (
-            <Accordion.Root
-              type="multiple"
-              className="AccordionRoot"
-              defaultValue={["executive"]}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={viewMode}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.3 }}
             >
               {CATEGORIES.map((cat) => {
+                if (cat.id !== viewMode) return null;
+
                 const sectionLeaders = categorizedLeaders[cat.id] ?? [];
-                if (sectionLeaders.length === 0) return null;
 
                 return (
-                  <Accordion.Item
-                    key={cat.id}
-                    value={cat.id}
-                    className="AccordionItem"
-                    style={{
-                      borderBottom: "1px solid var(--glass-border)",
-                      marginBottom: "12px",
-                    }}
-                  >
-                    <Accordion.Header className="AccordionHeader">
-                      <Accordion.Trigger
-                        className="AccordionTrigger"
-                        style={{
-                          width: "100%",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          padding: "20px 0",
-                          background: "none",
-                          border: "none",
-                          color: "var(--text-primary)",
-                          cursor: "pointer",
-                        }}
-                      >
-                        <span
-                          style={{
-                            fontFamily: "var(--font-headline)",
-                            fontSize: "20px",
-                            fontWeight: 600,
-                          }}
-                        >
-                          {cat.name}
-                        </span>
-                        <ChevronDown className="AccordionChevron" aria-hidden />
-                      </Accordion.Trigger>
-                    </Accordion.Header>
-                    <Accordion.Content className="AccordionContent">
+                  <div key={cat.id} style={{ marginBottom: "80px" }}>
+                    <div style={{ marginBottom: "32px", textAlign: "center" }}>
                       <p
                         style={{
                           fontFamily: "var(--font-body)",
-                          fontSize: "14px",
+                          fontSize: "15px",
                           color: "var(--text-muted)",
-                          marginBottom: "24px",
+                          maxWidth: "800px",
+                          margin: "0 auto",
                         }}
                       >
                         {cat.description}
                       </p>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-8">
+                    </div>
+                    {sectionLeaders.length === 0 ? (
+                      <div className="text-center text-[var(--text-muted)] py-12">
+                        No officers found for this category.
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                         {sectionLeaders.map(renderOfficerCard)}
                       </div>
-                    </Accordion.Content>
-                  </Accordion.Item>
+                    )}
+                  </div>
                 );
               })}
-            </Accordion.Root>
-          ) : (
-            CATEGORIES.map((cat) => {
-              const sectionLeaders = categorizedLeaders[cat.id] ?? [];
-              if (sectionLeaders.length === 0) return null;
-
-              return (
-                <div key={cat.id} style={{ marginBottom: "80px" }}>
-                  <div style={{ marginBottom: "32px" }}>
-                    <h3
-                      style={{
-                        fontFamily: "var(--font-headline)",
-                        fontSize: "28px",
-                        fontWeight: 600,
-                        color: "var(--text-primary)",
-                        marginBottom: "8px",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "12px",
-                      }}
-                    >
-                      <span
-                        style={{
-                          color:
-                            cat.id === "executive"
-                              ? "var(--cyber-gold)"
-                              : "var(--electric-blue)",
-                        }}
-                      >
-                        //
-                      </span>
-                      {cat.name}
-                    </h3>
-                    <p
-                      style={{
-                        fontFamily: "var(--font-body)",
-                        fontSize: "15px",
-                        color: "var(--text-muted)",
-                        maxWidth: "800px",
-                      }}
-                    >
-                      {cat.description}
-                    </p>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {sectionLeaders.map(renderOfficerCard)}
-                  </div>
-                </div>
-              );
-            })
-          )}
+            </motion.div>
+          </AnimatePresence>
         </Skeleton>
       </div>
-      <style>{`
-        .AccordionTrigger[data-state='open'] .AccordionChevron {
-          transform: rotate(180deg);
-        }
-        .AccordionChevron {
-          transition: transform 300ms cubic-bezier(0.87, 0, 0.13, 1);
-          color: var(--electric-blue);
-        }
-        .AccordionContent {
-          overflow: hidden;
-        }
-        .AccordionContent[data-state='open'] {
-          animation: slideDown 300ms cubic-bezier(0.87, 0, 0.13, 1);
-        }
-        .AccordionContent[data-state='closed'] {
-          animation: slideUp 300ms cubic-bezier(0.87, 0, 0.13, 1);
-        }
-        @keyframes slideDown {
-          from { height: 0; }
-          to { height: var(--radix-accordion-content-height); }
-        }
-        @keyframes slideUp {
-          from { height: var(--radix-accordion-content-height); }
-          to { height: 0; }
-        }
-      `}</style>
     </section>
   );
 }

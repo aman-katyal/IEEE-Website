@@ -13,7 +13,8 @@ export function CommitteeContentSections({ sections, isLight }: CommitteeContent
   return (
     <div className="flex flex-col gap-14">
       {sections.map((section, index) => {
-        switch (section.type) {
+        const sectionType = section.type || "text";
+        switch (sectionType) {
           case "text": {
             const layout = section.layout || "top";
             const isCrop = section.imageStyle?.crop !== false;
