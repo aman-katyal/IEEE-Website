@@ -49,9 +49,12 @@ describe('fetchWithRetry', () => {
       maxAttempts: 3,
       initialDelayMs: 100,
     });
+    // Wire up the rejects assertion BEFORE advancing timers so the rejection
+    // is always handled and never leaks as an unhandled rejection.
+    const assertion = expect(promise).rejects.toMatchObject({ message: 'HTTP 503' });
     await vi.runAllTimersAsync();
+    await assertion;
 
-    await expect(promise).rejects.toThrow('HTTP 503');
     expect(mockFetch).toHaveBeenCalledTimes(3);
   });
 
@@ -78,8 +81,10 @@ describe('fetchWithRetry', () => {
       initialDelayMs: 500,
       maxDelayMs: 4000,
     });
+    // Attach rejection handler before advancing timers to avoid unhandled rejection
+    const caught = promise.catch(() => {});
     await vi.runAllTimersAsync();
-    await promise.catch(() => {});
+    await caught;
 
     // Delays: attempt 0->1: 500ms, attempt 1->2: 1000ms
     const delays = setTimeoutSpy.mock.calls
