@@ -125,7 +125,13 @@ describe('BoilerBooks Purdue COOL / BOSOP Batch Exporter', () => {
       const header = lines[0].split('\t');
       expect(header).toEqual([
         'Requester Name',
+        'Purdue Username',
         'Purdue Email',
+        'Phone Number',
+        'Funding Source',
+        'SFAB Line Item',
+        'Disbursement Method',
+        'Address',
         'Vendor',
         'Account Line',
         'Total Cost',
@@ -135,12 +141,12 @@ describe('BoilerBooks Purdue COOL / BOSOP Batch Exporter', () => {
 
       const row1 = lines[1].split('\t');
       expect(row1[0]).toBe('Alex Boiler');
-      expect(row1[1]).toBe('aboiler@purdue.edu');
-      expect(row1[2]).toBe('DigiKey');
-      expect(row1[3]).toBe('01-234-56');
-      expect(row1[4]).toBe('142.50');
-      expect(row1[5]).toBe('/api/finance/receipts/receipts/fy25-26/rov/rec_1001.pdf');
-      expect(row1[6]).toBe('Microcontrollers and sensors for sub');
+      expect(row1[2]).toBe('aboiler@purdue.edu');
+      expect(row1[8]).toBe('DigiKey');
+      expect(row1[9]).toBe('01-234-56');
+      expect(row1[10]).toBe('142.50');
+      expect(row1[11]).toBe('/api/finance/receipts/receipts/fy25-26/rov/rec_1001.pdf');
+      expect(row1[12]).toBe('Microcontrollers and sensors for sub');
     });
 
     it('generates valid RFC 4180 CSV export formatting', async () => {
@@ -150,7 +156,7 @@ describe('BoilerBooks Purdue COOL / BOSOP Batch Exporter', () => {
       expect(lines.length).toBe(3); // 1 header + 2 rows
 
       expect(lines[0]).toBe(
-        'Requester Name,Purdue Email,Vendor,Account Line,Total Cost,Receipt Link,Description'
+        'Requester Name,Purdue Username,Purdue Email,Phone Number,Funding Source,SFAB Line Item,Disbursement Method,Address,Vendor,Account Line,Total Cost,Receipt Link,Description'
       );
 
       // Row with quotes in description: 'Motor controllers, "special edition"'

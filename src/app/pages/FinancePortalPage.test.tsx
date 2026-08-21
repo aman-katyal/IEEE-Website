@@ -131,15 +131,19 @@ describe('FinancePortalPage Integration Suite', () => {
       await user.click(newReqBtn);
 
       expect(screen.getByText(/Submit New Purchase Request/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/Requester Full Name/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/Name \(First Last\)/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/Purdue Username/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/Purdue Email Address/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/Vendor Name/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/Vendor \/ Store Name/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/Total Amount/i)).toBeInTheDocument();
 
       // Fill in fields
-      fireEvent.change(screen.getByLabelText(/Requester Full Name/i), { target: { value: 'Jordan Taylor' } });
+      fireEvent.change(screen.getByLabelText(/Name \(First Last\)/i), { target: { value: 'Jordan Taylor' } });
+      fireEvent.change(screen.getByLabelText(/Purdue Username/i), { target: { value: 'jtaylor' } });
       fireEvent.change(screen.getByLabelText(/Purdue Email Address/i), { target: { value: 'jtaylor@purdue.edu' } });
-      fireEvent.change(screen.getByLabelText(/Vendor Name/i), { target: { value: 'Pololu Robotics' } });
+      fireEvent.change(screen.getByLabelText(/Phone \(XXX-XXX-XXXX\)/i), { target: { value: '765-555-0199' } });
+      fireEvent.change(screen.getByLabelText(/Full Address/i), { target: { value: '123 Main St, West Lafayette, IN' } });
+      fireEvent.change(screen.getByLabelText(/Vendor \/ Store Name/i), { target: { value: 'Pololu Robotics' } });
       fireEvent.change(screen.getByLabelText(/Total Amount/i), { target: { value: '145.50' } });
 
       // Attach file
@@ -253,6 +257,40 @@ describe('FinancePortalPage Integration Suite', () => {
       // Switch to Dues Directory tab
       await user.click(screen.getByRole('tab', { name: /Dues Directory/i }));
       expect(screen.getByText(/Student Member Dues Directory/i)).toBeInTheDocument();
+    });
+
+    it('allows Treasurer to edit committee budgets, categories, and parameters', async () => {
+      const user = userEvent.setup();
+      render(<FinancePortalPage />);
+
+      const treasurerTab = screen.getByRole('tab', { name: /Treasurer Master/i });
+      await user.click(treasurerTab);
+
+      const pinInput = screen.getByTestId('pin-input');
+      await user.type(pinInput, '1903');
+      await user.click(screen.getByRole('button', { name: /Enter Treasurer Portal/i }));
+
+      // Switch to Master Spending Matrix tab
+      await user.click(screen.getByRole('tab', { name: /Master Spending Matrix/i }));
+
+      // Find Edit button for ROV
+      const editButtons = screen.getAllByRole('button', { name: /Edit/i });
+      expect(editButtons.length).toBeGreaterThan(0);
+      await user.click(editButtons[0]);
+
+      expect(screen.getByText(/Edit Parameters/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/Allocated Budget Capital/i)).toBeInTheDocument();
+
+      // Update allocated budget
+      fireEvent.change(screen.getByLabelText(/Allocated Budget Capital/i), {
+        target: { value: '18500' },
+      });
+
+      // Save parameters
+      await user.click(screen.getByRole('button', { name: /Save Parameters/i }));
+
+      // Verify updated allocation in matrix
+      expect(screen.getAllByText('$18,500.00').length).toBeGreaterThanOrEqual(1);
     });
 
     it('allows signing out and returning to the login modal', async () => {

@@ -11,6 +11,9 @@ export interface CommitteeInfo {
   shortName: string;
   allocated: number;
   contactEmail: string;
+  bankStatus?: 'Active' | 'Inactive' | 'Read-Only';
+  duesStatus?: 'Active' | 'Inactive';
+  notes?: string;
   categories: string[];
 }
 
@@ -20,6 +23,12 @@ export interface PurchaseItem {
   committeeName: string;
   requesterName: string;
   requesterEmail: string;
+  purdueUsername?: string;
+  phoneNumber?: string;
+  streetAddress?: string;
+  fundingSource?: 'SFAB' | 'GENERAL';
+  sfabLineItem?: string;
+  disbursementMethod?: 'BOSO_PICKUP' | 'MAIL_ADDRESS' | 'EPAYMENT';
   vendorName: string;
   category: string;
   totalAmount: number;
@@ -55,6 +64,14 @@ export interface AuthSessionData {
 
 export const REAL_COMMITTEES: CommitteeInfo[] = [
   {
+    id: 'general',
+    name: 'General IEEE Branch',
+    shortName: 'General IEEE',
+    allocated: 15000,
+    contactEmail: 'treasurer@purdueieee.org',
+    categories: ['Administrative & Office', 'Swag & Marketing', 'Branch Banquets', 'National Dues', 'General'],
+  },
+  {
     id: 'rov',
     name: 'Remotely Operated underwater Vehicle (ROV)',
     shortName: 'ROV',
@@ -72,8 +89,8 @@ export const REAL_COMMITTEES: CommitteeInfo[] = [
   },
   {
     id: 'aesc',
-    name: 'Aerial Robotics (AESC Drone Team)',
-    shortName: 'Aerial Robotics',
+    name: 'Aerial Robotics (AESS Drone Team)',
+    shortName: 'AESS',
     allocated: 8500,
     contactEmail: 'aesc@purdueieee.org',
     categories: ['Motors & ESCs', 'Carbon Fiber & Frames', 'Flight Controllers', 'Competition Travel', 'General'],
@@ -103,6 +120,14 @@ export const REAL_COMMITTEES: CommitteeInfo[] = [
     categories: ['Server & Cloud Hosting', 'Hackathons & Contests', 'Hardware Dev Kits', 'Workshops', 'General'],
   },
   {
+    id: 'smc',
+    name: 'Systems, Man, and Cybernetics (SMC)',
+    shortName: 'SMC',
+    allocated: 4000,
+    contactEmail: 'smc@purdueieee.org',
+    categories: ['Control Systems', 'Sensors & Actuators', 'Workshops & Competitions', 'General'],
+  },
+  {
     id: 'learning',
     name: 'Learning & Code Cafe',
     shortName: 'Learning',
@@ -111,12 +136,28 @@ export const REAL_COMMITTEES: CommitteeInfo[] = [
     categories: ['Microcontroller Kits', 'Soldering Supplies', 'Workshop Refreshments', 'General'],
   },
   {
-    id: 'social',
-    name: 'Social & Member Growth',
-    shortName: 'Social',
+    id: 'infra',
+    name: 'Infrastructure & Web Dev',
+    shortName: 'Infrastructure',
     allocated: 3000,
-    contactEmail: 'social@purdueieee.org',
-    categories: ['Social Events', 'Banquet & Awards', 'Recruitment & Swag', 'General'],
+    contactEmail: 'infra@purdueieee.org',
+    categories: ['Cloud Services', 'Lab Equipment', 'Network Hardware', 'General'],
+  },
+  {
+    id: 'events',
+    name: 'Branch Events & Growth',
+    shortName: 'Events',
+    allocated: 3000,
+    contactEmail: 'events@purdueieee.org',
+    categories: ['Social Events', 'Banquet & Awards', 'Callouts & Swag', 'General'],
+  },
+  {
+    id: 'ir',
+    name: 'Industrial Relations & Corporate Partnerships',
+    shortName: 'Industrial Relations',
+    allocated: 3000,
+    contactEmail: 'ir@purdueieee.org',
+    categories: ['Company Info Sessions', 'Resume Book Hosting', 'Sponsorship Events', 'General'],
   },
 ];
 

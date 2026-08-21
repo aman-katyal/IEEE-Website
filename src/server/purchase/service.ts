@@ -20,6 +20,12 @@ export interface CreatePurchaseRequestPayload {
   fiscalYearId: string;
   committeeId: string;
   categoryId?: string | null;
+  fundingSource?: 'SFAB' | 'GENERAL';
+  sfabLineItem?: string | null;
+  purdueUsername?: string;
+  streetAddress?: string;
+  phoneNumber?: string;
+  disbursementMethod?: 'BOSO_PICKUP' | 'MAIL_ADDRESS' | 'EPAYMENT';
   requesterName: string;
   requesterEmail: string;
   vendorName: string;
@@ -68,6 +74,12 @@ export function mapRowToPurchaseRequest(
     committeeId: row.committee_id,
     categoryId: row.category_id || null,
     categoryName: row.category_name || null,
+    fundingSource: row.funding_source || 'GENERAL',
+    sfabLineItem: row.sfab_line_item || null,
+    purdueUsername: row.purdue_username || '',
+    streetAddress: row.street_address || '',
+    phoneNumber: row.phone_number || '',
+    disbursementMethod: row.disbursement_method || 'BOSO_PICKUP',
     requesterName: row.requester_name,
     requesterEmail: row.requester_email,
     vendorName: row.vendor_name,
@@ -273,23 +285,29 @@ export async function createPurchaseRequest(
     .prepare(
       `INSERT INTO purchase_requests (
         id, fiscal_year_id, committee_id, category_id,
-        requester_name, requester_email, vendor_name, total_amount,
-        description, status, receipt_r2_key, receipt_filename,
-        receipt_content_type, cool_account_number, cool_batch_id,
+        funding_source, sfab_line_item, purdue_username, street_address,
+        phone_number, disbursement_method, requester_name, requester_email,
+        vendor_name, total_amount, description, status, receipt_r2_key,
+        receipt_filename, receipt_content_type, cool_account_number, cool_batch_id,
         treasurer_notes, submitted_at, approved_at, reimbursed_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, ?, NULL, NULL)`
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDING', ?, ?, ?, ?, NULL, NULL, ?, NULL, NULL)`
     )
     .bind(
       id,
       payload.fiscalYearId,
       payload.committeeId,
       payload.categoryId || null,
+      payload.fundingSource || 'GENERAL',
+      payload.sfabLineItem || null,
+      (payload.purdueUsername || '').trim(),
+      (payload.streetAddress || '').trim(),
+      (payload.phoneNumber || '').trim(),
+      payload.disbursementMethod || 'BOSO_PICKUP',
       payload.requesterName.trim(),
       payload.requesterEmail.trim().toLowerCase(),
       payload.vendorName.trim(),
       payload.totalAmount,
       payload.description.trim(),
-      'PENDING',
       payload.receiptR2Key || null,
       payload.receiptFilename || null,
       payload.receiptContentType || null,

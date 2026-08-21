@@ -349,3 +349,103 @@ export async function calculateCategoryBreakdown(
     categories: categoryRows,
   };
 }
+
+export interface UpdateCommitteeParametersPayload {
+  allocatedAmount?: number;
+  notes?: string | null;
+  bankStatus?: 'Active' | 'Inactive' | 'Read-Only';
+  duesStatus?: 'Active' | 'Inactive';
+  contactEmail?: string | null;
+  categories?: string[];
+}
+
+/**
+ * Updates committee budget allocation and organizational settings (bank status, dues status, contact email, categories).
+ * Restricted to Branch Treasurer role.
+ */
+export async function updateCommitteeParameters(
+  db: D1DatabaseLike,
+  fiscalYearId: string,
+  committeeId: string,
+  payload: UpdateCommitteeParametersPayload
+): Promise<{ success: boolean; message: string }> {
+  // 1. Update budget allocation if specified
+  if (payload.allocatedAmount !== undefined) {
+    const existingBudget = await queryFirst<{ id: string }>(
+      db,
+      'SELECT id FROM committee_budgets WHERE fiscal_year_id = ? AND committee_id = ?',
+      [fiscalYearId, committeeId]
+    );
+
+    if (existingBudget) {
+      await db
+        .prepare('UPDATE committee_budgets SET allocated_amount = ?, notes = ? WHERE id = ?')
+        .bind(payload.allocatedAmount, payload.notes || null, existingBudget.id)
+        .run();
+    } else {
+      const budgetId = `cb-${committeeId}-${fiscalYearId}`;
+      await db
+        .prepare(
+          'INSERT INTO committee_budgets (id, fiscal_year_id, committee_id, allocated_amount, notes) VALUES (?, ?, ?, ?, ?)'
+        )
+        .bind(budgetId, fiscalYearId, committeeId, payload.allocatedAmount, payload.notes || null)
+        .run();
+    }
+  }
+
+  // 2. Update committee operational parameters
+  if (
+    payload.bankStatus !== undefined ||
+    payload.duesStatus !== undefined ||
+    payload.contactEmail !== undefined
+  ) {
+    const updates: string[] = [];
+    const params: unknown[] = [];
+
+    if (payload.bankStatus !== undefined) {
+      updates.push('bank_status = ?');
+      params.push(payload.bankStatus);
+    }
+    if (payload.duesStatus !== undefined) {
+      updates.push('dues_status = ?');
+      params.push(payload.duesStatus);
+    }
+    if (payload.contactEmail !== undefined) {
+      updates.push('contact_email = ?');
+      params.push(payload.contactEmail);
+    }
+
+    if (updates.length > 0) {
+      params.push(committeeId);
+      await db
+        .prepare(`UPDATE finance_committees SET ${updates.join(', ')} WHERE id = ?`)
+        .bind(...params)
+        .run();
+    }
+  }
+
+  // 3. Update Categories if provided
+  if (payload.categories && Array.isArray(payload.categories)) {
+    // Delete existing categories for committee
+    await db
+      .prepare('DELETE FROM budget_categories WHERE committee_id = ?')
+      .bind(committeeId)
+      .run();
+
+    // Insert new category set
+    for (const cat of payload.categories) {
+      if (cat.trim().length > 0) {
+        const catId = `cat-${committeeId}-${cat.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
+        await db
+          .prepare('INSERT INTO budget_categories (id, committee_id, name) VALUES (?, ?, ?)')
+          .bind(catId, committeeId, cat.trim())
+          .run();
+      }
+    }
+  }
+
+  return {
+    success: true,
+    message: `Updated parameters for committee "${committeeId}" successfully.`,
+  };
+}

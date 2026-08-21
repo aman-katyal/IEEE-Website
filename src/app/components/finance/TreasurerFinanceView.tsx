@@ -41,11 +41,15 @@ import {
   Search,
   Users,
   MessageSquare,
+  Settings2,
+  Plus,
+  X,
 } from 'lucide-react';
 import {
   type PurchaseItem,
   type MemberDuesRecord,
   type AuthSessionData,
+  type CommitteeInfo,
   REAL_COMMITTEES,
   type PurchaseStatus,
 } from './financeData';
@@ -55,6 +59,7 @@ export interface TreasurerFinanceViewProps {
   session: AuthSessionData;
   purchases: PurchaseItem[];
   memberDues: MemberDuesRecord[];
+  committees?: CommitteeInfo[];
   onUpdatePurchaseStatus: (
     id: string,
     status: PurchaseStatus,
@@ -62,6 +67,7 @@ export interface TreasurerFinanceViewProps {
     coolAccountNumber?: string
   ) => void;
   onImportMemberDues: (records: MemberDuesRecord[]) => void;
+  onUpdateCommittee?: (committeeId: string, updated: Partial<CommitteeInfo>) => void;
   onLogout?: () => void;
 }
 
@@ -69,13 +75,19 @@ export function TreasurerFinanceView({
   session: _session,
   purchases,
   memberDues,
+  committees,
   onUpdatePurchaseStatus,
   onImportMemberDues,
+  onUpdateCommittee,
   onLogout,
 }: TreasurerFinanceViewProps) {
+  const activeCommittees = useMemo(() => {
+    return committees && committees.length > 0 ? committees : REAL_COMMITTEES;
+  }, [committees]);
+
   // Master Spending Matrix Data Calculation
   const matrixData = useMemo(() => {
-    return REAL_COMMITTEES.map((comm) => {
+    return activeCommittees.map((comm) => {
       const commPurchases = purchases.filter((p) => p.committeeId === comm.id);
       const allocated = comm.allocated;
       const approved = commPurchases
@@ -100,7 +112,7 @@ export function TreasurerFinanceView({
         totalRequests: commPurchases.length,
       };
     });
-  }, [purchases]);
+  }, [activeCommittees, purchases]);
 
   // Branch-Wide Totals
   const branchTotals = useMemo(() => {
@@ -139,6 +151,58 @@ export function TreasurerFinanceView({
   const [notesModalItem, setNotesModalItem] = useState<PurchaseItem | null>(null);
   const [notesInput, setNotesInput] = useState<string>('');
   const [accountNumberInput, setAccountNumberInput] = useState<string>('');
+
+  // Committee Parameters Editing Modal State
+  const [editingCommittee, setEditingCommittee] = useState<CommitteeInfo | null>(null);
+  const [editAllocated, setEditAllocated] = useState<string>('');
+  const [editBankStatus, setEditBankStatus] = useState<'Active' | 'Inactive' | 'Read-Only'>('Active');
+  const [editDuesStatus, setEditDuesStatus] = useState<'Active' | 'Inactive'>('Active');
+  const [editContactEmail, setEditContactEmail] = useState<string>('');
+  const [editNotes, setEditNotes] = useState<string>('');
+  const [editCategories, setEditCategories] = useState<string[]>([]);
+  const [newCategoryText, setNewCategoryText] = useState<string>('');
+
+  const handleOpenEditCommittee = (c: CommitteeInfo) => {
+    setEditingCommittee(c);
+    setEditAllocated(String(c.allocated));
+    setEditBankStatus(c.bankStatus || 'Active');
+    setEditDuesStatus(c.duesStatus || 'Active');
+    setEditContactEmail(c.contactEmail || '');
+    setEditNotes(c.notes || '');
+    setEditCategories([...(c.categories || [])]);
+    setNewCategoryText('');
+  };
+
+  const handleAddCategory = () => {
+    const trimmed = newCategoryText.trim();
+    if (trimmed && !editCategories.includes(trimmed)) {
+      setEditCategories((prev) => [...prev, trimmed]);
+      setNewCategoryText('');
+    }
+  };
+
+  const handleRemoveCategory = (catToRemove: string) => {
+    setEditCategories((prev) => prev.filter((cat) => cat !== catToRemove));
+  };
+
+  const handleSaveCommittee = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingCommittee) return;
+    const parsedAllocated = parseFloat(editAllocated);
+    if (isNaN(parsedAllocated) || parsedAllocated < 0) return;
+
+    if (onUpdateCommittee) {
+      onUpdateCommittee(editingCommittee.id, {
+        allocated: parsedAllocated,
+        bankStatus: editBankStatus,
+        duesStatus: editDuesStatus,
+        contactEmail: editContactEmail.trim(),
+        notes: editNotes.trim(),
+        categories: editCategories,
+      });
+    }
+    setEditingCommittee(null);
+  };
 
   // COOL Exporter Clipboard & Download Feedback
   const [copiedCOOL, setCopiedCOOL] = useState<boolean>(false);
@@ -210,9 +274,18 @@ export function TreasurerFinanceView({
 
     const body = approvedRequestsForCOOL
       .map((item, idx) => {
+        let disbursementLabel = 'BOSO Office Pickup (Krach 365)';
+        if (item.disbursementMethod === 'MAIL_ADDRESS') {
+          disbursementLabel = `Mail to Address (${item.streetAddress || 'Address on file'})`;
+        } else if (item.disbursementMethod === 'EPAYMENT') {
+          disbursementLabel = 'E-Payment to Bank Account';
+        }
+
         return [
           `[${idx + 1}] Req ID: ${item.id} | Committee: ${item.committeeName}`,
-          `    Student: ${item.requesterName} <${item.requesterEmail}>`,
+          `    Student: ${item.requesterName} (Purdue ID: ${item.purdueUsername || 'N/A'}) <${item.requesterEmail}> | Phone: ${item.phoneNumber || 'N/A'}`,
+          `    Funding Source: ${item.fundingSource || 'GENERAL'}${item.fundingSource === 'SFAB' ? ` (SFAB Line: ${item.sfabLineItem || 'N/A'})` : ''}`,
+          `    Disbursement: ${disbursementLabel}`,
           `    Vendor: ${item.vendorName}`,
           `    Account Line: ${item.coolAccountNumber || '01-234-56'}`,
           `    Amount: $${item.totalAmount.toFixed(2)}`,
@@ -243,7 +316,13 @@ export function TreasurerFinanceView({
       'Request ID',
       'Committee',
       'Student Requester',
+      'Purdue Username',
       'Purdue Email',
+      'Phone Number',
+      'Funding Source',
+      'SFAB Line Item',
+      'Disbursement Method',
+      'Mailing Address',
       'Vendor',
       'Account Line',
       'Total Amount',
@@ -258,7 +337,13 @@ export function TreasurerFinanceView({
       escapeCsv(r.id),
       escapeCsv(r.committeeName),
       escapeCsv(r.requesterName),
+      escapeCsv(r.purdueUsername || ''),
       escapeCsv(r.requesterEmail),
+      escapeCsv(r.phoneNumber || ''),
+      escapeCsv(r.fundingSource || 'GENERAL'),
+      escapeCsv(r.sfabLineItem || 'N/A'),
+      escapeCsv(r.disbursementMethod || 'BOSO_PICKUP'),
+      escapeCsv(r.streetAddress || ''),
       escapeCsv(r.vendorName),
       escapeCsv(r.coolAccountNumber || '01-234-56'),
       r.totalAmount.toFixed(2),
@@ -652,8 +737,9 @@ export function TreasurerFinanceView({
                     <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">Spent / Disbursed</TableHead>
                     <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">Pending</TableHead>
                     <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">Remaining</TableHead>
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-center w-48">% Spent</TableHead>
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-center pr-6">Requests</TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-center w-40">% Spent</TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-center">Requests</TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right pr-6">Manage</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -664,7 +750,13 @@ export function TreasurerFinanceView({
                     >
                       <TableCell className="pl-6 py-3.5">
                         <div className="font-semibold text-xs text-white">{c.name}</div>
-                        <div className="text-[11px] text-slate-500 font-mono">{c.contactEmail}</div>
+                        <div className="text-[11px] text-slate-500 font-mono flex items-center gap-1.5 mt-0.5">
+                          <span>{c.contactEmail}</span>
+                          <span className="text-slate-600">·</span>
+                          <span className={`text-[10px] ${c.bankStatus === 'Inactive' ? 'text-red-400' : c.bankStatus === 'Read-Only' ? 'text-amber-400' : 'text-emerald-400'}`}>
+                            {c.bankStatus || 'Active'}
+                          </span>
+                        </div>
                       </TableCell>
                       <TableCell className="text-right py-3.5 font-mono text-xs font-medium text-slate-200">
                         ${c.allocated.toLocaleString('en-US', { minimumFractionDigits: 2 })}
@@ -695,8 +787,21 @@ export function TreasurerFinanceView({
                           </span>
                         </div>
                       </TableCell>
-                      <TableCell className="text-center py-3.5 font-mono text-xs text-slate-400 pr-6">
+                      <TableCell className="text-center py-3.5 font-mono text-xs text-slate-400">
                         {c.totalRequests}
+                      </TableCell>
+                      <TableCell className="text-right py-3.5 pr-6">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleOpenEditCommittee(c)}
+                          className="h-7 px-2.5 text-xs bg-slate-900 border-slate-700 text-sky-400 hover:text-white hover:bg-slate-800 inline-flex items-center gap-1.5"
+                          title={`Edit ${c.shortName} Budget & Parameters`}
+                        >
+                          <Settings2 className="w-3.5 h-3.5" />
+                          <span>Edit</span>
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -1068,6 +1173,193 @@ export function TreasurerFinanceView({
                 >
                   Save Notes
                 </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Edit Committee Budget & Parameters Modal */}
+      {editingCommittee && (
+        <Dialog
+          open={!!editingCommittee}
+          onOpenChange={(open) => !open && setEditingCommittee(null)}
+        >
+          <DialogContent className="max-w-xl bg-[#121214] text-slate-100 border border-slate-700/80 shadow-2xl p-6 overflow-y-auto max-h-[90vh]">
+            <DialogHeader>
+              <DialogTitle className="text-lg font-bold text-white flex items-center gap-2">
+                <Settings2 className="w-5 h-5 text-sky-400" />
+                <span>Edit Parameters · {editingCommittee.name}</span>
+              </DialogTitle>
+              <DialogDescription className="text-xs text-slate-400">
+                Update allocated budget capital, operational bank status, member dues policy, and spending categories.
+              </DialogDescription>
+            </DialogHeader>
+
+            <form onSubmit={handleSaveCommittee} className="space-y-4 py-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="edit-allocated" className="text-xs font-medium text-slate-300">
+                    Allocated Budget Capital ($) *
+                  </Label>
+                  <Input
+                    id="edit-allocated"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={editAllocated}
+                    onChange={(e) => setEditAllocated(e.target.value)}
+                    placeholder="10000.00"
+                    className="bg-slate-900 border-slate-700 text-slate-100 text-xs font-mono h-9"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="edit-email" className="text-xs font-medium text-slate-300">
+                    Official Contact Email
+                  </Label>
+                  <Input
+                    id="edit-email"
+                    type="email"
+                    value={editContactEmail}
+                    onChange={(e) => setEditContactEmail(e.target.value)}
+                    placeholder="committee@purdueieee.org"
+                    className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
+                  />
+                </div>
+              </div>
+
+              {/* Status Controls */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-3 bg-slate-900/60 border border-slate-800 rounded-lg">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium text-slate-300">
+                    Bank Operational Status
+                  </Label>
+                  <Select
+                    value={editBankStatus}
+                    onValueChange={(val: 'Active' | 'Inactive' | 'Read-Only') => setEditBankStatus(val)}
+                  >
+                    <SelectTrigger className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-900 border-slate-700 text-slate-100 text-xs">
+                      <SelectItem value="Active">Active (Reimbursements Open)</SelectItem>
+                      <SelectItem value="Read-Only">Read-Only (View Only)</SelectItem>
+                      <SelectItem value="Inactive">Inactive (Frozen)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium text-slate-300">
+                    Member Dues Requirement
+                  </Label>
+                  <Select
+                    value={editDuesStatus}
+                    onValueChange={(val: 'Active' | 'Inactive') => setEditDuesStatus(val)}
+                  >
+                    <SelectTrigger className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-900 border-slate-700 text-slate-100 text-xs">
+                      <SelectItem value="Active">Active (Requires Paid Dues)</SelectItem>
+                      <SelectItem value="Inactive">Inactive (Exempt / Open)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Budget Categories Manager */}
+              <div className="space-y-2">
+                <Label className="text-xs font-medium text-slate-300">
+                  Approved Budget Categories ({editCategories.length})
+                </Label>
+                <div className="flex flex-wrap gap-1.5 p-2.5 bg-slate-900/80 border border-slate-800 rounded-lg min-h-[44px]">
+                  {editCategories.map((cat) => (
+                    <span
+                      key={cat}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-sky-500/15 text-sky-300 border border-sky-500/30 text-xs"
+                    >
+                      <span>{cat}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveCategory(cat)}
+                        className="text-sky-400 hover:text-red-400 p-0.5"
+                        title={`Remove ${cat}`}
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  ))}
+                  {editCategories.length === 0 && (
+                    <span className="text-xs text-slate-500 italic py-1">No categories assigned.</span>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Input
+                    value={newCategoryText}
+                    onChange={(e) => setNewCategoryText(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddCategory();
+                      }
+                    }}
+                    placeholder="Add new budget category (e.g. Avionics & Telemetry)..."
+                    className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-8"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleAddCategory}
+                    disabled={!newCategoryText.trim()}
+                    className="h-8 bg-slate-900 border-slate-700 text-sky-400 hover:text-white"
+                  >
+                    <Plus className="w-3.5 h-3.5 mr-1" />
+                    <span>Add</span>
+                  </Button>
+                </div>
+              </div>
+
+              {/* Budget Allocation Notes */}
+              <div className="space-y-1.5">
+                <Label htmlFor="edit-notes" className="text-xs font-medium text-slate-300">
+                  Treasurer Budget Allocation Notes
+                </Label>
+                <Textarea
+                  id="edit-notes"
+                  value={editNotes}
+                  onChange={(e) => setEditNotes(e.target.value)}
+                  placeholder="Notes on committee spending guidelines, SFAB funding earmarks, or rollover allocations..."
+                  className="bg-slate-900 border-slate-700 text-slate-100 text-xs min-h-[70px]"
+                />
+              </div>
+
+              <DialogFooter className="pt-3 border-t border-slate-800 flex items-center justify-between sm:justify-between">
+                <span className="text-[11px] text-slate-500">
+                  Updates apply across the finance portal and D1 database.
+                </span>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setEditingCommittee(null)}
+                    className="bg-slate-900 border-slate-700 text-slate-300"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    size="sm"
+                    className="bg-sky-600 hover:bg-sky-500 text-white font-medium"
+                  >
+                    Save Parameters
+                  </Button>
+                </div>
               </DialogFooter>
             </form>
           </DialogContent>

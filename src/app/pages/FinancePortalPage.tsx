@@ -5,9 +5,11 @@ import { TreasurerFinanceView } from '../components/finance/TreasurerFinanceView
 import {
   INITIAL_PURCHASES,
   INITIAL_MEMBER_DUES,
+  REAL_COMMITTEES,
   type AuthSessionData,
   type PurchaseItem,
   type MemberDuesRecord,
+  type CommitteeInfo,
   type PurchaseStatus,
 } from '../components/finance/financeData';
 import {
@@ -23,6 +25,7 @@ export function FinancePortalPage() {
   const [session, setSession] = useState<AuthSessionData | null>(null);
   const [purchases, setPurchases] = useState<PurchaseItem[]>(INITIAL_PURCHASES);
   const [memberDues, setMemberDues] = useState<MemberDuesRecord[]>(INITIAL_MEMBER_DUES);
+  const [committees, setCommittees] = useState<CommitteeInfo[]>(REAL_COMMITTEES);
 
   const handleLogin = (newSession: AuthSessionData) => {
     setSession(newSession);
@@ -59,6 +62,12 @@ export function FinancePortalPage() {
 
   const handleImportMemberDues = (records: MemberDuesRecord[]) => {
     setMemberDues((prev) => [...records, ...prev]);
+  };
+
+  const handleUpdateCommittee = (committeeId: string, updated: Partial<CommitteeInfo>) => {
+    setCommittees((prev) =>
+      prev.map((c) => (c.id === committeeId ? { ...c, ...updated } : c))
+    );
   };
 
   return (
@@ -160,8 +169,10 @@ export function FinancePortalPage() {
             session={session}
             purchases={purchases}
             memberDues={memberDues}
+            committees={committees}
             onUpdatePurchaseStatus={handleUpdatePurchaseStatus}
             onImportMemberDues={handleImportMemberDues}
+            onUpdateCommittee={handleUpdateCommittee}
             onLogout={handleLogout}
           />
         )}

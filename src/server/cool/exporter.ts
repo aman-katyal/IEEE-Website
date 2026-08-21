@@ -17,6 +17,13 @@ export interface COOLBatchItem {
   id: string;
   requesterName: string;
   requesterEmail: string;
+  purdueUsername: string;
+  phoneNumber: string;
+  streetAddress: string;
+  disbursementMethod: 'BOSO_PICKUP' | 'MAIL_ADDRESS' | 'EPAYMENT';
+  formattedDisbursement: string;
+  fundingSource: 'SFAB' | 'GENERAL';
+  sfabLineItem: string | null;
   vendorName: string;
   accountNumber: string;
   totalAmount: number;
@@ -55,6 +62,12 @@ interface RawExportRow {
   committee_id: string;
   committee_name: string | null;
   category_id: string | null;
+  funding_source: 'SFAB' | 'GENERAL';
+  sfab_line_item: string | null;
+  purdue_username: string;
+  street_address: string;
+  phone_number: string;
+  disbursement_method: 'BOSO_PICKUP' | 'MAIL_ADDRESS' | 'EPAYMENT';
   requester_name: string;
   requester_email: string;
   vendor_name: string;
@@ -111,8 +124,10 @@ export function formatCopyableCOOLBatch(
 
   const itemBlocks = items.map((item, index) => {
     return [
-      `[${index + 1}] Requester: ${item.requesterName}`,
-      `    Purdue Email: ${item.requesterEmail}`,
+      `[${index + 1}] Requester: ${item.requesterName} (Purdue ID: ${item.purdueUsername || 'N/A'})`,
+      `    Purdue Email: ${item.requesterEmail} | Phone: ${item.phoneNumber || 'N/A'}`,
+      `    Funding Source: ${item.fundingSource}${item.fundingSource === 'SFAB' ? ` (Line Item: ${item.sfabLineItem || 'N/A'})` : ''}`,
+      `    Disbursement: ${item.formattedDisbursement}`,
       `    Vendor: ${item.vendorName}`,
       `    Account Line: ${item.accountNumber}`,
       `    Total Cost: ${item.formattedAmount}`,
@@ -130,7 +145,13 @@ export function formatCopyableCOOLBatch(
 export function formatTSVCOOLBatch(items: COOLBatchItem[]): string {
   const headers = [
     'Requester Name',
+    'Purdue Username',
     'Purdue Email',
+    'Phone Number',
+    'Funding Source',
+    'SFAB Line Item',
+    'Disbursement Method',
+    'Address',
     'Vendor',
     'Account Line',
     'Total Cost',
@@ -141,7 +162,13 @@ export function formatTSVCOOLBatch(items: COOLBatchItem[]): string {
   const rows = items.map((item) =>
     [
       escapeTSVField(item.requesterName),
+      escapeTSVField(item.purdueUsername),
       escapeTSVField(item.requesterEmail),
+      escapeTSVField(item.phoneNumber),
+      escapeTSVField(item.fundingSource),
+      escapeTSVField(item.sfabLineItem || 'N/A'),
+      escapeTSVField(item.formattedDisbursement),
+      escapeTSVField(item.streetAddress),
       escapeTSVField(item.vendorName),
       escapeTSVField(item.accountNumber),
       item.totalAmount.toFixed(2),
@@ -159,7 +186,13 @@ export function formatTSVCOOLBatch(items: COOLBatchItem[]): string {
 export function formatCSVCOOLBatch(items: COOLBatchItem[]): string {
   const headers = [
     'Requester Name',
+    'Purdue Username',
     'Purdue Email',
+    'Phone Number',
+    'Funding Source',
+    'SFAB Line Item',
+    'Disbursement Method',
+    'Address',
     'Vendor',
     'Account Line',
     'Total Cost',
@@ -170,7 +203,13 @@ export function formatCSVCOOLBatch(items: COOLBatchItem[]): string {
   const rows = items.map((item) =>
     [
       escapeCSVField(item.requesterName),
+      escapeCSVField(item.purdueUsername),
       escapeCSVField(item.requesterEmail),
+      escapeCSVField(item.phoneNumber),
+      escapeCSVField(item.fundingSource),
+      escapeCSVField(item.sfabLineItem || 'N/A'),
+      escapeCSVField(item.formattedDisbursement),
+      escapeCSVField(item.streetAddress),
       escapeCSVField(item.vendorName),
       escapeCSVField(item.accountNumber),
       escapeCSVField(item.totalAmount.toFixed(2)),
@@ -228,6 +267,12 @@ export async function generateCOOLBatch(
       pr.committee_id,
       fc.name AS committee_name,
       pr.category_id,
+      pr.funding_source,
+      pr.sfab_line_item,
+      pr.purdue_username,
+      pr.street_address,
+      pr.phone_number,
+      pr.disbursement_method,
       pr.requester_name,
       pr.requester_email,
       pr.vendor_name,
@@ -262,10 +307,24 @@ export async function generateCOOLBatch(
         : `/api/finance/receipts/${row.receipt_r2_key}`;
     }
 
+    let formattedDisbursement = 'BOSO Office Pickup (Krach 365)';
+    if (row.disbursement_method === 'MAIL_ADDRESS') {
+      formattedDisbursement = `Mail: ${row.street_address || 'Address on file'}`;
+    } else if (row.disbursement_method === 'EPAYMENT') {
+      formattedDisbursement = 'E-Payment to Bank Account';
+    }
+
     return {
       id: row.id,
       requesterName: row.requester_name,
       requesterEmail: row.requester_email,
+      purdueUsername: row.purdue_username || '',
+      phoneNumber: row.phone_number || '',
+      streetAddress: row.street_address || '',
+      disbursementMethod: row.disbursement_method || 'BOSO_PICKUP',
+      formattedDisbursement,
+      fundingSource: row.funding_source || 'GENERAL',
+      sfabLineItem: row.sfab_line_item || null,
       vendorName: row.vendor_name,
       accountNumber: row.cool_account_number || '01-234-56',
       totalAmount: amount,

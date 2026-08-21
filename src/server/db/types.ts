@@ -8,6 +8,8 @@ export type PurchaseRequestStatus = 'PENDING' | 'APPROVED' | 'PURCHASED' | 'REIM
 export type BankStatus = 'Active' | 'Inactive' | 'Read-Only';
 export type DuesStatus = 'Active' | 'Inactive';
 export type PaymentMethod = 'TooCOOL' | 'Cash' | 'Card' | 'Other';
+export type FundingSource = 'SFAB' | 'GENERAL';
+export type DisbursementMethod = 'BOSO_PICKUP' | 'MAIL_ADDRESS' | 'EPAYMENT';
 
 export type DefaultCommitteeId =
   | 'treasurer'
@@ -63,6 +65,12 @@ export interface PurchaseRequestRow {
   fiscal_year_id: string;
   committee_id: string;
   category_id: string | null;
+  funding_source: FundingSource;
+  sfab_line_item: string | null;
+  purdue_username: string;
+  street_address: string;
+  phone_number: string;
+  disbursement_method: DisbursementMethod;
   requester_name: string;
   requester_email: string;
   vendor_name: string;
@@ -135,6 +143,12 @@ export interface PurchaseRequest {
   committeeId: string;
   categoryId: string | null;
   categoryName?: string | null;
+  fundingSource: FundingSource;
+  sfabLineItem: string | null;
+  purdueUsername: string;
+  streetAddress: string;
+  phoneNumber: string;
+  disbursementMethod: DisbursementMethod;
   requesterName: string;
   requesterEmail: string;
   vendorName: string;
@@ -180,6 +194,12 @@ export interface COOLBatchExportItem {
   id: string;
   requesterName: string;
   requesterEmail: string;
+  purdueUsername: string;
+  phoneNumber: string;
+  streetAddress: string;
+  disbursementMethod: DisbursementMethod;
+  fundingSource: FundingSource;
+  sfabLineItem: string | null;
   vendorName: string;
   totalAmount: number;
   coolAccountNumber: string | null;
@@ -225,6 +245,12 @@ export interface CreatePurchaseRequestInput {
   fiscal_year_id: string;
   committee_id: string;
   category_id?: string | null;
+  funding_source?: FundingSource;
+  sfab_line_item?: string | null;
+  purdue_username?: string;
+  street_address?: string;
+  phone_number?: string;
+  disbursement_method?: DisbursementMethod;
   requester_name: string;
   requester_email: string;
   vendor_name: string;

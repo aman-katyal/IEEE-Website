@@ -105,6 +105,12 @@ export function CommitteeFinanceView({
   // Form State
   const [requesterName, setRequesterName] = useState<string>('');
   const [requesterEmail, setRequesterEmail] = useState<string>('');
+  const [purdueUsername, setPurdueUsername] = useState<string>('');
+  const [streetAddress, setStreetAddress] = useState<string>('');
+  const [phoneNumber, setPhoneNumber] = useState<string>('');
+  const [fundingSource, setFundingSource] = useState<'SFAB' | 'GENERAL'>('GENERAL');
+  const [sfabLineItem, setSfabLineItem] = useState<string>('');
+  const [disbursementMethod, setDisbursementMethod] = useState<'BOSO_PICKUP' | 'MAIL_ADDRESS' | 'EPAYMENT'>('BOSO_PICKUP');
   const [vendorName, setVendorName] = useState<string>('');
   const [category, setCategory] = useState<string>(committee.categories[0] || 'General');
   const [totalAmount, setTotalAmount] = useState<string>('');
@@ -138,53 +144,63 @@ export function CommitteeFinanceView({
         p.vendorName.toLowerCase().includes(tableSearch.toLowerCase()) ||
         p.requesterName.toLowerCase().includes(tableSearch.toLowerCase()) ||
         p.description.toLowerCase().includes(tableSearch.toLowerCase()) ||
+        (p.purdueUsername && p.purdueUsername.toLowerCase().includes(tableSearch.toLowerCase())) ||
         p.id.toLowerCase().includes(tableSearch.toLowerCase());
 
-      const matchesStatus = statusFilter === 'ALL' || p.status === statusFilter;
+      const matchesStatus =
+        statusFilter === 'ALL' || p.status === statusFilter;
+
       return matchesSearch && matchesStatus;
     });
   }, [committeePurchases, tableSearch, statusFilter]);
 
-  // File Drop / Upload
-  const handleFileDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  // File Upload Handlers
+  const handleFileDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      processSelectedFile(e.dataTransfer.files[0]);
+      const file = e.dataTransfer.files[0];
+      setReceiptFile({
+        name: file.name,
+        url: URL.createObjectURL(file),
+        size: `${(file.size / (1024 * 1024)).toFixed(2)} MB`,
+      });
     }
   };
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      processSelectedFile(e.target.files[0]);
+      const file = e.target.files[0];
+      setReceiptFile({
+        name: file.name,
+        url: URL.createObjectURL(file),
+        size: `${(file.size / (1024 * 1024)).toFixed(2)} MB`,
+      });
     }
-  };
-
-  const processSelectedFile = (file: File) => {
-    const url = URL.createObjectURL(file);
-    const sizeInKb = Math.round(file.size / 1024);
-    setReceiptFile({
-      name: file.name,
-      url,
-      size: sizeInKb > 1024 ? `${(sizeInKb / 1024).toFixed(1)} MB` : `${sizeInKb} KB`,
-    });
   };
 
   const handleSubmitPurchase = (e: React.FormEvent) => {
     e.preventDefault();
     setFormError(null);
 
-    const amountNum = parseFloat(totalAmount);
-    if (!requesterName.trim() || !requesterEmail.trim() || !vendorName.trim()) {
-      setFormError('Please complete all required fields (Requester, Email, Vendor).');
+    const parsedAmount = parseFloat(totalAmount);
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      setFormError('Please enter a valid dollar amount greater than $0.00');
       return;
     }
-    if (isNaN(amountNum) || amountNum <= 0) {
-      setFormError('Please enter a valid dollar amount greater than $0.00.');
+
+    if (!requesterName.trim() || !requesterEmail.trim()) {
+      setFormError('Requester name and Purdue email are required.');
       return;
     }
+
+    if (fundingSource === 'SFAB' && !sfabLineItem.trim()) {
+      setFormError('Please specify the SFAB Line Item (or "N/A" if general).');
+      return;
+    }
+
     if (!receiptFile) {
-      setFormError('Please attach an itemized receipt image or PDF file.');
+      setFormError('A receipt or vendor invoice attachment is required by Purdue BOSO.');
       return;
     }
 
@@ -193,14 +209,21 @@ export function CommitteeFinanceView({
       committeeId: committee.id,
       committeeName: committee.shortName,
       requesterName: requesterName.trim(),
-      requesterEmail: requesterEmail.trim(),
+      requesterEmail: requesterEmail.trim().toLowerCase(),
+      purdueUsername: purdueUsername.trim().toLowerCase(),
+      streetAddress: streetAddress.trim(),
+      phoneNumber: phoneNumber.trim(),
+      fundingSource,
+      sfabLineItem: fundingSource === 'SFAB' ? sfabLineItem.trim() : undefined,
+      disbursementMethod,
       vendorName: vendorName.trim(),
-      category: category || 'General',
-      totalAmount: Math.round(amountNum * 100) / 100,
-      description: description.trim() || 'Purchase Request submission',
+      category,
+      totalAmount: parsedAmount,
+      description: description.trim() || 'Purchased items for committee project',
       status: 'PENDING',
       receiptUrl: receiptFile.url,
       receiptFilename: receiptFile.name,
+      coolAccountNumber: '01-234-56',
       submittedAt: new Date().toISOString(),
     };
 
@@ -209,6 +232,12 @@ export function CommitteeFinanceView({
     // Reset Form
     setRequesterName('');
     setRequesterEmail('');
+    setPurdueUsername('');
+    setStreetAddress('');
+    setPhoneNumber('');
+    setFundingSource('GENERAL');
+    setSfabLineItem('');
+    setDisbursementMethod('BOSO_PICKUP');
     setVendorName('');
     setTotalAmount('');
     setDescription('');
@@ -552,10 +581,27 @@ export function CommitteeFinanceView({
           </DialogHeader>
 
           <form onSubmit={handleSubmitPurchase} className="space-y-4 py-2">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
+            {/* BOSO & Amazon Guidance Notice */}
+            <div className="p-3.5 bg-amber-500/10 border border-amber-500/30 rounded-xl text-xs text-amber-300 space-y-1.5">
+              <div className="font-semibold flex items-center gap-1.5 text-amber-200">
+                <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+                <span>Purdue BOSO & Reimbursement Guidelines</span>
+              </div>
+              <ul className="list-disc list-inside text-[11px] text-amber-200/90 space-y-1 pl-1">
+                <li>
+                  <strong>Group by invoice:</strong> Submit requests per vendor/invoice (do not submit individual items on separate forms).
+                </li>
+                <li>
+                  <strong>Amazon Purchases:</strong> Uploaded invoice/receipt <strong>MUST state DELIVERED</strong> for BOSO check clearance.
+                </li>
+              </ul>
+            </div>
+
+            {/* Requester Identity & Purdue Career Alias */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="space-y-1 sm:col-span-1">
                 <Label htmlFor="req-name" className="text-xs font-medium text-slate-300">
-                  Requester Full Name *
+                  Name (First Last) *
                 </Label>
                 <Input
                   id="req-name"
@@ -567,7 +613,21 @@ export function CommitteeFinanceView({
                 />
               </div>
 
-              <div className="space-y-1.5">
+              <div className="space-y-1 sm:col-span-1">
+                <Label htmlFor="req-username" className="text-xs font-medium text-slate-300">
+                  Purdue Username *
+                </Label>
+                <Input
+                  id="req-username"
+                  value={purdueUsername}
+                  onChange={(e) => setPurdueUsername(e.target.value)}
+                  placeholder="e.g. arivera"
+                  className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9 font-mono"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1 sm:col-span-1">
                 <Label htmlFor="req-email" className="text-xs font-medium text-slate-300">
                   Purdue Email Address *
                 </Label>
@@ -583,22 +643,168 @@ export function CommitteeFinanceView({
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="space-y-1.5 sm:col-span-1">
-                <Label htmlFor="vendor" className="text-xs font-medium text-slate-300">
-                  Vendor Name *
+            {/* Contact Phone & Mailing Address */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="space-y-1 sm:col-span-1">
+                <Label htmlFor="req-phone" className="text-xs font-medium text-slate-300">
+                  Phone (XXX-XXX-XXXX) *
                 </Label>
                 <Input
-                  id="vendor"
-                  value={vendorName}
-                  onChange={(e) => setVendorName(e.target.value)}
-                  placeholder="e.g. DigiKey, McMaster"
+                  id="req-phone"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  placeholder="e.g. 765-555-0199"
                   className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
                   required
                 />
               </div>
 
-              <div className="space-y-1.5 sm:col-span-1">
+              <div className="space-y-1 sm:col-span-2">
+                <Label htmlFor="req-address" className="text-xs font-medium text-slate-300">
+                  Full Address (Street, City, State, Zip) *
+                </Label>
+                <Input
+                  id="req-address"
+                  value={streetAddress}
+                  onChange={(e) => setStreetAddress(e.target.value)}
+                  placeholder="e.g. 123 University St, Apt 4, West Lafayette, IN 47906"
+                  className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Funding Source & SFAB Line Item */}
+            <div className="p-3 bg-slate-900/60 border border-slate-800 rounded-lg space-y-2.5">
+              <Label className="text-xs font-medium text-slate-300">
+                Which IEEE Account to get money from? *
+              </Label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setFundingSource('GENERAL')}
+                  className={`p-2.5 rounded-lg border text-xs font-medium text-left flex items-center justify-between transition-all ${
+                    fundingSource === 'GENERAL'
+                      ? 'bg-sky-500/20 border-sky-500 text-sky-200'
+                      : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-600'
+                  }`}
+                >
+                  <div>
+                    <div className="font-semibold text-white">GENERAL</div>
+                    <div className="text-[10px] text-slate-400">Branch & Committee Budget</div>
+                  </div>
+                  {fundingSource === 'GENERAL' && <CheckCircle2 className="w-4 h-4 text-sky-400" />}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setFundingSource('SFAB')}
+                  className={`p-2.5 rounded-lg border text-xs font-medium text-left flex items-center justify-between transition-all ${
+                    fundingSource === 'SFAB'
+                      ? 'bg-amber-500/20 border-amber-500 text-amber-200'
+                      : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-600'
+                  }`}
+                >
+                  <div>
+                    <div className="font-semibold text-white">SFAB Grant</div>
+                    <div className="text-[10px] text-slate-400">Student Fee Advisory Board</div>
+                  </div>
+                  {fundingSource === 'SFAB' && <CheckCircle2 className="w-4 h-4 text-amber-400" />}
+                </button>
+              </div>
+
+              {fundingSource === 'SFAB' ? (
+                <div className="space-y-1 animate-in fade-in-50 duration-200">
+                  <Label htmlFor="sfab-line-item" className="text-xs font-medium text-amber-300">
+                    If SFAB, which line item? *
+                  </Label>
+                  <Input
+                    id="sfab-line-item"
+                    value={sfabLineItem}
+                    onChange={(e) => setSfabLineItem(e.target.value)}
+                    placeholder="e.g. Line Item 3.1 Motors & ESCs"
+                    className="bg-slate-900 border-amber-500/50 text-slate-100 text-xs h-9"
+                    required
+                  />
+                </div>
+              ) : (
+                <p className="text-[11px] text-slate-500">Charged against committee general operating budget.</p>
+              )}
+            </div>
+
+            {/* Check Disbursement Method Selection */}
+            <div className="p-3 bg-slate-900/60 border border-slate-800 rounded-lg space-y-2">
+              <Label className="text-xs font-medium text-slate-300">
+                How would you like to receive your check? *
+              </Label>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setDisbursementMethod('BOSO_PICKUP')}
+                  className={`p-2.5 rounded-lg border text-xs text-left transition-all ${
+                    disbursementMethod === 'BOSO_PICKUP'
+                      ? 'bg-sky-500/20 border-sky-500 text-sky-200'
+                      : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-600'
+                  }`}
+                >
+                  <div className="font-semibold text-white flex items-center justify-between">
+                    <span>Pick up from BOSO</span>
+                    {disbursementMethod === 'BOSO_PICKUP' && <CheckCircle2 className="w-3.5 h-3.5 text-sky-400" />}
+                  </div>
+                  <div className="text-[10px] text-slate-400 mt-0.5">Krach 365 (Fastest & Safest)</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setDisbursementMethod('EPAYMENT')}
+                  className={`p-2.5 rounded-lg border text-xs text-left transition-all ${
+                    disbursementMethod === 'EPAYMENT'
+                      ? 'bg-sky-500/20 border-sky-500 text-sky-200'
+                      : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-600'
+                  }`}
+                >
+                  <div className="font-semibold text-white flex items-center justify-between">
+                    <span>E-Payment</span>
+                    {disbursementMethod === 'EPAYMENT' && <CheckCircle2 className="w-3.5 h-3.5 text-sky-400" />}
+                  </div>
+                  <div className="text-[10px] text-slate-400 mt-0.5">Electronic Bank Transfer Email</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setDisbursementMethod('MAIL_ADDRESS')}
+                  className={`p-2.5 rounded-lg border text-xs text-left transition-all ${
+                    disbursementMethod === 'MAIL_ADDRESS'
+                      ? 'bg-sky-500/20 border-sky-500 text-sky-200'
+                      : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-600'
+                  }`}
+                >
+                  <div className="font-semibold text-white flex items-center justify-between">
+                    <span>Mail to Address</span>
+                    {disbursementMethod === 'MAIL_ADDRESS' && <CheckCircle2 className="w-3.5 h-3.5 text-sky-400" />}
+                  </div>
+                  <div className="text-[10px] text-slate-400 mt-0.5">Sent to mailing address</div>
+                </button>
+              </div>
+            </div>
+
+            {/* Vendor, Category, Amount */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="space-y-1 sm:col-span-1">
+                <Label htmlFor="vendor" className="text-xs font-medium text-slate-300">
+                  Vendor / Store Name *
+                </Label>
+                <Input
+                  id="vendor"
+                  value={vendorName}
+                  onChange={(e) => setVendorName(e.target.value)}
+                  placeholder="e.g. DigiKey, Amazon, McMaster"
+                  className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1 sm:col-span-1">
                 <Label htmlFor="req-category" className="text-xs font-medium text-slate-300">
                   Budget Category
                 </Label>
@@ -616,7 +822,7 @@ export function CommitteeFinanceView({
                 </Select>
               </div>
 
-              <div className="space-y-1.5 sm:col-span-1">
+              <div className="space-y-1 sm:col-span-1">
                 <Label htmlFor="amount" className="text-xs font-medium text-slate-300">
                   Total Amount ($) *
                 </Label>
