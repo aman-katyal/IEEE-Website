@@ -20,7 +20,7 @@
     {
       "binding": "DB",
       "database_name": "boilerbooks",
-      "database_id": "boilerbooks-db",
+      "database_id": "fa0def27-5b45-4028-b8e3-b3d0b6f80b95",
       "migrations_dir": "migrations"
     }
   ]
