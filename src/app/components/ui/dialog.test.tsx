@@ -109,4 +109,31 @@ describe("Dialog", () => {
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
   });
+
+  it("closes when ESC key is pressed", async () => {
+    const user = userEvent.setup();
+    render(
+      <Dialog>
+        <DialogTrigger>Open Dialog</DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Dialog Title</DialogTitle>
+            <DialogDescription>Description</DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+    );
+
+    // Open
+    await user.click(screen.getByRole("button", { name: /open dialog/i }));
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+
+    // Press Escape
+    await user.keyboard("{Escape}");
+
+    // Verify dialog is dismissed
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+  });
 });
