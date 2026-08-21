@@ -62,7 +62,14 @@ To deploy to Cloudflare Pages:
 
 1.  **Functional Components:** Use functional components with hooks.
 2.  **TypeScript:** Maintain strict typing throughout the codebase, especially for data structures in `src/data/`.
-3.  **CMS-Driven Content:** All website content (committees, officers, projects, home, and about pages) is managed dynamically in Sanity CMS. Do not hardcode content in components or data files.
+3.  **Strict CMS-Driven Content & Zero Hardcoding (MANDATORY):**
+    - **Zero In-Component Static Data Arrays**: NEVER declare hardcoded data arrays, milestone lists, feature cards, or mock text directly inside `.tsx` components or data files.
+    - **Schema-First Workflow**: For every new content section (timelines, quotes, cards, archives):
+      1. Define the Sanity schema (`studio/schema/`) and deploy/register in `schemaTypes`.
+      2. Declare TypeScript interfaces in `src/data/sanity-types.ts`.
+      3. Fetch via GROQ projection in `src/hooks/useSanityData.ts`.
+      4. Conditionally render in UI only when populated from CMS (`data?.field && data.field.length > 0`).
+    - If CMS returns `null` or empty arrays, render nothing or clean empty state—never hardcoded fallback content.
 4.  **Accessibility:** Utilize Radix UI primitives in `src/app/components/ui/` to ensure high accessibility standards.
 5.  **Styling:** Prefer Tailwind CSS utility classes. For complex or brand-specific styling, use the pre-defined CSS variables in `src/styles/`.
 6.  **Page Transitions:** Use the `<PageTransition>` component (wrapper around Framer Motion) for smooth navigation between routes.
