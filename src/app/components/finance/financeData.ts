@@ -159,6 +159,22 @@ export const REAL_COMMITTEES: CommitteeInfo[] = [
     contactEmail: 'ir@purdueieee.org',
     categories: ['Company Info Sessions', 'Resume Book Hosting', 'Sponsorship Events', 'General'],
   },
+  {
+    id: 'involvement',
+    name: 'Member Involvement',
+    shortName: 'Member Involvement',
+    allocated: 3500,
+    contactEmail: 'involvement@purdueieee.org',
+    categories: ['Callouts & Socials', 'Mentorship & Workshops', 'Member Retention', 'Swag & Apparel', 'General'],
+  },
+  {
+    id: 'operations',
+    name: 'Operations',
+    shortName: 'Operations',
+    allocated: 4000,
+    contactEmail: 'operations@purdueieee.org',
+    categories: ['Lab Management & Supplies', 'Inventory & Storage', 'Equipment Maintenance', 'Safety & PPE', 'General'],
+  },
 ];
 
 export const INITIAL_PURCHASES: PurchaseItem[] = [
