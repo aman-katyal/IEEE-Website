@@ -56,6 +56,17 @@ export function OfficersPage() {
   const loading = leadersLoading || configLoading;
   const error = leadersError || configError;
 
+  const categorizedLeaders = useMemo(() => {
+    if (!leaders) return {} as Record<string, Leader[]>;
+    return CATEGORIES.reduce(
+      (acc, cat) => {
+        acc[cat.id] = getOrderedLeaders(leaders, config, cat.id);
+        return acc;
+      },
+      {} as Record<string, Leader[]>,
+    );
+  }, [leaders, config]);
+
   if (error) {
     return (
       <div
@@ -72,17 +83,6 @@ export function OfficersPage() {
       </div>
     );
   }
-
-  const categorizedLeaders = useMemo(() => {
-    if (!leaders) return {} as Record<string, Leader[]>;
-    return CATEGORIES.reduce(
-      (acc, cat) => {
-        acc[cat.id] = getOrderedLeaders(leaders, config, cat.id);
-        return acc;
-      },
-      {} as Record<string, Leader[]>,
-    );
-  }, [leaders, config]);
 
   const renderOfficerCard = (officer: Leader) => (
     <MagneticWrapper

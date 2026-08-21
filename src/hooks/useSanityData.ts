@@ -25,21 +25,21 @@ const SECTION_PROJECTION = `
 `;
 
 // Simple helper to detect if we should use the preview client
-const usePreview = () => {
+const checkIsPreview = () => {
   if (typeof window === 'undefined') return false;
   const params = new URLSearchParams(window.location.search);
   return params.has('preview') || window.location.hostname.includes('sanity.studio') || window.self !== window.top;
 };
 
 const getActiveClient = () => {
-  const isPreview = usePreview();
+  const isPreview = checkIsPreview();
   return isPreview ? previewClient : client;
 };
 
 // React Query hook for data fetching
 function useSanityQuery<T>(query: string, params?: Record<string, any>) {
   const activeClient = getActiveClient();
-  const isPreview = usePreview();
+  const isPreview = checkIsPreview();
 
   const queryResult = useQuery({
     queryKey: ['sanity', query, params, isPreview],
