@@ -105,8 +105,9 @@ To deploy to Cloudflare Pages:
     - When executing batches of tasks or working through multiple issues, provide a structured check-in every 1–2 issues.
     - Summarize completed changes, verification results (`tsc`, `vitest`, `vite build`), and next intended actions before proceeding.
 19. **Standardized Tooling Over Ad-hoc Scripts (MANDATORY):**
-    - **NEVER** write one-off scratch scripts for standard repository actions (creating/closing issues, listing PRs, branch cleanup, running builds).
+    - **NEVER** write one-off scratch or runner scripts in `scripts/` or workspace roots for standard repository actions (creating/closing issues, listing PRs, branch cleanup, running builds).
     - **ALWAYS** invoke existing repository tooling (`python -m gh_tool`, `npm run issue:*`, `npm run pr:*`, `npm run branch:prune`) directly.
+    - For batch issue creation, **ALWAYS** use native batch tooling: `python -m gh_tool issue create --batch <file.json|->` or `npm run issue:create -- --batch <file.json>`. Never author ad-hoc `.py` batch creation scripts.
 20. **Zero GitHub Actions / Workflows (MANDATORY):**
     - **NEVER** create, commit, or configure `.github/workflows/` files.
     - All compilation, test suites, bundle builds, PR linting, and issue validation MUST run 100% locally via CLI (`npx tsc`, `npm test`, `npm run build`, `python -m gh_tool`).
