@@ -24,7 +24,21 @@ export const committee = defineType({
         source: 'name',
         maxLength: 96,
       },
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) =>
+        Rule.required().custom((slug) => {
+          if (!slug || !slug.current) return true;
+          const current = slug.current;
+          if (current !== current.toLowerCase()) {
+            return 'Slug must be all lowercase.';
+          }
+          if (!/^[a-z0-9-]+$/.test(current)) {
+            return 'Slug can only contain lowercase letters, numbers, and dashes.';
+          }
+          if (current.startsWith('-') || current.endsWith('-')) {
+            return 'Slug cannot start or end with a dash.';
+          }
+          return true;
+        }),
     }),
     defineField({
       name: 'name',

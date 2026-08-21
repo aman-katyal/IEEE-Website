@@ -37,5 +37,34 @@ describe('Sanity Schema Validations', () => {
     const taglineField = committee.fields.find((f: any) => f.name === 'tagline');
     expect(taglineField).toBeDefined();
     expect(taglineField.validation).toBeDefined();
+
+    const slugField = committee.fields.find((f: any) => f.name === 'id');
+    expect(slugField).toBeDefined();
+    expect(slugField.validation).toBeDefined();
+
+    // Test slug custom validation function
+    let customValidator: any = null;
+    const mockRule: any = {
+      required: () => mockRule,
+      custom: (fn: any) => {
+        customValidator = fn;
+        return mockRule;
+      },
+    };
+    slugField.validation(mockRule);
+    expect(customValidator).toBeDefined();
+
+    // Valid kebab-case slug
+    expect(customValidator({ current: 'aerial-robotics' })).toBe(true);
+    expect(customValidator({ current: 'rov' })).toBe(true);
+
+    // Uppercase rejected
+    expect(customValidator({ current: 'Aerial-Robotics' })).toBe('Slug must be all lowercase.');
+
+    // Invalid characters rejected
+    expect(customValidator({ current: 'aerial_robotics' })).toBe('Slug can only contain lowercase letters, numbers, and dashes.');
+
+    // Leading/trailing dashes rejected
+    expect(customValidator({ current: '-rov-' })).toBe('Slug cannot start or end with a dash.');
   });
 });
