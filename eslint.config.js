@@ -4,10 +4,19 @@ import tsParser from '@typescript-eslint/parser';
 
 export default [
   {
-    ignores: ['dist/**', 'node_modules/**', 'coverage/**', 'studio/dist/**', '.sanity/**'],
+    ignores: [
+      'dist/**',
+      'node_modules/**',
+      'coverage/**',
+      'studio/dist/**',
+      'studio/node_modules/**',
+      'studio/purdue-ieee-website/**',
+      '.sanity/**',
+      '*.config.js',
+    ],
   },
   {
-    files: ['src/**/*.{ts,tsx}', 'studio/**/*.{ts,tsx}'],
+    files: ['src/**/*.{ts,tsx}', 'studio/schema/**/*.{ts,tsx}'],
     plugins: {
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
