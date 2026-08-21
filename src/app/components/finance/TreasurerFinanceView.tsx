@@ -43,6 +43,9 @@ import {
   MessageSquare,
   Settings2,
   Plus,
+  PlusCircle,
+  Coins,
+  Trash2,
   X,
 } from 'lucide-react';
 import {
@@ -50,6 +53,9 @@ import {
   type MemberDuesRecord,
   type AuthSessionData,
   type CommitteeInfo,
+  type CommitteeFundingInflow,
+  type InflowSourceType,
+  INITIAL_FUNDING_INFLOWS,
   REAL_COMMITTEES,
   type PurchaseStatus,
 } from './financeData';
@@ -60,6 +66,7 @@ export interface TreasurerFinanceViewProps {
   purchases: PurchaseItem[];
   memberDues: MemberDuesRecord[];
   committees?: CommitteeInfo[];
+  fundingInflows?: CommitteeFundingInflow[];
   onUpdatePurchaseStatus: (
     id: string,
     status: PurchaseStatus,
@@ -68,6 +75,8 @@ export interface TreasurerFinanceViewProps {
   ) => void;
   onImportMemberDues: (records: MemberDuesRecord[]) => void;
   onUpdateCommittee?: (committeeId: string, updated: Partial<CommitteeInfo>) => void;
+  onAddFundingInflow?: (inflow: CommitteeFundingInflow) => void;
+  onDeleteFundingInflow?: (id: string) => void;
   onLogout?: () => void;
 }
 
@@ -76,20 +85,27 @@ export function TreasurerFinanceView({
   purchases,
   memberDues,
   committees,
+  fundingInflows = INITIAL_FUNDING_INFLOWS,
   onUpdatePurchaseStatus,
   onImportMemberDues,
   onUpdateCommittee,
+  onAddFundingInflow,
+  onDeleteFundingInflow,
   onLogout,
 }: TreasurerFinanceViewProps) {
   const activeCommittees = useMemo(() => {
     return committees && committees.length > 0 ? committees : REAL_COMMITTEES;
   }, [committees]);
 
-  // Master Spending Matrix Data Calculation
+  // Master Spending Matrix Data Calculation (Base Allocated + Inflow Grants)
   const matrixData = useMemo(() => {
     return activeCommittees.map((comm) => {
       const commPurchases = purchases.filter((p) => p.committeeId === comm.id);
-      const allocated = comm.allocated;
+      const commInflows = (fundingInflows || []).filter((inf) => inf.committeeId === comm.id);
+      const totalInflows = commInflows.reduce((sum, inf) => sum + inf.amount, 0);
+      const baseAllocated = comm.allocated;
+      const totalBudget = baseAllocated + totalInflows;
+
       const approved = commPurchases
         .filter((p) => p.status === 'APPROVED' || p.status === 'PURCHASED' || p.status === 'REIMBURSED')
         .reduce((sum, p) => sum + p.totalAmount, 0);
@@ -99,11 +115,15 @@ export function TreasurerFinanceView({
       const reimbursed = commPurchases
         .filter((p) => p.status === 'REIMBURSED')
         .reduce((sum, p) => sum + p.totalAmount, 0);
-      const remaining = Math.max(allocated - approved, 0);
-      const percentSpent = allocated > 0 ? Math.min(Math.round((approved / allocated) * 100), 100) : 0;
+      const remaining = Math.max(totalBudget - approved, 0);
+      const percentSpent = totalBudget > 0 ? Math.min(Math.round((approved / totalBudget) * 100), 100) : 0;
 
       return {
         ...comm,
+        baseAllocated,
+        totalInflows,
+        inflowsCount: commInflows.length,
+        totalBudget,
         approved,
         pending,
         reimbursed,
@@ -112,27 +132,31 @@ export function TreasurerFinanceView({
         totalRequests: commPurchases.length,
       };
     });
-  }, [activeCommittees, purchases]);
+  }, [activeCommittees, purchases, fundingInflows]);
 
   // Branch-Wide Totals
   const branchTotals = useMemo(() => {
-    const totalAllocated = matrixData.reduce((sum, c) => sum + c.allocated, 0);
+    const totalAllocated = matrixData.reduce((sum, c) => sum + c.baseAllocated, 0);
+    const totalInflows = (fundingInflows || []).reduce((sum, inf) => sum + inf.amount, 0);
+    const totalBranchBudget = totalAllocated + totalInflows;
     const totalSpent = matrixData.reduce((sum, c) => sum + c.approved, 0);
     const totalPending = matrixData.reduce((sum, c) => sum + c.pending, 0);
     const totalRemaining = matrixData.reduce((sum, c) => sum + c.remaining, 0);
     const totalRequests = purchases.length;
     const branchPercentSpent =
-      totalAllocated > 0 ? Math.min(Math.round((totalSpent / totalAllocated) * 100), 100) : 0;
+      totalBranchBudget > 0 ? Math.min(Math.round((totalSpent / totalBranchBudget) * 100), 100) : 0;
 
     return {
       totalAllocated,
+      totalInflows,
+      totalBranchBudget,
       totalSpent,
       totalPending,
       totalRemaining,
       totalRequests,
       branchPercentSpent,
     };
-  }, [matrixData, purchases]);
+  }, [matrixData, purchases, fundingInflows]);
 
   // Pending Approvals Queue
   const pendingRequests = useMemo(() => {
@@ -228,6 +252,76 @@ export function TreasurerFinanceView({
       return matchesQuery && matchesSemester;
     });
   }, [memberDues, duesSearch, duesSemesterFilter]);
+
+  // Specific Funding Inflows State & Handlers
+  const [isInflowModalOpen, setIsInflowModalOpen] = useState<boolean>(false);
+  const [inflowCommitteeId, setInflowCommitteeId] = useState<string>('rov');
+  const [inflowSourceType, setInflowSourceType] = useState<InflowSourceType>('SFAB Grant');
+  const [inflowTitle, setInflowTitle] = useState<string>('');
+  const [inflowAmount, setInflowAmount] = useState<string>('');
+  const [inflowRefNumber, setInflowRefNumber] = useState<string>('');
+  const [inflowDate, setInflowDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [inflowNotes, setInflowNotes] = useState<string>('');
+
+  // Inflows Tab Filters
+  const [inflowFilterCommittee, setInflowFilterCommittee] = useState<string>('ALL');
+  const [inflowFilterSource, setInflowFilterSource] = useState<string>('ALL');
+  const [inflowSearch, setInflowSearch] = useState<string>('');
+
+  const filteredInflows = useMemo(() => {
+    return (fundingInflows || []).filter((item) => {
+      const matchesCommittee =
+        inflowFilterCommittee === 'ALL' || item.committeeId === inflowFilterCommittee;
+      const matchesSource =
+        inflowFilterSource === 'ALL' || item.sourceType === inflowFilterSource;
+      const query = inflowSearch.toLowerCase().trim();
+      const matchesSearch =
+        !query ||
+        item.title.toLowerCase().includes(query) ||
+        (item.referenceNumber && item.referenceNumber.toLowerCase().includes(query)) ||
+        (item.committeeName && item.committeeName.toLowerCase().includes(query)) ||
+        (item.notes && item.notes.toLowerCase().includes(query));
+      return matchesCommittee && matchesSource && matchesSearch;
+    });
+  }, [fundingInflows, inflowFilterCommittee, inflowFilterSource, inflowSearch]);
+
+  const handleOpenInflowModal = (defaultCommId?: string) => {
+    if (defaultCommId) {
+      setInflowCommitteeId(defaultCommId);
+    }
+    setInflowTitle('');
+    setInflowAmount('');
+    setInflowRefNumber('');
+    setInflowNotes('');
+    setInflowDate(new Date().toISOString().split('T')[0]);
+    setIsInflowModalOpen(true);
+  };
+
+  const handleSaveInflow = (e: React.FormEvent) => {
+    e.preventDefault();
+    const parsedAmount = parseFloat(inflowAmount);
+    if (!inflowTitle.trim() || isNaN(parsedAmount) || parsedAmount <= 0) return;
+
+    const targetCommittee = activeCommittees.find((c) => c.id === inflowCommitteeId);
+    const newInflow: CommitteeFundingInflow = {
+      id: `INFLOW-${Date.now().toString().slice(-4)}`,
+      committeeId: inflowCommitteeId,
+      committeeName: targetCommittee?.shortName || targetCommittee?.name || inflowCommitteeId,
+      sourceType: inflowSourceType,
+      title: inflowTitle.trim(),
+      amount: parsedAmount,
+      referenceNumber: inflowRefNumber.trim() || undefined,
+      receivedDate: inflowDate || new Date().toISOString().split('T')[0],
+      notes: inflowNotes.trim() || undefined,
+      createdAt: new Date().toISOString(),
+    };
+
+    if (onAddFundingInflow) {
+      onAddFundingInflow(newInflow);
+    }
+
+    setIsInflowModalOpen(false);
+  };
 
   // Handle Approvals
   const handleApprove = (item: PurchaseItem) => {
@@ -475,6 +569,15 @@ export function TreasurerFinanceView({
         <div className="flex flex-wrap items-center gap-3">
           <Button
             type="button"
+            onClick={() => handleOpenInflowModal()}
+            className="bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-medium shadow-md flex items-center gap-2"
+          >
+            <PlusCircle className="w-4 h-4" />
+            <span>Record Specific Funds / Grant</span>
+          </Button>
+
+          <Button
+            type="button"
             onClick={() => setIsCOOLExporterOpen(true)}
             className="bg-gradient-to-r from-sky-600 to-sky-500 hover:from-sky-500 hover:to-sky-400 text-white font-medium shadow-md flex items-center gap-2"
           >
@@ -507,18 +610,22 @@ export function TreasurerFinanceView({
 
       {/* Branch Metric Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {/* Total Branch Budget */}
+        {/* Total Branch Capital */}
         <Card className="bg-[#121214] border-slate-800 p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
             <span className="text-xs font-mono uppercase tracking-wider text-slate-400">
-              Branch Total Budget
+              Total Branch Capital
             </span>
             <DollarSign className="w-4 h-4 text-[#EBD3A9]" />
           </div>
           <div className="text-2xl font-bold text-white mt-2 font-mono">
-            ${branchTotals.totalAllocated.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+            ${branchTotals.totalBranchBudget.toLocaleString('en-US', { minimumFractionDigits: 2 })}
           </div>
-          <p className="text-[11px] text-slate-500 mt-1">Across 8 Technical Committees</p>
+          <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
+            <span>${branchTotals.totalAllocated.toLocaleString('en-US')} base</span>
+            <span className="text-slate-600">+</span>
+            <span className="text-emerald-400 font-medium">+${branchTotals.totalInflows.toLocaleString('en-US')} grants</span>
+          </p>
         </Card>
 
         {/* Total Spent */}
@@ -571,7 +678,7 @@ export function TreasurerFinanceView({
         </Card>
       </div>
 
-      {/* Main Tabs: Pending Approvals | Master Spending Matrix | Dues Directory */}
+      {/* Main Tabs: Pending Approvals | Master Spending Matrix | Grants & Inflows | Dues Directory */}
       <Tabs defaultValue="approvals" className="w-full">
         <TabsList className="bg-slate-900/90 border border-slate-800 p-1 rounded-lg">
           <TabsTrigger
@@ -585,6 +692,12 @@ export function TreasurerFinanceView({
             className="data-[state=active]:bg-sky-600 data-[state=active]:text-white text-slate-300 text-xs px-4"
           >
             Master Spending Matrix
+          </TabsTrigger>
+          <TabsTrigger
+            value="inflows"
+            className="data-[state=active]:bg-sky-600 data-[state=active]:text-white text-slate-300 text-xs px-4"
+          >
+            Grants & Inflows ({fundingInflows.length})
           </TabsTrigger>
           <TabsTrigger
             value="dues"
@@ -718,14 +831,26 @@ export function TreasurerFinanceView({
         {/* Tab 2: Master Spending Matrix */}
         <TabsContent value="matrix" className="mt-4 space-y-4">
           <Card className="bg-[#121214] border-slate-800 shadow-xl overflow-hidden">
-            <CardHeader className="border-b border-slate-800 px-6 py-4">
-              <CardTitle className="text-base font-bold text-white flex items-center gap-2">
-                <Building2 className="w-5 h-5 text-sky-400" />
-                <span>Technical Committees Master Spending Matrix</span>
-              </CardTitle>
-              <CardDescription className="text-xs text-slate-400">
-                Comparative budget overview, allocated capital, pending liabilities, and remaining balances per committee.
-              </CardDescription>
+            <CardHeader className="border-b border-slate-800 px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <CardTitle className="text-base font-bold text-white flex items-center gap-2">
+                  <Building2 className="w-5 h-5 text-sky-400" />
+                  <span>Technical Committees Master Spending Matrix</span>
+                </CardTitle>
+                <CardDescription className="text-xs text-slate-400">
+                  Comparative budget overview, base capital, specific grants & inflows, liabilities, and surplus per committee.
+                </CardDescription>
+              </div>
+
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => handleOpenInflowModal()}
+                className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs flex items-center gap-1.5 self-start sm:self-auto"
+              >
+                <PlusCircle className="w-3.5 h-3.5" />
+                <span>Record Inflow / Grant</span>
+              </Button>
             </CardHeader>
 
             <CardContent className="p-0 overflow-x-auto">
@@ -733,12 +858,14 @@ export function TreasurerFinanceView({
                 <TableHeader className="bg-slate-900/60 border-b border-slate-800">
                   <TableRow className="border-slate-800 hover:bg-transparent">
                     <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 pl-6">Committee</TableHead>
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">Allocated</TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">Base Allocated</TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">Grants / Inflows</TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">Total Budget</TableHead>
                     <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">Spent / Disbursed</TableHead>
                     <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">Pending</TableHead>
                     <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">Remaining</TableHead>
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-center w-40">% Spent</TableHead>
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-center">Requests</TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-center w-36">% Spent</TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-center">Reqs</TableHead>
                     <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right pr-6">Manage</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -758,8 +885,20 @@ export function TreasurerFinanceView({
                           </span>
                         </div>
                       </TableCell>
-                      <TableCell className="text-right py-3.5 font-mono text-xs font-medium text-slate-200">
-                        ${c.allocated.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                      <TableCell className="text-right py-3.5 font-mono text-xs font-medium text-slate-300">
+                        ${c.baseAllocated.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                      </TableCell>
+                      <TableCell className="text-right py-3.5 font-mono text-xs">
+                        {c.totalInflows > 0 ? (
+                          <span className="inline-flex items-center gap-1 text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                            +${c.totalInflows.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                          </span>
+                        ) : (
+                          <span className="text-slate-600">$0.00</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right py-3.5 font-mono text-xs font-bold text-white">
+                        ${c.totalBudget.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                       </TableCell>
                       <TableCell className="text-right py-3.5 font-mono text-xs font-bold text-sky-400">
                         ${c.approved.toLocaleString('en-US', { minimumFractionDigits: 2 })}
@@ -791,17 +930,30 @@ export function TreasurerFinanceView({
                         {c.totalRequests}
                       </TableCell>
                       <TableCell className="text-right py-3.5 pr-6">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleOpenEditCommittee(c)}
-                          className="h-7 px-2.5 text-xs bg-slate-900 border-slate-700 text-sky-400 hover:text-white hover:bg-slate-800 inline-flex items-center gap-1.5"
-                          title={`Edit ${c.shortName} Budget & Parameters`}
-                        >
-                          <Settings2 className="w-3.5 h-3.5" />
-                          <span>Edit</span>
-                        </Button>
+                        <div className="flex items-center justify-end gap-1.5">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleOpenInflowModal(c.id)}
+                            className="h-7 px-2 text-xs bg-slate-900 border-slate-700 text-emerald-400 hover:text-white hover:bg-slate-800 inline-flex items-center gap-1"
+                            title={`Add Inflow for ${c.shortName}`}
+                          >
+                            <Plus className="w-3 h-3" />
+                            <span>Inflow</span>
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleOpenEditCommittee(c)}
+                            className="h-7 px-2 text-xs bg-slate-900 border-slate-700 text-sky-400 hover:text-white hover:bg-slate-800 inline-flex items-center gap-1"
+                            title={`Edit ${c.shortName} Budget & Parameters`}
+                          >
+                            <Settings2 className="w-3 h-3" />
+                            <span>Edit</span>
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -811,7 +963,166 @@ export function TreasurerFinanceView({
           </Card>
         </TabsContent>
 
-        {/* Tab 3: Member Dues Directory */}
+        {/* Tab 3: Specific Funding & Grants Inflows */}
+        <TabsContent value="inflows" className="mt-4 space-y-4">
+          <Card className="bg-[#121214] border-slate-800 shadow-xl overflow-hidden">
+            <CardHeader className="border-b border-slate-800 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <CardTitle className="text-base font-bold text-white flex items-center gap-2">
+                  <Coins className="w-5 h-5 text-emerald-400" />
+                  <span>Committee Specific Funding & Grants Ledger</span>
+                </CardTitle>
+                <CardDescription className="text-xs text-slate-400">
+                  Track external grants (SFAB), corporate sponsorships, departmental awards, and prize money credited to committees.
+                </CardDescription>
+              </div>
+
+              {/* Inflow Action & Filters */}
+              <div className="flex flex-wrap items-center gap-2.5">
+                <div className="relative w-40 sm:w-56">
+                  <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <Input
+                    value={inflowSearch}
+                    onChange={(e) => setInflowSearch(e.target.value)}
+                    placeholder="Search grants or references..."
+                    className="pl-9 h-8 bg-slate-900 border-slate-700 text-xs text-slate-200"
+                  />
+                </div>
+
+                <Select value={inflowFilterCommittee} onValueChange={setInflowFilterCommittee}>
+                  <SelectTrigger className="h-8 w-36 bg-slate-900 border-slate-700 text-xs text-slate-200">
+                    <SelectValue placeholder="All Committees" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-900 border-slate-700 text-slate-200 text-xs">
+                    <SelectItem value="ALL">All Committees</SelectItem>
+                    {activeCommittees.map((c) => (
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.shortName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={inflowFilterSource} onValueChange={setInflowFilterSource}>
+                  <SelectTrigger className="h-8 w-40 bg-slate-900 border-slate-700 text-xs text-slate-200">
+                    <SelectValue placeholder="All Source Types" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-900 border-slate-700 text-slate-200 text-xs">
+                    <SelectItem value="ALL">All Source Types</SelectItem>
+                    <SelectItem value="SFAB Grant">SFAB Grant</SelectItem>
+                    <SelectItem value="Corporate Sponsorship">Corporate Sponsorship</SelectItem>
+                    <SelectItem value="Department Allocation">Department Allocation</SelectItem>
+                    <SelectItem value="Competition Prize">Competition Prize</SelectItem>
+                    <SelectItem value="Donation">Donation</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => handleOpenInflowModal()}
+                  className="h-8 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium flex items-center gap-1.5 shadow-sm"
+                >
+                  <PlusCircle className="w-3.5 h-3.5" />
+                  <span>+ Record Inflow</span>
+                </Button>
+              </div>
+            </CardHeader>
+
+            <CardContent className="p-0 overflow-x-auto">
+              <Table>
+                <TableHeader className="bg-slate-900/60 border-b border-slate-800">
+                  <TableRow className="border-slate-800 hover:bg-transparent">
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 pl-6">Inflow ID</TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">Committee</TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">Source Type</TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">Grant / Title</TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">Reference / Code</TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">Date</TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">Amount</TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right pr-6">Action</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredInflows.length > 0 ? (
+                    filteredInflows.map((item) => (
+                      <TableRow
+                        key={item.id}
+                        className="border-b border-slate-800/60 hover:bg-slate-800/30 transition-colors"
+                      >
+                        <TableCell className="font-mono text-xs text-emerald-400 pl-6 py-3.5 font-medium">
+                          {item.id}
+                        </TableCell>
+                        <TableCell className="py-3.5">
+                          <span className="font-semibold text-xs text-slate-200">
+                            {item.committeeName || item.committeeId.toUpperCase()}
+                          </span>
+                        </TableCell>
+                        <TableCell className="py-3.5">
+                          <Badge
+                            className={`text-[10px] px-2 py-0.5 border ${
+                              item.sourceType === 'SFAB Grant'
+                                ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+                                : item.sourceType === 'Corporate Sponsorship'
+                                ? 'bg-sky-500/15 text-sky-300 border-sky-500/30'
+                                : item.sourceType === 'Department Allocation'
+                                ? 'bg-purple-500/15 text-purple-300 border-purple-500/30'
+                                : 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+                            }`}
+                          >
+                            {item.sourceType}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="py-3.5 max-w-[280px]">
+                          <div className="font-medium text-xs text-slate-100">{item.title}</div>
+                          {item.notes && (
+                            <div className="text-[11px] text-slate-400 truncate mt-0.5">{item.notes}</div>
+                          )}
+                        </TableCell>
+                        <TableCell className="py-3.5 font-mono text-xs text-slate-400">
+                          {item.referenceNumber || 'N/A'}
+                        </TableCell>
+                        <TableCell className="py-3.5 font-mono text-xs text-slate-400">
+                          {item.receivedDate}
+                        </TableCell>
+                        <TableCell className="text-right py-3.5 font-mono text-xs font-bold text-emerald-400">
+                          +${item.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                        </TableCell>
+                        <TableCell className="text-right py-3.5 pr-6">
+                          {onDeleteFundingInflow && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => onDeleteFundingInflow(item.id)}
+                              className="h-7 w-7 p-0 text-slate-500 hover:text-red-400 hover:bg-red-950/40"
+                              title="Delete inflow record"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </Button>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={8} className="text-center py-12 text-slate-500">
+                        <Coins className="w-8 h-8 text-emerald-400/60 mx-auto mb-2" />
+                        <p className="text-sm font-medium text-slate-300">No Funding Inflows Found</p>
+                        <p className="text-xs text-slate-500 mt-1">
+                          No specific grants or corporate sponsorships match the active filters.
+                        </p>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Tab 4: Member Dues Directory */}
         <TabsContent value="dues" className="mt-4 space-y-4">
           <Card className="bg-[#121214] border-slate-800 shadow-xl overflow-hidden">
             <CardHeader className="border-b border-slate-800 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -1358,6 +1669,171 @@ export function TreasurerFinanceView({
                     className="bg-sky-600 hover:bg-sky-500 text-white font-medium"
                   >
                     Save Parameters
+                  </Button>
+                </div>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Record Specific Committee Funding / Grant Modal */}
+      {isInflowModalOpen && (
+        <Dialog
+          open={isInflowModalOpen}
+          onOpenChange={(open) => !open && setIsInflowModalOpen(false)}
+        >
+          <DialogContent className="max-w-lg bg-[#121214] text-slate-100 border border-slate-700/80 shadow-2xl p-6 overflow-y-auto max-h-[90vh]">
+            <DialogHeader>
+              <DialogTitle className="text-lg font-bold text-white flex items-center gap-2">
+                <Coins className="w-5 h-5 text-emerald-400" />
+                <span>Record Specific Committee Funding & Grants</span>
+              </DialogTitle>
+              <DialogDescription className="text-xs text-slate-400">
+                Credit external grants (SFAB), corporate sponsorships, departmental awards, or prize money directly to a committee's available budget.
+              </DialogDescription>
+            </DialogHeader>
+
+            <form onSubmit={handleSaveInflow} className="space-y-4 py-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium text-slate-300">
+                    Recipient Committee *
+                  </Label>
+                  <Select
+                    value={inflowCommitteeId}
+                    onValueChange={setInflowCommitteeId}
+                  >
+                    <SelectTrigger className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-900 border-slate-700 text-slate-100 text-xs max-h-64">
+                      {activeCommittees.map((c) => (
+                        <SelectItem key={c.id} value={c.id}>
+                          {c.shortName}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium text-slate-300">
+                    Funding Source Type *
+                  </Label>
+                  <Select
+                    value={inflowSourceType}
+                    onValueChange={(val: InflowSourceType) => setInflowSourceType(val)}
+                  >
+                    <SelectTrigger className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-900 border-slate-700 text-slate-100 text-xs">
+                      <SelectItem value="SFAB Grant">SFAB Grant (Student Fee Advisory Board)</SelectItem>
+                      <SelectItem value="Corporate Sponsorship">Corporate Sponsorship (Lockheed, TI, etc.)</SelectItem>
+                      <SelectItem value="Department Allocation">Department Allocation (ECE, ME, AAE)</SelectItem>
+                      <SelectItem value="Competition Prize">Competition Prize & Awards</SelectItem>
+                      <SelectItem value="Donation">Alumni / Donor Gift</SelectItem>
+                      <SelectItem value="Other">Other Miscellaneous Inflow</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="inflow-title" className="text-xs font-medium text-slate-300">
+                  Grant / Sponsorship Title *
+                </Label>
+                <Input
+                  id="inflow-title"
+                  value={inflowTitle}
+                  onChange={(e) => setInflowTitle(e.target.value)}
+                  placeholder="e.g. SFAB Spring 2026 Vehicle Hardware Grant or Lockheed EV Sponsor"
+                  className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="inflow-amount" className="text-xs font-medium text-slate-300">
+                    Amount ($) *
+                  </Label>
+                  <Input
+                    id="inflow-amount"
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    value={inflowAmount}
+                    onChange={(e) => setInflowAmount(e.target.value)}
+                    placeholder="3500.00"
+                    className="bg-slate-900 border-slate-700 text-slate-100 text-xs font-mono h-9"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="inflow-date" className="text-xs font-medium text-slate-300">
+                    Received Date *
+                  </Label>
+                  <Input
+                    id="inflow-date"
+                    type="date"
+                    value={inflowDate}
+                    onChange={(e) => setInflowDate(e.target.value)}
+                    className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="inflow-ref" className="text-xs font-medium text-slate-300">
+                  Grant Reference / PO # / Code (Optional)
+                </Label>
+                <Input
+                  id="inflow-ref"
+                  value={inflowRefNumber}
+                  onChange={(e) => setInflowRefNumber(e.target.value)}
+                  placeholder="e.g. SFAB-2026-ROV-01 or PO-98124"
+                  className="bg-slate-900 border-slate-700 text-slate-100 text-xs font-mono h-9"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="inflow-notes" className="text-xs font-medium text-slate-300">
+                  Notes & Earmark Details
+                </Label>
+                <Textarea
+                  id="inflow-notes"
+                  value={inflowNotes}
+                  onChange={(e) => setInflowNotes(e.target.value)}
+                  placeholder="Earmarked equipment specifications, donor conditions, or rollover schedule..."
+                  className="bg-slate-900 border-slate-700 text-slate-100 text-xs min-h-[70px]"
+                />
+              </div>
+
+              <DialogFooter className="pt-3 border-t border-slate-800 flex items-center justify-between sm:justify-between">
+                <span className="text-[11px] text-slate-500">
+                  Increases committee's total effective budget immediately.
+                </span>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsInflowModalOpen(false)}
+                    className="bg-slate-900 border-slate-700 text-slate-300"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    size="sm"
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white font-medium flex items-center gap-1.5"
+                  >
+                    <PlusCircle className="w-3.5 h-3.5" />
+                    <span>Credit Funding Inflow</span>
                   </Button>
                 </div>
               </DialogFooter>

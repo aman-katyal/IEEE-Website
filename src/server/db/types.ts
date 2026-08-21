@@ -100,7 +100,42 @@ export interface MemberDuesRow {
   created_at: string;
 }
 
+export type InflowSourceType =
+  | 'SFAB Grant'
+  | 'Corporate Sponsorship'
+  | 'Department Allocation'
+  | 'Competition Prize'
+  | 'Donation'
+  | 'Other';
+
+export interface CommitteeFundingInflowRow {
+  id: string;
+  fiscal_year_id: string;
+  committee_id: string;
+  source_type: string;
+  title: string;
+  amount: number;
+  reference_number: string | null;
+  received_date: string;
+  notes: string | null;
+  created_at: string;
+}
+
 // Domain Model Types (TypeScript ergonomics with boolean flags)
+
+export interface CommitteeFundingInflow {
+  id: string;
+  fiscalYearId: string;
+  committeeId: string;
+  committeeName?: string;
+  sourceType: InflowSourceType;
+  title: string;
+  amount: number;
+  referenceNumber?: string;
+  receivedDate: string;
+  notes?: string;
+  createdAt?: string;
+}
 
 export interface FiscalYear {
   id: string;

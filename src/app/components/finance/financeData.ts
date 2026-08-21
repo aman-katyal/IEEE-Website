@@ -54,6 +54,27 @@ export interface MemberDuesRecord {
   status: 'Active' | 'Inactive';
 }
 
+export type InflowSourceType =
+  | 'SFAB Grant'
+  | 'Corporate Sponsorship'
+  | 'Department Allocation'
+  | 'Competition Prize'
+  | 'Donation'
+  | 'Other';
+
+export interface CommitteeFundingInflow {
+  id: string;
+  committeeId: string;
+  committeeName?: string;
+  sourceType: InflowSourceType;
+  title: string;
+  amount: number;
+  referenceNumber?: string;
+  receivedDate: string;
+  notes?: string;
+  createdAt?: string;
+}
+
 export interface AuthSessionData {
   role: 'COMMITTEE_LEAD' | 'TREASURER';
   committeeId: string;
@@ -354,5 +375,63 @@ export const INITIAL_MEMBER_DUES: MemberDuesRecord[] = [
     paymentDate: '2026-01-22',
     semester: 'Spring 2026',
     status: 'Active',
+  },
+];
+
+export const INITIAL_FUNDING_INFLOWS: CommitteeFundingInflow[] = [
+  {
+    id: 'INFLOW-001',
+    committeeId: 'rov',
+    committeeName: 'ROV',
+    sourceType: 'SFAB Grant',
+    title: 'SFAB Spring 2026 Vehicle Hardware Grant',
+    amount: 3500.00,
+    referenceNumber: 'SFAB-2026-ROV-01',
+    receivedDate: '2026-01-10',
+    notes: 'Approved by SFAB for autonomous underwater thrusters and pressure housing fabrication.',
+  },
+  {
+    id: 'INFLOW-002',
+    committeeId: 'racing',
+    committeeName: 'Racing',
+    sourceType: 'Corporate Sponsorship',
+    title: 'Lockheed Martin EV Powertrain Sponsorship',
+    amount: 2500.00,
+    referenceNumber: 'LM-SPONSOR-2026',
+    receivedDate: '2026-01-18',
+    notes: 'Corporate grant towards EV Go-Kart high-voltage battery modules.',
+  },
+  {
+    id: 'INFLOW-003',
+    committeeId: 'aesc',
+    committeeName: 'AESS',
+    sourceType: 'Department Allocation',
+    title: 'AAE Department Aerial Avionics Earmark',
+    amount: 1500.00,
+    referenceNumber: 'AAE-PURDUE-442',
+    receivedDate: '2026-01-25',
+    notes: 'Aeronautics & Astronautics department grant for drone telemetry and flight controllers.',
+  },
+  {
+    id: 'INFLOW-004',
+    committeeId: 'cs',
+    committeeName: 'Computer Society',
+    sourceType: 'Corporate Sponsorship',
+    title: 'Texas Instruments Hackathon Co-Sponsorship',
+    amount: 1000.00,
+    referenceNumber: 'TI-GR-9021',
+    receivedDate: '2026-02-02',
+    notes: 'Hackathon workshops and microcontroller dev boards.',
+  },
+  {
+    id: 'INFLOW-005',
+    committeeId: 'operations',
+    committeeName: 'Operations',
+    sourceType: 'Donation',
+    title: 'Alumni Lab Tooling Equipment Donation',
+    amount: 800.00,
+    referenceNumber: 'DONATION-ALUM-88',
+    receivedDate: '2026-02-05',
+    notes: 'Designated for general soldering stations and lab safety equipment overhaul.',
   },
 ];

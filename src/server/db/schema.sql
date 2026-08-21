@@ -81,6 +81,20 @@ CREATE TABLE IF NOT EXISTS member_dues (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+-- 7. Committee Funding Inflows Table (Grants, Sponsorships, SFAB Allocations, Department Awards)
+CREATE TABLE IF NOT EXISTS committee_funding_inflows (
+    id TEXT PRIMARY KEY,
+    fiscal_year_id TEXT NOT NULL REFERENCES fiscal_years(id) ON DELETE RESTRICT,
+    committee_id TEXT NOT NULL REFERENCES finance_committees(id) ON DELETE RESTRICT,
+    source_type TEXT NOT NULL DEFAULT 'Other',
+    title TEXT NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    reference_number TEXT,
+    received_date DATE NOT NULL,
+    notes TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Indexes for Query Performance & Lookups
 CREATE INDEX IF NOT EXISTS idx_committee_budgets_fy ON committee_budgets(fiscal_year_id);
 CREATE INDEX IF NOT EXISTS idx_committee_budgets_committee ON committee_budgets(committee_id);
@@ -90,6 +104,8 @@ CREATE INDEX IF NOT EXISTS idx_purchase_requests_committee ON purchase_requests(
 CREATE INDEX IF NOT EXISTS idx_purchase_requests_status ON purchase_requests(status);
 CREATE INDEX IF NOT EXISTS idx_member_dues_email ON member_dues(purdue_email);
 CREATE INDEX IF NOT EXISTS idx_member_dues_fy ON member_dues(fiscal_year_id);
+CREATE INDEX IF NOT EXISTS idx_inflows_committee ON committee_funding_inflows(committee_id);
+CREATE INDEX IF NOT EXISTS idx_inflows_fy ON committee_funding_inflows(fiscal_year_id);
 
 -- Default Seed Committees
 INSERT OR IGNORE INTO finance_committees (id, name, passcode_hash, is_admin, bank_status, dues_status, contact_email) VALUES

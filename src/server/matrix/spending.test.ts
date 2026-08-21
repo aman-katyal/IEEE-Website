@@ -5,6 +5,7 @@ import { DatabaseSync } from 'node:sqlite';
 import {
   calculateCommitteeSpending,
   calculateCategoryBreakdown,
+  recordCommitteeFundingInflow,
 } from './spending';
 
 describe('BoilerBooks Treasurer Master Spending Matrix', () => {
@@ -194,6 +195,40 @@ describe('BoilerBooks Treasurer Master Spending Matrix', () => {
       expect(breakdown.totalSpent).toBe(0);
       expect(breakdown.remainingAmount).toBe(2000.0);
       expect(breakdown.categories.length).toBe(0);
+    });
+  });
+
+  describe('3. Committee Specific Funding Inflows & Grants', () => {
+    it('records and persists specific committee funding inflow', async () => {
+      const result = await recordCommitteeFundingInflow(
+        db,
+        'inflow-sf-01',
+        'fy25-26',
+        'rov',
+        'SFAB Grant',
+        'SFAB Spring 2026 Vehicle Hardware Grant',
+        3500.0,
+        'SFAB-2026-ROV-01',
+        '2026-02-15',
+        'Earmarked for thrusterESC modular upgrade',
+        'user-treasurer-01'
+      );
+
+      expect(result.id).toBe('inflow-sf-01');
+      expect(result.committeeId).toBe('rov');
+      expect(result.sourceType).toBe('SFAB Grant');
+      expect(result.amount).toBe(3500.0);
+      expect(result.referenceNumber).toBe('SFAB-2026-ROV-01');
+
+      // Verify query from SQLite
+      const row = db
+        .prepare('SELECT * FROM committee_funding_inflows WHERE id = ?')
+        .get('inflow-sf-01') as any;
+
+      expect(row).toBeDefined();
+      expect(row.title).toBe('SFAB Spring 2026 Vehicle Hardware Grant');
+      expect(row.amount).toBe(3500.0);
+      expect(row.received_date).toBe('2026-02-15');
     });
   });
 });

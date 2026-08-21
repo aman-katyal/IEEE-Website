@@ -93,6 +93,7 @@
     "@vitest/coverage-istanbul": "^4.1.4",
     "@vitest/coverage-v8": "^4.1.4",
     "jsdom": "^29.0.2",
+    "playwright": "^1.62.1",
     "sharp": "^0.34.5",
     "svgo": "^4.0.1",
     "tailwindcss": "4.1.12",

@@ -449,3 +449,55 @@ export async function updateCommitteeParameters(
     message: `Updated parameters for committee "${committeeId}" successfully.`,
   };
 }
+
+export interface CreateFundingInflowPayload {
+  fiscalYearId: string;
+  committeeId: string;
+  sourceType: string;
+  title: string;
+  amount: number;
+  referenceNumber?: string;
+  receivedDate?: string;
+  notes?: string;
+}
+
+/**
+ * Records specific funding inflow received by a committee (SFAB grant, corporate sponsor, departmental award).
+ */
+export async function recordCommitteeFundingInflow(
+  db: D1DatabaseLike,
+  payload: CreateFundingInflowPayload
+): Promise<{ success: boolean; id: string; message: string }> {
+  if (!payload.committeeId || !payload.title || typeof payload.amount !== 'number' || payload.amount <= 0) {
+    throw new Error('Invalid funding inflow payload: committeeId, title, and positive amount are required.');
+  }
+
+  const inflowId = `inflow-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+  const receivedDate = payload.receivedDate || new Date().toISOString().split('T')[0];
+
+  await db
+    .prepare(
+      `INSERT INTO committee_funding_inflows (
+        id, fiscal_year_id, committee_id, source_type, title, amount, reference_number, received_date, notes
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    )
+    .bind(
+      inflowId,
+      payload.fiscalYearId,
+      payload.committeeId,
+      payload.sourceType || 'Other',
+      payload.title.trim(),
+      roundCurrency(payload.amount),
+      payload.referenceNumber?.trim() || null,
+      receivedDate,
+      payload.notes?.trim() || null
+    )
+    .run();
+
+  return {
+    success: true,
+    id: inflowId,
+    message: `Successfully recorded $${payload.amount.toFixed(2)} funding for ${payload.committeeId}.`,
+  };
+}
+

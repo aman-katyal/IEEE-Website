@@ -37,11 +37,14 @@ import {
   AlertTriangle,
   FileSpreadsheet,
   Building,
+  Coins,
 } from 'lucide-react';
 import {
   type PurchaseItem,
   type MemberDuesRecord,
   type AuthSessionData,
+  type CommitteeFundingInflow,
+  INITIAL_FUNDING_INFLOWS,
   REAL_COMMITTEES,
 } from './financeData';
 import { ReceiptPreviewModal } from './ReceiptPreviewModal';
@@ -50,6 +53,7 @@ export interface CommitteeFinanceViewProps {
   session: AuthSessionData;
   purchases: PurchaseItem[];
   memberDues: MemberDuesRecord[];
+  fundingInflows?: CommitteeFundingInflow[];
   onAddPurchase: (newPurchase: PurchaseItem) => void;
   onLogout?: () => void;
 }
@@ -58,6 +62,7 @@ export function CommitteeFinanceView({
   session,
   purchases,
   memberDues,
+  fundingInflows = INITIAL_FUNDING_INFLOWS,
   onAddPurchase,
   onLogout,
 }: CommitteeFinanceViewProps) {
@@ -73,9 +78,19 @@ export function CommitteeFinanceView({
     return purchases.filter((p) => p.committeeId === committee.id);
   }, [purchases, committee.id]);
 
+  // Committee Specific Funding Inflows
+  const committeeInflows = useMemo(() => {
+    return (fundingInflows || []).filter((inf) => inf.committeeId === committee.id);
+  }, [fundingInflows, committee.id]);
+
+  const totalInflows = useMemo(() => {
+    return committeeInflows.reduce((sum, inf) => sum + inf.amount, 0);
+  }, [committeeInflows]);
+
   // Financial Aggregates
   const stats = useMemo(() => {
-    const allocated = committee.allocated;
+    const baseAllocated = committee.allocated;
+    const totalEffectiveBudget = baseAllocated + totalInflows;
     const approved = committeePurchases
       .filter((p) => p.status === 'APPROVED' || p.status === 'PURCHASED' || p.status === 'REIMBURSED')
       .reduce((sum, p) => sum + p.totalAmount, 0);
@@ -85,18 +100,20 @@ export function CommitteeFinanceView({
     const reimbursed = committeePurchases
       .filter((p) => p.status === 'REIMBURSED')
       .reduce((sum, p) => sum + p.totalAmount, 0);
-    const remaining = Math.max(allocated - approved, 0);
-    const percentSpent = allocated > 0 ? Math.min(Math.round((approved / allocated) * 100), 100) : 0;
+    const remaining = Math.max(totalEffectiveBudget - approved, 0);
+    const percentSpent = totalEffectiveBudget > 0 ? Math.min(Math.round((approved / totalEffectiveBudget) * 100), 100) : 0;
 
     return {
-      allocated,
+      baseAllocated,
+      totalInflows,
+      totalEffectiveBudget,
       approved,
       pending,
       reimbursed,
       remaining,
       percentSpent,
     };
-  }, [committee, committeePurchases]);
+  }, [committee, committeePurchases, totalInflows]);
 
   // Modals & State
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState<boolean>(false);
@@ -330,18 +347,26 @@ export function CommitteeFinanceView({
 
       {/* Spending Gauge & Budget Metric Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {/* Allocated Budget */}
+        {/* Total Effective Budget */}
         <Card className="bg-[#121214] border-slate-800 p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
             <span className="text-xs font-mono uppercase tracking-wider text-slate-400">
-              Allocated Budget
+              Total Committee Budget
             </span>
             <DollarSign className="w-4 h-4 text-[#EBD3A9]" />
           </div>
           <div className="text-2xl font-bold text-white mt-2 font-mono">
-            ${stats.allocated.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+            ${stats.totalEffectiveBudget.toLocaleString('en-US', { minimumFractionDigits: 2 })}
           </div>
-          <p className="text-[11px] text-slate-500 mt-1">Full 2025-26 Academic Year</p>
+          <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
+            <span>${stats.baseAllocated.toLocaleString('en-US')} base</span>
+            {stats.totalInflows > 0 && (
+              <>
+                <span className="text-slate-600">+</span>
+                <span className="text-emerald-400 font-medium">+${stats.totalInflows.toLocaleString('en-US')} grants</span>
+              </>
+            )}
+          </p>
         </Card>
 
         {/* Total Spent */}
@@ -389,6 +414,54 @@ export function CommitteeFinanceView({
           <p className="text-[11px] text-slate-500 mt-1">Available for new purchases</p>
         </Card>
       </div>
+
+      {/* Committee Grants & External Funding Ledger */}
+      {committeeInflows.length > 0 && (
+        <Card className="bg-[#121214] border-slate-800 p-5 shadow-lg overflow-hidden">
+          <div className="flex items-center justify-between mb-3 border-b border-slate-800 pb-3">
+            <div className="flex items-center gap-2">
+              <Coins className="w-4 h-4 text-emerald-400" />
+              <h3 className="text-sm font-semibold text-white">
+                Received Grants & External Funding ({committeeInflows.length})
+              </h3>
+            </div>
+            <span className="text-xs font-mono font-bold text-emerald-400">
+              +${stats.totalInflows.toLocaleString('en-US', { minimumFractionDigits: 2 })} Total Credited
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {committeeInflows.map((inflow) => (
+              <div
+                key={inflow.id}
+                className="p-3 bg-slate-900/80 border border-slate-800 rounded-lg space-y-1.5"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <Badge
+                    className={`text-[10px] px-2 py-0.5 border ${
+                      inflow.sourceType === 'SFAB Grant'
+                        ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+                        : inflow.sourceType === 'Corporate Sponsorship'
+                        ? 'bg-sky-500/15 text-sky-300 border-sky-500/30'
+                        : 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+                    }`}
+                  >
+                    {inflow.sourceType}
+                  </Badge>
+                  <span className="font-mono text-xs font-bold text-emerald-400">
+                    +${inflow.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                  </span>
+                </div>
+                <div className="font-medium text-xs text-slate-200">{inflow.title}</div>
+                {inflow.referenceNumber && (
+                  <div className="text-[11px] font-mono text-slate-400">Ref: {inflow.referenceNumber}</div>
+                )}
+                <div className="text-[10px] text-slate-500">{inflow.receivedDate}</div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
 
       {/* Quick Member Dues Verification Bar */}
       <Card className="bg-[#121214] border-slate-800 p-5 shadow-lg">

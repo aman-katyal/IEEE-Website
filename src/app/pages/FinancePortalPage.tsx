@@ -5,10 +5,12 @@ import { TreasurerFinanceView } from '../components/finance/TreasurerFinanceView
 import {
   INITIAL_PURCHASES,
   INITIAL_MEMBER_DUES,
+  INITIAL_FUNDING_INFLOWS,
   REAL_COMMITTEES,
   type AuthSessionData,
   type PurchaseItem,
   type MemberDuesRecord,
+  type CommitteeFundingInflow,
   type CommitteeInfo,
   type PurchaseStatus,
 } from '../components/finance/financeData';
@@ -26,6 +28,7 @@ export function FinancePortalPage() {
   const [purchases, setPurchases] = useState<PurchaseItem[]>(INITIAL_PURCHASES);
   const [memberDues, setMemberDues] = useState<MemberDuesRecord[]>(INITIAL_MEMBER_DUES);
   const [committees, setCommittees] = useState<CommitteeInfo[]>(REAL_COMMITTEES);
+  const [fundingInflows, setFundingInflows] = useState<CommitteeFundingInflow[]>(INITIAL_FUNDING_INFLOWS);
 
   const handleLogin = (newSession: AuthSessionData) => {
     setSession(newSession);
@@ -68,6 +71,14 @@ export function FinancePortalPage() {
     setCommittees((prev) =>
       prev.map((c) => (c.id === committeeId ? { ...c, ...updated } : c))
     );
+  };
+
+  const handleAddFundingInflow = (newInflow: CommitteeFundingInflow) => {
+    setFundingInflows((prev) => [newInflow, ...prev]);
+  };
+
+  const handleDeleteFundingInflow = (inflowId: string) => {
+    setFundingInflows((prev) => prev.filter((item) => item.id !== inflowId));
   };
 
   return (
@@ -114,7 +125,7 @@ export function FinancePortalPage() {
                     <Badge
                       className={`text-[10px] px-1.5 py-0 ${
                         session.role === 'TREASURER'
-                          ? 'bg-amber-500/20 text-amber-300 border-amber-500/30'
+                          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
                           : 'bg-sky-500/20 text-sky-300 border-sky-500/30'
                       }`}
                     >
@@ -161,6 +172,7 @@ export function FinancePortalPage() {
             session={session}
             purchases={purchases}
             memberDues={memberDues}
+            fundingInflows={fundingInflows}
             onAddPurchase={handleAddPurchase}
             onLogout={handleLogout}
           />
@@ -170,9 +182,12 @@ export function FinancePortalPage() {
             purchases={purchases}
             memberDues={memberDues}
             committees={committees}
+            fundingInflows={fundingInflows}
             onUpdatePurchaseStatus={handleUpdatePurchaseStatus}
             onImportMemberDues={handleImportMemberDues}
             onUpdateCommittee={handleUpdateCommittee}
+            onAddFundingInflow={handleAddFundingInflow}
+            onDeleteFundingInflow={handleDeleteFundingInflow}
             onLogout={handleLogout}
           />
         )}

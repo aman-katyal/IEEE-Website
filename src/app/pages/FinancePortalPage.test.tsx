@@ -93,7 +93,7 @@ describe('FinancePortalPage Integration Suite', () => {
       await user.click(submitButton);
 
       expect(screen.getByText(/Remotely Operated underwater Vehicle/i)).toBeInTheDocument();
-      expect(screen.getByText('Allocated Budget')).toBeInTheDocument();
+      expect(screen.getByText('Total Committee Budget')).toBeInTheDocument();
       expect(screen.getByText('Total Spent')).toBeInTheDocument();
       expect(screen.getByText('Pending Queue')).toBeInTheDocument();
       expect(screen.getByText('Remaining Balance')).toBeInTheDocument();
@@ -182,7 +182,7 @@ describe('FinancePortalPage Integration Suite', () => {
       await user.click(submitButton);
 
       expect(screen.getByText('Executive Treasurer Console')).toBeInTheDocument();
-      expect(screen.getByText('Branch Total Budget')).toBeInTheDocument();
+      expect(screen.getByText('Total Branch Capital')).toBeInTheDocument();
       expect(screen.getByText('Disbursed & Approved')).toBeInTheDocument();
       expect(screen.getByText('Pending Queue Total')).toBeInTheDocument();
       expect(screen.getByText('Remaining Balance')).toBeInTheDocument();
@@ -190,6 +190,7 @@ describe('FinancePortalPage Integration Suite', () => {
       // Check Tabs
       expect(screen.getByRole('tab', { name: /Pending Approvals/i })).toBeInTheDocument();
       expect(screen.getByRole('tab', { name: /Master Spending Matrix/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /Grants & Inflows/i })).toBeInTheDocument();
       expect(screen.getByRole('tab', { name: /Dues Directory/i })).toBeInTheDocument();
     });
 
@@ -291,6 +292,44 @@ describe('FinancePortalPage Integration Suite', () => {
 
       // Verify updated allocation in matrix
       expect(screen.getAllByText('$18,500.00').length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('allows Treasurer to record specific funding inflow/grant for a committee', async () => {
+      const user = userEvent.setup();
+      render(<FinancePortalPage />);
+
+      const treasurerTab = screen.getByRole('tab', { name: /Treasurer Master/i });
+      await user.click(treasurerTab);
+
+      const pinInput = screen.getByTestId('pin-input');
+      await user.type(pinInput, '1903');
+      await user.click(screen.getByRole('button', { name: /Enter Treasurer Portal/i }));
+
+      // Open Record Inflow modal from top banner
+      const recordInflowBtn = screen.getByRole('button', { name: /Record Specific Funds \/ Grant/i });
+      await user.click(recordInflowBtn);
+
+      expect(screen.getByText(/Record Specific Committee Funding & Grants/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/Grant \/ Sponsorship Title/i)).toBeInTheDocument();
+
+      // Fill in inflow details
+      fireEvent.change(screen.getByLabelText(/Grant \/ Sponsorship Title/i), {
+        target: { value: 'Texas Instruments Autonomous Grant' },
+      });
+      fireEvent.change(screen.getByLabelText(/Amount \(\$\)/i), {
+        target: { value: '4500' },
+      });
+
+      // Submit inflow
+      const submitInflowBtn = screen.getByRole('button', { name: /Credit Funding Inflow/i });
+      await user.click(submitInflowBtn);
+
+      // Switch to Grants & Inflows tab and verify
+      const inflowsTab = screen.getByRole('tab', { name: /Grants & Inflows/i });
+      await user.click(inflowsTab);
+
+      expect(screen.getByText('Texas Instruments Autonomous Grant')).toBeInTheDocument();
+      expect(screen.getAllByText('+$4,500.00').length).toBeGreaterThanOrEqual(1);
     });
 
     it('allows signing out and returning to the login modal', async () => {
