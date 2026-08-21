@@ -60,8 +60,10 @@ export const getOrderedLeaders = (leaders: Leader[], config: OfficersConfig | nu
 
   // Sort categoryLeaders based on orderedIds
   const sorted = categoryLeaders.sort((a, b) => {
-    const indexA = orderMap.has(a._id) ? orderMap.get(a._id)! : -1;
-    const indexB = orderMap.has(b._id) ? orderMap.get(b._id)! : -1;
+    // ⚡ Bolt Optimization: Replace `has` + `get` with a single `get` + nullish coalesce
+    // Impact: Halves the number of O(1) hash lookups inside this O(N log N) sorting loop
+    const indexA = orderMap.get(a._id) ?? -1;
+    const indexB = orderMap.get(b._id) ?? -1;
 
     if (indexA === -1 && indexB === -1) return 0;
     if (indexA === -1) return 1;
