@@ -100,7 +100,7 @@ export function CommitteeProjects({ sections, loading, isLight }: CommitteeProje
                                   key={tag}
                                   className="font-[family-name:var(--font-mono)] text-[0.6rem] text-[var(--text-muted)] inline-flex items-center gap-0.5"
                                 >
-                                  <Tag size={9} />
+                                  <Tag size={9} aria-hidden="true" />
                                   {tag}
                                 </span>
                               ))}
@@ -113,7 +113,7 @@ export function CommitteeProjects({ sections, loading, isLight }: CommitteeProje
 
                           {projectLink && (
                             <span className="font-[family-name:var(--font-mono)] text-[10px] text-[var(--cyber-gold)] flex items-center gap-1 opacity-80 group-hover:opacity-100">
-                              <ExternalLink size={10} /> Link
+                              <ExternalLink size={10} aria-hidden="true" /> Link
                             </span>
                           )}
                         </div>
@@ -142,7 +142,7 @@ export function CommitteeProjects({ sections, loading, isLight }: CommitteeProje
                   </DialogTitle>
                   {selectedProject.flagship && (
                     <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[rgba(235,211,169,0.15)] border border-[rgba(235,211,169,0.4)] text-[var(--cyber-gold)] font-[family-name:var(--font-mono)] text-xs font-bold">
-                      <Sparkles size={12} /> Flagship Project
+                      <Sparkles size={12} aria-hidden="true" /> Flagship Project
                     </span>
                   )}
                 </div>
