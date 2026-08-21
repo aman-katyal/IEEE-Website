@@ -23,6 +23,7 @@ const ConstitutionPage = React.lazy(() => import('./app/pages/ConstitutionPage')
 const PrivacyPage = React.lazy(() => import('./app/pages/PrivacyPage').then(m => ({ default: m.PrivacyPage })));
 const TermsPage = React.lazy(() => import('./app/pages/TermsPage').then(m => ({ default: m.TermsPage })));
 const AccessibilityPage = React.lazy(() => import('./app/pages/AccessibilityPage').then(m => ({ default: m.AccessibilityPage })));
+const FinancePortalPage = React.lazy(() => import('./app/pages/FinancePortalPage').then(m => ({ default: m.FinancePortalPage })));
 const NotFoundPage = React.lazy(() => import('./app/pages/NotFoundPage').then(m => ({ default: m.NotFoundPage })));
 
 const queryClient = new QueryClient({
@@ -53,6 +54,7 @@ const router = createBrowserRouter([
           { path: "/privacy", element: <PageTransition><Suspense fallback={<PageSkeleton />}><PrivacyPage /></Suspense></PageTransition> },
           { path: "/terms", element: <PageTransition><Suspense fallback={<PageSkeleton />}><TermsPage /></Suspense></PageTransition> },
           { path: "/accessibility", element: <PageTransition><Suspense fallback={<PageSkeleton />}><AccessibilityPage /></Suspense></PageTransition> },
+          { path: "/finance", element: <PageTransition><Suspense fallback={<PageSkeleton />}><FinancePortalPage /></Suspense></PageTransition> },
           { path: "*", element: <PageTransition><Suspense fallback={<PageSkeleton />}><NotFoundPage /></Suspense></PageTransition> },
         ]
       }
