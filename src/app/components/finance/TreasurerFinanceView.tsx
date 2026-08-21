@@ -455,6 +455,51 @@ export function TreasurerFinanceView({
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  // Download Master Spending Matrix CSV
+  const handleExportMatrixCsv = () => {
+    if (matrixData.length === 0) return;
+
+    const headers = [
+      'Committee ID',
+      'Committee Name',
+      'Base Allocated',
+      'Grants and Inflows',
+      'Total Budget',
+      'Spent and Disbursed',
+      'Pending Amount',
+      'Remaining Balance',
+      'Percent Spent',
+      'Total Requests',
+    ];
+
+    const escapeCsv = (val: string) => `"${val.replace(/"/g, '""')}"`;
+
+    const rows = matrixData.map((c) => [
+      escapeCsv(c.id),
+      escapeCsv(c.name),
+      c.allocated.toFixed(2),
+      c.inflows.toFixed(2),
+      c.totalBudget.toFixed(2),
+      c.spent.toFixed(2),
+      c.pending.toFixed(2),
+      c.remaining.toFixed(2),
+      `${c.percentSpent.toFixed(1)}%`,
+      c.requestCount.toString(),
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map((row) => row.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `purdue-ieee-spending-matrix-${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   // Mark all approved as reimbursed
@@ -842,15 +887,28 @@ export function TreasurerFinanceView({
                 </CardDescription>
               </div>
 
-              <Button
-                type="button"
-                size="sm"
-                onClick={() => handleOpenInflowModal()}
-                className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs flex items-center gap-1.5 self-start sm:self-auto"
-              >
-                <PlusCircle className="w-3.5 h-3.5" />
-                <span>Record Inflow / Grant</span>
-              </Button>
+              <div className="flex items-center gap-2 flex-wrap self-start sm:self-auto">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleExportMatrixCsv}
+                  className="border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs flex items-center gap-1.5"
+                >
+                  <Download className="w-3.5 h-3.5 text-sky-400" />
+                  <span>Export Matrix CSV</span>
+                </Button>
+
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => handleOpenInflowModal()}
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs flex items-center gap-1.5"
+                >
+                  <PlusCircle className="w-3.5 h-3.5" />
+                  <span>Record Inflow / Grant</span>
+                </Button>
+              </div>
             </CardHeader>
 
             <CardContent className="p-0 overflow-x-auto">
