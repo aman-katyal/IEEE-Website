@@ -6,6 +6,7 @@ import { enableVisualEditing } from "@sanity/visual-editing";
 import { BackToTop } from "./components/shared/BackToTop";
 
 import { ToastProvider } from "./components/ui/toast";
+import { OfflineNotifier } from "./components/shared/OfflineNotifier";
 
 export default function App() {
   const location = useLocation();
@@ -32,6 +33,7 @@ export default function App() {
   return (
     <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark">
       <ToastProvider>
+        <OfflineNotifier />
         <BackToTop />
         
         <AnimatePresence mode="wait">
