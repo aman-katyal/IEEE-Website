@@ -5,6 +5,8 @@ import { ThemeProvider } from "next-themes";
 import { enableVisualEditing } from "@sanity/visual-editing";
 import { BackToTop } from "./components/shared/BackToTop";
 
+import { ToastProvider } from "./components/ui/toast";
+
 export default function App() {
   const location = useLocation();
 
@@ -29,11 +31,13 @@ export default function App() {
 
   return (
     <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark">
-      <BackToTop />
-      
-      <AnimatePresence mode="wait">
-        <Outlet key={location.pathname} />
-      </AnimatePresence>
+      <ToastProvider>
+        <BackToTop />
+        
+        <AnimatePresence mode="wait">
+          <Outlet key={location.pathname} />
+        </AnimatePresence>
+      </ToastProvider>
     </ThemeProvider>
   );
 }
