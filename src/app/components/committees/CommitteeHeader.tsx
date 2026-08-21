@@ -1,6 +1,5 @@
-import { Link } from "react-router";
-import { ArrowLeft } from "lucide-react";
 import { Skeleton } from "boneyard-js/react";
+import { Breadcrumbs } from "../shared/Breadcrumbs";
 import type { Committee } from "../../../data/committees/types";
 
 interface CommitteeHeaderProps {
@@ -48,22 +47,12 @@ export function CommitteeHeader({ committee, loading, isLight }: CommitteeHeader
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-8 w-full">
           <div className="flex items-center justify-between mb-6 gap-6 flex-wrap">
             {/* Breadcrumb Navigation */}
-            <div className="inline-flex items-center gap-2 font-[family-name:var(--font-mono)] text-xs tracking-widest uppercase h-7">
-              <Link
-                to="/"
-                className="text-[var(--text-muted)] no-underline flex items-center gap-1.5 transition-colors hover:text-[var(--electric-blue)]"
-              >
-                <ArrowLeft size={12} />
-                Home
-              </Link>
-              <span className="text-[var(--text-muted)] opacity-40">/</span>
-              <Link
-                to="/committees"
-                className="text-[var(--electric-blue)] no-underline transition-colors hover:underline"
-              >
-                Committees
-              </Link>
-            </div>
+            <Breadcrumbs
+              items={[
+                { label: "Committees", href: "/committees" },
+                { label: committee?.name || "Committee" },
+              ]}
+            />
 
             <div className="flex items-center gap-3 flex-wrap">
               {/* Non-Active Status Badge */}
