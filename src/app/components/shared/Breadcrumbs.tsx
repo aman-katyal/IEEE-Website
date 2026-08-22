@@ -34,7 +34,12 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
     <nav aria-label="Breadcrumb" className="mb-6">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd)
+            .replace(/</g, "\\u003c")
+            .replace(/>/g, "\\u003e")
+            .replace(/&/g, "\\u0026"),
+        }}
       />
       <ol className="flex items-center flex-wrap gap-2 text-xs font-[family-name:var(--font-mono)] text-[var(--text-muted)]">
         <li className="inline-flex items-center">
@@ -52,7 +57,11 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
 
           return (
             <li key={index} className="inline-flex items-center gap-2">
-              <ChevronRight size={12} aria-hidden="true" className="text-[var(--text-muted)] opacity-60" />
+              <ChevronRight
+                size={12}
+                aria-hidden="true"
+                className="text-[var(--text-muted)] opacity-60"
+              />
               {isLast || !item.href ? (
                 <span
                   aria-current={isLast ? "page" : undefined}
