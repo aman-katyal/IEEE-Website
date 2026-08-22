@@ -1,17 +1,8 @@
-import { Outlet, useLocation } from "react-router";
-import { useEffect } from "react";
+import { Outlet } from "react-router";
 import { Navigation } from "./Navigation";
 import { Footer } from "./Footer";
 import { BackToTop } from "./BackToTop";
-
-/** Scroll to top on route change */
-function ScrollToTop() {
-  const { pathname } = useLocation();
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
-  return null;
-}
+import { ScrollToTop } from "./ScrollToTop";
 
 export function Layout() {
   return (
