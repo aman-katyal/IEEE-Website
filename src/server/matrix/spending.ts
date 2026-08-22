@@ -521,3 +521,99 @@ export async function recordCommitteeFundingInflow(
   };
 }
 
+export interface BudgetAuditEntry {
+  id: string;
+  committeeId: string;
+  fiscalYearId: string;
+  adjustedBy: string;
+  previousAmount: number;
+  newAmount: number;
+  reason?: string;
+  createdAt: string;
+}
+
+/**
+ * Records an immutable audit trail entry whenever a committee budget allocation is updated.
+ */
+export async function recordBudgetAdjustmentAudit(
+  db: D1DatabaseLike,
+  entry: {
+    committeeId: string;
+    fiscalYearId: string;
+    adjustedBy: string;
+    previousAmount: number;
+    newAmount: number;
+    reason?: string;
+  }
+): Promise<BudgetAuditEntry> {
+  const d1 = toD1Database(db);
+  const auditId = `audit-${crypto.randomUUID()}`;
+  const createdAt = new Date().toISOString();
+
+  await d1
+    .prepare(
+      `INSERT INTO budget_audit_logs (
+        id, committee_id, fiscal_year_id, adjusted_by, previous_amount, new_amount, reason, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+    )
+    .bind(
+      auditId,
+      entry.committeeId,
+      entry.fiscalYearId,
+      entry.adjustedBy,
+      roundCurrency(entry.previousAmount),
+      roundCurrency(entry.newAmount),
+      entry.reason || null,
+      createdAt
+    )
+    .run();
+
+  return {
+    id: auditId,
+    committeeId: entry.committeeId,
+    fiscalYearId: entry.fiscalYearId,
+    adjustedBy: entry.adjustedBy,
+    previousAmount: roundCurrency(entry.previousAmount),
+    newAmount: roundCurrency(entry.newAmount),
+    reason: entry.reason,
+    createdAt,
+  };
+}
+
+/**
+ * Retrieves budget revision history for a committee.
+ */
+export async function getBudgetAuditHistory(
+  db: D1DatabaseLike,
+  committeeId: string,
+  fiscalYearId: string
+): Promise<BudgetAuditEntry[]> {
+  const d1 = toD1Database(db);
+  const rows = await queryAll<{
+    id: string;
+    committee_id: string;
+    fiscal_year_id: string;
+    adjusted_by: string;
+    previous_amount: number;
+    new_amount: number;
+    reason: string | null;
+    created_at: string;
+  }>(
+    d1,
+    `SELECT * FROM budget_audit_logs WHERE committee_id = ? AND fiscal_year_id = ? ORDER BY created_at DESC`,
+    [committeeId, fiscalYearId]
+  );
+
+  return rows.map((r) => ({
+    id: r.id,
+    committeeId: r.committee_id,
+    fiscalYearId: r.fiscal_year_id,
+    adjustedBy: r.adjusted_by,
+    previousAmount: Number(r.previous_amount),
+    newAmount: Number(r.new_amount),
+    reason: r.reason || undefined,
+    createdAt: r.created_at,
+  }));
+}
+
+

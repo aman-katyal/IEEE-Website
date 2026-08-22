@@ -96,6 +96,18 @@ CREATE TABLE IF NOT EXISTS committee_funding_inflows (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+-- 8. Budget Audit Logs Table (Tracks revisions to committee allocations and grants)
+CREATE TABLE IF NOT EXISTS budget_audit_logs (
+    id TEXT PRIMARY KEY,
+    committee_id TEXT NOT NULL,
+    fiscal_year_id TEXT NOT NULL,
+    adjusted_by TEXT NOT NULL,
+    previous_amount DECIMAL(10, 2) NOT NULL,
+    new_amount DECIMAL(10, 2) NOT NULL,
+    reason TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Indexes for Query Performance & Lookups
 CREATE INDEX IF NOT EXISTS idx_committee_budgets_fy ON committee_budgets(fiscal_year_id);
 CREATE INDEX IF NOT EXISTS idx_committee_budgets_committee ON committee_budgets(committee_id);
@@ -107,6 +119,7 @@ CREATE INDEX IF NOT EXISTS idx_member_dues_email ON member_dues(purdue_email);
 CREATE INDEX IF NOT EXISTS idx_member_dues_fy ON member_dues(fiscal_year_id);
 CREATE INDEX IF NOT EXISTS idx_inflows_committee ON committee_funding_inflows(committee_id);
 CREATE INDEX IF NOT EXISTS idx_inflows_fy ON committee_funding_inflows(fiscal_year_id);
+CREATE INDEX IF NOT EXISTS idx_budget_audit_committee ON budget_audit_logs(committee_id);
 
 -- Default Seed Committees
 INSERT OR IGNORE INTO finance_committees (id, name, passcode_hash, is_admin, bank_status, dues_status, contact_email) VALUES

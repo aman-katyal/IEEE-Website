@@ -6,6 +6,8 @@ import {
   calculateCommitteeSpending,
   calculateCategoryBreakdown,
   recordCommitteeFundingInflow,
+  recordBudgetAdjustmentAudit,
+  getBudgetAuditHistory,
 } from './spending';
 
 describe('BoilerBooks Treasurer Master Spending Matrix', () => {
@@ -282,6 +284,28 @@ describe('BoilerBooks Treasurer Master Spending Matrix', () => {
       expect(Math.round(summary.totalRemaining * 100)).toBe(
         Math.round((summary.totalAllocated - summary.totalSpent) * 100)
       );
+    });
+  });
+
+  describe('Budget Audit Trail History', () => {
+    it('records and retrieves budget adjustment revisions', async () => {
+      const entry = await recordBudgetAdjustmentAudit(db, {
+        committeeId: 'rov',
+        fiscalYearId: 'fy25-26',
+        adjustedBy: 'treasurer@purdueieee.org',
+        previousAmount: 5000,
+        newAmount: 6500,
+        reason: 'Fall Callout Equipment Grants Expansion',
+      });
+
+      expect(entry.id).toContain('audit-');
+      expect(entry.previousAmount).toBe(5000);
+      expect(entry.newAmount).toBe(6500);
+
+      const history = await getBudgetAuditHistory(db, 'rov', 'fy25-26');
+      expect(history.length).toBe(1);
+      expect(history[0].adjustedBy).toBe('treasurer@purdueieee.org');
+      expect(history[0].reason).toBe('Fall Callout Equipment Grants Expansion');
     });
   });
 });
