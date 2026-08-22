@@ -89,6 +89,34 @@ export function Navigation() {
   };
 
   const handleLinkHover = (href: string, committeeId?: string) => {
+    // Speculative route chunk prefetching
+    switch (href) {
+      case "/about":
+        import("../../pages/AboutUsPage");
+        break;
+      case "/committees":
+        import("../../pages/CommitteesPage");
+        break;
+      case "/officers":
+        import("../../pages/OfficersPage");
+        break;
+      case "/calendar":
+        import("../../pages/CalendarPage");
+        break;
+      case "/join":
+        import("../../pages/JoinPage");
+        break;
+      case "/partners":
+        import("../../pages/PartnersPage");
+        break;
+      case "/constitution":
+        import("../../pages/ConstitutionPage");
+        break;
+      case "/finance":
+        import("../../pages/FinancePortalPage");
+        break;
+    }
+
     if (href === "/officers") {
       const query = groq`*[_type == "leader"] | order(order asc){
         ...,
