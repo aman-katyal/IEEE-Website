@@ -30,9 +30,9 @@ describe('CommitteesPage', () => {
 
     expect(screen.getByText('Our')).toBeInTheDocument();
     expect(screen.getByText('Committees')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Technical Committees/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Involvement/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Operations/i })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Technical Committees/i })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Involvement/i })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Operations/i })).toBeInTheDocument();
   });
 
 
@@ -47,11 +47,27 @@ describe('CommitteesPage', () => {
   it('toggles to operations committees when button is clicked', () => {
     render(<CommitteesPage />);
 
-    const operationsButton = screen.getByRole('button', { name: /Operations/i });
+    const operationsButton = screen.getByRole('tab', { name: /Operations/i });
     fireEvent.click(operationsButton);
 
     expect(screen.queryByTestId('committees-mock')).not.toBeInTheDocument();
     expect(screen.getByTestId('cornerstone-committees-mock')).toBeInTheDocument();
     expect(screen.getByText('Showing Operations Committees')).toBeInTheDocument();
+  });
+
+  it('supports arrow key keyboard navigation between tabs', () => {
+    render(<CommitteesPage />);
+
+    const tablist = screen.getByRole('tablist');
+    fireEvent.keyDown(tablist, { key: 'ArrowRight' });
+
+    expect(screen.getByRole('tab', { name: /Involvement/i })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByText('Showing Involvement Committees')).toBeInTheDocument();
+
+    fireEvent.keyDown(tablist, { key: 'ArrowRight' });
+    expect(screen.getByRole('tab', { name: /Operations/i })).toHaveAttribute('aria-selected', 'true');
+
+    fireEvent.keyDown(tablist, { key: 'Home' });
+    expect(screen.getByRole('tab', { name: /Technical Committees/i })).toHaveAttribute('aria-selected', 'true');
   });
 });

@@ -30,13 +30,34 @@ export function CommitteesPage() {
         {/* View Mode Toggle */}
         <div className="flex justify-center mb-6">
           <div
-            role="group"
+            role="tablist"
             aria-label="Committee Categories"
             className="flex bg-[rgba(128,128,128,0.05)] border border-[var(--glass-border)] rounded-full p-1 relative flex-wrap sm:flex-nowrap gap-1"
+            onKeyDown={(e) => {
+              const tabs: Array<"technical" | "involvement" | "operations"> = ["technical", "involvement", "operations"];
+              const currentIndex = tabs.indexOf(viewMode);
+              if (e.key === "ArrowRight") {
+                e.preventDefault();
+                const nextIndex = (currentIndex + 1) % tabs.length;
+                handleModeChange(tabs[nextIndex]);
+              } else if (e.key === "ArrowLeft") {
+                e.preventDefault();
+                const prevIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+                handleModeChange(tabs[prevIndex]);
+              } else if (e.key === "Home") {
+                e.preventDefault();
+                handleModeChange(tabs[0]);
+              } else if (e.key === "End") {
+                e.preventDefault();
+                handleModeChange(tabs[tabs.length - 1]);
+              }
+            }}
           >
             <button
+              role="tab"
+              aria-selected={viewMode === "technical"}
+              tabIndex={viewMode === "technical" ? 0 : -1}
               onClick={() => handleModeChange("technical")}
-              aria-pressed={viewMode === "technical"}
               className={`relative py-2.5 px-6 rounded-full font-[family-name:var(--font-mono)] text-[11px] font-semibold uppercase tracking-[0.08em] border-none bg-transparent cursor-pointer transition-colors duration-200 z-[2] ${
                 viewMode === "technical"
                   ? isLight
@@ -55,8 +76,10 @@ export function CommitteesPage() {
               Technical Committees
             </button>
             <button
+              role="tab"
+              aria-selected={viewMode === "involvement"}
+              tabIndex={viewMode === "involvement" ? 0 : -1}
               onClick={() => handleModeChange("involvement")}
-              aria-pressed={viewMode === "involvement"}
               className={`relative py-2.5 px-6 rounded-full font-[family-name:var(--font-mono)] text-[11px] font-semibold uppercase tracking-[0.08em] border-none bg-transparent cursor-pointer transition-colors duration-200 z-[2] ${
                 viewMode === "involvement"
                   ? isLight
@@ -75,8 +98,10 @@ export function CommitteesPage() {
               Involvement
             </button>
             <button
+              role="tab"
+              aria-selected={viewMode === "operations"}
+              tabIndex={viewMode === "operations" ? 0 : -1}
               onClick={() => handleModeChange("operations")}
-              aria-pressed={viewMode === "operations"}
               className={`relative py-2.5 px-6 rounded-full font-[family-name:var(--font-mono)] text-[11px] font-semibold uppercase tracking-[0.08em] border-none bg-transparent cursor-pointer transition-colors duration-200 z-[2] ${
                 viewMode === "operations"
                   ? isLight
