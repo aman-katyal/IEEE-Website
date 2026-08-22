@@ -37,7 +37,7 @@ describe('Sanity Studio Schema Contract Suite', () => {
     expect(fieldNames).toContain('email');
     expect(fieldNames).toContain('image');
     expect(fieldNames).toContain('category');
-    expect(fieldNames).toContain('order');
+    expect(fieldNames).toContain('committees');
   });
 
   it('validates that homePage schema fields match HomePageData TypeScript interface', () => {
