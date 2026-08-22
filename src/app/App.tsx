@@ -8,6 +8,7 @@ import { BackToTop } from "./components/shared/BackToTop";
 import { ToastProvider } from "./components/ui/toast";
 import { OfflineNotifier } from "./components/shared/OfflineNotifier";
 import { ScrollToTop } from "./components/shared/ScrollToTop";
+import { PreviewBanner } from "./components/shared/PreviewBanner";
 
 export default function App() {
   const location = useLocation();
@@ -36,6 +37,7 @@ export default function App() {
   return (
     <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark">
       <ToastProvider>
+        <PreviewBanner />
         <ScrollToTop />
         <OfflineNotifier />
         <BackToTop />
