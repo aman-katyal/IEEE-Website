@@ -70,33 +70,28 @@ function parseEvent(item: GoogleCalendarItem): CalendarEvent {
   };
 }
 
-// ─── Global Cache ───────────────────────────────────────────────
-// ⚡ Bolt Optimization: Global request caching and deduplication
-// Impact: Prevents duplicate network requests during rapid re-mounts or
-// when the hook is consumed by multiple components simultaneously.
-// Reduces API calls to Google Calendar by >50% for typical user sessions.
+import { LRUCache } from "../lib/lruCache";
 
-let cachedEvents: CalendarEvent[] | null = null;
-let lastFetchTime = 0;
+// ─── Global Cache ───────────────────────────────────────────────
+// ⚡ Bolt Optimization: Parameterized LRU request caching & deduplication
+const calendarCache = new LRUCache<string, CalendarEvent[]>(10, CALENDAR_CONFIG.refreshInterval);
 let fetchPromise: Promise<CalendarEvent[]> | null = null;
 
 // ─── Hook ───────────────────────────────────────────────────────
 
 export function useGoogleCalendarEvents() {
-  const [events, setEvents] = useState<CalendarEvent[]>(cachedEvents || []);
-  const [loading, setLoading] = useState(!cachedEvents);
+  const cacheKey = `${CALENDAR_CONFIG.calendarId}-${CALENDAR_CONFIG.maxResults}`;
+  const initialEvents = calendarCache.get(cacheKey) || [];
+  const [events, setEvents] = useState<CalendarEvent[]>(initialEvents);
+  const [loading, setLoading] = useState(!calendarCache.has(cacheKey));
   const [error, setError] = useState<string | null>(null);
 
   const fetchEvents = useCallback(async (forceRefresh = false) => {
-    const nowMs = performance.now();
+    const cached = calendarCache.get(cacheKey);
 
     // Return cached events if within the refresh interval and not forcing a refresh
-    if (
-      !forceRefresh &&
-      cachedEvents &&
-      nowMs - lastFetchTime < CALENDAR_CONFIG.refreshInterval
-    ) {
-      setEvents(cachedEvents);
+    if (!forceRefresh && cached) {
+      setEvents(cached);
       setLoading(false);
       return;
     }
@@ -147,8 +142,7 @@ export function useGoogleCalendarEvents() {
         })
         .then((data) => {
           const parsed = (data.items ?? []).map(parseEvent);
-          cachedEvents = parsed;
-          lastFetchTime = performance.now();
+          calendarCache.set(cacheKey, parsed);
           return parsed;
         });
 
