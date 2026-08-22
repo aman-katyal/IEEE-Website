@@ -280,6 +280,19 @@ textarea:focus-visible,
   box-shadow: 0 0 12px rgba(235, 211, 169, 0.4) !important;
 }
 
+/* ─── Standardized Touch Target Sizes (WCAG 2.2 AA SC 2.5.8) ─── */
+@media (pointer: coarse), (max-width: 768px) {
+  button,
+  a[role="button"],
+  .nav-mobile-toggle,
+  .btn-primary,
+  .btn-ghost,
+  .btn-gold {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
 .btn-gold:hover {
   background: rgba(235, 211, 169, 0.1);
   box-shadow: 0 0 16px rgba(235, 211, 169, 0.2);
