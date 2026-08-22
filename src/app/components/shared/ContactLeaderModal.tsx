@@ -24,7 +24,7 @@ export function ContactLeaderModal({
   trigger,
 }: ContactLeaderModalProps) {
   const [open, setOpen] = useState(false);
-  const { copy, copied } = useClipboard({ timeout: 2000 });
+  const { copy, hasCopied } = useClipboard({ timeoutMs: 2000 });
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -55,7 +55,7 @@ export function ContactLeaderModal({
             className="flex items-center gap-1 px-3 py-1.5 rounded text-xs font-mono font-semibold bg-primary/20 text-primary border border-primary/30 hover:bg-primary/30 transition-colors cursor-pointer shrink-0"
             aria-label={`Copy email address ${email}`}
           >
-            {copied ? (
+            {hasCopied ? (
               <>
                 <Check className="w-3.5 h-3.5 text-emerald-400" aria-hidden="true" />
                 <span className="text-emerald-400">Copied!</span>

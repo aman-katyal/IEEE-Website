@@ -1,5 +1,6 @@
 /*
   X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
   Referrer-Policy: strict-origin-when-cross-origin
   Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https: https://*.sanity.io; frame-src 'self' https://calendar.google.com https://*.sanity.io https://*.sanity.studio; frame-ancestors 'self' https://purdue-ieee-website.sanity.studio https://*.sanity.studio https://*.sanity.io https://sanity.io https://purdue-ieee-website.ieeepurdueweb.workers.dev https://*.workers.dev https://*.pages.dev https://purdueieee.org http://localhost:* http://127.0.0.1:*;
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload

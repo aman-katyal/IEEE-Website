@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Shield, Wrench, AlertTriangle, CheckCircle2, Search } from "lucide-react";
+import { Shield, AlertTriangle, CheckCircle2, Search } from "lucide-react";
 
 export interface LabToolItem {
   id: string;

@@ -616,7 +616,7 @@ export interface ReallocationResult {
  * Submits a budget category reallocation request for review by the Treasurer.
  */
 export async function requestBudgetReallocation(
-  dbLike: D1DatabaseLike | DatabaseSync,
+  _dbLike: D1DatabaseLike | DatabaseSync,
   payload: ReallocationRequestPayload,
   session: AuthSession | null
 ): Promise<ReallocationResult> {
