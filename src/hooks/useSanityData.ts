@@ -5,7 +5,7 @@ import type { Committee, CornerstoneCommittee } from '../data/committees/types';
 import type { Leader, OfficersConfig, HomePageData, AboutPageData } from '../data/sanity-types';
 
 const SECTION_PROJECTION = `
-  sections[]{
+  "sections": coalesce(sections[]{
     ...,
     "type": select(
       _type == "textSection" => "text",
@@ -17,11 +17,11 @@ const SECTION_PROJECTION = `
       _type
     ),
     "image": coalesce(image.asset->url + "?auto=format&q=75", image),
-    items[]{
+    "items": coalesce(items[]{
       ...,
       "image": coalesce(image.asset->url + "?auto=format&w=800&q=75", image)
-    }
-  }
+    }, [])
+  }, [])
 `;
 
 // Simple helper to detect if we should use the preview client
@@ -99,11 +99,11 @@ export function useCornerstoneCommittees() {
   const query = groq`*[_type == "cornerstone"]{
     ...,
     "id": id.current,
-    leads[]{
+    "leads": coalesce(leads[]{
       ...,
       "name": coalesce(officer->name, name),
       "email": coalesce(officer->email, email)
-    }
+    }, [])
   }`;
   const { data, loading, error } = useSanityQuery<CornerstoneCommittee[]>(query);
   return { committees: data || [], loading, error };
@@ -121,10 +121,10 @@ export function useLeaders() {
 export function useOfficersConfig() {
   const query = groq`*[_type == "officersConfig"][0]{
     ...,
-    executiveOrder[]->{ _id },
-    technicalOrder[]->{ _id },
-    operationsOrder[]->{ _id },
-    memberOrder[]->{ _id }
+    "executiveOrder": coalesce(executiveOrder[]->{ _id }, []),
+    "technicalOrder": coalesce(technicalOrder[]->{ _id }, []),
+    "operationsOrder": coalesce(operationsOrder[]->{ _id }, []),
+    "memberOrder": coalesce(memberOrder[]->{ _id }, [])
   }`;
   const { data, loading, error } = useSanityQuery<OfficersConfig>(query);
   return { config: data, loading, error };
@@ -143,14 +143,14 @@ export function useHomePage() {
 export function useAboutPage() {
   const query = groq`*[_type == "aboutPage"][0]{
     ...,
-    timeline[]{
+    "timeline": coalesce(timeline[]{
       ...,
       "gold": coalesce(isGoldAccent, false)
-    },
-    sections[]{
+    }, []),
+    "sections": coalesce(sections[]{
       ...,
       "image": coalesce(image.asset->url + "?auto=format&w=1000&q=75", image.asset->url)
-    }
+    }, [])
   }`;
   const { data, loading, error } = useSanityQuery<AboutPageData>(query);
   return { data, loading, error };
@@ -201,10 +201,12 @@ export function useSiteSettings() {
       ...,
       "pdfUrl": pdfFile.asset->url
     },
-    committeeBylaws[]{
+    "committeeBylaws": coalesce(committeeBylaws[]{
       ...,
       "pdfUrl": pdfFile.asset->url
-    },
+    }, []),
+    "socialLinks": coalesce(socialLinks[], []),
+    "ctaBenefits": coalesce(ctaBenefits[], []),
     "partnersProspectusUrl": partnersProspectusFile.asset->url
   }`;
   const { data, loading, error } = useSanityQuery<SiteSettings>(query);
