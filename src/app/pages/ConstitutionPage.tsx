@@ -70,9 +70,26 @@ export function ConstitutionPage() {
           </p>
         </div>
 
+        {/* Table of Contents Scroll-Spy */}
+        <nav aria-label="Constitution Sections" className="mb-10 p-4 rounded-lg bg-white/5 border border-white/10 flex flex-wrap gap-4 items-center">
+          <span className="text-xs font-mono uppercase tracking-wider text-neutral-400 font-bold">Quick Jump:</span>
+          <a
+            href="#branch-constitution"
+            className="text-xs font-mono px-3 py-1.5 rounded-full bg-white/10 text-white hover:bg-primary/20 hover:text-primary transition-colors cursor-pointer"
+          >
+            # Branch Constitution
+          </a>
+          <a
+            href="#committee-bylaws"
+            className="text-xs font-mono px-3 py-1.5 rounded-full bg-white/10 text-white hover:bg-primary/20 hover:text-primary transition-colors cursor-pointer"
+          >
+            # Committee Bylaws
+          </a>
+        </nav>
+
         <div style={{ display: "flex", flexDirection: "column", gap: "64px" }}>
           {/* Core Constitution */}
-          <div>
+          <div id="branch-constitution" className="scroll-mt-28">
             <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "32px" }}>
               <Shield size={24} style={{ color: "var(--electric-blue)" }} />
               <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "24px", fontWeight: 600, color: "var(--text-primary)" }}>Branch Constitution</h3>
@@ -92,7 +109,7 @@ export function ConstitutionPage() {
           </div>
 
           {/* Committee Bylaws */}
-          <div>
+          <div id="committee-bylaws" className="scroll-mt-28">
             <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "32px" }}>
               <FileText size={24} style={{ color: "var(--cyber-gold)" }} />
               <h3 style={{ fontFamily: "var(--font-headline)", fontSize: "24px", fontWeight: 600, color: "var(--text-primary)" }}>Technical Committee Bylaws</h3>
