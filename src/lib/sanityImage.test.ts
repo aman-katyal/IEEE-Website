@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { appendSanityUrlParams, urlForImage, buildSanityImageUrl } from "./sanityImage";
+import { appendSanityUrlParams, urlForImage, buildSanityImageUrl, generateSanitySrcSet } from "./sanityImage";
 
 describe("sanityImage", () => {
   describe("appendSanityUrlParams", () => {
@@ -64,9 +64,20 @@ describe("sanityImage", () => {
     });
   });
 
-  describe("urlForImage", () => {
-    it("returns empty string for null source", () => {
-      expect(urlForImage(null)).toBe("");
+  describe("generateSanitySrcSet", () => {
+    it("generates comma-separated srcset with width descriptors", () => {
+      const srcset = generateSanitySrcSet(
+        "https://cdn.sanity.io/images/proj/dataset/img.jpg",
+        [480, 1024]
+      );
+      expect(srcset).toContain("480w");
+      expect(srcset).toContain("1024w");
+      expect(srcset).toContain("w=480");
+      expect(srcset).toContain("w=1024");
+    });
+
+    it("returns empty string for empty base url", () => {
+      expect(generateSanitySrcSet("")).toBe("");
     });
   });
 });

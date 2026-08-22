@@ -80,3 +80,18 @@ export function buildSanityImageUrl(
 
   return appendSanityUrlParams(baseCdnUrl, params);
 }
+
+/**
+ * Generates a responsive srcset string with deterministic width descriptors for Sanity image CDN URLs.
+ */
+export function generateSanitySrcSet(
+  baseCdnUrl: string,
+  widths: number[] = [480, 768, 1024, 1440, 1920]
+): string {
+  if (!baseCdnUrl) return "";
+
+  return widths
+    .map((w) => `${buildSanityImageUrl(baseCdnUrl, { width: w, quality: 80 })} ${w}w`)
+    .join(", ");
+}
+
