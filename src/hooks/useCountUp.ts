@@ -9,15 +9,26 @@ export function useCountUp(target: number, duration = 1800, start = false): numb
       return;
     }
     let startTime: number | null = null;
+    let rafId: number | null = null;
+
     const step = (timestamp: number) => {
       if (!startTime) startTime = timestamp;
       const progress = Math.min((timestamp - startTime) / duration, 1);
       const ease = 1 - Math.pow(1 - progress, 3);
       setCount(Math.floor(ease * target));
-      if (progress < 1) requestAnimationFrame(step);
-      else setCount(target);
+      if (progress < 1) {
+        rafId = requestAnimationFrame(step);
+      } else {
+        setCount(target);
+      }
     };
-    requestAnimationFrame(step);
+    rafId = requestAnimationFrame(step);
+
+    return () => {
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+      }
+    };
   }, [target, duration, start]);
 
   return count;
