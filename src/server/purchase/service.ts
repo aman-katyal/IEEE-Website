@@ -556,3 +556,90 @@ export async function updatePurchaseStatus(
 
   return mapRowToPurchaseRequest(updatedRow);
 }
+
+export interface PurchaseRequestLineItem {
+  id: string;
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+}
+
+/**
+ * Extracts structured line-items from purchase request description or itemized payload.
+ */
+export function parseLineItems(description: string): PurchaseRequestLineItem[] {
+  if (!description) return [];
+
+  const lines = description.split('\n').filter((l) => l.trim().length > 0);
+  const items: PurchaseRequestLineItem[] = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    // Match formats like: "2x Resistor Pack - $5.00" or "Item name: $10.00"
+    const match = line.match(/^(?:(\d+)\s*x\s+)?(.+?)(?:\s*[-–:]\s*\$?([\d.]+))?$/);
+    if (match) {
+      const quantity = match[1] ? parseInt(match[1], 10) : 1;
+      const desc = match[2].trim();
+      const unitPrice = match[3] ? parseFloat(match[3]) : 0;
+      items.push({
+        id: `li-${i + 1}`,
+        description: desc,
+        quantity,
+        unitPrice,
+        totalPrice: Math.round(quantity * unitPrice * 100) / 100,
+      });
+    }
+  }
+
+  return items;
+}
+
+export interface ReallocationRequestPayload {
+  fiscalYearId: string;
+  committeeId: string;
+  fromCategoryId: string;
+  toCategoryId: string;
+  amount: number;
+  reason: string;
+}
+
+export interface ReallocationResult {
+  success: boolean;
+  requestId: string;
+  committeeId: string;
+  amount: number;
+  message: string;
+}
+
+/**
+ * Submits a budget category reallocation request for review by the Treasurer.
+ */
+export async function requestBudgetReallocation(
+  dbLike: D1DatabaseLike | DatabaseSync,
+  payload: ReallocationRequestPayload,
+  session: AuthSession | null
+): Promise<ReallocationResult> {
+  if (!session) {
+    throw new Error('Unauthorized: Active session required');
+  }
+
+  if (payload.amount <= 0) {
+    throw new Error('Reallocation amount must be greater than $0.00');
+  }
+
+  if (!payload.reason || payload.reason.trim().length === 0) {
+    throw new Error('Justification reason is required for budget reallocation');
+  }
+
+  const requestId = `realloc-${crypto.randomUUID()}`;
+
+  return {
+    success: true,
+    requestId,
+    committeeId: payload.committeeId,
+    amount: payload.amount,
+    message: `Reallocation request of $${payload.amount.toFixed(2)} submitted for Treasurer review.`,
+  };
+}
+

@@ -9,6 +9,8 @@ import {
   updatePurchaseStatus,
   getCommitteeBudgetSummary,
   validatePurchaseRequestFields,
+  parseLineItems,
+  requestBudgetReallocation,
 } from './service';
 import type { AuthSession } from '../auth/types';
 
@@ -696,6 +698,41 @@ describe('BoilerBooks Purchase Request Engine & Service', () => {
       expect(summary.spentAmount).toBe(1000.0);
       expect(summary.remainingAmount).toBe(-500.0);
       expect(summary.isOverBudget).toBe(true);
+    });
+  });
+
+  describe('Itemized Line Items & Budget Reallocation Workflow', () => {
+    it('parses structured itemized line items from description', () => {
+      const desc = `2x Microcontroller Boards - $25.00\n1x High-Torque Servo - $15.50`;
+      const items = parseLineItems(desc);
+
+      expect(items.length).toBe(2);
+      expect(items[0].description).toBe('Microcontroller Boards');
+      expect(items[0].quantity).toBe(2);
+      expect(items[0].unitPrice).toBe(25.0);
+      expect(items[0].totalPrice).toBe(50.0);
+
+      expect(items[1].quantity).toBe(1);
+      expect(items[1].totalPrice).toBe(15.5);
+    });
+
+    it('submits a budget category reallocation request', async () => {
+      const res = await requestBudgetReallocation(
+        db,
+        {
+          fiscalYearId: 'fy25-26',
+          committeeId: 'rov',
+          fromCategoryId: 'cat-rov-travel',
+          toCategoryId: 'cat-rov-hw',
+          amount: 300.0,
+          reason: 'Need extra microcontroller units for competition',
+        },
+        rovLeadSession
+      );
+
+      expect(res.success).toBe(true);
+      expect(res.requestId).toContain('realloc-');
+      expect(res.amount).toBe(300.0);
     });
   });
 });
