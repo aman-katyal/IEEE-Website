@@ -10,11 +10,12 @@ export function CalendarPage() {
   const { settings, loading } = useSiteSettings();
   const [monthLoaded, setMonthLoaded] = useState(false);
   const [agendaLoaded, setAgendaLoaded] = useState(false);
+  const [viewMode, setViewMode] = useState<"MONTH" | "WEEK">("MONTH");
   
   // Official IEEE Blue for the calendar accents
   const calendarColor = "00629B";
   const calendarId = settings?.calendarId || "7e80819a448e91ef81721772e0c6d9236076b45ad51343474265c1b7d4a363f1%40group.calendar.google.com";
-  const calendarBaseUrl = settings?.calendarUrl || `https://calendar.google.com/calendar/embed?src=${calendarId}&ctz=America%2FIndiana%2FIndianapolis&color=%23${calendarColor}`;
+  const calendarBaseUrl = (settings?.calendarUrl || `https://calendar.google.com/calendar/embed?src=${calendarId}&ctz=America%2FIndiana%2FIndianapolis&color=%23${calendarColor}`) + `&mode=${viewMode}`;
   const subscribeUrl = `https://calendar.google.com/calendar/u/0/r?cid=${calendarId}`;
   const icalUrl = settings?.calendarIcalUrl || `https://calendar.google.com/calendar/ical/${calendarId}/public/basic.ics`;
 
@@ -127,6 +128,32 @@ export function CalendarPage() {
             </p>
 
             <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", alignItems: "center" }}>
+              {/* View Toggle */}
+              <div className="flex bg-white/10 p-1 rounded-lg border border-white/10" role="radiogroup" aria-label="Calendar view mode">
+                <button
+                  onClick={() => setViewMode("MONTH")}
+                  className={`px-3 py-1.5 rounded text-xs font-mono font-semibold transition-colors cursor-pointer ${
+                    viewMode === "MONTH"
+                      ? "bg-primary text-black"
+                      : "text-neutral-400 hover:text-white"
+                  }`}
+                  aria-pressed={viewMode === "MONTH"}
+                >
+                  Month View
+                </button>
+                <button
+                  onClick={() => setViewMode("WEEK")}
+                  className={`px-3 py-1.5 rounded text-xs font-mono font-semibold transition-colors cursor-pointer ${
+                    viewMode === "WEEK"
+                      ? "bg-primary text-black"
+                      : "text-neutral-400 hover:text-white"
+                  }`}
+                  aria-pressed={viewMode === "WEEK"}
+                >
+                  Week View
+                </button>
+              </div>
+
               <a
                 href={subscribeUrl}
                 target="_blank"
