@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { formatBytes } from './fileUtils';
+import { formatBytes, detectFileSignature, validateFileExtensionMatch } from './fileUtils';
 
 describe('formatBytes', () => {
   it('returns "0 Bytes" for 0', () => {
