@@ -1,13 +1,45 @@
 /**
- * Formats a number as USD currency using Intl.NumberFormat.
+ * Converts a dollar amount to exact integer cents.
  */
-export function formatCurrencyUSD(amount: number, decimals = 2): string {
+export function dollarsToCents(dollars: number): number {
+  if (!Number.isFinite(dollars)) return 0;
+  return Math.round((dollars + Number.EPSILON) * 100);
+}
+
+/**
+ * Converts integer cents back to dollars.
+ */
+export function centsToDollars(cents: number): number {
+  if (!Number.isFinite(cents)) return 0;
+  return cents / 100;
+}
+
+/**
+ * Formats a number as USD currency using Intl.NumberFormat.
+ * Supports options for decimal precision and passing values directly in cents.
+ */
+export function formatCurrencyUSD(
+  amount: number,
+  optionsOrDecimals?: number | { decimals?: number; inCents?: boolean }
+): string {
+  let decimals = 2;
+  let inCents = false;
+
+  if (typeof optionsOrDecimals === 'number') {
+    decimals = optionsOrDecimals;
+  } else if (optionsOrDecimals) {
+    decimals = optionsOrDecimals.decimals ?? 2;
+    inCents = optionsOrDecimals.inCents ?? false;
+  }
+
+  const value = inCents ? centsToDollars(amount) : amount;
+
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
-  }).format(amount);
+  }).format(value);
 }
 
 /**

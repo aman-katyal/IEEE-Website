@@ -1,9 +1,34 @@
 import { describe, it, expect } from 'vitest';
-import { formatCurrencyUSD, formatPhoneNumber } from './formatters';
+import { formatCurrencyUSD, formatPhoneNumber, dollarsToCents, centsToDollars } from './formatters';
+
+describe('dollarsToCents and centsToDollars', () => {
+  it('converts dollars to integer cents accurately without floating precision errors', () => {
+    expect(dollarsToCents(19.99)).toBe(1999);
+    expect(dollarsToCents(0.01)).toBe(1);
+    expect(dollarsToCents(0)).toBe(0);
+    expect(dollarsToCents(1234.56)).toBe(123456);
+  });
+
+  it('converts integer cents back to dollars', () => {
+    expect(centsToDollars(1999)).toBe(19.99);
+    expect(centsToDollars(1)).toBe(0.01);
+    expect(centsToDollars(0)).toBe(0);
+  });
+
+  it('handles non-finite values safely', () => {
+    expect(dollarsToCents(NaN)).toBe(0);
+    expect(centsToDollars(Infinity)).toBe(0);
+  });
+});
 
 describe('formatCurrencyUSD', () => {
   it('formats 1234.5 as $1,234.50', () => {
     expect(formatCurrencyUSD(1234.5)).toBe('$1,234.50');
+  });
+
+  it('formats amount in cents when inCents is true', () => {
+    expect(formatCurrencyUSD(123450, { inCents: true })).toBe('$1,234.50');
+    expect(formatCurrencyUSD(99, { inCents: true })).toBe('$0.99');
   });
 
   it('formats 0 as $0.00', () => {
@@ -16,6 +41,7 @@ describe('formatCurrencyUSD', () => {
 
   it('respects custom decimals', () => {
     expect(formatCurrencyUSD(9.9, 0)).toBe('$10');
+    expect(formatCurrencyUSD(9.9, { decimals: 0 })).toBe('$10');
   });
 });
 
