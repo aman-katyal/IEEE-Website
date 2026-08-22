@@ -249,6 +249,22 @@ a.btn-ghost:focus-visible {
   transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
+.btn-primary:active {
+  background: var(--ieee-blue-dark);
+  color: #FFFFFF;
+  transform: translateY(0);
+}
+
+.btn-ghost:active {
+  background: rgba(235, 211, 169, 0.15);
+  color: var(--cyber-gold);
+}
+
+.btn-gold:active {
+  background: var(--cyber-gold);
+  color: var(--boiler-black);
+}
+
 /* ─── Standardized Keyboard Focus Visible Rings (WCAG 2.2 AA) ─── */
 button:focus-visible,
 a:focus-visible,
