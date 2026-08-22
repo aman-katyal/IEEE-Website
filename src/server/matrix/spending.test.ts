@@ -230,4 +230,58 @@ describe('BoilerBooks Treasurer Master Spending Matrix', () => {
       expect(row.received_date).toBe('2026-02-15');
     });
   });
+
+  describe('4. Property-Based Double-Entry Ledger Invariants', () => {
+    it('maintains total conservation of funds across randomized transaction sequences', async () => {
+      // Clear purchase requests
+      db.exec('DELETE FROM purchase_requests;');
+
+      const statuses = ['APPROVED', 'REIMBURSED', 'PENDING', 'REJECTED'] as const;
+      const committeeIds = ['rov', 'racing', 'cs'] as const;
+      const rngAmounts = [12.34, 45.67, 89.01, 100.00, 250.50, 0.99, 15.00];
+
+      // Insert 50 randomized purchase requests
+      for (let i = 1; i <= 50; i++) {
+        const comm = committeeIds[i % committeeIds.length];
+        const status = statuses[i % statuses.length];
+        const amount = rngAmounts[i % rngAmounts.length];
+
+        db.exec(`
+          INSERT INTO purchase_requests (
+            id, fiscal_year_id, committee_id, requester_name, requester_email,
+            vendor_name, total_amount, description, status
+          ) VALUES (
+            'pr-prop-${i}', 'fy25-26', '${comm}', 'Student ${i}', 's${i}@purdue.edu',
+            'Vendor ${i}', ${amount}, 'Auto item ${i}', '${status}'
+          );
+        `);
+      }
+
+      const summary = await calculateCommitteeSpending(db, 'fy25-26');
+
+      // Invariant 1: Total Allocated must equal sum of individual committee allocations
+      const sumAllocations = summary.committees.reduce((acc, c) => acc + c.allocatedAmount, 0);
+      expect(Math.round(summary.totalAllocated * 100)).toBe(Math.round(sumAllocations * 100));
+
+      // Invariant 2: Total Spent must equal Total Approved + Total Reimbursed
+      expect(Math.round(summary.totalSpent * 100)).toBe(
+        Math.round((summary.totalApproved + summary.totalReimbursed) * 100)
+      );
+
+      // Invariant 3: For each committee, Allocated = Spent + Remaining
+      for (const comm of summary.committees) {
+        expect(Math.round(comm.allocatedAmount * 100)).toBe(
+          Math.round((comm.spentAmount + comm.remainingAmount) * 100)
+        );
+        expect(Math.round(comm.spentAmount * 100)).toBe(
+          Math.round((comm.approvedAmount + comm.reimbursedAmount) * 100)
+        );
+      }
+
+      // Invariant 4: Total Remaining = Total Allocated - Total Spent
+      expect(Math.round(summary.totalRemaining * 100)).toBe(
+        Math.round((summary.totalAllocated - summary.totalSpent) * 100)
+      );
+    });
+  });
 });
