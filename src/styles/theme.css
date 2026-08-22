@@ -180,3 +180,26 @@
     line-height: 1.5;
   }
 }
+
+/* Windows High Contrast Mode (Forced Colors) Overrides */
+@media (forced-colors: active) {
+  :root, .dark {
+    --border: CanvasText;
+    --primary-foreground: ButtonText;
+  }
+
+  button, a, [role="button"], input, select, textarea {
+    forced-color-adjust: none;
+    border: 1px solid ButtonBorder;
+  }
+
+  button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+    outline: 2px solid Highlight !important;
+    outline-offset: 2px;
+  }
+
+  [data-testid="widget-error-fallback"], .glass-card, [role="dialog"], [role="alert"] {
+    border: 2px solid CanvasText !important;
+  }
+}
+
