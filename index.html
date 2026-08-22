@@ -7,7 +7,24 @@
     <meta name="description" content="Purdue University's premier IEEE student branch. Fostering technological innovation and excellence since 1903." />
     <link rel="canonical" href="https://purdueieee.org/" />
 
-    <!-- Preconnect for performance -->
+    <!-- Theme Flicker Prevention Script -->
+    <script>
+      (function() {
+        try {
+          var theme = localStorage.getItem('theme');
+          var isDark = theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (isDark) {
+            document.documentElement.classList.add('dark');
+            document.documentElement.classList.remove('light');
+          } else {
+            document.documentElement.classList.add('light');
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
+
+    <!-- Preconnect & Preload for performance -->
     <link rel="preconnect" href="https://cdn.sanity.io" crossorigin />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -15,6 +32,13 @@
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
     <link rel="preload" as="image" href="/images/general%20IEEE%20pictures/ieee%20whole%20team%20photo.webp" type="image/webp" />
     
+    <!-- PWA & Mobile Meta -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#00629B" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="apple-touch-icon" href="/images/logo/logo_clean.png" />
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://purdueieee.org/" />
