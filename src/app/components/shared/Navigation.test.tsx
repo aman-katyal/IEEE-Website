@@ -219,6 +219,18 @@ describe("Navigation", () => {
     expect(screen.queryByTestId("mobile-nav-drawer")).not.toBeInTheDocument();
   });
 
+  it("closes mobile menu when Escape key is pressed", () => {
+    renderNav();
+
+    const toggleButton = screen.getByRole("button", { name: /open navigation menu/i });
+    fireEvent.click(toggleButton);
+    expect(screen.getByTestId("mobile-nav-drawer")).toBeInTheDocument();
+
+    // Press Escape
+    fireEvent.keyDown(window, { key: "Escape" });
+    expect(screen.queryByTestId("mobile-nav-drawer")).not.toBeInTheDocument();
+  });
+
   it("navigates and closes mobile menu when a mobile item is clicked", () => {
     renderNav();
 

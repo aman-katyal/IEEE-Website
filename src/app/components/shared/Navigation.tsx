@@ -271,6 +271,7 @@ export function Navigation() {
           currentPath={location.pathname}
           discordUrl={discordUrl}
           onNavigate={handleNav}
+          onClose={() => setMenuOpen(false)}
         />
       </nav>
 
