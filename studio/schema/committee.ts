@@ -81,6 +81,14 @@ export const committee = defineType({
       rows: 5,
     }),
     defineField({
+      name: 'budgetAllocation',
+      title: 'Fiscal Year Budget Allocation (USD)',
+      type: 'number',
+      group: 'info',
+      validation: (Rule) =>
+        Rule.min(0).precision(2).warning('Budget allocations must be non-negative numbers with up to 2 decimal places.'),
+    }),
+    defineField({
       name: 'meetingSchedule',
       title: 'Meeting Schedule',
       type: 'object',
