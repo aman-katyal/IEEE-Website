@@ -36,10 +36,13 @@ const getActiveClient = () => {
   return isPreview ? previewClient : client;
 };
 
-// React Query hook for data fetching
+const inFlightQueries = new Map<string, Promise<any>>();
+
+// React Query hook for data fetching with Stale-While-Revalidate semantics
 function useSanityQuery<T>(query: string, params?: Record<string, any>) {
   const activeClient = getActiveClient();
   const isPreview = checkIsPreview();
+  const cacheKey = JSON.stringify({ query, params });
 
   const queryResult = useQuery({
     queryKey: ['sanity', query, params, isPreview],
@@ -48,15 +51,25 @@ function useSanityQuery<T>(query: string, params?: Record<string, any>) {
         console.warn('[useSanityQuery] Sanity client not initialized. Query:', query);
         return null;
       }
-      try {
-        return await activeClient.fetch(query, params || {});
-      } catch (err) {
-        console.warn('[useSanityQuery] Query failed (Sanity fetch error or CORS):', err);
-        return null;
+
+      // Deduplicate simultaneous in-flight requests for identical queries
+      if (inFlightQueries.has(cacheKey)) {
+        return inFlightQueries.get(cacheKey) as Promise<T | null>;
       }
+
+      const fetchPromise = activeClient
+        .fetch(query, params || {})
+        .finally(() => {
+          inFlightQueries.delete(cacheKey);
+        });
+
+      inFlightQueries.set(cacheKey, fetchPromise);
+      return (await fetchPromise) as T | null;
     },
-    staleTime: isPreview ? 0 : 1000 * 60 * 5, // 5 minutes stale time for production
-    refetchOnWindowFocus: false, // Don't refetch on window focus
+    staleTime: isPreview ? 0 : 1000 * 60 * 5, // 5 minutes stale time
+    gcTime: 1000 * 60 * 60, // 1 hour cache preservation
+    placeholderData: (previousData) => previousData, // SWR: keep previous data while revalidating
+    refetchOnWindowFocus: false,
     retry: 1,
   });
 
