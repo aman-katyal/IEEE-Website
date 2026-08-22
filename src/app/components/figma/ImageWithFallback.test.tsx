@@ -24,4 +24,28 @@ describe('ImageWithFallback', () => {
     expect(fallback).toBeInTheDocument()
     expect(fallback).toHaveAttribute('data-original-url', 'test.jpg')
   })
+
+  it('renders aspect-ratio inline style to eliminate layout shift', () => {
+    render(<ImageWithFallback src="banner.jpg" alt="banner" aspectRatio="16/9" />)
+    const img = screen.getByAltText('banner')
+    expect(img).toHaveStyle({ aspectRatio: '16/9' })
+  })
+
+  it('renders LQIP blur container when lqip prop is provided', () => {
+    render(
+      <ImageWithFallback
+        src="banner.jpg"
+        alt="banner"
+        lqip="data:image/jpeg;base64,/9j/4AAQSkZJRg=="
+      />
+    )
+    const container = screen.getByTestId('lqip-container')
+    expect(container).toBeInTheDocument()
+    const fullImg = screen.getByAltText('banner')
+    expect(fullImg).toBeInTheDocument()
+
+    // Trigger full image load
+    fireEvent.load(fullImg)
+    expect(fullImg).toHaveClass('opacity-100')
+  })
 })
