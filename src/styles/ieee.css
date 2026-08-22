@@ -249,6 +249,21 @@ a.btn-ghost:focus-visible {
   transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* ─── Standardized Keyboard Focus Visible Rings (WCAG 2.2 AA) ─── */
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+.btn-primary:focus-visible,
+.btn-ghost:focus-visible,
+.btn-gold:focus-visible {
+  outline: 2px solid var(--cyber-gold) !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 12px rgba(235, 211, 169, 0.4) !important;
+}
+
 .btn-gold:hover {
   background: rgba(235, 211, 169, 0.1);
   box-shadow: 0 0 16px rgba(235, 211, 169, 0.2);
