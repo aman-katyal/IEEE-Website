@@ -6,6 +6,7 @@ import { siteSettings } from './siteSettings'
 import { homePage } from './homePage'
 import { aboutPage, timelineMilestone } from './aboutPage'
 import { partner } from './partner'
+import { officeHours } from './officeHours'
 
 // Shared Objects
 import { socialLink, metric, imageStyle } from './objects/common'
@@ -22,6 +23,7 @@ export const schemaTypes = [
   homePage,
   aboutPage,
   partner,
+  officeHours,
 
   // Objects
   socialLink,

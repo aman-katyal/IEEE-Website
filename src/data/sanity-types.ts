@@ -73,3 +73,16 @@ export interface AboutPageData {
   timeline?: TimelineMilestone[];
   sections?: AboutSectionData[];
 }
+
+export interface OfficeHoursData {
+  _id: string;
+  officerName: string;
+  role: string;
+  dayOfWeek: "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday";
+  startTime: string;
+  endTime: string;
+  location: string;
+  email?: string;
+  notes?: string;
+}
+
