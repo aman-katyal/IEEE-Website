@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { CheckCircle2, AlertCircle, Info, X } from "lucide-react";
+import { announceToScreenReader } from "../../../lib/ariaLive";
 
 export type ToastVariant = "default" | "success" | "destructive" | "warning";
 
@@ -26,7 +27,11 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
 
   const dismiss = useCallback((id: string) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
+    setToasts((prev) => {
+      const remaining = prev.filter((t) => t.id !== id);
+      announceToScreenReader("Notification dismissed", "polite");
+      return remaining;
+    });
   }, []);
 
   const toast = useCallback(
@@ -35,6 +40,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       const newToast: ToastItem = { id, title, description, variant, duration };
 
       setToasts((prev) => [...prev, newToast]);
+      announceToScreenReader(`${title}${description ? `: ${description}` : ""}`, variant === "destructive" ? "assertive" : "polite");
 
       if (duration > 0) {
         setTimeout(() => {
