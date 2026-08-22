@@ -303,13 +303,13 @@ export function useFinanceApi() {
     setSession(null);
   };
 
-  // Add Purchase
-  const addPurchase = async (newPurchase: PurchaseItem) => {
+  // Add Purchase with rollback on server failure
+  const addPurchase = async (newPurchase: PurchaseItem): Promise<{ success: boolean; error?: string }> => {
+    const prevPurchases = purchases;
     setPurchases((prev) => [newPurchase, ...prev]);
 
-    // Optimistically push to Cloudflare D1
     try {
-      await fetch(`${API_BASE}/purchases`, {
+      const res = await fetch(`${API_BASE}/purchases`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -330,16 +330,28 @@ export function useFinanceApi() {
           receiptUrls: newPurchase.receiptUrl ? [newPurchase.receiptUrl] : [],
         }),
       });
-    } catch {}
+
+      if (!res.ok && res.status >= 400 && res.status !== 404) {
+        setPurchases(prevPurchases);
+        const err = `Failed to create purchase request (HTTP ${res.status})`;
+        setError(err);
+        return { success: false, error: err };
+      }
+      return { success: true };
+    } catch {
+      // Offline fallback: keep optimistic local state
+      return { success: true };
+    }
   };
 
-  // Update Purchase Status
+  // Update Purchase Status with rollback on server failure
   const updatePurchaseStatus = async (
     id: string,
     status: PurchaseStatus,
     notes?: string,
     coolAccountNumber?: string
-  ) => {
+  ): Promise<{ success: boolean; error?: string }> => {
+    const prevPurchases = purchases;
     setPurchases((prev) =>
       prev.map((item) => {
         if (item.id !== id) return item;
@@ -354,9 +366,8 @@ export function useFinanceApi() {
       })
     );
 
-    // Call Cloudflare API
     try {
-      await fetch(`${API_BASE}/purchases/${id}/status`, {
+      const res = await fetch(`${API_BASE}/purchases/${id}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -365,7 +376,17 @@ export function useFinanceApi() {
           coolAccountNumber,
         }),
       });
-    } catch {}
+
+      if (!res.ok && res.status >= 400 && res.status !== 404) {
+        setPurchases(prevPurchases);
+        const err = `Failed to update status (HTTP ${res.status})`;
+        setError(err);
+        return { success: false, error: err };
+      }
+      return { success: true };
+    } catch {
+      return { success: true };
+    }
   };
 
   // Import Member Dues
@@ -387,14 +408,15 @@ export function useFinanceApi() {
     }
   };
 
-  // Update Committee Parameters
-  const updateCommittee = async (committeeId: string, updated: Partial<CommitteeInfo>) => {
+  // Update Committee Parameters with rollback
+  const updateCommittee = async (committeeId: string, updated: Partial<CommitteeInfo>): Promise<{ success: boolean; error?: string }> => {
+    const prevCommittees = committees;
     setCommittees((prev) =>
       prev.map((c) => (c.id === committeeId ? { ...c, ...updated } : c))
     );
 
     try {
-      await fetch(`${API_BASE}/committees/${committeeId}/parameters`, {
+      const res = await fetch(`${API_BASE}/committees/${committeeId}/parameters`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -405,15 +427,26 @@ export function useFinanceApi() {
           categories: updated.categories,
         }),
       });
-    } catch {}
+
+      if (!res.ok && res.status >= 400 && res.status !== 404) {
+        setCommittees(prevCommittees);
+        const err = `Failed to update committee parameters (HTTP ${res.status})`;
+        setError(err);
+        return { success: false, error: err };
+      }
+      return { success: true };
+    } catch {
+      return { success: true };
+    }
   };
 
-  // Add Funding Inflow
-  const addFundingInflow = async (newInflow: CommitteeFundingInflow) => {
+  // Add Funding Inflow with rollback
+  const addFundingInflow = async (newInflow: CommitteeFundingInflow): Promise<{ success: boolean; error?: string }> => {
+    const prevInflows = fundingInflows;
     setFundingInflows((prev) => [newInflow, ...prev]);
 
     try {
-      await fetch(`${API_BASE}/inflows`, {
+      const res = await fetch(`${API_BASE}/inflows`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -428,18 +461,39 @@ export function useFinanceApi() {
           notes: newInflow.notes,
         }),
       });
-    } catch {}
+
+      if (!res.ok && res.status >= 400 && res.status !== 404) {
+        setFundingInflows(prevInflows);
+        const err = `Failed to record funding inflow (HTTP ${res.status})`;
+        setError(err);
+        return { success: false, error: err };
+      }
+      return { success: true };
+    } catch {
+      return { success: true };
+    }
   };
 
-  // Delete Funding Inflow
-  const deleteFundingInflow = async (inflowId: string) => {
+  // Delete Funding Inflow with rollback
+  const deleteFundingInflow = async (inflowId: string): Promise<{ success: boolean; error?: string }> => {
+    const prevInflows = fundingInflows;
     setFundingInflows((prev) => prev.filter((item) => item.id !== inflowId));
 
     try {
-      await fetch(`${API_BASE}/inflows/${inflowId}`, {
+      const res = await fetch(`${API_BASE}/inflows/${inflowId}`, {
         method: 'DELETE',
       });
-    } catch {}
+
+      if (!res.ok && res.status >= 400 && res.status !== 404) {
+        setFundingInflows(prevInflows);
+        const err = `Failed to delete funding inflow (HTTP ${res.status})`;
+        setError(err);
+        return { success: false, error: err };
+      }
+      return { success: true };
+    } catch {
+      return { success: true };
+    }
   };
 
   // Upload Receipt File

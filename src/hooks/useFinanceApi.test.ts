@@ -133,4 +133,39 @@ describe('useFinanceApi Hook Suite', () => {
 
     expect(result.current.fundingInflows.length).toBe(initialCount);
   });
+
+  it('rolls back purchases state when server returns error response', async () => {
+    const { result } = renderHook(() => useFinanceApi());
+    const initialCount = result.current.purchases.length;
+
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      json: async () => ({ error: 'Internal Server Error' }),
+    });
+
+    const newPurchase = {
+      id: 'PR-FAIL-001',
+      committeeId: 'rov',
+      committeeName: 'ROV',
+      requesterName: 'Test Requester',
+      requesterEmail: 'test@purdue.edu',
+      vendorName: 'Fail Vendor',
+      category: 'Hardware',
+      totalAmount: 99.0,
+      description: 'Will fail',
+      status: 'PENDING' as const,
+      submittedAt: new Date().toISOString(),
+    };
+
+    let outcome: { success: boolean; error?: string } = { success: true };
+    await act(async () => {
+      outcome = await result.current.addPurchase(newPurchase);
+    });
+
+    expect(outcome.success).toBe(false);
+    expect(result.current.purchases.length).toBe(initialCount);
+    expect(result.current.error).toContain('500');
+  });
 });
+
