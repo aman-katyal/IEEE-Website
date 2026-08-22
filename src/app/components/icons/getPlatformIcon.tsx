@@ -20,14 +20,14 @@ export function getPlatformIcon(
 ) {
   const combined = (platform + url).toLowerCase();
   if (combined.includes("discord")) return <DiscordIcon size={size} />;
-  if (combined.includes("github")) return <Github size={size} />;
-  if (combined.includes("instagram")) return <Instagram size={size} />;
-  if (combined.includes("linkedin")) return <Linkedin size={size} />;
+  if (combined.includes("github")) return <Github size={size} aria-hidden="true" />;
+  if (combined.includes("instagram")) return <Instagram size={size} aria-hidden="true" />;
+  if (combined.includes("linkedin")) return <Linkedin size={size} aria-hidden="true" />;
   if (combined.includes("twitter") || combined.includes("x.com"))
-    return <Twitter size={size} />;
-  if (combined.includes("slack")) return <Slack size={size} />;
-  if (combined.includes("youtube")) return <Youtube size={size} />;
+    return <Twitter size={size} aria-hidden="true" />;
+  if (combined.includes("slack")) return <Slack size={size} aria-hidden="true" />;
+  if (combined.includes("youtube")) return <Youtube size={size} aria-hidden="true" />;
   if (combined.includes("mailto") || combined.includes("@"))
-    return <Mail size={size} />;
-  return <Globe size={size} />;
+    return <Mail size={size} aria-hidden="true" />;
+  return <Globe size={size} aria-hidden="true" />;
 }
