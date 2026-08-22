@@ -1,7 +1,13 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useSyncExternalStore, useCallback, useRef } from "react";
+
+function dispatchStorageEvent(key: string, newValue: string | null) {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new StorageEvent("storage", { key, newValue }));
+  }
+}
 
 /**
- * Type-safe localStorage hook with quota error handling.
+ * Type-safe localStorage hook with React 19 useSyncExternalStore concurrency alignment.
  */
 export function useLocalStorage<T>(
   key: string,
@@ -10,32 +16,57 @@ export function useLocalStorage<T>(
   const initialValueRef = useRef(initialValue);
   initialValueRef.current = initialValue;
 
-  const readValue = useCallback((): T => {
-    if (typeof window === "undefined") {
-      return initialValueRef.current;
-    }
+  const subscribe = useCallback(
+    (callback: () => void) => {
+      if (typeof window === "undefined") return () => {};
+      const handler = (e: StorageEvent) => {
+        if (e.key === key || e.key === null) {
+          callback();
+        }
+      };
+      window.addEventListener("storage", handler);
+      return () => window.removeEventListener("storage", handler);
+    },
+    [key]
+  );
+
+  const getSnapshot = useCallback((): string | null => {
+    if (typeof window === "undefined") return null;
     try {
-      const item = window.localStorage.getItem(key);
-      return item ? (JSON.parse(item) as T) : initialValueRef.current;
-    } catch (error) {
-      console.warn(`Error reading localStorage key "${key}":`, error);
-      return initialValueRef.current;
+      return window.localStorage.getItem(key);
+    } catch {
+      return null;
     }
   }, [key]);
 
-  const [storedValue, setStoredValue] = useState<T>(readValue);
+  const getServerSnapshot = useCallback((): string | null => null, []);
+
+  const rawValue = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+
+  let storedValue: T = initialValueRef.current;
+  if (rawValue !== null) {
+    try {
+      storedValue = JSON.parse(rawValue) as T;
+    } catch {
+      storedValue = initialValueRef.current;
+    }
+  }
 
   const setValue = useCallback(
     (value: T | ((val: T) => T)) => {
       try {
-        setStoredValue((prev) => {
-          const valueToStore =
-            value instanceof Function ? value(prev) : value;
-          if (typeof window !== "undefined") {
-            window.localStorage.setItem(key, JSON.stringify(valueToStore));
-          }
-          return valueToStore;
-        });
+        if (typeof window === "undefined") return;
+        const currentRaw = window.localStorage.getItem(key);
+        let currentParsed: T = initialValueRef.current;
+        if (currentRaw !== null) {
+          try {
+            currentParsed = JSON.parse(currentRaw) as T;
+          } catch {}
+        }
+        const valueToStore = value instanceof Function ? value(currentParsed) : value;
+        const serialized = JSON.stringify(valueToStore);
+        window.localStorage.setItem(key, serialized);
+        dispatchStorageEvent(key, serialized);
       } catch (error) {
         console.warn(`Error setting localStorage key "${key}":`, error);
       }
@@ -45,27 +76,13 @@ export function useLocalStorage<T>(
 
   const removeValue = useCallback(() => {
     try {
-      if (typeof window !== "undefined") {
-        window.localStorage.removeItem(key);
-      }
-      setStoredValue(initialValueRef.current);
+      if (typeof window === "undefined") return;
+      window.localStorage.removeItem(key);
+      dispatchStorageEvent(key, null);
     } catch (error) {
       console.warn(`Error removing localStorage key "${key}":`, error);
     }
   }, [key]);
-
-  useEffect(() => {
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === key) {
-        setStoredValue(readValue());
-      }
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
-  }, [key, readValue]);
 
   return [storedValue, setValue, removeValue];
 }
