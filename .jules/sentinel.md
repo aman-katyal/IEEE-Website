@@ -17,3 +17,8 @@
 **Vulnerability:** Found issue describing missing rel="noopener noreferrer" for target="_blank" links.
 **Learning:** Sometimes reported security vulnerabilities may have already been fixed in a recent PR or by another team member. In this case, `rel="noopener noreferrer"` was already present.
 **Prevention:** Always verify the codebase state directly before applying security patches to prevent unnecessary churn or overwriting good fixes.
+
+## 2026-08-23 - XSS Vulnerability in JSON-LD script tag
+**Vulnerability:** The `Breadcrumbs` component injected unescaped JSON strings into a `<script type="application/ld+json">` tag using `dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}`. This allowed potential Cross-Site Scripting (XSS) if any breadcrumb label or URL contained unescaped malicious scripts like `</script><script>alert(1)</script>`.
+**Learning:** `JSON.stringify` does not escape HTML-sensitive characters such as `<`, `>`, and `&`. When a JSON string containing `</script>` is injected into an inline script block, the browser terminates the script tag early, allowing the execution of arbitrary HTML and JavaScript that follows.
+**Prevention:** When injecting serialized JSON into a `<script>` tag via `dangerouslySetInnerHTML`, always sanitize the output by escaping HTML-sensitive characters (e.g., `.replace(/</g, '\u003c').replace(/>/g, '\u003e').replace(/&/g, '\u0026')`) to prevent Cross-Site Scripting (XSS).
