@@ -97,6 +97,9 @@ export default defineConfig({
   },
 
   build: {
+    rollupOptions: {
+      external: ['node:sqlite'],
+    },
     rolldownOptions: {
       output: {
         manualChunks(id) {
