@@ -233,7 +233,7 @@ describe('FinancePortalPage Integration Suite', () => {
       expect(screen.getByText(/PURDUE COOL \/ BOSOP REIMBURSEMENT BATCH EXPORT/i)).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /Download COOL CSV/i })).toBeInTheDocument();
 
-      const copyButton = screen.getByRole('button', { name: /Copy Text/i });
+      const copyButton = screen.getByRole('button', { name: /Copy Formatted Purdue COOL Batch Text/i });
       await user.click(copyButton);
 
       expect(screen.getByText(/Copied!/i)).toBeInTheDocument();
