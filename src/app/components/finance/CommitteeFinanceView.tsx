@@ -48,6 +48,7 @@ import {
   REAL_COMMITTEES,
 } from './financeData';
 import { ReceiptPreviewModal } from './ReceiptPreviewModal';
+import { formatCurrencyUSD } from '@/lib/formatters';
 
 export interface CommitteeFinanceViewProps {
   session: AuthSessionData;
@@ -356,14 +357,14 @@ export function CommitteeFinanceView({
             <DollarSign className="w-4 h-4 text-[#EBD3A9]" />
           </div>
           <div className="text-2xl font-bold text-white mt-2 font-mono">
-            ${stats.totalEffectiveBudget.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+            {formatCurrencyUSD(stats.totalEffectiveBudget)}
           </div>
           <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
-            <span>${stats.baseAllocated.toLocaleString('en-US')} base</span>
+            <span>{formatCurrencyUSD(stats.baseAllocated, { decimals: 0 })} base</span>
             {stats.totalInflows > 0 && (
               <>
                 <span className="text-slate-600">+</span>
-                <span className="text-emerald-400 font-medium">+${stats.totalInflows.toLocaleString('en-US')} grants</span>
+                <span className="text-emerald-400 font-medium">+{formatCurrencyUSD(stats.totalInflows, { decimals: 0 })} grants</span>
               </>
             )}
           </p>
@@ -378,7 +379,7 @@ export function CommitteeFinanceView({
             <TrendingUp className="w-4 h-4 text-sky-400" />
           </div>
           <div className="text-2xl font-bold text-sky-400 mt-2 font-mono">
-            ${stats.approved.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+            {formatCurrencyUSD(stats.approved)}
           </div>
           <div className="flex items-center gap-2 mt-2">
             <Progress value={stats.percentSpent} className="h-1.5 bg-slate-800 flex-1" />
@@ -395,7 +396,7 @@ export function CommitteeFinanceView({
             <Clock className="w-4 h-4 text-amber-400" />
           </div>
           <div className="text-2xl font-bold text-amber-400 mt-2 font-mono">
-            ${stats.pending.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+            {formatCurrencyUSD(stats.pending)}
           </div>
           <p className="text-[11px] text-slate-500 mt-1">Awaiting Treasurer Review</p>
         </Card>
@@ -409,7 +410,7 @@ export function CommitteeFinanceView({
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
           </div>
           <div className="text-2xl font-bold text-emerald-400 mt-2 font-mono">
-            ${stats.remaining.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+            {formatCurrencyUSD(stats.remaining)}
           </div>
           <p className="text-[11px] text-slate-500 mt-1">Available for new purchases</p>
         </Card>
@@ -426,7 +427,7 @@ export function CommitteeFinanceView({
               </h3>
             </div>
             <span className="text-xs font-mono font-bold text-emerald-400">
-              +${stats.totalInflows.toLocaleString('en-US', { minimumFractionDigits: 2 })} Total Credited
+              +{formatCurrencyUSD(stats.totalInflows)} Total Credited
             </span>
           </div>
 
@@ -449,7 +450,7 @@ export function CommitteeFinanceView({
                     {inflow.sourceType}
                   </Badge>
                   <span className="font-mono text-xs font-bold text-emerald-400">
-                    +${inflow.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                    +{formatCurrencyUSD(inflow.amount)}
                   </span>
                 </div>
                 <div className="font-medium text-xs text-slate-200">{inflow.title}</div>
@@ -504,7 +505,7 @@ export function CommitteeFinanceView({
                       <span className="text-slate-500 ml-2">({m.semester})</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-slate-400">${m.amountPaid.toFixed(2)} via {m.paymentMethod}</span>
+                      <span className="text-slate-400">{formatCurrencyUSD(m.amountPaid)} via {m.paymentMethod}</span>
                       <Badge className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                         ACTIVE · DUES PAID
                       </Badge>
@@ -602,7 +603,7 @@ export function CommitteeFinanceView({
                       </span>
                     </TableCell>
                     <TableCell className="text-right py-3.5 font-mono text-xs font-bold text-white">
-                      ${item.totalAmount.toFixed(2)}
+                      {formatCurrencyUSD(item.totalAmount)}
                     </TableCell>
                     <TableCell className="text-center py-3.5">
                       {getStatusBadge(item.status)}
