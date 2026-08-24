@@ -108,6 +108,42 @@ CREATE TABLE IF NOT EXISTS budget_audit_logs (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+-- 9. BOSO Account Statements Table
+CREATE TABLE IF NOT EXISTS boso_account_statements (
+    soa_number TEXT PRIMARY KEY,
+    account_name TEXT NOT NULL,
+    statement_period TEXT NOT NULL,
+    organization TEXT NOT NULL,
+    department TEXT NOT NULL,
+    office_location TEXT NOT NULL,
+    phone TEXT,
+    fax TEXT,
+    website TEXT,
+    beginning_balance DECIMAL(10, 2) NOT NULL,
+    total_payments DECIMAL(10, 2) NOT NULL,
+    total_credits DECIMAL(10, 2) NOT NULL,
+    total_debits DECIMAL(10, 2) NOT NULL,
+    total_transfers_out DECIMAL(10, 2) NOT NULL,
+    ending_balance DECIMAL(10, 2) NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 10. BOSO Statement Items Table
+CREATE TABLE IF NOT EXISTS boso_statement_items (
+    id TEXT PRIMARY KEY,
+    soa_number TEXT NOT NULL REFERENCES boso_account_statements(soa_number) ON DELETE CASCADE,
+    item_type TEXT NOT NULL, -- 'PAYMENT', 'CREDIT', 'DEBIT', 'TRANSFER_OUT'
+    transaction_date DATE NOT NULL,
+    doc_or_check_number TEXT NOT NULL,
+    ref_code TEXT NOT NULL,
+    ref_number TEXT,
+    amount DECIMAL(10, 2) NOT NULL,
+    cleared_date DATE NOT NULL,
+    expense_or_income_code TEXT NOT NULL,
+    payee_or_vendor TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Indexes for Query Performance & Lookups
 CREATE INDEX IF NOT EXISTS idx_committee_budgets_fy ON committee_budgets(fiscal_year_id);
 CREATE INDEX IF NOT EXISTS idx_committee_budgets_committee ON committee_budgets(committee_id);
@@ -120,6 +156,8 @@ CREATE INDEX IF NOT EXISTS idx_member_dues_fy ON member_dues(fiscal_year_id);
 CREATE INDEX IF NOT EXISTS idx_inflows_committee ON committee_funding_inflows(committee_id);
 CREATE INDEX IF NOT EXISTS idx_inflows_fy ON committee_funding_inflows(fiscal_year_id);
 CREATE INDEX IF NOT EXISTS idx_budget_audit_committee ON budget_audit_logs(committee_id);
+CREATE INDEX IF NOT EXISTS idx_boso_items_soa ON boso_statement_items(soa_number);
+CREATE INDEX IF NOT EXISTS idx_boso_items_type ON boso_statement_items(item_type);
 
 -- Default Seed Committees
 INSERT OR IGNORE INTO finance_committees (id, name, passcode_hash, is_admin, bank_status, dues_status, contact_email) VALUES
@@ -133,3 +171,31 @@ INSERT OR IGNORE INTO finance_committees (id, name, passcode_hash, is_admin, ban
     ('cs', 'Computer Society', '', 0, 'Active', 'Active', 'cs@purdueieee.org'),
     ('learning', 'Learning & Code Cafe', '', 0, 'Active', 'Active', 'learning@purdueieee.org'),
     ('social', 'Social & Growth', '', 0, 'Active', 'Active', 'social@purdueieee.org');
+
+-- Seed Official BOSO Statement (SOA #04612)
+INSERT OR IGNORE INTO boso_account_statements (
+    soa_number, account_name, statement_period, organization, department, office_location, phone, fax, website, beginning_balance, total_payments, total_credits, total_debits, total_transfers_out, ending_balance
+) VALUES (
+    '04612', 'INST ELECTR ELECTN ENGR SFAB', 'From 6/1/2026 thru 8/31/2026', 'Purdue University W. Lafayette', 'Business Office for Student Organizations (BOSO)', 'Krach Leadership Center, (KRCH) RM 365, 1198 Third Street, West Lafayette, IN 47907', '(765) 494-6724', '(765) 496-2208', 'https://www.purdue.edu/treasurer/finance/business', 11390.55, 1062.77, 563.13, 10145.53, 745.38, 0.00
+);
+
+INSERT OR IGNORE INTO boso_statement_items (
+    id, soa_number, item_type, transaction_date, doc_or_check_number, ref_code, ref_number, amount, cleared_date, expense_or_income_code, payee_or_vendor
+) VALUES
+    ('PAY-001', '04612', 'PAYMENT', '2026-06-01', '372271', 'U8583858', 'SFAB 25-26', 161.34, '2026-07-13', 'Equipment $4999 or Less', 'Underground Printing'),
+    ('PAY-002', '04612', 'PAYMENT', '2026-06-11', 'E331454', 'Amazon', NULL, 7.48, '2026-07-13', 'Equipment $4999 or Less', 'Brendon Hayes'),
+    ('PAY-003', '04612', 'PAYMENT', '2026-06-11', 'E331454', 'Amazon', NULL, 13.90, '2026-07-13', 'Equipment $4999 or Less', 'Brendon Hayes'),
+    ('PAY-004', '04612', 'PAYMENT', '2026-06-11', 'E331454', 'eBay', NULL, 294.25, '2026-07-13', 'Equipment $4999 or Less', 'Brendon Hayes'),
+    ('PAY-005', '04612', 'PAYMENT', '2026-06-11', 'E331454', 'Amazon', NULL, 9.62, '2026-07-13', 'Equipment $4999 or Less', 'Brendon Hayes'),
+    ('PAY-006', '04612', 'PAYMENT', '2026-06-11', 'E331454', 'Amazon', NULL, 16.04, '2026-07-13', 'Equipment $4999 or Less', 'Brendon Hayes'),
+    ('PAY-007', '04612', 'PAYMENT', '2026-06-26', 'E331903', 'Reissue E316419', '0626073', 304.61, '2026-07-13', 'Equipment $4999 or Less', 'Tai Hsu'),
+    ('PAY-008', '04612', 'PAYMENT', '2026-06-26', 'E331903', 'Reissue E316419', '0626073', 255.53, '2026-07-13', 'Supplies', 'Tai Hsu'),
+    ('CRD-001', '04612', 'CREDIT', '2026-06-03', '0626015', 'AMAZON.COM, INC', '120534537', 2.99, '2026-07-13', 'Supplies', 'AMAZON.COM, INC'),
+    ('CRD-002', '04612', 'CREDIT', '2026-06-23', '0626073', 'Void E316419', 'T Hsu', 304.61, '2026-07-13', 'Equipment $4999 or Less', 'T Hsu (Voided)'),
+    ('CRD-003', '04612', 'CREDIT', '2026-06-23', '0626073', 'Void E316419', 'T Hsu', 255.53, '2026-07-13', 'Supplies', 'T Hsu (Voided)'),
+    ('DEB-001', '04612', 'DEBIT', '2026-06-03', '0626014', 'MCMASTER-CARR S', '120534538', 88.03, '2026-07-13', 'Supplies', 'MCMASTER-CARR'),
+    ('DEB-002', '04612', 'DEBIT', '2026-06-03', '0626014', 'OSH Park', '120534538', 48.80, '2026-07-13', 'Supplies', 'OSH Park'),
+    ('DEB-003', '04612', 'DEBIT', '2026-06-03', '0626011', 'EUROS', '1902614125', 8999.51, '2026-07-13', 'Event Expense', 'EUROS Event Expense'),
+    ('DEB-004', '04612', 'DEBIT', '2026-06-03', '0626017', 'AMAZON.COM, INC', '120534538', 1009.19, '2026-07-13', 'Supplies', 'AMAZON.COM, INC'),
+    ('TRF-001', '04612', 'TRANSFER_OUT', '2026-07-10', '26874', 'Unused SFAB', 'FY 25-26', 745.38, '2026-08-17', 'Transfer', 'Unused SFAB (Fiscal Year Closeout Sweep)');
+

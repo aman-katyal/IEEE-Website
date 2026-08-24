@@ -18,6 +18,7 @@ export function FinancePortalPage() {
     memberDues,
     committees,
     fundingInflows,
+    bosoStatement,
     logout,
     addPurchase,
     updatePurchaseStatus,
@@ -48,35 +49,28 @@ export function FinancePortalPage() {
               <span className="text-slate-600">·</span>
               <span className="font-mono text-xs text-[#EBD3A9]">BoilerBooks 3.0</span>
               <span className="text-slate-600">·</span>
-              <div className="inline-flex items-center gap-1.5 text-[11px] font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20 shadow-sm">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span>Cloudflare D1 Synced</span>
-              </div>
+              <span className="font-mono text-xs text-slate-400">Purdue IEEE</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white font-['Space_Grotesk']">
-              Purdue IEEE Finance Portal
+            <h1 className="text-2xl sm:text-3xl font-bold font-mono tracking-tight text-white flex items-center gap-3">
+              <span>IEEE Financial Operating System</span>
             </h1>
-            <p className="text-sm text-slate-400 max-w-2xl">
-              Serverless branch ledger connecting committee technical leads and branch treasurers to real-time budget allocations, purchase reimbursements, and TooCOOL dues directory.
+            <p className="text-sm text-slate-400">
+              Manage committee balance sheets, purchase requisitions, member dues, and Purdue COOL / BOSO reconciliation.
             </p>
           </div>
 
-          {/* Session Header Status */}
+          {/* Session Switcher Pill */}
           {session && (
-            <div className="flex items-center gap-3 bg-[#121214] p-3.5 rounded-xl border border-slate-700/80 shadow-lg">
-              <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 p-2.5 rounded-xl bg-[#121214] border border-slate-800 shadow-lg">
+              <div className="flex items-center gap-2.5">
                 <div
-                  className={`p-2 rounded-lg ${
+                  className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold font-mono text-xs ${
                     session.role === 'TREASURER'
-                      ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-                      : 'bg-sky-500/10 text-sky-400 border border-sky-500/20'
+                      ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                      : 'bg-sky-500/20 text-sky-400 border border-sky-500/30'
                   }`}
                 >
-                  {session.role === 'TREASURER' ? (
-                    <ShieldCheck className="w-5 h-5" />
-                  ) : (
-                    <Building className="w-5 h-5" />
-                  )}
+                  {session.role === 'TREASURER' ? 'TR' : session.committeeId.toUpperCase().slice(0, 2)}
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
@@ -131,6 +125,7 @@ export function FinancePortalPage() {
             memberDues={memberDues}
             committees={committees}
             fundingInflows={fundingInflows}
+            bosoStatement={bosoStatement}
             onUpdatePurchaseStatus={updatePurchaseStatus}
             onImportMemberDues={importMemberDues}
             onUpdateCommittee={updateCommittee}

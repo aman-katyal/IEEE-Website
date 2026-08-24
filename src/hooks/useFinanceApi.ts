@@ -16,6 +16,8 @@ import {
   type CommitteeInfo,
   type PurchaseStatus,
   type InflowSourceType,
+  type BosoAccountStatement,
+  OFFICIAL_BOSO_STATEMENT_SFAB_2026,
 } from '../app/components/finance/financeData';
 
 const API_BASE = '/api/finance';
@@ -26,6 +28,7 @@ export interface UseFinanceApiState {
   memberDues: MemberDuesRecord[];
   committees: CommitteeInfo[];
   fundingInflows: CommitteeFundingInflow[];
+  bosoStatement: BosoAccountStatement;
   isLoading: boolean;
   isSyncing: boolean;
   error: string | null;
@@ -77,6 +80,15 @@ export function useFinanceApi() {
     }
   });
 
+  const [bosoStatement, setBosoStatement] = useState<BosoAccountStatement>(() => {
+    try {
+      const stored = localStorage.getItem('boilerbooks_boso_statement');
+      return stored ? JSON.parse(stored) : OFFICIAL_BOSO_STATEMENT_SFAB_2026;
+    } catch {
+      return OFFICIAL_BOSO_STATEMENT_SFAB_2026;
+    }
+  });
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -115,6 +127,12 @@ export function useFinanceApi() {
       localStorage.setItem('boilerbooks_inflows', JSON.stringify(fundingInflows));
     } catch {}
   }, [fundingInflows]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('boilerbooks_boso_statement', JSON.stringify(bosoStatement));
+    } catch {}
+  }, [bosoStatement]);
 
   // Fetch initial data from Cloudflare API if available
   const refreshData = useCallback(async (fiscalYearId = 'fy25-26') => {
@@ -558,6 +576,8 @@ export function useFinanceApi() {
     memberDues,
     committees,
     fundingInflows,
+    bosoStatement,
+    setBosoStatement,
     isLoading,
     isSyncing,
     error,

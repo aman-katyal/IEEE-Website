@@ -235,5 +235,38 @@ describe('BoilerBooks D1 Schema & Migrations', () => {
         expect(comm?.dues_status).toBe('Active');
       }
     });
+
+    it('verifies that official BOSO Statement (SOA #04612) and 16 items are seeded in D1 database', () => {
+      const db = new DatabaseSync(':memory:');
+      const migrationContent = fs.readFileSync(migrationPath, 'utf8');
+      db.exec(migrationContent);
+
+      const statementStmt = db.prepare('SELECT * FROM boso_account_statements WHERE soa_number = ?');
+      const stmt = statementStmt.get('04612') as Record<string, unknown>;
+
+      expect(stmt).toBeDefined();
+      expect(stmt.account_name).toBe('INST ELECTR ELECTN ENGR SFAB');
+      expect(stmt.beginning_balance).toBe(11390.55);
+      expect(stmt.total_payments).toBe(1062.77);
+      expect(stmt.total_credits).toBe(563.13);
+      expect(stmt.total_debits).toBe(10145.53);
+      expect(stmt.total_transfers_out).toBe(745.38);
+      expect(stmt.ending_balance).toBe(0.00);
+
+      const itemsStmt = db.prepare('SELECT * FROM boso_statement_items WHERE soa_number = ? ORDER BY id ASC');
+      const items = itemsStmt.all('04612') as Record<string, unknown>[];
+
+      expect(items).toHaveLength(16);
+
+      const payments = items.filter((i) => i.item_type === 'PAYMENT');
+      const credits = items.filter((i) => i.item_type === 'CREDIT');
+      const debits = items.filter((i) => i.item_type === 'DEBIT');
+      const transfers = items.filter((i) => i.item_type === 'TRANSFER_OUT');
+
+      expect(payments).toHaveLength(8);
+      expect(credits).toHaveLength(3);
+      expect(debits).toHaveLength(4);
+      expect(transfers).toHaveLength(1);
+    });
   });
 });
