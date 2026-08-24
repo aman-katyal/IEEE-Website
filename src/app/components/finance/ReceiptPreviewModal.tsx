@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { formatCurrencyUSD } from '@/lib/formatters';
 import {
   Dialog,
   DialogContent,
@@ -81,7 +80,7 @@ export function ReceiptPreviewModal({
                   <span>{receiptFilename}</span>
                   {totalAmount !== undefined && (
                     <span className="text-sm font-mono font-normal text-amber-400 bg-amber-400/10 px-2.5 py-0.5 rounded-full border border-amber-400/20">
-                      {formatCurrencyUSD(totalAmount)}
+                      ${totalAmount.toFixed(2)}
                     </span>
                   )}
                 </DialogTitle>
