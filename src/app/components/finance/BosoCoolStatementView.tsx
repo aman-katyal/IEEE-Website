@@ -12,8 +12,6 @@ import {
   TableCell,
 } from '../ui/table';
 import {
-  Building2,
-  DollarSign,
   Download,
   Copy,
   Check,

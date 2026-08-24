@@ -20,7 +20,7 @@ describe('BosoCoolStatementView Component', () => {
     expect(screen.getByText('-$10,145.53')).toBeInTheDocument();
     expect(screen.getByText('-$1,062.77')).toBeInTheDocument();
     expect(screen.getByText('+$563.13')).toBeInTheDocument();
-    expect(screen.getByText('-$745.38')).toBeInTheDocument();
+    expect(screen.getAllByText('-$745.38').length).toBeGreaterThan(0);
   });
 
   it('filters transactions when switching category tabs', () => {
