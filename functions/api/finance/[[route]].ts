@@ -303,6 +303,66 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
       });
     }
 
+    // -------------------------------------------------------------
+    // 9. BOSO Account Statements: /api/finance/statements
+    // -------------------------------------------------------------
+    if (route === 'statements' && request.method === 'GET') {
+      const statements = await queryAll(db, 'SELECT * FROM boso_account_statements ORDER BY soa_number ASC');
+      return jsonResponse({ success: true, statements });
+    }
+
+    if (pathParts[0] === 'statements' && pathParts.length === 2 && request.method === 'GET') {
+      const soaNumber = pathParts[1];
+      const rows = await queryAll(db, 'SELECT * FROM boso_account_statements WHERE soa_number = ?', [soaNumber]);
+      if (rows.length === 0) {
+        return errorResponse(`BOSO Statement SOA #${soaNumber} not found.`, 404);
+      }
+      const statement = rows[0] as any;
+      const items = await queryAll(
+        db,
+        'SELECT * FROM boso_statement_items WHERE soa_number = ? ORDER BY transaction_date ASC',
+        [soaNumber]
+      );
+
+      const formatItem = (row: any) => ({
+        id: row.id,
+        type: row.item_type,
+        date: row.transaction_date,
+        docOrCheckNumber: row.doc_or_check_number,
+        refCode: row.ref_code,
+        refNumber: row.ref_number || undefined,
+        amount: Number(row.amount),
+        clearedDate: row.cleared_date,
+        expenseOrIncomeCode: row.expense_or_income_code,
+        payeeOrVendor: row.payee_or_vendor || undefined,
+      });
+
+      return jsonResponse({
+        success: true,
+        statement: {
+          accountName: statement.account_name,
+          soaNumber: statement.soa_number,
+          statementPeriod: statement.statement_period,
+          organization: statement.organization,
+          department: statement.department,
+          officeLocation: statement.office_location,
+          phone: statement.phone,
+          fax: statement.fax,
+          website: statement.website,
+          beginningBalance: Number(statement.beginning_balance),
+          totalPayments: Number(statement.total_payments),
+          totalCredits: Number(statement.total_credits),
+          totalDebits: Number(statement.total_debits),
+          totalTransfersOut: Number(statement.total_transfers_out),
+          endingBalance: Number(statement.ending_balance),
+          payments: items.filter((i: any) => i.item_type === 'PAYMENT').map(formatItem),
+          credits: items.filter((i: any) => i.item_type === 'CREDIT').map(formatItem),
+          debits: items.filter((i: any) => i.item_type === 'DEBIT').map(formatItem),
+          transfersOut: items.filter((i: any) => i.item_type === 'TRANSFER_OUT').map(formatItem),
+        },
+      });
+    }
+
     return errorResponse(`Route "/api/finance/${route}" not found.`, 404);
   } catch (err) {
     const errorMsg = err instanceof Error ? err.message : 'Internal Server Error';

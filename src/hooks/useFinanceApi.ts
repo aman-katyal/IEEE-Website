@@ -237,6 +237,15 @@ export function useFinanceApi() {
           }
         }
       }
+
+      // 5. Fetch BOSO Statement
+      const statementRes = await fetch(`${API_BASE}/statements/04612`);
+      if (statementRes.ok) {
+        const statementData = await statementRes.json();
+        if (statementData.statement) {
+          setBosoStatement(statementData.statement);
+        }
+      }
     } catch {
       // Offline fallback: keep using local state
     } finally {
