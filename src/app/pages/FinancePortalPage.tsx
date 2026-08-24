@@ -48,7 +48,7 @@ export function FinancePortalPage() {
               <span className="font-mono text-xs text-slate-400">Purdue IEEE</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold font-mono tracking-tight text-white flex items-center gap-3">
-              <span>IEEE Financial Operating System</span>
+              <span>Purdue IEEE Finance Portal</span>
             </h1>
             <p className="text-sm text-slate-400">
               Manage committee balance sheets, purchase requisitions, member dues, and Purdue COOL / BOSO reconciliation.
