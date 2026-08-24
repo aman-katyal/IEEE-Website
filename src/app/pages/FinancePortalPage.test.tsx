@@ -350,5 +350,27 @@ describe('FinancePortalPage Integration Suite', () => {
       expect(screen.getByText('BoilerBooks')).toBeInTheDocument();
       expect(screen.getByTestId('pin-input')).toBeInTheDocument();
     });
+
+    it('displays the official Purdue BOSO / COOL Statement tab with SOA #04612', async () => {
+      const user = userEvent.setup();
+      render(<FinancePortalPage />);
+
+      const treasurerTab = screen.getByRole('tab', { name: /Treasurer Master/i });
+      await user.click(treasurerTab);
+
+      const pinInput = screen.getByTestId('pin-input');
+      await user.type(pinInput, '1903');
+      await user.click(screen.getByRole('button', { name: /Enter Treasurer Portal/i }));
+
+      // Switch to BOSO Statement tab
+      const statementTab = screen.getByRole('tab', { name: /BOSO Statement/i });
+      await user.click(statementTab);
+
+      expect(screen.getByText('INST ELECTR ELECTN ENGR SFAB')).toBeInTheDocument();
+      expect(screen.getByText('SOA #04612')).toBeInTheDocument();
+      expect(screen.getByText('Underground Printing')).toBeInTheDocument();
+      expect(screen.getByText('EUROS')).toBeInTheDocument();
+      expect(screen.getByText('$11,390.55')).toBeInTheDocument();
+    });
   });
 });

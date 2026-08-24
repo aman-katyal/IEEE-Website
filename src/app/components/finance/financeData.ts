@@ -435,3 +435,252 @@ export const INITIAL_FUNDING_INFLOWS: CommitteeFundingInflow[] = [
     notes: 'Designated for general soldering stations and lab safety equipment overhaul.',
   },
 ];
+
+export interface BosoStatementItem {
+  id: string;
+  type: 'PAYMENT' | 'CREDIT' | 'DEBIT' | 'TRANSFER_OUT';
+  date: string;
+  docOrCheckNumber: string;
+  refCode: string;
+  refNumber?: string;
+  amount: number;
+  clearedDate: string;
+  expenseOrIncomeCode: string;
+  payeeOrVendor?: string;
+}
+
+export interface BosoAccountStatement {
+  accountName: string;
+  soaNumber: string;
+  statementPeriod: string;
+  organization: string;
+  department: string;
+  officeLocation: string;
+  phone: string;
+  fax: string;
+  website: string;
+  beginningBalance: number;
+  totalPayments: number;
+  totalCredits: number;
+  totalDebits: number;
+  totalTransfersOut: number;
+  endingBalance: number;
+  payments: BosoStatementItem[];
+  credits: BosoStatementItem[];
+  debits: BosoStatementItem[];
+  transfersOut: BosoStatementItem[];
+}
+
+export const OFFICIAL_BOSO_STATEMENT_SFAB_2026: BosoAccountStatement = {
+  accountName: 'INST ELECTR ELECTN ENGR SFAB',
+  soaNumber: '04612',
+  statementPeriod: 'From 6/1/2026 thru 8/31/2026',
+  organization: 'Purdue University W. Lafayette',
+  department: 'Business Office for Student Organizations (BOSO)',
+  officeLocation: 'Krach Leadership Center, (KRCH) RM 365, 1198 Third Street, West Lafayette, IN 47907',
+  phone: '(765) 494-6724',
+  fax: '(765) 496-2208',
+  website: 'https://www.purdue.edu/treasurer/finance/business',
+  beginningBalance: 11390.55,
+  totalPayments: 1062.77,
+  totalCredits: 563.13,
+  totalDebits: 10145.53,
+  totalTransfersOut: 745.38,
+  endingBalance: 0.00,
+  payments: [
+    {
+      id: 'PAY-001',
+      type: 'PAYMENT',
+      date: '06/01/26',
+      docOrCheckNumber: '372271',
+      refCode: 'U8583858',
+      refNumber: 'SFAB 25-26',
+      amount: 161.34,
+      clearedDate: '07/13/26',
+      expenseOrIncomeCode: 'Equipment $4999 or Less',
+      payeeOrVendor: 'Underground Printing',
+    },
+    {
+      id: 'PAY-002',
+      type: 'PAYMENT',
+      date: '06/11/26',
+      docOrCheckNumber: 'E331454',
+      refCode: 'Amazon',
+      amount: 7.48,
+      clearedDate: '07/13/26',
+      expenseOrIncomeCode: 'Equipment $4999 or Less',
+      payeeOrVendor: 'Brendon Hayes',
+    },
+    {
+      id: 'PAY-003',
+      type: 'PAYMENT',
+      date: '06/11/26',
+      docOrCheckNumber: 'E331454',
+      refCode: 'Amazon',
+      amount: 13.90,
+      clearedDate: '07/13/26',
+      expenseOrIncomeCode: 'Equipment $4999 or Less',
+      payeeOrVendor: 'Brendon Hayes',
+    },
+    {
+      id: 'PAY-004',
+      type: 'PAYMENT',
+      date: '06/11/26',
+      docOrCheckNumber: 'E331454',
+      refCode: 'eBay',
+      amount: 294.25,
+      clearedDate: '07/13/26',
+      expenseOrIncomeCode: 'Equipment $4999 or Less',
+      payeeOrVendor: 'Brendon Hayes',
+    },
+    {
+      id: 'PAY-005',
+      type: 'PAYMENT',
+      date: '06/11/26',
+      docOrCheckNumber: 'E331454',
+      refCode: 'Amazon',
+      amount: 9.62,
+      clearedDate: '07/13/26',
+      expenseOrIncomeCode: 'Equipment $4999 or Less',
+      payeeOrVendor: 'Brendon Hayes',
+    },
+    {
+      id: 'PAY-006',
+      type: 'PAYMENT',
+      date: '06/11/26',
+      docOrCheckNumber: 'E331454',
+      refCode: 'Amazon',
+      amount: 16.04,
+      clearedDate: '07/13/26',
+      expenseOrIncomeCode: 'Equipment $4999 or Less',
+      payeeOrVendor: 'Brendon Hayes',
+    },
+    {
+      id: 'PAY-007',
+      type: 'PAYMENT',
+      date: '06/26/26',
+      docOrCheckNumber: 'E331903',
+      refCode: 'Reissue E316419',
+      refNumber: '0626073',
+      amount: 304.61,
+      clearedDate: '07/13/26',
+      expenseOrIncomeCode: 'Equipment $4999 or Less',
+      payeeOrVendor: 'Tai Hsu',
+    },
+    {
+      id: 'PAY-008',
+      type: 'PAYMENT',
+      date: '06/26/26',
+      docOrCheckNumber: 'E331903',
+      refCode: 'Reissue E316419',
+      refNumber: '0626073',
+      amount: 255.53,
+      clearedDate: '07/13/26',
+      expenseOrIncomeCode: 'Supplies',
+      payeeOrVendor: 'Tai Hsu',
+    },
+  ],
+  credits: [
+    {
+      id: 'CRD-001',
+      type: 'CREDIT',
+      date: '06/03/26',
+      docOrCheckNumber: '0626015',
+      refCode: 'AMAZON.COM, INC',
+      refNumber: '120534537',
+      amount: 2.99,
+      clearedDate: '07/13/26',
+      expenseOrIncomeCode: 'Supplies',
+      payeeOrVendor: 'AMAZON.COM, INC',
+    },
+    {
+      id: 'CRD-002',
+      type: 'CREDIT',
+      date: '06/23/26',
+      docOrCheckNumber: '0626073',
+      refCode: 'Void E316419',
+      refNumber: 'T Hsu',
+      amount: 304.61,
+      clearedDate: '07/13/26',
+      expenseOrIncomeCode: 'Equipment $4999 or Less',
+      payeeOrVendor: 'T Hsu (Voided)',
+    },
+    {
+      id: 'CRD-003',
+      type: 'CREDIT',
+      date: '06/23/26',
+      docOrCheckNumber: '0626073',
+      refCode: 'Void E316419',
+      refNumber: 'T Hsu',
+      amount: 255.53,
+      clearedDate: '07/13/26',
+      expenseOrIncomeCode: 'Supplies',
+      payeeOrVendor: 'T Hsu (Voided)',
+    },
+  ],
+  debits: [
+    {
+      id: 'DEB-001',
+      type: 'DEBIT',
+      date: '06/03/26',
+      docOrCheckNumber: '0626014',
+      refCode: 'MCMASTER-CARR S',
+      refNumber: '120534538',
+      amount: 88.03,
+      clearedDate: '07/13/26',
+      expenseOrIncomeCode: 'Supplies',
+      payeeOrVendor: 'MCMASTER-CARR',
+    },
+    {
+      id: 'DEB-002',
+      type: 'DEBIT',
+      date: '06/03/26',
+      docOrCheckNumber: '0626014',
+      refCode: 'OSH Park',
+      refNumber: '120534538',
+      amount: 48.80,
+      clearedDate: '07/13/26',
+      expenseOrIncomeCode: 'Supplies',
+      payeeOrVendor: 'OSH Park',
+    },
+    {
+      id: 'DEB-003',
+      type: 'DEBIT',
+      date: '06/03/26',
+      docOrCheckNumber: '0626011',
+      refCode: 'EUROS',
+      refNumber: '1902614125',
+      amount: 8999.51,
+      clearedDate: '07/13/26',
+      expenseOrIncomeCode: 'Event Expense',
+      payeeOrVendor: 'EUROS Event Expense',
+    },
+    {
+      id: 'DEB-004',
+      type: 'DEBIT',
+      date: '06/03/26',
+      docOrCheckNumber: '0626017',
+      refCode: 'AMAZON.COM, INC',
+      refNumber: '120534538',
+      amount: 1009.19,
+      clearedDate: '07/13/26',
+      expenseOrIncomeCode: 'Supplies',
+      payeeOrVendor: 'AMAZON.COM, INC',
+    },
+  ],
+  transfersOut: [
+    {
+      id: 'TRF-001',
+      type: 'TRANSFER_OUT',
+      date: '07/10/26',
+      docOrCheckNumber: '26874',
+      refCode: 'Unused SFAB',
+      refNumber: 'FY 25-26',
+      amount: 745.38,
+      clearedDate: '08/17/26',
+      expenseOrIncomeCode: 'Transfer',
+      payeeOrVendor: 'Unused SFAB (Fiscal Year Closeout Sweep)',
+    },
+  ],
+};
+

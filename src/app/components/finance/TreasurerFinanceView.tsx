@@ -55,11 +55,14 @@ import {
   type CommitteeInfo,
   type CommitteeFundingInflow,
   type InflowSourceType,
+  type BosoAccountStatement,
   INITIAL_FUNDING_INFLOWS,
   REAL_COMMITTEES,
   type PurchaseStatus,
+  OFFICIAL_BOSO_STATEMENT_SFAB_2026,
 } from './financeData';
 import { ReceiptPreviewModal } from './ReceiptPreviewModal';
+import { BosoCoolStatementView } from './BosoCoolStatementView';
 
 export interface TreasurerFinanceViewProps {
   session: AuthSessionData;
@@ -67,6 +70,7 @@ export interface TreasurerFinanceViewProps {
   memberDues: MemberDuesRecord[];
   committees?: CommitteeInfo[];
   fundingInflows?: CommitteeFundingInflow[];
+  bosoStatement?: BosoAccountStatement;
   onUpdatePurchaseStatus: (
     id: string,
     status: PurchaseStatus,
@@ -86,6 +90,7 @@ export function TreasurerFinanceView({
   memberDues,
   committees,
   fundingInflows = INITIAL_FUNDING_INFLOWS,
+  bosoStatement = OFFICIAL_BOSO_STATEMENT_SFAB_2026,
   onUpdatePurchaseStatus,
   onImportMemberDues,
   onUpdateCommittee,
@@ -750,6 +755,12 @@ export function TreasurerFinanceView({
           >
             Dues Directory ({memberDues.length})
           </TabsTrigger>
+          <TabsTrigger
+            value="statement"
+            className="data-[state=active]:bg-sky-600 data-[state=active]:text-white text-slate-300 text-xs px-4"
+          >
+            BOSO Statement (SOA #04612)
+          </TabsTrigger>
         </TabsList>
 
         {/* Tab 1: Pending Approvals Queue */}
@@ -1277,6 +1288,11 @@ export function TreasurerFinanceView({
               </Table>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* Tab 5: Official BOSO / COOL Account Statement */}
+        <TabsContent value="statement" className="mt-4 space-y-4">
+          <BosoCoolStatementView statement={bosoStatement || OFFICIAL_BOSO_STATEMENT_SFAB_2026} />
         </TabsContent>
       </Tabs>
 
