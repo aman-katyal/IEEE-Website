@@ -2,11 +2,7 @@ import { FinanceAuthModal } from '../components/finance/FinanceAuthModal';
 import { CommitteeFinanceView } from '../components/finance/CommitteeFinanceView';
 import { TreasurerFinanceView } from '../components/finance/TreasurerFinanceView';
 import { useFinanceApi } from '@/hooks/useFinanceApi';
-import {
-  ShieldCheck,
-  Building,
-  ArrowRightLeft,
-} from 'lucide-react';
+import { ArrowRightLeft } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 
