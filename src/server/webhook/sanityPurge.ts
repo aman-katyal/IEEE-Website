@@ -1,7 +1,7 @@
 export async function handleSanityWebhook(
-  request: Request,
+  request: any,
   env: any,
-): Promise<Response> {
+): Promise<any> {
   const signature = request.headers.get("sanity-webhook-signature");
   if (!signature) {
     return new Response("Missing signature", { status: 401 });
