@@ -22,6 +22,9 @@ describe('BranchTelemetryCard', () => {
     expect(screen.getByText('Join Now →')).toBeInTheDocument();
     expect(screen.getByText('1,500+ Members')).toBeInTheDocument();
     expect(screen.getByText('Purdue University, West Lafayette')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Teams/i })).toHaveAttribute('href', '/committees');
+    expect(screen.getByRole('link', { name: /Events/i })).toHaveAttribute('href', '/calendar');
+    expect(screen.getByRole('link', { name: /Finance/i })).toHaveAttribute('href', '/finance');
   });
 });
 
