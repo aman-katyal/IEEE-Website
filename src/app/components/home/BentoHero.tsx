@@ -3,6 +3,7 @@ import { useTheme } from "next-themes";
 import { ChevronRight } from "lucide-react";
 import { useCommittees } from "../../../hooks/useSanityData";
 import { useHomePageData } from "../../../context/HomePageContext";
+import { useGoogleCalendarEvents } from "../../../hooks/useGoogleCalendarEvents";
 import { MagneticButton } from "../shared/MagneticButton";
 import { Skeleton } from "boneyard-js/react";
 import { CyclingStat, type StatItem } from "./hero/CyclingStat";
@@ -19,9 +20,11 @@ export function BentoHero() {
   }
   const { data: homeData, loading: homeLoading } = useHomePageData();
   const { committees, loading: committeesLoading } = useCommittees();
+  const { events: liveEvents, loading: eventsLoading } = useGoogleCalendarEvents();
 
   const isLight = theme === "light";
   const loading = homeLoading || committeesLoading;
+  const nextEvent = liveEvents && liveEvents.length > 0 ? liveEvents[0] : null;
 
   // Hero copy with standard fallbacks
   const heroTitle = homeData?.heroTitle || "Fostering technological innovation and excellence for the benefit of humanity.";
@@ -186,8 +189,11 @@ export function BentoHero() {
               </div>
             </div>
 
-            {/* 2. Branch Telemetry Console (1x1 span) */}
+            {/* 2. Upcoming Event & Callout Radar (1x1 span) */}
             <BranchTelemetryCard
+              event={nextEvent}
+              loading={eventsLoading}
+              upcomingCount={liveEvents?.length}
               hqLocation={hqLocation}
               committeesCount={committees?.length}
               discordMembers={discordMembers}

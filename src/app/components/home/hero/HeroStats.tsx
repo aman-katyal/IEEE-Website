@@ -1,164 +1,154 @@
 import { Link } from "react-router";
-import { ChevronRight, ArrowUpRight, MapPin, MessageSquare, Sparkles, Shield, Calendar, Users } from "lucide-react";
+import {
+  Calendar,
+  MapPin,
+  CalendarPlus,
+  Radio,
+  ArrowUpRight,
+  ChevronRight,
+  MessageSquare,
+} from "lucide-react";
+import type { CalendarEvent } from "../../../../hooks/useGoogleCalendarEvents";
+import { fmtDate, fmtTime } from "../../../../lib/dateUtils";
 
-export interface BranchTelemetryCardProps {
+export interface EventRadarCardProps {
+  event?: CalendarEvent | null;
+  loading?: boolean;
+  upcomingCount?: number;
+  // Backward-compatible props
   hqLocation?: string | null;
   committeesCount?: number;
   discordMembers?: string | null;
   campusLocation?: string | null;
 }
 
-export function BranchTelemetryCard({
-  hqLocation,
-  committeesCount,
-  discordMembers,
-  campusLocation,
-}: BranchTelemetryCardProps) {
+export function BranchTelemetryCard(props: EventRadarCardProps) {
+  const { event, loading, upcomingCount } = props;
+
   return (
     <div
-      className="glass-card group hover:border-sky-500/40 transition-all duration-300 relative overflow-hidden"
+      className="glass-card group hover:border-sky-500/40 transition-all duration-300 relative overflow-hidden flex flex-col justify-between"
       style={{
         padding: "20px",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
         fontFamily: "var(--font-mono)",
         background: "rgba(10, 10, 12, 0.45)",
       }}
+      data-testid="event-radar-card"
     >
-      {/* Subtle top gradient accent */}
-      <div className="absolute top-0 inset-x-0 h-0.5 bg-gradient-to-r from-sky-500/0 via-sky-500/40 to-sky-500/0 opacity-0 group-hover:opacity-100 transition-opacity" />
+      {/* Top ambient highlight beam */}
+      <div className="absolute top-0 inset-x-0 h-0.5 bg-gradient-to-r from-sky-500/0 via-sky-500/50 to-sky-500/0 opacity-0 group-hover:opacity-100 transition-opacity" />
 
       <div>
         {/* Header telemetry badge */}
-        <div className="flex items-center justify-between gap-2 mb-4">
-          <span
-            style={{
-              fontSize: "0.65rem",
-              letterSpacing: "0.15em",
-              color: "var(--electric-blue)",
-              textTransform: "uppercase",
-              fontWeight: 700,
-            }}
-          >
-            // Branch Overview
-          </span>
-          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-400/90 border border-sky-500/20">
-            EST. 1903
-          </span>
-        </div>
-
-        {/* Live Branch Attributes */}
-        <div className="flex flex-col gap-2.5 text-xs text-slate-300">
-          {hqLocation && (
-            <div className="flex items-center justify-between gap-3 group/item">
-              <span className="text-slate-400 shrink-0">HQ Location:</span>
-              <Link
-                to="/about"
-                className="text-slate-200 hover:text-sky-400 transition-colors flex items-center gap-1 font-medium text-right"
-                title="View EE 014 Lab & Office Hours"
-              >
-                <span>{hqLocation}</span>
-                <MapPin className="w-3 h-3 text-sky-400/70 group-hover/item:text-sky-400 transition-colors shrink-0" />
-              </Link>
-            </div>
-          )}
-
-          {typeof committeesCount === "number" && committeesCount > 0 && (
-            <div className="flex items-center justify-between gap-3 group/item">
-              <span className="text-slate-400 shrink-0">Active Projects:</span>
-              <Link
-                to="/committees"
-                className="text-slate-200 hover:text-sky-400 transition-colors flex items-center gap-1 font-medium"
-                title="Explore Technical Committees"
-              >
-                <span>{committeesCount} Committees</span>
-                <ArrowUpRight className="w-3 h-3 text-sky-400/70 group-hover/item:text-sky-400 transition-colors shrink-0" />
-              </Link>
-            </div>
-          )}
-
-          <div className="flex items-center justify-between gap-3">
-            <span className="text-slate-400 shrink-0">Membership:</span>
-            <Link
-              to="/join"
-              className="text-amber-400 hover:text-amber-300 font-semibold transition-colors flex items-center gap-1"
-              style={{ color: "var(--cyber-gold)" }}
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <div className="flex items-center gap-1.5">
+            <Radio className="w-3.5 h-3.5 text-sky-400 animate-pulse shrink-0" />
+            <span
+              style={{
+                fontSize: "0.65rem",
+                letterSpacing: "0.15em",
+                color: "var(--electric-blue)",
+                textTransform: "uppercase",
+                fontWeight: 700,
+              }}
             >
-              Join Now →
-            </Link>
+              // Callout & Event Radar
+            </span>
           </div>
+          <span className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-mono border border-emerald-500/20">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping shrink-0" />
+            <span>RADAR</span>
+          </span>
+        </div>
 
-          {discordMembers && (
-            <div className="flex items-center justify-between gap-3 group/item">
-              <span className="text-slate-400 shrink-0">Discord Hub:</span>
-              <a
-                href="https://discord.gg/purdueieee"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-amber-300 hover:text-amber-200 transition-colors flex items-center gap-1 font-medium"
-                style={{ color: "var(--cyber-gold)" }}
-                title="Join Purdue IEEE Discord"
-              >
-                <span>{discordMembers}</span>
-                <MessageSquare className="w-3 h-3 text-amber-400/70 group-hover/item:text-amber-300 transition-colors shrink-0" />
-              </a>
+        {/* Dynamic Event Content */}
+        {loading ? (
+          <div className="py-4 space-y-2 animate-pulse">
+            <div className="h-3 bg-slate-800 rounded w-1/3" />
+            <div className="h-4 bg-slate-700 rounded w-4/5" />
+            <div className="h-3 bg-slate-800 rounded w-1/2" />
+          </div>
+        ) : event ? (
+          <div className="space-y-2.5">
+            {/* Date and Time Header */}
+            <div className="flex items-center gap-2 text-amber-400 font-semibold text-xs">
+              <Calendar className="w-3.5 h-3.5 shrink-0" />
+              <span>
+                {fmtDate(event.start)} · {event.isAllDay ? "All Day" : fmtTime(event.start, event.end)}
+              </span>
             </div>
-          )}
-        </div>
 
-        {/* Fast Action Shortcuts */}
-        <div className="mt-4 pt-3 border-t border-slate-800/80 grid grid-cols-3 gap-1.5 text-[11px]">
-          <Link
-            to="/committees"
-            className="px-2 py-1.5 rounded bg-slate-900/60 hover:bg-sky-500/10 border border-slate-800 hover:border-sky-500/30 text-slate-300 hover:text-sky-300 transition-all text-center flex items-center justify-center gap-1"
-          >
-            <Users className="w-3 h-3 text-sky-400 shrink-0" />
-            <span>Teams</span>
-          </Link>
-          <Link
-            to="/calendar"
-            className="px-2 py-1.5 rounded bg-slate-900/60 hover:bg-amber-500/10 border border-slate-800 hover:border-amber-500/30 text-slate-300 hover:text-amber-300 transition-all text-center flex items-center justify-center gap-1"
-          >
-            <Calendar className="w-3 h-3 text-amber-400 shrink-0" />
-            <span>Events</span>
-          </Link>
-          <Link
-            to="/finance"
-            className="px-2 py-1.5 rounded bg-slate-900/60 hover:bg-emerald-500/10 border border-slate-800 hover:border-emerald-500/30 text-slate-300 hover:text-emerald-300 transition-all text-center flex items-center justify-center gap-1"
-            title="BoilerBooks Financial Portal"
-          >
-            <Shield className="w-3 h-3 text-emerald-400 shrink-0" />
-            <span>Finance</span>
-          </Link>
-        </div>
+            {/* Event Title */}
+            <h3
+              className="text-sm font-bold text-white leading-snug line-clamp-2 hover:text-sky-300 transition-colors"
+              style={{ fontFamily: "var(--font-headline)" }}
+            >
+              {event.title}
+            </h3>
+
+            {/* Location Pill */}
+            {event.location && (
+              <div className="flex items-center gap-1.5 text-xs text-slate-300">
+                <MapPin className="w-3 h-3 text-sky-400 shrink-0" />
+                <span className="truncate">{event.location}</span>
+              </div>
+            )}
+          </div>
+        ) : (
+          /* Default Radar Display when no single event in active feed */
+          <div className="space-y-2">
+            <div className="text-xs font-semibold text-amber-400 flex items-center gap-1.5">
+              <Calendar className="w-3.5 h-3.5 shrink-0" />
+              <span>Upcoming Callouts & Workshops</span>
+            </div>
+            <p className="text-xs text-slate-300 leading-relaxed line-clamp-2" style={{ fontFamily: "var(--font-body)" }}>
+              General branch callouts, technical committee workshops, and project sessions in EE 014 & EE 129.
+            </p>
+            {props.hqLocation && (
+              <div className="flex items-center gap-1 text-[11px] text-slate-400">
+                <MapPin className="w-3 h-3 text-sky-400 shrink-0" />
+                <span>HQ: {props.hqLocation}</span>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
-      {campusLocation && (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            borderTop: "1px solid var(--glass-border)",
-            paddingTop: "12px",
-            marginTop: "12px",
-          }}
+      {/* Action Footer */}
+      <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
+        {event?.addToCalendarUrl ? (
+          <a
+            href={event.addToCalendarUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-2.5 py-1.5 rounded bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 text-sky-300 hover:text-sky-200 text-xs font-semibold transition-all flex items-center gap-1.5"
+            title="Add this event to Google Calendar"
+          >
+            <CalendarPlus className="w-3.5 h-3.5 shrink-0" />
+            <span>Add to Cal</span>
+          </a>
+        ) : (
+          <a
+            href="https://discord.gg/purdueieee"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-2.5 py-1.5 rounded bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 text-sky-300 hover:text-sky-200 text-xs font-semibold transition-all flex items-center gap-1.5"
+            title="Join Discord for event notifications"
+          >
+            <MessageSquare className="w-3.5 h-3.5 shrink-0" />
+            <span>Alerts</span>
+          </a>
+        )}
+
+        <Link
+          to="/calendar"
+          className="text-xs text-slate-300 hover:text-amber-300 font-semibold transition-colors flex items-center gap-1"
+          style={{ color: "var(--cyber-gold)" }}
         >
-          <div
-            style={{
-              width: "6px",
-              height: "6px",
-              borderRadius: "50%",
-              background: "#00C853",
-              animation: "pulse-dot 2s ease-in-out infinite",
-            }}
-          />
-          <span style={{ fontSize: "0.55rem", color: "var(--text-muted)", letterSpacing: "0.08em" }}>
-            {campusLocation}
-          </span>
-        </div>
-      )}
+          <span>{typeof upcomingCount === "number" && upcomingCount > 0 ? `${upcomingCount} Events` : "All Events"}</span>
+          <ArrowUpRight className="w-3.5 h-3.5 shrink-0" />
+        </Link>
+      </div>
     </div>
   );
 }
