@@ -113,9 +113,9 @@ describe('FinancePortalPage Integration Suite', () => {
       expect(screen.getByTestId('dues-search-input')).toBeInTheDocument();
 
       const duesInput = screen.getByTestId('dues-search-input');
-      fireEvent.change(duesInput, { target: { value: 'Rivera' } });
+      fireEvent.change(duesInput, { target: { value: 'Leviste' } });
 
-      const emailMatches = screen.getAllByText('arivera@purdue.edu');
+      const emailMatches = screen.getAllByText('ryan.leviste@purdue.edu');
       expect(emailMatches.length).toBeGreaterThanOrEqual(1);
       expect(screen.getByText(/DUES PAID/i)).toBeInTheDocument();
     });

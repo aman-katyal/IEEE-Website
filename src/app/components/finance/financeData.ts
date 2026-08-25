@@ -51,6 +51,8 @@ export interface MemberDuesRecord {
   paymentMethod: 'TooCOOL' | 'Cash' | 'Card';
   paymentDate: string;
   semester: string;
+  fiscalYear?: string;
+  transactionId?: string;
   status: 'Active' | 'Inactive';
 }
 
