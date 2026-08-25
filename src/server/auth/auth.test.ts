@@ -17,6 +17,9 @@ import {
 import {
   authenticateRequest,
   requireRole,
+  parseCookies,
+  extractTokenFromRequest,
+  createSessionCookie,
   clearSessionCookie,
   SESSION_COOKIE_NAME,
 } from './middleware';
