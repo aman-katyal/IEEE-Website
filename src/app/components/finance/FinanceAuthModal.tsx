@@ -245,7 +245,7 @@ export function FinanceAuthModal({
                   type="button"
                   onClick={() => setShowPin(!showPin)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 focus:outline-none"
-                  aria-label={showPin ? 'Hide Passcode' : 'Show Passcode'}
+                  aria-label={showPin ? 'Hide PIN' : 'Show PIN'}
                 >
                   {showPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
