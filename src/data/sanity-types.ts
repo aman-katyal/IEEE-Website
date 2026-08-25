@@ -28,6 +28,14 @@ export interface StatItem {
   prefix?: string;
 }
 
+export interface AlumniCompany {
+  _key?: string;
+  name: string;
+  domain?: string;
+  roleOrField?: string;
+  url?: string;
+}
+
 export interface HomePageData {
   _id?: string;
   heroTitle?: string;
@@ -40,6 +48,8 @@ export interface HomePageData {
   hqLocation?: string;
   discordMembers?: string;
   campusLocation?: string;
+  alumniCompanies?: AlumniCompany[];
+  alumniHighlightText?: string;
 }
 
 export interface AboutSectionData {

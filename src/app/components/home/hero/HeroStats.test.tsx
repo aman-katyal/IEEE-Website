@@ -3,60 +3,47 @@ import { describe, it, expect } from 'vitest';
 import { MemoryRouter } from 'react-router';
 import { BranchTelemetryCard, HeroAboutCard } from './HeroStats';
 
-describe('BranchTelemetryCard (Callout & Event Radar)', () => {
-  const mockEvent = {
-    id: 'evt-1',
-    title: 'IEEE Fall 2026 General Callout',
-    description: 'Come learn about our 9 technical committees and open project leadership roles!',
-    location: 'EE 129 / WALC 1055',
-    start: new Date('2026-09-03T18:30:00-04:00'),
-    end: new Date('2026-09-03T20:00:00-04:00'),
-    isAllDay: false,
-    addToCalendarUrl: 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=IEEE+Callout',
-    htmlLink: 'https://calendar.google.com/event?eid=123',
-  };
+describe('BranchTelemetryCard (Where Our Engineers Go)', () => {
+  it('renders custom alumni companies provided from Sanity CMS', () => {
+    const customCompanies = [
+      { name: 'NASA JPL', domain: 'jpl.nasa.gov', roleOrField: 'Space Robotics' },
+      { name: 'Tesla Motors', domain: 'tesla.com', roleOrField: 'Vehicle Autonomy' },
+      { name: 'Qualcomm', domain: 'qualcomm.com', roleOrField: 'Cellular RF' },
+    ];
 
-  it('renders dynamic live event telemetry with Add to Cal link', () => {
     render(
       <MemoryRouter>
         <BranchTelemetryCard
-          event={mockEvent}
-          upcomingCount={5}
-          hqLocation="EE 014"
+          companies={customCompanies}
+          highlightText="Top Robotics & Cellular Destinations"
         />
       </MemoryRouter>
     );
 
-    expect(screen.getByText('// Callout & Event Radar')).toBeInTheDocument();
-    expect(screen.getByText('RADAR')).toBeInTheDocument();
-    expect(screen.getByText('IEEE Fall 2026 General Callout')).toBeInTheDocument();
-    expect(screen.getByText('EE 129 / WALC 1055')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /Add to Cal/i })).toHaveAttribute(
-      'href',
-      'https://calendar.google.com/calendar/render?action=TEMPLATE&text=IEEE+Callout'
-    );
-    expect(screen.getByRole('link', { name: /5 Events/i })).toHaveAttribute('href', '/calendar');
+    expect(screen.getByText('// Where Our Engineers Go')).toBeInTheDocument();
+    expect(screen.getByText('TOP DESTINATIONS')).toBeInTheDocument();
+    expect(screen.getByText('NASA JPL')).toBeInTheDocument();
+    expect(screen.getByText('Tesla Motors')).toBeInTheDocument();
+    expect(screen.getByText('Qualcomm')).toBeInTheDocument();
+    expect(screen.getByText('Top Robotics & Cellular Destinations')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /^Partners$/i })).toHaveAttribute('href', '/partners');
+    expect(screen.getByRole('link', { name: /View All Partners/i })).toHaveAttribute('href', '/partners');
   });
 
-  it('renders fallback radar view when no events are currently loaded', () => {
+  it('renders default high-profile engineering destinations when CMS list is empty', () => {
     render(
       <MemoryRouter>
-        <BranchTelemetryCard
-          event={null}
-          upcomingCount={0}
-          hqLocation="EE 014"
-        />
+        <BranchTelemetryCard companies={[]} />
       </MemoryRouter>
     );
 
-    expect(screen.getByText('// Callout & Event Radar')).toBeInTheDocument();
-    expect(screen.getByText('Upcoming Callouts & Workshops')).toBeInTheDocument();
-    expect(screen.getByText(/HQ: EE 014/i)).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /Alerts/i })).toHaveAttribute(
-      'href',
-      'https://discord.gg/purdueieee'
-    );
-    expect(screen.getByRole('link', { name: /All Events/i })).toHaveAttribute('href', '/calendar');
+    expect(screen.getByText('// Where Our Engineers Go')).toBeInTheDocument();
+    expect(screen.getByText('TOP DESTINATIONS')).toBeInTheDocument();
+    expect(screen.getByText('SpaceX')).toBeInTheDocument();
+    expect(screen.getByText('Apple')).toBeInTheDocument();
+    expect(screen.getByText('Tesla')).toBeInTheDocument();
+    expect(screen.getByText('Texas Instruments')).toBeInTheDocument();
+    expect(screen.getByText('Top Tech, Aerospace & Semiconductor Destinations')).toBeInTheDocument();
   });
 });
 

@@ -92,6 +92,39 @@ export const homePage = defineType({
       ],
     }),
 
+    defineField({
+      name: 'alumniCompanies',
+      title: 'Where Our Engineers Go (Companies / Employers)',
+      type: 'array',
+      group: 'hero',
+      description: 'List of top companies, employers, and organizations where Purdue IEEE members work and intern.',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            { name: 'name', title: 'Company Name', type: 'string', validation: (Rule) => Rule.required() },
+            { name: 'domain', title: 'Domain (for logo lookup, e.g. spacex.com, apple.com)', type: 'string' },
+            { name: 'roleOrField', title: 'Focus / Industry (e.g. Aerospace, Silicon, AI)', type: 'string' },
+            { name: 'url', title: 'Careers or Company Website URL', type: 'url' },
+          ],
+          preview: {
+            select: {
+              title: 'name',
+              subtitle: 'roleOrField',
+            },
+          },
+        },
+      ],
+    }),
+    defineField({
+      name: 'alumniHighlightText',
+      title: 'Alumni Card Tagline',
+      type: 'string',
+      group: 'hero',
+      description: 'Tagline displayed on the hero card (e.g., Top Tech, Aerospace & Semiconductor Destinations).',
+      initialValue: 'Top Tech, Aerospace & Semiconductor Destinations',
+    }),
+
     // --- SYSTEM GROUP ---
     defineField({
       name: 'hqLocation',
