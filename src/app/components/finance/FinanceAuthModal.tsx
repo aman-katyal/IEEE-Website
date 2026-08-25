@@ -226,7 +226,7 @@ export function FinanceAuthModal({
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <Label htmlFor="pin-input" className="text-xs font-medium text-slate-300">
-                  {role === 'TREASURER' ? 'Treasurer Master PIN' : 'Committee PIN Passcode'}
+                  {role === 'TREASURER' ? 'Treasurer Master Passcode' : 'Committee Access Passcode'}
                 </Label>
               </div>
 
@@ -237,7 +237,7 @@ export function FinanceAuthModal({
                   type={showPin ? 'text' : 'password'}
                   value={pin}
                   onChange={(e) => setPin(e.target.value)}
-                  placeholder={role === 'TREASURER' ? 'Enter master PIN...' : 'Enter committee PIN...'}
+                  placeholder={role === 'TREASURER' ? 'Enter master passcode...' : 'Enter committee passcode...'}
                   className="bg-slate-900 border-slate-700 text-slate-100 pr-10 h-10 tracking-widest font-mono focus:border-sky-500"
                   autoComplete="current-password"
                 />
@@ -245,7 +245,7 @@ export function FinanceAuthModal({
                   type="button"
                   onClick={() => setShowPin(!showPin)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 focus:outline-none"
-                  aria-label={showPin ? 'Hide PIN' : 'Show PIN'}
+                  aria-label={showPin ? 'Hide Passcode' : 'Show Passcode'}
                 >
                   {showPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>

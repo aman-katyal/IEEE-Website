@@ -21,8 +21,8 @@ import {
   extractTokenFromRequest,
   createSessionCookie,
   clearSessionCookie,
-  SESSION_COOKIE_NAME,
-} from './middleware';
+import { DatabaseSync } from 'node:sqlite';
+import { verifyPin as verifyPinService, updateCommitteePasscode } from './service';
 import type { AuthRole, AuthSession } from './types';
 
 describe('BoilerBooks Auth: Crypto & PIN Verification', () => {
@@ -351,5 +351,56 @@ describe('BoilerBooks Auth: Middleware & RBAC', () => {
     // Null session blocked from all actions
     expect(requireRole(null, treasurerOnlyRoles)).toBe(false);
     expect(requireRole(null, anyCommitteeRoles)).toBe(false);
+  });
+
+  describe('BoilerBooks Auth Service & Passcode Verification', () => {
+    it('authenticates valid committee and treasurer passcodes from database', async () => {
+      const db = new DatabaseSync(':memory:');
+      db.exec(`
+        CREATE TABLE finance_committees (
+          id TEXT PRIMARY KEY,
+          name TEXT NOT NULL,
+          passcode_hash TEXT NOT NULL,
+          is_admin INTEGER NOT NULL DEFAULT 0,
+          contact_email TEXT
+        );
+      `);
+
+      const treasurerHash = await hashPin('TR-872R$565-3ED', 1000);
+      const rovHash = await hashPin('ROV-CVJL$897-GLV', 1000);
+
+      db.exec(`
+        INSERT INTO finance_committees (id, name, passcode_hash, is_admin, contact_email)
+        VALUES
+          ('treasurer', 'Executive Treasurer', '${treasurerHash}', 1, 'treasurer@purdueieee.org'),
+          ('rov', 'Remotely Operated underwater Vehicle (ROV)', '${rovHash}', 0, 'rov@purdueieee.org');
+      `);
+
+      // Verify valid treasurer password
+      const trResult = await verifyPinService(db, 'TR-872R$565-3ED', 'treasurer');
+      expect(trResult.authenticated).toBe(true);
+      expect(trResult.session?.role).toBe('TREASURER');
+      expect(trResult.session?.email).toBe('treasurer@purdueieee.org');
+
+      // Verify valid committee lead password
+      const rovResult = await verifyPinService(db, 'ROV-CVJL$897-GLV', 'committee', 'rov');
+      expect(rovResult.authenticated).toBe(true);
+      expect(rovResult.session?.role).toBe('COMMITTEE_LEAD');
+      expect(rovResult.session?.committeeId).toBe('rov');
+
+      // Reject invalid password
+      const badResult = await verifyPinService(db, 'WrongPass123!', 'treasurer');
+      expect(badResult.authenticated).toBe(false);
+      expect(badResult.message).toContain('Invalid authentication passcode');
+
+      // Test updating committee passcode
+      const updated = await updateCommitteePasscode(db, 'rov', 'ROV-NewSecretPass#99');
+      expect(updated).toBe(true);
+
+      const newPassResult = await verifyPinService(db, 'ROV-NewSecretPass#99', 'committee', 'rov');
+      expect(newPassResult.authenticated).toBe(true);
+
+      db.close();
+    });
   });
 });
