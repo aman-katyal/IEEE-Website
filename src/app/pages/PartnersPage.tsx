@@ -1,7 +1,23 @@
 import { useState, useMemo } from "react";
 import { motion } from "motion/react";
 import { useTheme } from "next-themes";
-import { Mail, Award, Rocket, Shield, Cpu, Download } from "lucide-react";
+import {
+  Mail,
+  Award,
+  Rocket,
+  Shield,
+  Cpu,
+  Download,
+  Check,
+} from "lucide-react";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from "../components/ui/table";
 import {
   usePartners,
   useSiteSettings,
@@ -188,6 +204,215 @@ export function PartnersPage() {
         </div>
       </section>
 
+      {/* Interactive Tier Comparison Matrix */}
+      {showCorporateTiers && (
+        <section style={{ padding: "64px 0 0" }}>
+          <div
+            style={{
+              maxWidth: "1280px",
+              margin: "0 auto",
+              padding: "0 clamp(16px, 4vw, 32px)",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "16px",
+                marginBottom: "32px",
+              }}
+            >
+              <h2
+                className="text-heading-2"
+                style={{
+                  fontFamily: "var(--font-headline)",
+                  color: "var(--text-primary)",
+                  letterSpacing: "0.05em",
+                }}
+              >
+                Corporate Partnership Tiers
+              </h2>
+              <div
+                style={{
+                  flex: 1,
+                  height: "1px",
+                  background:
+                    "linear-gradient(90deg, var(--glass-border), transparent)",
+                }}
+              />
+            </div>
+
+            <div
+              className="glass-card"
+              style={{ padding: "16px", overflowX: "auto" }}
+            >
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[300px]">Benefits</TableHead>
+                    <TableHead className="text-center">Bronze</TableHead>
+                    <TableHead className="text-center">Silver</TableHead>
+                    <TableHead className="text-center">Gold</TableHead>
+                    <TableHead className="text-center">Platinum</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow>
+                    <TableCell className="font-medium">
+                      Resume Book access
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Check
+                        size={18}
+                        className="mx-auto text-green-500"
+                        aria-label="Included"
+                      />
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Check
+                        size={18}
+                        className="mx-auto text-green-500"
+                        aria-label="Included"
+                      />
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Check
+                        size={18}
+                        className="mx-auto text-green-500"
+                        aria-label="Included"
+                      />
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Check
+                        size={18}
+                        className="mx-auto text-green-500"
+                        aria-label="Included"
+                      />
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">
+                      Callout banner placement
+                    </TableCell>
+                    <TableCell className="text-center"></TableCell>
+                    <TableCell className="text-center">
+                      <Check
+                        size={18}
+                        className="mx-auto text-green-500"
+                        aria-label="Included"
+                      />
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Check
+                        size={18}
+                        className="mx-auto text-green-500"
+                        aria-label="Included"
+                      />
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Check
+                        size={18}
+                        className="mx-auto text-green-500"
+                        aria-label="Included"
+                      />
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">
+                      Dedicated tech talks
+                    </TableCell>
+                    <TableCell className="text-center"></TableCell>
+                    <TableCell className="text-center"></TableCell>
+                    <TableCell className="text-center">
+                      <Check
+                        size={18}
+                        className="mx-auto text-green-500"
+                        aria-label="Included"
+                      />
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Check
+                        size={18}
+                        className="mx-auto text-green-500"
+                        aria-label="Included"
+                      />
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">Lab branding</TableCell>
+                    <TableCell className="text-center"></TableCell>
+                    <TableCell className="text-center"></TableCell>
+                    <TableCell className="text-center">
+                      <Check
+                        size={18}
+                        className="mx-auto text-green-500"
+                        aria-label="Included"
+                      />
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Check
+                        size={18}
+                        className="mx-auto text-green-500"
+                        aria-label="Included"
+                      />
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">
+                      Hackathon sponsorship
+                    </TableCell>
+                    <TableCell className="text-center"></TableCell>
+                    <TableCell className="text-center"></TableCell>
+                    <TableCell className="text-center"></TableCell>
+                    <TableCell className="text-center">
+                      <Check
+                        size={18}
+                        className="mx-auto text-green-500"
+                        aria-label="Included"
+                      />
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </div>
+
+            <div
+              style={{
+                marginTop: "32px",
+                display: "flex",
+                gap: "16px",
+                flexWrap: "wrap",
+              }}
+            >
+              <a
+                href="mailto:industry@purdueieee.org"
+                className="btn-primary"
+                style={{ textDecoration: "none" }}
+              >
+                Become a Corporate Partner
+              </a>
+              {settings?.partnersProspectusUrl && (
+                <a
+                  href={settings.partnersProspectusUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-ghost"
+                  style={{
+                    textDecoration: "none",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                  }}
+                >
+                  <Download size={18} />
+                  Download Sponsorship Packet PDF
+                </a>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Partners Grid Section */}
       <section style={{ padding: "64px 0 128px" }}>
         <div
@@ -240,14 +465,14 @@ export function PartnersPage() {
                   margin: 0,
                 }}
               >
-                Gold Partner status is awarded by IEEE to student branches
-                that demonstrate exceptional technical activity, community
-                impact, and organizational excellence. Purdue IEEE has earned
-                this recognition through consistent leadership in engineering
+                Gold Partner status is awarded by IEEE to student branches that
+                demonstrate exceptional technical activity, community impact,
+                and organizational excellence. Purdue IEEE has earned this
+                recognition through consistent leadership in engineering
                 education, record member engagement, and nationally recognized
                 technical projects. Gold Partners receive premium placement at
-                our recruiting events and direct access to our most
-                accomplished members.
+                our recruiting events and direct access to our most accomplished
+                members.
               </p>
             </div>
           </div>
@@ -311,7 +536,10 @@ export function PartnersPage() {
                       marginBottom: "32px",
                     }}
                   >
-                    <Shield style={{ color: "var(--text-secondary)" }} size={24} />
+                    <Shield
+                      style={{ color: "var(--text-secondary)" }}
+                      size={24}
+                    />
                     <h2
                       style={{
                         fontFamily: "var(--font-headline)",
@@ -513,7 +741,9 @@ function PartnerCard({
   };
 
   const showLogo = logoSrc && !logoError;
-  const destinationUrl = partner.websiteUrl || (partner.domain ? `https://${partner.domain}` : undefined);
+  const destinationUrl =
+    partner.websiteUrl ||
+    (partner.domain ? `https://${partner.domain}` : undefined);
 
   const cardContent = (
     <motion.div
