@@ -30,11 +30,16 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
     ],
   };
 
+  const safeJsonLd = JSON.stringify(jsonLd)
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/&/g, "\\u0026");
+
   return (
     <nav aria-label="Breadcrumb" className="mb-6">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd }}
       />
       <ol className="flex items-center flex-wrap gap-2 text-xs font-[family-name:var(--font-mono)] text-[var(--text-muted)]">
         <li className="inline-flex items-center">

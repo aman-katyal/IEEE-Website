@@ -17,3 +17,7 @@
 **Vulnerability:** Found issue describing missing rel="noopener noreferrer" for target="_blank" links.
 **Learning:** Sometimes reported security vulnerabilities may have already been fixed in a recent PR or by another team member. In this case, `rel="noopener noreferrer"` was already present.
 **Prevention:** Always verify the codebase state directly before applying security patches to prevent unnecessary churn or overwriting good fixes.
+## 2024-10-27 - Cross-Site Scripting (XSS) in JSON-LD Injection
+**Vulnerability:** Unsanitized dynamic user input (breadcrumb labels/URLs) passed to `JSON.stringify` and injected directly into a `<script>` tag via `dangerouslySetInnerHTML`.
+**Learning:** `JSON.stringify` does not escape HTML-sensitive characters (like `<`). When injected directly into a script tag without escaping, an attacker can prematurely close the `</script>` tag and execute arbitrary JavaScript.
+**Prevention:** Always sanitize serialized JSON before injecting it into HTML by replacing HTML-sensitive characters (`<`, `>`, `&`) with their unicode equivalents (`\u003c`, `\u003e`, `\u0026`).
