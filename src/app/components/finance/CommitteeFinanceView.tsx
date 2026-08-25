@@ -72,6 +72,7 @@ export function CommitteeFinanceView({
   memberDues,
   fundingInflows = INITIAL_FUNDING_INFLOWS,
   onAddPurchase,
+  onRecordCashDues,
   onLogout,
 }: CommitteeFinanceViewProps) {
   const committee = useMemo(() => {

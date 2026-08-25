@@ -435,7 +435,7 @@ export function useFinanceApi() {
       paymentDate: record.paymentDate || new Date().toISOString().split('T')[0],
       semester,
       fiscalYear: '2025-2026',
-      status: 'PAID',
+      status: 'Active',
     };
 
     setMemberDues((prev) => [newRecord, ...prev]);

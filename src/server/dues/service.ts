@@ -455,6 +455,8 @@ export async function importMemberDues(
     committeeId: 'treasurer',
     name: 'System Importer',
     isAdmin: true,
+    iat: Math.floor(Date.now() / 1000),
+    exp: Math.floor(Date.now() / 1000) + 3600,
   }
 ): Promise<ImportDuesResult> {
   const parsed = parseDuesFile(fileContent, fiscalYearId, semester);

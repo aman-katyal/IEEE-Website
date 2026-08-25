@@ -63,7 +63,7 @@ import {
 } from './financeData';
 import { ReceiptPreviewModal } from './ReceiptPreviewModal';
 import { BosoCoolStatementView } from './BosoCoolStatementView';
-import { parseDuesFile } from '../../server/dues/parser';
+import { parseDuesFile } from '@/server/dues/parser';
 
 export interface TreasurerFinanceViewProps {
   session: AuthSessionData;
@@ -550,7 +550,7 @@ export function TreasurerFinanceView({
       const uniqueNewRecords: MemberDuesRecord[] = [];
       let skipped = 0;
 
-      parsed.validRecords.forEach((r, idx) => {
+      parsed.validRecords.forEach((r: any, idx: number) => {
         const key = `${r.purdueEmail.toLowerCase()}::${r.semester}`;
         if (existingKeys.has(key)) {
           skipped++;
@@ -564,7 +564,7 @@ export function TreasurerFinanceView({
             paymentDate: r.paymentDate,
             semester: r.semester,
             fiscalYear: '2025-2026',
-            status: 'PAID',
+            status: 'Active',
           });
         }
       });

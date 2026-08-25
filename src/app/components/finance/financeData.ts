@@ -315,7 +315,7 @@ export const INITIAL_MEMBER_DUES: MemberDuesRecord[] = [
     paymentDate: '2026-03-05',
     semester: 'Spring 2026',
     fiscalYear: '2025-2026',
-    status: 'PAID',
+    status: 'Active',
   },
   {
     id: 'DUES-179387',
@@ -326,7 +326,7 @@ export const INITIAL_MEMBER_DUES: MemberDuesRecord[] = [
     paymentDate: '2026-03-05',
     semester: 'Spring 2026',
     fiscalYear: '2025-2026',
-    status: 'PAID',
+    status: 'Active',
   },
   {
     id: 'DUES-178527',
@@ -337,7 +337,7 @@ export const INITIAL_MEMBER_DUES: MemberDuesRecord[] = [
     paymentDate: '2026-02-27',
     semester: 'Spring 2026',
     fiscalYear: '2025-2026',
-    status: 'PAID',
+    status: 'Active',
   },
   {
     id: 'DUES-178327',
@@ -348,7 +348,7 @@ export const INITIAL_MEMBER_DUES: MemberDuesRecord[] = [
     paymentDate: '2026-02-26',
     semester: 'Spring 2026',
     fiscalYear: '2025-2026',
-    status: 'PAID',
+    status: 'Active',
   },
   {
     id: 'DUES-176808',
@@ -359,7 +359,7 @@ export const INITIAL_MEMBER_DUES: MemberDuesRecord[] = [
     paymentDate: '2026-02-14',
     semester: 'Spring 2026',
     fiscalYear: '2025-2026',
-    status: 'PAID',
+    status: 'Active',
   },
   {
     id: 'DUES-176716',
@@ -370,7 +370,7 @@ export const INITIAL_MEMBER_DUES: MemberDuesRecord[] = [
     paymentDate: '2026-02-13',
     semester: 'Spring 2026',
     fiscalYear: '2025-2026',
-    status: 'PAID',
+    status: 'Active',
   },
   {
     id: 'DUES-176574',
@@ -381,7 +381,7 @@ export const INITIAL_MEMBER_DUES: MemberDuesRecord[] = [
     paymentDate: '2026-02-12',
     semester: 'Spring 2026',
     fiscalYear: '2025-2026',
-    status: 'PAID',
+    status: 'Active',
   },
   {
     id: 'DUES-176510',
@@ -392,7 +392,7 @@ export const INITIAL_MEMBER_DUES: MemberDuesRecord[] = [
     paymentDate: '2026-02-11',
     semester: 'Spring 2026',
     fiscalYear: '2025-2026',
-    status: 'PAID',
+    status: 'Active',
   },
   {
     id: 'DUES-175846',
@@ -403,7 +403,7 @@ export const INITIAL_MEMBER_DUES: MemberDuesRecord[] = [
     paymentDate: '2026-02-07',
     semester: 'Spring 2026',
     fiscalYear: '2025-2026',
-    status: 'PAID',
+    status: 'Active',
   },
   {
     id: 'DUES-175671',
@@ -414,7 +414,7 @@ export const INITIAL_MEMBER_DUES: MemberDuesRecord[] = [
     paymentDate: '2026-02-06',
     semester: 'Spring 2026',
     fiscalYear: '2025-2026',
-    status: 'PAID',
+    status: 'Active',
   },
   {
     id: 'DUES-175544',
@@ -425,7 +425,7 @@ export const INITIAL_MEMBER_DUES: MemberDuesRecord[] = [
     paymentDate: '2026-02-05',
     semester: 'Spring 2026',
     fiscalYear: '2025-2026',
-    status: 'PAID',
+    status: 'Active',
   },
   {
     id: 'DUES-175150',
@@ -436,7 +436,7 @@ export const INITIAL_MEMBER_DUES: MemberDuesRecord[] = [
     paymentDate: '2026-02-03',
     semester: 'Spring 2026',
     fiscalYear: '2025-2026',
-    status: 'PAID',
+    status: 'Active',
   },
   {
     id: 'DUES-174907',
@@ -447,7 +447,7 @@ export const INITIAL_MEMBER_DUES: MemberDuesRecord[] = [
     paymentDate: '2026-02-02',
     semester: 'Spring 2026',
     fiscalYear: '2025-2026',
-    status: 'PAID',
+    status: 'Active',
   },
   {
     id: 'DUES-174302',
@@ -458,7 +458,7 @@ export const INITIAL_MEMBER_DUES: MemberDuesRecord[] = [
     paymentDate: '2026-01-29',
     semester: 'Spring 2026',
     fiscalYear: '2025-2026',
-    status: 'PAID',
+    status: 'Active',
   },
   {
     id: 'DUES-174303',
@@ -469,7 +469,7 @@ export const INITIAL_MEMBER_DUES: MemberDuesRecord[] = [
     paymentDate: '2026-01-29',
     semester: 'Spring 2026',
     fiscalYear: '2025-2026',
-    status: 'PAID',
+    status: 'Active',
   },
   {
     id: 'DUES-174211',
@@ -480,7 +480,7 @@ export const INITIAL_MEMBER_DUES: MemberDuesRecord[] = [
     paymentDate: '2026-01-29',
     semester: 'Spring 2026',
     fiscalYear: '2025-2026',
-    status: 'PAID',
+    status: 'Active',
   },
   {
     id: 'DUES-174126',
@@ -491,7 +491,7 @@ export const INITIAL_MEMBER_DUES: MemberDuesRecord[] = [
     paymentDate: '2026-01-28',
     semester: 'Spring 2026',
     fiscalYear: '2025-2026',
-    status: 'PAID',
+    status: 'Active',
   },
   {
     id: 'DUES-174117',
@@ -502,7 +502,7 @@ export const INITIAL_MEMBER_DUES: MemberDuesRecord[] = [
     paymentDate: '2026-01-28',
     semester: 'Spring 2026',
     fiscalYear: '2025-2026',
-    status: 'PAID',
+    status: 'Active',
   },
   {
     id: 'DUES-173761',
@@ -513,7 +513,7 @@ export const INITIAL_MEMBER_DUES: MemberDuesRecord[] = [
     paymentDate: '2026-01-26',
     semester: 'Spring 2026',
     fiscalYear: '2025-2026',
-    status: 'PAID',
+    status: 'Active',
   },
 ];
 
