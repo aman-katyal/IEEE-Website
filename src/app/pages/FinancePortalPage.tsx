@@ -18,6 +18,7 @@ export function FinancePortalPage() {
     logout,
     addPurchase,
     updatePurchaseStatus,
+    recordCashDues,
     importMemberDues,
     updateCommittee,
     addFundingInflow,
@@ -60,22 +61,19 @@ export function FinancePortalPage() {
             <div className="flex items-center gap-3 p-2.5 rounded-xl bg-[#121214] border border-slate-800 shadow-lg">
               <div className="flex items-center gap-2.5">
                 <div
-                  className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold font-mono text-xs ${
-                    session.role === 'TREASURER'
-                      ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                      : 'bg-sky-500/20 text-sky-400 border border-sky-500/30'
+                  className={`w-2.5 h-2.5 rounded-full ${
+                    session.role === 'TREASURER' ? 'bg-amber-400' : 'bg-sky-400'
                   }`}
-                >
-                  {session.role === 'TREASURER' ? 'TR' : session.committeeId.toUpperCase().slice(0, 2)}
-                </div>
+                />
                 <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-semibold text-white">{session.name}</span>
+                  <div className="text-xs font-semibold text-white flex items-center gap-1.5">
+                    <span>{session.name}</span>
                     <Badge
-                      className={`text-[10px] px-1.5 py-0 ${
+                      variant="outline"
+                      className={`text-[10px] uppercase font-mono px-1.5 py-0 ${
                         session.role === 'TREASURER'
-                          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                          : 'bg-sky-500/20 text-sky-300 border-sky-500/30'
+                          ? 'border-amber-500/40 text-amber-300 bg-amber-500/10'
+                          : 'border-sky-500/40 text-sky-300 bg-sky-500/10'
                       }`}
                     >
                       {session.role === 'TREASURER' ? 'Treasurer Admin' : 'Committee Lead'}
@@ -112,6 +110,7 @@ export function FinancePortalPage() {
             memberDues={memberDues}
             fundingInflows={fundingInflows}
             onAddPurchase={addPurchase}
+            onRecordCashDues={recordCashDues}
             onLogout={handleLogout}
           />
         ) : (
@@ -123,6 +122,7 @@ export function FinancePortalPage() {
             fundingInflows={fundingInflows}
             bosoStatement={bosoStatement}
             onUpdatePurchaseStatus={updatePurchaseStatus}
+            onRecordCashDues={recordCashDues}
             onImportMemberDues={importMemberDues}
             onUpdateCommittee={updateCommittee}
             onAddFundingInflow={addFundingInflow}

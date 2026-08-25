@@ -55,6 +55,14 @@ export interface CommitteeFinanceViewProps {
   memberDues: MemberDuesRecord[];
   fundingInflows?: CommitteeFundingInflow[];
   onAddPurchase: (newPurchase: PurchaseItem) => void;
+  onRecordCashDues?: (record: {
+    studentName: string;
+    purdueEmail: string;
+    amountPaid: number;
+    semester?: string;
+    committeeId?: string;
+    paymentDate?: string;
+  }) => Promise<{ success: boolean; error?: string }> | void;
   onLogout?: () => void;
 }
 
@@ -142,6 +150,15 @@ export function CommitteeFinanceView({
 
   // Dues Verification Search
   const [duesQuery, setDuesQuery] = useState<string>('');
+  const [isCashDuesModalOpen, setIsCashDuesModalOpen] = useState<boolean>(false);
+  const [cashStudentName, setCashStudentName] = useState<string>('');
+  const [cashPurdueEmail, setCashPurdueEmail] = useState<string>('');
+  const [cashAmount, setCashAmount] = useState<string>('15.00');
+  const [cashSemester, setCashSemester] = useState<string>('Spring 2026');
+  const [cashPaymentDate, setCashPaymentDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [isSubmittingCash, setIsSubmittingCash] = useState<boolean>(false);
+  const [cashSuccessMsg, setCashSuccessMsg] = useState<string | null>(null);
+  const [cashErrorMsg, setCashErrorMsg] = useState<string | null>(null);
 
   const duesSearchResults = useMemo(() => {
     const query = duesQuery.trim().toLowerCase();
@@ -472,9 +489,24 @@ export function CommitteeFinanceView({
               Quick Member Dues Verification
             </h3>
           </div>
-          <span className="text-xs text-slate-400">
-            Verify active dues payment before issuing team components or reimbursing students.
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-slate-400 hidden sm:inline">
+              Verify active dues payment before issuing team components.
+            </span>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                setCashErrorMsg(null);
+                setCashSuccessMsg(null);
+                setIsCashDuesModalOpen(true);
+              }}
+              className="h-8 text-xs bg-slate-900 border-slate-700 hover:bg-slate-800 text-sky-400 hover:text-sky-300 font-mono"
+            >
+              <Coins className="w-3.5 h-3.5 mr-1" />
+              <span>Record Cash Dues</span>
+            </Button>
+          </div>
         </div>
 
         <div className="relative">
@@ -513,16 +545,193 @@ export function CommitteeFinanceView({
                 ))}
               </div>
             ) : (
-              <div className="flex items-center gap-2 text-xs text-amber-400 py-1 px-2">
-                <AlertTriangle className="w-4 h-4 shrink-0" />
-                <span>
-                  No matching dues record found for "{duesQuery}". Please verify if dues were paid via TooCOOL or cash with the Treasurer.
-                </span>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-amber-400 py-1 px-2">
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 shrink-0" />
+                  <span>
+                    No matching dues record found for "{duesQuery}".
+                  </span>
+                </div>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => {
+                    setCashStudentName(duesQuery.includes('@') ? '' : duesQuery);
+                    setCashPurdueEmail(duesQuery.includes('@') ? duesQuery : '');
+                    setIsCashDuesModalOpen(true);
+                  }}
+                  className="h-7 text-[11px] text-sky-400 hover:text-sky-300 hover:bg-sky-500/10 self-start sm:self-auto"
+                >
+                  <PlusCircle className="w-3 h-3 mr-1" />
+                  <span>Add as Cash Member</span>
+                </Button>
               </div>
             )}
           </div>
         )}
       </Card>
+
+      {/* Record In-Person Cash Dues Modal */}
+      <Dialog open={isCashDuesModalOpen} onOpenChange={setIsCashDuesModalOpen}>
+        <DialogContent className="bg-[#121214] border-slate-800 text-slate-100 max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-base font-bold text-white flex items-center gap-2 font-mono">
+              <Coins className="w-5 h-5 text-amber-400" />
+              <span>Record Cash Dues Payment</span>
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-400">
+              Register a member who paid cash dues in person during committee meetings or callouts.
+            </DialogDescription>
+          </DialogHeader>
+
+          {cashErrorMsg && (
+            <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-md text-xs text-rose-400 flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 shrink-0" />
+              <span>{cashErrorMsg}</span>
+            </div>
+          )}
+
+          {cashSuccessMsg && (
+            <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-md text-xs text-emerald-400 flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 shrink-0" />
+              <span>{cashSuccessMsg}</span>
+            </div>
+          )}
+
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              setCashErrorMsg(null);
+              setCashSuccessMsg(null);
+
+              if (!cashStudentName.trim()) {
+                setCashErrorMsg('Student name is required.');
+                return;
+              }
+
+              if (!cashPurdueEmail.trim() || !cashPurdueEmail.includes('@')) {
+                setCashErrorMsg('Valid Purdue email address is required.');
+                return;
+              }
+
+              const amountNum = parseFloat(cashAmount);
+              if (isNaN(amountNum) || amountNum <= 0) {
+                setCashErrorMsg('Please enter a valid dues amount.');
+                return;
+              }
+
+              setIsSubmittingCash(true);
+              try {
+                if (onRecordCashDues) {
+                  await onRecordCashDues({
+                    studentName: cashStudentName.trim(),
+                    purdueEmail: cashPurdueEmail.trim().toLowerCase(),
+                    amountPaid: amountNum,
+                    semester: cashSemester,
+                    committeeId: committee.id,
+                    paymentDate: cashPaymentDate,
+                  });
+                }
+                setCashSuccessMsg(`Recorded $${amountNum.toFixed(2)} cash dues payment for ${cashStudentName.trim()}!`);
+                setCashStudentName('');
+                setCashPurdueEmail('');
+                setTimeout(() => {
+                  setIsCashDuesModalOpen(false);
+                  setCashSuccessMsg(null);
+                }, 1200);
+              } catch (err: any) {
+                setCashErrorMsg(err?.message || 'Failed to record cash dues payment.');
+              } finally {
+                setIsSubmittingCash(false);
+              }
+            }}
+            className="space-y-4 pt-2"
+          >
+            <div className="space-y-1.5">
+              <Label className="text-xs text-slate-300">Student Full Name *</Label>
+              <Input
+                required
+                value={cashStudentName}
+                onChange={(e) => setCashStudentName(e.target.value)}
+                placeholder="e.g. Alex Rivera"
+                className="bg-slate-900 border-slate-700 text-slate-100 h-9 text-xs focus:border-amber-500"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs text-slate-300">Purdue Email (@purdue.edu) *</Label>
+              <Input
+                required
+                type="email"
+                value={cashPurdueEmail}
+                onChange={(e) => setCashPurdueEmail(e.target.value)}
+                placeholder="e.g. arivera@purdue.edu"
+                className="bg-slate-900 border-slate-700 text-slate-100 h-9 text-xs focus:border-amber-500"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-xs text-slate-300">Amount Paid ($) *</Label>
+                <Select value={cashAmount} onValueChange={setCashAmount}>
+                  <SelectTrigger className="bg-slate-900 border-slate-700 text-slate-100 h-9 text-xs">
+                    <SelectValue placeholder="Select amount" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-900 border-slate-800 text-slate-100">
+                    <SelectItem value="10.00">$10.00 (Single Semester)</SelectItem>
+                    <SelectItem value="15.00">$15.00 (Annual Dues)</SelectItem>
+                    <SelectItem value="20.00">$20.00 (Special Rate)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs text-slate-300">Semester *</Label>
+                <Select value={cashSemester} onValueChange={setCashSemester}>
+                  <SelectTrigger className="bg-slate-900 border-slate-700 text-slate-100 h-9 text-xs">
+                    <SelectValue placeholder="Select semester" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-900 border-slate-800 text-slate-100">
+                    <SelectItem value="Spring 2026">Spring 2026</SelectItem>
+                    <SelectItem value="Fall 2025">Fall 2025</SelectItem>
+                    <SelectItem value="Annual 2025-2026">Annual 2025-2026</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs text-slate-300">Payment Date</Label>
+              <Input
+                type="date"
+                value={cashPaymentDate}
+                onChange={(e) => setCashPaymentDate(e.target.value)}
+                className="bg-slate-900 border-slate-700 text-slate-100 h-9 text-xs"
+              />
+            </div>
+
+            <DialogFooter className="pt-2 gap-2">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsCashDuesModalOpen(false)}
+                className="text-xs text-slate-400 hover:text-white"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                size="sm"
+                disabled={isSubmittingCash}
+                className="text-xs bg-amber-500 hover:bg-amber-600 text-slate-950 font-semibold"
+              >
+                {isSubmittingCash ? 'Recording...' : 'Save Cash Dues'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       {/* Committee Purchase History Table */}
       <Card className="bg-[#121214] border-slate-800 shadow-xl overflow-hidden">

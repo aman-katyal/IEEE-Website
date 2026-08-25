@@ -63,6 +63,7 @@ import {
 } from './financeData';
 import { ReceiptPreviewModal } from './ReceiptPreviewModal';
 import { BosoCoolStatementView } from './BosoCoolStatementView';
+import { parseDuesFile } from '../../server/dues/parser';
 
 export interface TreasurerFinanceViewProps {
   session: AuthSessionData;
@@ -77,9 +78,17 @@ export interface TreasurerFinanceViewProps {
     notes?: string,
     coolAccountNumber?: string
   ) => void;
-  onImportMemberDues: (records: MemberDuesRecord[]) => void;
-  onUpdateCommittee?: (committeeId: string, updated: Partial<CommitteeInfo>) => void;
-  onAddFundingInflow?: (inflow: CommitteeFundingInflow) => void;
+  onRecordCashDues?: (record: {
+    studentName: string;
+    purdueEmail: string;
+    amountPaid: number;
+    semester?: string;
+    committeeId?: string;
+    paymentDate?: string;
+  }) => Promise<{ success: boolean; error?: string }> | void;
+  onImportMemberDues: (records: MemberDuesRecord[], fileRaw?: string, semester?: string) => void;
+  onUpdateCommittee: (committeeId: string, updated: Partial<CommitteeInfo>) => void;
+  onAddFundingInflow: (newInflow: CommitteeFundingInflow) => void;
   onDeleteFundingInflow?: (id: string) => void;
   onLogout?: () => void;
 }
@@ -515,51 +524,56 @@ export function TreasurerFinanceView({
     setIsCOOLExporterOpen(false);
   };
 
-  // CSV Parsing for TooCOOL Dues
+  // CSV & Excel XML Parsing for TooCOOL / vECOrders Dues
+  const [skippedCount, setSkippedCount] = useState<number>(0);
+  const [rawFileContent, setRawFileContent] = useState<string>('');
+
   const handleParseCsv = (content: string, filename: string) => {
     setImportError(null);
+    setRawFileContent(content);
     try {
-      const lines = content.split(/\r?\n/).filter((l) => l.trim().length > 0);
-      if (lines.length <= 1) {
-        setImportError('CSV file appears empty or missing data rows.');
+      const parsed = parseDuesFile(content, 'fy25-26', 'Spring 2026');
+      if (parsed.validRecords.length === 0) {
+        setImportError(
+          parsed.errors.length > 0
+            ? `Could not parse valid records: ${parsed.errors[0].reason}`
+            : 'File appears empty or missing valid student dues data.'
+        );
         return;
       }
 
-      // Simple header detection & parsing
-      const parsedRecords: MemberDuesRecord[] = [];
-      const dataLines = lines.slice(1); // skip header
+      // Check against existing memberDues in database to disregard existing
+      const existingKeys = new Set(
+        memberDues.map((d) => `${d.purdueEmail.toLowerCase()}::${d.semester}`)
+      );
 
-      dataLines.forEach((line, idx) => {
-        const parts = line.split(',').map((p) => p.replace(/^"|"$/g, '').trim());
-        if (parts.length >= 2) {
-          const name = parts[0] || `Student ${idx + 1}`;
-          const email = parts[1] || `user${idx + 1}@purdue.edu`;
-          const amount = parts[2] ? parseFloat(parts[2]) : 15.0;
-          const method = (parts[3] as any) || 'TooCOOL';
-          const sem = parts[4] || 'Spring 2026';
+      const uniqueNewRecords: MemberDuesRecord[] = [];
+      let skipped = 0;
 
-          parsedRecords.push({
-            id: `DUES-${Math.floor(1000 + Math.random() * 9000)}`,
-            studentName: name,
-            purdueEmail: email,
-            amountPaid: isNaN(amount) ? 15.0 : amount,
-            paymentMethod: ['TooCOOL', 'Cash', 'Card'].includes(method) ? method : 'TooCOOL',
-            paymentDate: new Date().toISOString().split('T')[0],
-            semester: sem,
-            status: 'Active',
+      parsed.validRecords.forEach((r, idx) => {
+        const key = `${r.purdueEmail.toLowerCase()}::${r.semester}`;
+        if (existingKeys.has(key)) {
+          skipped++;
+        } else {
+          uniqueNewRecords.push({
+            id: r.transactionId ? `DUES-${r.transactionId}` : `DUES-${Date.now()}-${idx}`,
+            studentName: r.studentName,
+            purdueEmail: r.purdueEmail,
+            amountPaid: r.amountPaid,
+            paymentMethod: 'TooCOOL',
+            paymentDate: r.paymentDate,
+            semester: r.semester,
+            fiscalYear: '2025-2026',
+            status: 'PAID',
           });
         }
       });
 
-      if (parsedRecords.length === 0) {
-        setImportError('Could not parse any valid student dues records from CSV.');
-        return;
-      }
-
-      setImportedCsvData(parsedRecords);
+      setSkippedCount(skipped);
+      setImportedCsvData(uniqueNewRecords);
       setImportFileName(filename);
-    } catch {
-      setImportError('Failed to parse CSV file. Ensure valid RFC 4180 format.');
+    } catch (err: any) {
+      setImportError(err?.message || 'Failed to parse file. Please ensure valid CSV or Excel format.');
     }
   };
 
@@ -588,10 +602,12 @@ export function TreasurerFinanceView({
   };
 
   const handleExecuteDuesImport = () => {
-    if (importedCsvData.length === 0) return;
-    onImportMemberDues(importedCsvData);
+    if (importedCsvData.length === 0 && skippedCount === 0) return;
+    onImportMemberDues(importedCsvData, rawFileContent, 'Spring 2026');
     setImportedCsvData([]);
     setImportFileName(null);
+    setRawFileContent('');
+    setSkippedCount(0);
     setIsDuesImporterOpen(false);
   };
 
@@ -1397,7 +1413,7 @@ export function TreasurerFinanceView({
         </DialogContent>
       </Dialog>
 
-      {/* TooCOOL Dues Importer Modal */}
+      {/* TooCOOL / vECOrders Dues Importer Modal */}
       <Dialog open={isDuesImporterOpen} onOpenChange={setIsDuesImporterOpen}>
         <DialogContent
           className="max-w-2xl bg-[#121214] text-slate-100 border border-slate-700/80 shadow-2xl p-6 overflow-y-auto max-h-[90vh]"
@@ -1405,10 +1421,10 @@ export function TreasurerFinanceView({
           <DialogHeader>
             <DialogTitle className="text-lg font-bold text-white flex items-center gap-2">
               <UploadCloud className="w-5 h-5 text-sky-400" />
-              <span>Import Purdue TooCOOL Dues CSV</span>
+              <span>Import Purdue TooCOOL / vECOrders Dues File</span>
             </DialogTitle>
             <DialogDescription className="text-xs text-slate-400">
-              Batch ingest student membership dues exported from Purdue TooCOOL.
+              Batch ingest membership dues exported from Purdue TooCOOL (supports .xls XML, .xlsx, and .csv formats).
             </DialogDescription>
           </DialogHeader>
 
@@ -1431,16 +1447,16 @@ export function TreasurerFinanceView({
               <input
                 id="dues-csv-input"
                 type="file"
-                accept=".csv,text/csv"
+                accept=".csv,.xls,.xlsx,.xml,.tsv,text/csv,application/vnd.ms-excel"
                 className="hidden"
                 onChange={handleCsvFileInput}
               />
               <FileSpreadsheet className="w-8 h-8 text-sky-400 mx-auto mb-2" />
               <p className="text-xs font-semibold text-slate-200">
-                Click to browse or drop TooCOOL .csv export file here
+                Click to browse or drop TooCOOL / vECOrders (.xls / .csv) file here
               </p>
               <p className="text-[11px] text-slate-500 mt-1">
-                Accepts standard TooCOOL CSV format (Student Name, Purdue Email, Amount, Method, Semester)
+                Supports vECOrders XML spreadsheets and TooCOOL exports with automatic name formatting and duplicate protection
               </p>
             </div>
 
@@ -1450,27 +1466,43 @@ export function TreasurerFinanceView({
               </div>
             )}
 
-            {importedCsvData.length > 0 && (
+            {(importedCsvData.length > 0 || skippedCount > 0) && (
               <div className="space-y-2 p-3 bg-slate-900/90 border border-slate-800 rounded-lg">
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-semibold text-white">
-                    Parsed {importedCsvData.length} records from {importFileName}
+                    File: <span className="font-mono text-slate-300">{importFileName}</span>
                   </span>
-                  <span className="text-emerald-400 font-mono">Ready to Ingest</span>
+                  <div className="flex items-center gap-2">
+                    {skippedCount > 0 && (
+                      <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-300 border-amber-500/30">
+                        {skippedCount} Existing Disregarded
+                      </Badge>
+                    )}
+                    <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-300 border-emerald-500/30 font-mono">
+                      {importedCsvData.length} New to Ingest
+                    </Badge>
+                  </div>
                 </div>
-                <div className="max-h-36 overflow-y-auto space-y-1 pr-1 text-[11px]">
-                  {importedCsvData.slice(0, 5).map((rec, i) => (
-                    <div key={i} className="flex items-center justify-between p-1.5 rounded bg-slate-800/40 text-slate-300">
-                      <span>{rec.studentName} ({rec.purdueEmail})</span>
-                      <span className="font-mono text-white">${rec.amountPaid.toFixed(2)}</span>
-                    </div>
-                  ))}
-                  {importedCsvData.length > 5 && (
-                    <div className="text-center text-[10px] text-slate-500 pt-1">
-                      + {importedCsvData.length - 5} more records
-                    </div>
-                  )}
-                </div>
+
+                {importedCsvData.length > 0 ? (
+                  <div className="max-h-36 overflow-y-auto space-y-1 pr-1 text-[11px]">
+                    {importedCsvData.slice(0, 5).map((rec, i) => (
+                      <div key={i} className="flex items-center justify-between p-1.5 rounded bg-slate-800/40 text-slate-300">
+                        <span>{rec.studentName} ({rec.purdueEmail})</span>
+                        <span className="font-mono text-white">${rec.amountPaid.toFixed(2)}</span>
+                      </div>
+                    ))}
+                    {importedCsvData.length > 5 && (
+                      <div className="text-center text-[10px] text-slate-500 pt-1">
+                        + {importedCsvData.length - 5} more new records
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-xs text-slate-400 italic py-1">
+                    All {skippedCount} members in this file are already recorded in the database.
+                  </div>
+                )}
               </div>
             )}
 
@@ -1491,7 +1523,7 @@ export function TreasurerFinanceView({
                 disabled={importedCsvData.length === 0}
                 className="bg-sky-600 hover:bg-sky-500 text-white font-medium shadow-md"
               >
-                Import {importedCsvData.length} Records
+                Import {importedCsvData.length} New Members
               </Button>
             </DialogFooter>
           </div>

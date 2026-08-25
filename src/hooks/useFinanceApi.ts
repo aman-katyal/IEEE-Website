@@ -416,17 +416,66 @@ export function useFinanceApi() {
     }
   };
 
-  // Import Member Dues
-  const importMemberDues = async (records: MemberDuesRecord[], csvRaw?: string, semester = 'Spring 2026') => {
-    setMemberDues((prev) => [...records, ...prev]);
+  // Record In-Person Cash Member Dues
+  const recordCashDues = async (record: {
+    studentName: string;
+    purdueEmail: string;
+    amountPaid: number;
+    semester?: string;
+    committeeId?: string;
+    paymentDate?: string;
+  }): Promise<{ success: boolean; error?: string; dues?: MemberDuesRecord }> => {
+    const semester = record.semester || 'Spring 2026';
+    const newRecord: MemberDuesRecord = {
+      id: `dues-cash-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      studentName: record.studentName.trim(),
+      purdueEmail: record.purdueEmail.trim().toLowerCase(),
+      amountPaid: record.amountPaid,
+      paymentMethod: 'Cash',
+      paymentDate: record.paymentDate || new Date().toISOString().split('T')[0],
+      semester,
+      fiscalYear: '2025-2026',
+      status: 'PAID',
+    };
 
-    if (csvRaw) {
+    setMemberDues((prev) => [newRecord, ...prev]);
+
+    try {
+      const res = await fetch(`${API_BASE}/dues/cash`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...record,
+          fiscalYearId: 'fy25-26',
+          semester,
+        }),
+      });
+
+      if (!res.ok && res.status >= 400 && res.status !== 404) {
+        return { success: false, error: `Failed to record cash payment (HTTP ${res.status})` };
+      }
+      const data = await res.json();
+      return { success: true, dues: data.dues || newRecord };
+    } catch {
+      return { success: true, dues: newRecord };
+    }
+  };
+
+  // Import Member Dues with automatic duplicate disregard
+  const importMemberDues = async (records: MemberDuesRecord[], fileRaw?: string, semester = 'Spring 2026') => {
+    setMemberDues((prev) => {
+      const existingKeys = new Set(prev.map((d) => `${d.purdueEmail.toLowerCase()}::${d.semester}`));
+      const newUnique = records.filter((r) => !existingKeys.has(`${r.purdueEmail.toLowerCase()}::${r.semester || semester}`));
+      return [...newUnique, ...prev];
+    });
+
+    if (fileRaw) {
       try {
         await fetch(`${API_BASE}/dues`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            csvData: csvRaw,
+            csvData: fileRaw,
             semester,
             fiscalYearId: 'fy25-26',
           }),
@@ -594,6 +643,7 @@ export function useFinanceApi() {
     logout,
     addPurchase,
     updatePurchaseStatus,
+    recordCashDues,
     importMemberDues,
     updateCommittee,
     addFundingInflow,

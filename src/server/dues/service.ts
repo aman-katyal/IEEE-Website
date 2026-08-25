@@ -9,7 +9,7 @@ import { queryAll, roundCurrency } from '../db/query';
 import type { MemberDues, MemberDuesRow, FiscalYearRow } from '../db/types';
 import type { AuthSession } from '../auth/types';
 import type { ParsedDuesRow } from './parser';
-import { isValidEmail, parseDateToISO } from './parser';
+import { isValidEmail, parseDateToISO, parseDuesFile } from './parser';
 
 export interface RecordCashPaymentPayload {
   id?: string;
@@ -230,9 +230,9 @@ export async function recordCashPayment(
     throw new Error('Unauthorized: Active session required');
   }
 
-  const allowedRoles = ['TREASURER', 'PRESIDENT', 'IT_ADMIN'];
-  if (!session.isAdmin && !allowedRoles.includes(session.role)) {
-    throw new Error('Unauthorized: Only treasurers can record cash payments');
+  const allowedRoles = ['COMMITTEE_LEAD', 'TREASURER', 'PRESIDENT', 'IT_ADMIN'];
+  if (!session.isAdmin && !allowedRoles.includes(session.role) && !session.committeeId) {
+    throw new Error('Unauthorized: Committee lead or treasurer session required to record cash payments');
   }
 
   if (!payload.studentName || typeof payload.studentName !== 'string' || payload.studentName.trim().length === 0) {
@@ -441,3 +441,33 @@ export async function getDuesStats(
     paymentMethodBreakdown,
   };
 }
+
+/**
+ * Universal Member Dues Import: Accepts raw spreadsheet string (CSV, TSV, Excel XML vECOrders) and imports unique records.
+ */
+export async function importMemberDues(
+  dbLike: D1DatabaseLike | DatabaseSync,
+  fileContent: string,
+  semester: string = 'Spring 2026',
+  fiscalYearId: string = 'fy25-26',
+  session: AuthSession = {
+    role: 'TREASURER',
+    committeeId: 'treasurer',
+    name: 'System Importer',
+    isAdmin: true,
+  }
+): Promise<ImportDuesResult> {
+  const parsed = parseDuesFile(fileContent, fiscalYearId, semester);
+  return importDuesBatch(dbLike, parsed.validRecords, session, { skipDuplicates: true });
+}
+
+/**
+ * Retrieves summary statistics for member dues
+ */
+export async function getMemberDuesSummary(
+  dbLike: D1DatabaseLike | DatabaseSync,
+  fiscalYearId = 'fy25-26'
+): Promise<DuesStatsResult> {
+  return getDuesStats(dbLike, fiscalYearId);
+}
+

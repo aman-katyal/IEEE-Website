@@ -295,7 +295,21 @@ Gene Cernan,gcernan@purdue.edu,$15.00,2025-09-02,TXN-1002`;
       expect(row.payment_method).toBe('Cash');
     });
 
-    it('rejects cash payment creation from non-treasurer committee lead', async () => {
+    it('allows cash payment creation from committee lead and rejects when unauthenticated', async () => {
+      const recorded = await recordCashPayment(
+        db,
+        {
+          fiscalYearId: 'fy25-26',
+          studentName: 'Walk-In',
+          purdueEmail: 'walkin@purdue.edu',
+          amountPaid: 15.00,
+          semester: 'Fall 2025',
+        },
+        leadSession
+      );
+      expect(recorded.studentName).toBe('Walk-In');
+      expect(recorded.paymentMethod).toBe('Cash');
+
       await expect(
         recordCashPayment(
           db,
@@ -306,7 +320,7 @@ Gene Cernan,gcernan@purdue.edu,$15.00,2025-09-02,TXN-1002`;
             amountPaid: 15.00,
             semester: 'Fall 2025',
           },
-          leadSession
+          null
         )
       ).rejects.toThrow('Unauthorized');
     });
@@ -453,6 +467,109 @@ Gene Cernan,gcernan@purdue.edu,$15.00,2025-09-02,TXN-1002`;
       expect(stats.totalMembersPaid).toBe(0);
       expect(stats.totalTransactions).toBe(0);
       expect(Object.keys(stats.bySemester)).toHaveLength(0);
+    });
+  });
+
+  describe('vECOrders Excel XML Parser & Deduplication', () => {
+    it('parses Excel 2003 XML spreadsheet (vECOrders format) and normalizes names', () => {
+      const xmlData = `<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet">
+  <Worksheet ss:Name="Sheet1">
+    <Table>
+      <Row>
+        <Cell><Data ss:Type="String">EC Order</Data></Cell>
+        <Cell><Data ss:Type="String">Full Name</Data></Cell>
+        <Cell><Data ss:Type="String">EC Customer</Data></Cell>
+        <Cell><Data ss:Type="String">Order Date</Data></Cell>
+        <Cell><Data ss:Type="String">Invoice Number</Data></Cell>
+        <Cell><Data ss:Type="String">Order Amount</Data></Cell>
+      </Row>
+      <Row>
+        <Cell><Data ss:Type="String">179435</Data></Cell>
+        <Cell><Data ss:Type="String">Leviste, Ryan</Data></Cell>
+        <Cell><Data ss:Type="String">91866</Data></Cell>
+        <Cell><Data ss:Type="String">2026-03-05T19:47:00.000</Data></Cell>
+        <Cell><Data ss:Type="String">149766</Data></Cell>
+        <Cell><Data ss:Type="String">10</Data></Cell>
+      </Row>
+      <Row>
+        <Cell><Data ss:Type="String">178327</Data></Cell>
+        <Cell><Data ss:Type="String">Belhadj, Youssef</Data></Cell>
+        <Cell><Data ss:Type="String">91535</Data></Cell>
+        <Cell><Data ss:Type="String">2026-02-26T13:14:00.000</Data></Cell>
+        <Cell><Data ss:Type="String">148861</Data></Cell>
+        <Cell><Data ss:Type="String">15</Data></Cell>
+      </Row>
+    </Table>
+  </Worksheet>
+</Workbook>`;
+
+      const result = parseTooCOOLCSV(xmlData, 'fy25-26', 'Spring 2026');
+      expect(result.validCount).toBe(2);
+      expect(result.validRecords[0].studentName).toBe('Ryan Leviste');
+      expect(result.validRecords[0].purdueEmail).toBe('ryan.leviste@purdue.edu');
+      expect(result.validRecords[0].amountPaid).toBe(10);
+      expect(result.validRecords[0].paymentDate).toBe('2026-03-05');
+      expect(result.validRecords[0].transactionId).toBe('179435');
+
+      expect(result.validRecords[1].studentName).toBe('Youssef Belhadj');
+      expect(result.validRecords[1].amountPaid).toBe(15);
+    });
+
+    it('disregards existing members in the database when importing batches', async () => {
+      // First insert an existing member
+      await recordCashPayment(
+        db,
+        {
+          fiscalYearId: 'fy25-26',
+          studentName: 'Ryan Leviste',
+          purdueEmail: 'ryan.leviste@purdue.edu',
+          amountPaid: 10,
+          semester: 'Spring 2026',
+        },
+        treasurerSession
+      );
+
+      const recordsToImport = [
+        {
+          fiscalYearId: 'fy25-26',
+          studentName: 'Ryan Leviste',
+          purdueEmail: 'ryan.leviste@purdue.edu',
+          amountPaid: 10,
+          semester: 'Spring 2026',
+        },
+        {
+          fiscalYearId: 'fy25-26',
+          studentName: 'New Student',
+          purdueEmail: 'newstudent@purdue.edu',
+          amountPaid: 15,
+          semester: 'Spring 2026',
+        },
+      ];
+
+      const importResult = await importDuesBatch(db, recordsToImport, treasurerSession, { skipDuplicates: true });
+      expect(importResult.importedCount).toBe(1);
+      expect(importResult.skippedCount).toBe(1);
+      expect(importResult.skippedRecords[0].purdueEmail).toBe('ryan.leviste@purdue.edu');
+    });
+
+    it('allows technical committee leads to record cash dues payments', async () => {
+      const cashRecord = await recordCashPayment(
+        db,
+        {
+          fiscalYearId: 'fy25-26',
+          studentName: 'Committee Member',
+          purdueEmail: 'committeemember@purdue.edu',
+          amountPaid: 15,
+          semester: 'Spring 2026',
+        },
+        leadSession
+      );
+
+      expect(cashRecord.studentName).toBe('Committee Member');
+      expect(cashRecord.paymentMethod).toBe('Cash');
+      expect(cashRecord.amountPaid).toBe(15);
     });
   });
 

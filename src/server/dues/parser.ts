@@ -198,6 +198,47 @@ export function parseCSVToRows(csvContent: string): string[][] {
   return rows;
 }
 
+/**
+ * Parses raw Excel 2003 XML spreadsheet text (<Workbook><Table><Row><Cell><Data>...</Data></Cell></Row></Table></Workbook>)
+ */
+export function parseSpreadsheetXMLToRows(xmlContent: string): string[][] {
+  if (!xmlContent || typeof xmlContent !== 'string') {
+    return [];
+  }
+
+  const rowMatches = xmlContent.match(/<Row[\s\S]*?<\/Row>/gi) || [];
+  const rows: string[][] = [];
+
+  for (const rowXml of rowMatches) {
+    const cellMatches = rowXml.match(/<Cell[\s\S]*?<\/Cell>/gi) || [];
+    const cellValues: string[] = [];
+
+    for (const cellXml of cellMatches) {
+      const dataMatch = cellXml.match(/<Data[^>]*>([\s\S]*?)<\/Data>/i);
+      const val = dataMatch ? dataMatch[1].replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').trim() : '';
+      cellValues.push(val);
+    }
+
+    if (cellValues.some((c) => c.trim().length > 0)) {
+      rows.push(cellValues);
+    }
+  }
+
+  return rows;
+}
+
+/**
+ * Universal spreadsheet content row extractor supporting CSV, TSV, and Excel XML formats.
+ */
+export function parseSpreadsheetToRows(content: string): string[][] {
+  if (!content || typeof content !== 'string') return [];
+  const trimmed = content.trim();
+  if (trimmed.includes('<Workbook') || trimmed.includes('<?xml') || trimmed.includes('<ss:Workbook')) {
+    return parseSpreadsheetXMLToRows(trimmed);
+  }
+  return parseCSVToRows(trimmed);
+}
+
 function normalizeKey(str: string): string {
   return str.toLowerCase().replace(/[^a-z0-9]/g, '');
 }
@@ -210,6 +251,7 @@ interface ColumnMapping {
   amountIndex: number;
   dateIndex: number;
   transactionIndex: number;
+  customerIndex: number;
 }
 
 function detectColumnMapping(headers: string[]): ColumnMapping {
@@ -221,6 +263,7 @@ function detectColumnMapping(headers: string[]): ColumnMapping {
     amountIndex: -1,
     dateIndex: -1,
     transactionIndex: -1,
+    customerIndex: -1,
   };
 
   headers.forEach((h, index) => {
@@ -260,6 +303,7 @@ function detectColumnMapping(headers: string[]): ColumnMapping {
       norm === 'amountpaid' ||
       norm === 'totalpaid' ||
       norm === 'paymentamount' ||
+      norm === 'orderamount' ||
       norm === 'itemtotal' ||
       norm === 'price' ||
       norm === 'total' ||
@@ -285,13 +329,19 @@ function detectColumnMapping(headers: string[]): ColumnMapping {
       norm.includes('transaction') ||
       norm.includes('orderid') ||
       norm.includes('ordernumber') ||
+      norm === 'ecorder' ||
+      norm === 'invoicenumber' ||
       norm.includes('receipt') ||
       norm.includes('confirmation') ||
       norm === 'transid' ||
       norm === 'ref' ||
       norm === 'referenceid'
     ) {
-      mapping.transactionIndex = index;
+      if (mapping.transactionIndex === -1 || norm === 'ecorder') {
+        mapping.transactionIndex = index;
+      }
+    } else if (norm === 'eccustomer' || norm === 'customer' || norm === 'customerid') {
+      mapping.customerIndex = index;
     }
   });
 
@@ -299,10 +349,10 @@ function detectColumnMapping(headers: string[]): ColumnMapping {
 }
 
 /**
- * Parses TooCOOL CSV semester export content and returns structured valid records, errors, and duplicates.
+ * Universal Parser: Parses TooCOOL CSV or vECOrders Excel XML content and returns structured valid records, errors, and duplicates.
  */
-export function parseTooCOOLCSV(
-  csvContent: string,
+export function parseDuesFile(
+  content: string,
   fiscalYearId: string,
   semester: string
 ): ParseDuesResult {
@@ -314,7 +364,7 @@ export function parseTooCOOLCSV(
     throw new Error('semester is required to parse TooCOOL CSV');
   }
 
-  const rawRows = parseCSVToRows(csvContent);
+  const rawRows = parseSpreadsheetToRows(content);
 
   if (rawRows.length === 0) {
     return {
@@ -366,9 +416,29 @@ export function parseTooCOOLCSV(
       studentName = `${first} ${last}`.trim();
     }
 
-    // Extract email
-    const emailRaw = mapping.emailIndex !== -1 ? (row[mapping.emailIndex] || '').trim() : '';
-    const purdueEmail = emailRaw.toLowerCase();
+    // Format "Last, First [Middle]" -> "First [Middle] Last"
+    if (studentName.includes(',')) {
+      const nameParts = studentName.split(',').map((p) => p.trim());
+      if (nameParts.length >= 2) {
+        studentName = `${nameParts.slice(1).join(' ')} ${nameParts[0]}`.trim();
+      }
+    }
+
+    // Extract email or derive Purdue alias
+    let purdueEmail = '';
+    if (mapping.emailIndex !== -1 && row[mapping.emailIndex]) {
+      purdueEmail = row[mapping.emailIndex].trim().toLowerCase();
+    } else if (studentName) {
+      // Fallback: derive Purdue email identifier from name
+      const cleanParts = studentName.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim().split(/\s+/);
+      if (cleanParts.length >= 2) {
+        purdueEmail = `${cleanParts[0]}.${cleanParts[cleanParts.length - 1]}@purdue.edu`;
+      } else if (cleanParts.length === 1 && cleanParts[0]) {
+        purdueEmail = `${cleanParts[0]}@purdue.edu`;
+      } else if (mapping.customerIndex !== -1 && row[mapping.customerIndex]) {
+        purdueEmail = `customer-${row[mapping.customerIndex].trim()}@purdue.edu`;
+      }
+    }
 
     // Extract amount
     const amountRaw = mapping.amountIndex !== -1 ? row[mapping.amountIndex] : '';
@@ -398,7 +468,7 @@ export function parseTooCOOLCSV(
       errors.push({
         rowNumber,
         raw: rawString,
-        reason: `Invalid or missing email address: "${emailRaw}"`,
+        reason: `Invalid or missing email address: "${purdueEmail}"`,
       });
       return;
     }
@@ -474,3 +544,15 @@ export function parseTooCOOLCSV(
     semester,
   };
 }
+
+/**
+ * Legacy alias for parseDuesFile
+ */
+export function parseTooCOOLCSV(
+  csvContent: string,
+  fiscalYearId: string,
+  semester: string
+): ParseDuesResult {
+  return parseDuesFile(csvContent, fiscalYearId, semester);
+}
+

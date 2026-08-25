@@ -15,7 +15,7 @@ import {
   updateCommitteeParameters,
   recordCommitteeFundingInflow,
 } from '../../../src/server/matrix/spending';
-import { importMemberDues, searchMemberDues, getMemberDuesSummary } from '../../../src/server/dues/service';
+import { importMemberDues, searchMemberDues, getMemberDuesSummary, recordCashPayment } from '../../../src/server/dues/service';
 import { generateCoolBatchExport } from '../../../src/server/cool/exporter';
 import { queryAll } from '../../../src/server/db/query';
 import { toD1Database } from '../../../src/server/db/adapter';
@@ -198,6 +198,32 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
     // -------------------------------------------------------------
     // 5. Member Dues: /api/finance/dues
     // -------------------------------------------------------------
+    if (route === 'dues/cash' || route === 'dues/record-cash') {
+      if (request.method === 'POST') {
+        const payload = (await request.json()) as any;
+        const result = await recordCashPayment(
+          db,
+          {
+            fiscalYearId: payload.fiscalYearId || 'fy25-26',
+            studentName: payload.studentName,
+            purdueEmail: payload.purdueEmail,
+            amountPaid: Number(payload.amountPaid),
+            semester: payload.semester || 'Spring 2026',
+            paymentDate: payload.paymentDate,
+          },
+          {
+            committeeId: payload.committeeId || 'committee',
+            role: payload.role || 'COMMITTEE_LEAD',
+            name: payload.recorderName || 'Committee Lead',
+            isAdmin: Boolean(payload.isAdmin),
+            exp: Date.now() + 86400000,
+            iat: Date.now(),
+          }
+        );
+        return jsonResponse({ success: true, dues: result }, 201);
+      }
+    }
+
     if (route === 'dues') {
       if (request.method === 'GET') {
         const query = url.searchParams.get('q') || '';
@@ -215,7 +241,7 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
 
       if (request.method === 'POST') {
         const payload = (await request.json()) as { csvData: string; semester: string; fiscalYearId?: string };
-        const result = await importMemberDues(db, payload.csvData, payload.semester, payload.fiscalYearId || 'fy25-26');
+        const result = await importMemberDues(db, payload.csvData, payload.semester || 'Spring 2026', payload.fiscalYearId || 'fy25-26');
         return jsonResponse(result);
       }
     }
