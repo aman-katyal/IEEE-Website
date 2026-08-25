@@ -100,12 +100,10 @@ describe('BentoHero', () => {
     expect(screen.getByText(/— IEEE Mission Statement/)).toBeInTheDocument();
     expect(screen.getByText('Explore Committees')).toBeInTheDocument();
 
-    // Check Telemetry
-    expect(screen.getByText('EE 115')).toBeInTheDocument();
-    expect(screen.getByText('1 Committees')).toBeInTheDocument();
-    expect(screen.getByText('Join Now →')).toBeInTheDocument();
-    expect(screen.getByText('1,200+ Members')).toBeInTheDocument();
-    expect(screen.getByText('Purdue West Lafayette')).toBeInTheDocument();
+    // Check Callout & Event Radar Box
+    expect(screen.getByText('// Callout & Event Radar')).toBeInTheDocument();
+    expect(screen.getByText('RADAR')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Alerts/i })).toBeInTheDocument();
 
     // Check About Us
     expect(screen.getByText(/Student Organization/)).toBeInTheDocument();
