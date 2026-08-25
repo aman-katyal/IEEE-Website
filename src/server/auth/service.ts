@@ -1,9 +1,9 @@
 import type { D1DatabaseLike } from '../db/adapter';
 import type { DatabaseSync } from 'node:sqlite';
-import { queryOne, executeQuery } from '../db/query';
+import { queryFirst, executeRun } from '../db/query';
 import { verifyPin as verifyPinHash, hashPin } from './crypto';
 import { signSessionToken } from './jwt';
-import type { AuthSession, AuthRole } from './types';
+import type { AuthRole } from './types';
 
 export interface VerifyPinResult {
   authenticated: boolean;
@@ -25,7 +25,8 @@ export async function verifyPin(
   dbLike: D1DatabaseLike | DatabaseSync,
   pin: string,
   role: 'treasurer' | 'committee',
-  committeeId?: string
+  committeeId?: string,
+  jwtSecret = 'boilerbooks-session-secret-key-2026'
 ): Promise<VerifyPinResult> {
   if (!pin || typeof pin !== 'string') {
     return { authenticated: false, message: 'PIN passcode is required.' };
@@ -33,7 +34,7 @@ export async function verifyPin(
 
   const targetId = role === 'treasurer' ? 'treasurer' : (committeeId || 'general');
 
-  const row = await queryOne<{
+  const row = await queryFirst<{
     id: string;
     name: string;
     passcode_hash: string;
@@ -62,12 +63,15 @@ export async function verifyPin(
   }
 
   const authRole: AuthRole = row.is_admin === 1 ? 'TREASURER' : 'COMMITTEE_LEAD';
-  const token = await signSessionToken({
-    role: authRole,
-    committeeId: row.id,
-    name: row.is_admin === 1 ? 'Executive Treasurer' : `${row.name} Lead`,
-    isAdmin: row.is_admin === 1,
-  });
+  const token = await signSessionToken(
+    {
+      role: authRole,
+      committeeId: row.id,
+      name: row.is_admin === 1 ? 'Executive Treasurer' : `${row.name} Lead`,
+      isAdmin: row.is_admin === 1,
+    },
+    jwtSecret
+  );
 
   return {
     authenticated: true,
@@ -91,7 +95,7 @@ export async function updateCommitteePasscode(
   newPasscode: string
 ): Promise<boolean> {
   const hash = await hashPin(newPasscode);
-  const result = await executeQuery(
+  const result = await executeRun(
     dbLike,
     'UPDATE finance_committees SET passcode_hash = ? WHERE id = ?',
     [hash, committeeId]

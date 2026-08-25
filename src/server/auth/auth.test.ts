@@ -17,10 +17,9 @@ import {
 import {
   authenticateRequest,
   requireRole,
-  parseCookies,
-  extractTokenFromRequest,
-  createSessionCookie,
   clearSessionCookie,
+  SESSION_COOKIE_NAME,
+} from './middleware';
 import { DatabaseSync } from 'node:sqlite';
 import { verifyPin as verifyPinService, updateCommitteePasscode } from './service';
 import type { AuthRole, AuthSession } from './types';
