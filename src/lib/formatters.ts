@@ -56,3 +56,22 @@ export function formatPhoneNumber(phone: string): string {
   }
   return phone;
 }
+
+/**
+ * Converts a US phone number into international E.164 standard (+17654946724) for tel: hyperlinks.
+ */
+export function toE164Phone(phone: string): string {
+  if (!phone || typeof phone !== 'string') return '';
+  const digits = phone.replace(/\D/g, '');
+  if (digits.length === 10) {
+    return `+1${digits}`;
+  }
+  if (digits.length === 11 && digits.startsWith('1')) {
+    return `+${digits}`;
+  }
+  if (digits.length > 0) {
+    return `+${digits}`;
+  }
+  return '';
+}
+

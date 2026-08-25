@@ -181,25 +181,65 @@
   }
 }
 
-/* Windows High Contrast Mode (Forced Colors) Overrides */
-@media (forced-colors: active) {
-  :root, .dark {
-    --border: CanvasText;
-    --primary-foreground: ButtonText;
+html {
+  scrollbar-gutter: stable;
+}
+
+/* Fluid typography tokens */
+:root {
+  --text-fluid-hero: clamp(2rem, 5vw + 1rem, 3.75rem);
+  --text-fluid-subheading: clamp(1.25rem, 3vw + 0.5rem, 2.25rem);
+  --focus-ring-color: #0284c7;
+  --focus-ring-offset: 2px;
+}
+
+/* 3D Card Tilt GPU compositing acceleration */
+.ieee-card-tilt {
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+/* Multi-line clamp utilities */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-4 {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Print Stylesheet for Governance and Financial Statements */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
   }
 
-  button, a, [role="button"], input, select, textarea {
-    forced-color-adjust: none;
-    border: 1px solid ButtonBorder;
+  header, nav, footer, .theme-toggle, button, [role="tablist"] {
+    display: none !important;
   }
 
-  button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
-    outline: 2px solid Highlight !important;
-    outline-offset: 2px;
+  table, tr, td, th {
+    page-break-inside: avoid;
   }
 
-  [data-testid="widget-error-fallback"], .glass-card, [role="dialog"], [role="alert"] {
-    border: 2px solid CanvasText !important;
+  a[href^="http"]:after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
   }
 }
+
 

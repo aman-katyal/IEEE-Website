@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { calculatePercentage } from './mathUtils';
+import {
+  calculatePercentage,
+  roundCurrency,
+  sumCurrencies,
+  diffCurrencies,
+} from './mathUtils';
 
 describe('calculatePercentage', () => {
   it('returns 0 when total is 0', () => {
@@ -28,5 +33,11 @@ describe('calculatePercentage', () => {
 
   it('rounds correctly at decimals=0', () => {
     expect(calculatePercentage(1, 3)).toBe(33);
+  });
+
+  it('accurately rounds and sums currencies avoiding floating point drift', () => {
+    expect(sumCurrencies([0.1, 0.2])).toBe(0.3);
+    expect(diffCurrencies(1.0, 0.9)).toBe(0.1);
+    expect(roundCurrency(10.555)).toBe(10.56);
   });
 });

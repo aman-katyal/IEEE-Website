@@ -2,19 +2,25 @@ interface RetryConfig {
   maxAttempts?: number;
   initialDelayMs?: number;
   maxDelayMs?: number;
+  jitter?: boolean;
 }
 
 const RETRIABLE_STATUSES = new Set([429, 500, 502, 503, 504]);
 
 /**
- * Fetches a URL with exponential backoff retry on transient errors.
+ * Fetches a URL with exponential backoff retry and optional jitter on transient errors.
  */
 export async function fetchWithRetry(
   url: string,
   options?: RequestInit,
   config?: RetryConfig
 ): Promise<Response> {
-  const { maxAttempts = 3, initialDelayMs = 500, maxDelayMs = 4000 } = config ?? {};
+  const {
+    maxAttempts = 3,
+    initialDelayMs = 500,
+    maxDelayMs = 4000,
+    jitter = false,
+  } = config ?? {};
   let lastError: unknown;
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     try {
@@ -28,7 +34,8 @@ export async function fetchWithRetry(
       lastError = err;
     }
     if (attempt < maxAttempts - 1) {
-      const delay = Math.min(initialDelayMs * Math.pow(2, attempt), maxDelayMs);
+      const baseDelay = Math.min(initialDelayMs * Math.pow(2, attempt), maxDelayMs);
+      const delay = jitter ? Math.floor(Math.random() * baseDelay) : baseDelay;
       await new Promise(resolve => setTimeout(resolve, delay));
     }
   }

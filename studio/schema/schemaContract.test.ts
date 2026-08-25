@@ -62,4 +62,33 @@ describe('Sanity Studio Schema Contract Suite', () => {
     expect(fieldNames).toContain('timeline');
     expect(fieldNames).toContain('sections');
   });
+
+  it('validates that committee schema fields match Committee TypeScript contract', () => {
+    const committeeSchema = schemaTypes.find((s) => s.name === 'committee');
+    expect(committeeSchema).toBeDefined();
+    const fieldNames = committeeSchema!.fields.map((f: any) => f.name);
+
+    expect(fieldNames).toContain('name');
+    expect(fieldNames).toContain('id');
+    expect(fieldNames).toContain('description');
+  });
+
+  it('validates that partner schema fields match Partner TypeScript contract', () => {
+    const partnerSchema = schemaTypes.find((s) => s.name === 'partner');
+    expect(partnerSchema).toBeDefined();
+    const fieldNames = partnerSchema!.fields.map((f: any) => f.name);
+
+    expect(fieldNames).toContain('name');
+    expect(fieldNames).toContain('tier');
+    expect(fieldNames).toContain('domain');
+  });
+
+  it('validates that siteSettings schema fields match SiteSettings contract', () => {
+    const settingsSchema = schemaTypes.find((s) => s.name === 'siteSettings');
+    expect(settingsSchema).toBeDefined();
+    const fieldNames = settingsSchema!.fields.map((f: any) => f.name);
+
+    expect(fieldNames).toContain('discordUrl');
+    expect(fieldNames).toContain('paymentUrl');
+  });
 });

@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { formatCurrencyUSD, formatPhoneNumber, dollarsToCents, centsToDollars } from './formatters';
+import {
+  formatCurrencyUSD,
+  formatPhoneNumber,
+  toE164Phone,
+  dollarsToCents,
+  centsToDollars,
+} from './formatters';
 
 describe('dollarsToCents and centsToDollars', () => {
   it('converts dollars to integer cents accurately without floating precision errors', () => {
@@ -60,6 +66,13 @@ describe('formatPhoneNumber', () => {
 
   it('returns non-standard formats as-is', () => {
     expect(formatPhoneNumber('123')).toBe('123');
+    expect(formatPhoneNumber('invalid-phone-number')).toBe('invalid-phone-number');
+  });
+
+  it('converts numbers to E.164 international standard', () => {
+    expect(toE164Phone('(765) 494-6724')).toBe('+17654946724');
+    expect(toE164Phone('1-765-494-6724')).toBe('+17654946724');
+    expect(toE164Phone('')).toBe('');
   });
 
   it('returns empty string as-is', () => {

@@ -26,11 +26,50 @@
 
     <!-- Preconnect & Preload for performance -->
     <link rel="preconnect" href="https://cdn.sanity.io" crossorigin />
+    <link rel="dns-prefetch" href="https://cdn.sanity.io" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" />
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
     <link rel="preload" as="image" href="/images/general%20IEEE%20pictures/ieee%20whole%20team%20photo.webp" type="image/webp" />
+    
+    <!-- Schema.org JSON-LD Structured Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "EducationalOrganization",
+            "@id": "https://purdueieee.org/#organization",
+            "name": "Purdue IEEE Student Branch",
+            "alternateName": "Purdue University IEEE",
+            "url": "https://purdueieee.org/",
+            "logo": "https://purdueieee.org/images/logo/logo_clean.png",
+            "foundingDate": "1903",
+            "description": "Purdue University's premier IEEE student branch. Fostering technological innovation and excellence since 1903.",
+            "parentOrganization": {
+              "@type": "CollegeOrUniversity",
+              "name": "Purdue University",
+              "url": "https://www.purdue.edu/"
+            },
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "West Lafayette",
+              "addressRegion": "IN",
+              "postalCode": "47907",
+              "addressCountry": "US"
+            },
+            "sameAs": [
+              "https://www.instagram.com/purdueieee/",
+              "https://www.linkedin.com/company/purdue-ieee-student-branch/",
+              "https://github.com/PurdueIEEE"
+            ]
+          }
+        ]
+      }
+    </script>
     
     <!-- PWA & Mobile Meta -->
     <link rel="manifest" href="/manifest.webmanifest" />

@@ -20,6 +20,13 @@ describe("csvUtils", () => {
       expect(escapeCsvCell(null)).toBe('""');
       expect(escapeCsvCell(undefined)).toBe('""');
     });
+
+    it("escapes formula injection characters like =, +, -, @", () => {
+      expect(escapeCsvCell('=SUM(1,2)')).toBe("\"'=SUM(1,2)\"");
+      expect(escapeCsvCell('+12345')).toBe("\"'+12345\"");
+      expect(escapeCsvCell('-50.00')).toBe("\"'-50.00\"");
+      expect(escapeCsvCell('@cmd')).toBe("\"'@cmd\"");
+    });
   });
 
   describe("generateCsvString", () => {

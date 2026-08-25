@@ -17,3 +17,17 @@ export function calculatePercentage(
   const factor = Math.pow(10, decimals);
   return Math.round(clamped * factor) / factor;
 }
+
+export function roundCurrency(amount: number): number {
+  return Math.round((amount + Number.EPSILON) * 100) / 100;
+}
+
+export function sumCurrencies(amounts: number[]): number {
+  const sumInCents = amounts.reduce((acc, curr) => acc + Math.round(curr * 100), 0);
+  return sumInCents / 100;
+}
+
+export function diffCurrencies(a: number, b: number): number {
+  return (Math.round(a * 100) - Math.round(b * 100)) / 100;
+}
+

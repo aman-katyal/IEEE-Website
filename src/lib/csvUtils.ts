@@ -1,13 +1,25 @@
 /**
- * Escapes a cell value for standard RFC 4180 CSV output.
+ * Sanitizes a cell value to prevent CSV formula injection attacks in Excel / Google Sheets.
+ */
+export function sanitizeCsvCell(val: unknown): string {
+  if (val == null) return '';
+  let str = String(val);
+  if (/^[=+\-@\t\r]/.test(str)) {
+    str = `'${str}`;
+  }
+  return str;
+}
+
+/**
+ * Escapes a cell value for standard RFC 4180 CSV output with injection defense.
  */
 export function escapeCsvCell(val: unknown): string {
   if (val == null) return '""';
-  const str = String(val);
-  if (str.includes(",") || str.includes('"') || str.includes("\n") || str.includes("\r")) {
-    return `"${str.replace(/"/g, '""')}"`;
+  const sanitized = sanitizeCsvCell(val);
+  if (sanitized.includes(",") || sanitized.includes('"') || sanitized.includes("\n") || sanitized.includes("\r")) {
+    return `"${sanitized.replace(/"/g, '""')}"`;
   }
-  return `"${str}"`;
+  return `"${sanitized}"`;
 }
 
 /**
