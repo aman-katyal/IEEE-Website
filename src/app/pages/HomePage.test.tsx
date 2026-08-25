@@ -141,7 +141,8 @@ describe('HomePage', () => {
 
     expect(screen.getByText('Committees')).toBeInTheDocument();
     expect(screen.getByText('Technical')).toBeInTheDocument();
-    expect(screen.getByText('HQ Location:')).toBeInTheDocument();
+    expect(screen.getByText('// Where Our Engineers Go')).toBeInTheDocument();
+    expect(screen.getByText('TOP DESTINATIONS')).toBeInTheDocument();
   });
 
   it('renders events section with correct content', () => {
