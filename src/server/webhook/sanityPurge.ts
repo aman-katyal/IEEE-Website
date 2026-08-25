@@ -46,9 +46,12 @@ export async function handleSanityWebhook(
     const signatureBuffer = await crypto.subtle.sign("HMAC", key, data);
 
     // Sanity signature is a base64url encoded string
-    const base64String = btoa(
-      String.fromCharCode(...new Uint8Array(signatureBuffer)),
-    );
+    const uint8 = new Uint8Array(signatureBuffer);
+    let str = "";
+    for (let i = 0; i < uint8.length; i++) {
+      str += String.fromCharCode(uint8[i]);
+    }
+    const base64String = btoa(str);
     const base64UrlString = base64String
       .replace(/\+/g, "-")
       .replace(/\//g, "_")
@@ -63,7 +66,7 @@ export async function handleSanityWebhook(
 
     if (payload._type === "committee" || payload._type === "officer") {
       const url = new URL(request.url);
-      const cache = caches.default;
+      const cache = (caches as any).default;
       const urlsToPurge = [
         new URL("/about", url.origin),
         new URL("/officers", url.origin),
