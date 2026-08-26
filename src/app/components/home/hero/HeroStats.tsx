@@ -59,40 +59,40 @@ export function BranchTelemetryCard(props: WhereEngineersGoCardProps) {
         </div>
 
         {/* Single Company Vertical Ticker Area */}
-        <div className="relative h-[72px] my-2 overflow-hidden flex items-center">
+        <div className="relative h-[88px] my-1.5 overflow-hidden flex items-center">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentCompany.name + currentIndex}
-              initial={{ y: 20, opacity: 0, scale: 0.98 }}
+              initial={{ y: 24, opacity: 0, scale: 0.97 }}
               animate={{ y: 0, opacity: 1, scale: 1 }}
-              exit={{ y: -20, opacity: 0, scale: 0.98 }}
+              exit={{ y: -24, opacity: 0, scale: 0.97 }}
               transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-              className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl bg-slate-900/80 border border-slate-800/90 shadow-inner"
+              className="flex items-center gap-3.5 w-full px-3.5 py-3 rounded-2xl bg-slate-900/85 border border-slate-800/90 shadow-inner group/card hover:border-sky-500/30 transition-colors"
             >
               {/* Company Logo Badge */}
-              <div className="w-9 h-9 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-center p-1.5 shrink-0 shadow-sm">
+              <div className="w-12 h-12 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center p-2 shrink-0 shadow-sm">
                 {currentCompany.domain ? (
                   <img
                     src={`https://www.google.com/s2/favicons?domain=${currentCompany.domain}&sz=64`}
                     alt=""
-                    className="w-5 h-5 rounded-sm object-contain"
+                    className="w-7 h-7 rounded-sm object-contain"
                     loading="lazy"
                     onError={(e) => {
                       (e.target as HTMLImageElement).style.display = "none";
                     }}
                   />
                 ) : (
-                  <Building2 className="w-4 h-4 text-sky-400" />
+                  <Building2 className="w-5 h-5 text-sky-400" />
                 )}
               </div>
 
               {/* Company Name & Focus */}
               <div className="min-w-0 flex-1">
-                <div className="text-sm font-bold text-slate-100 truncate tracking-tight">
+                <div className="text-[15px] sm:text-base font-bold text-slate-100 truncate tracking-tight">
                   {currentCompany.name}
                 </div>
                 {currentCompany.roleOrField && (
-                  <div className="text-[11px] font-mono text-sky-300 truncate mt-0.5">
+                  <div className="text-xs font-mono text-sky-300 truncate mt-0.5">
                     {currentCompany.roleOrField}
                   </div>
                 )}
@@ -102,23 +102,24 @@ export function BranchTelemetryCard(props: WhereEngineersGoCardProps) {
         </div>
       </div>
 
-      {/* Action Footer */}
-      <div className="mt-3.5 pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
+      {/* Action Footer - Combined Single Action Bar */}
+      <div className="mt-3 pt-3 border-t border-slate-800/80">
         <Link
           to="/committees"
-          className="px-2.5 py-1.5 rounded bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 text-sky-300 hover:text-sky-200 text-xs font-semibold transition-all flex items-center gap-1.5"
-          title="Explore Technical Committees"
+          className="w-full px-3.5 py-2.5 rounded-xl bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/25 hover:border-sky-500/40 text-sky-300 hover:text-sky-100 text-xs font-semibold transition-all flex items-center justify-between group/link shadow-sm"
+          title="Explore 9 Technical Committees"
         >
-          <span>Join a Project</span>
-        </Link>
+          <span className="flex items-center gap-1.5 font-sans">
+            <span>Join a Project</span>
+          </span>
 
-        <Link
-          to="/committees"
-          className="text-xs text-slate-300 hover:text-amber-300 font-semibold transition-colors flex items-center gap-1"
-          style={{ color: "var(--cyber-gold)" }}
-        >
-          <span>9 Committees</span>
-          <ArrowUpRight className="w-3.5 h-3.5 shrink-0" />
+          <span
+            className="flex items-center gap-1 text-[11px] font-mono font-semibold"
+            style={{ color: "var(--cyber-gold)" }}
+          >
+            <span>9 Committees</span>
+            <ArrowUpRight className="w-3.5 h-3.5 shrink-0 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
+          </span>
         </Link>
       </div>
     </div>
