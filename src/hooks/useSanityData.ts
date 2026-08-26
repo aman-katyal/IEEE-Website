@@ -187,6 +187,7 @@ export interface SiteSettings {
   partnersHeroSubtitle?: string;
   partnersProspectusUrl?: string;
   showCorporateTiers?: boolean;
+  hidePartners?: boolean;
   partnerTierDescriptions?: {
     tier: string;
     color: string;

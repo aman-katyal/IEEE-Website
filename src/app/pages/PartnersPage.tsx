@@ -189,16 +189,17 @@ export function PartnersPage() {
       </section>
 
       {/* Partners Grid Section */}
-      <section style={{ padding: "64px 0 128px" }}>
-        <div
-          style={{
-            maxWidth: "1280px",
-            margin: "0 auto",
-            padding: "0 clamp(16px, 4vw, 32px)",
-          }}
-        >
-          {/* Conditional Tier Breakdown or Unified Sponsors Grid */}
-          {showCorporateTiers ? (
+      {!settings?.hidePartners && partners.length > 0 && (
+        <section style={{ padding: "64px 0 128px" }}>
+          <div
+            style={{
+              maxWidth: "1280px",
+              margin: "0 auto",
+              padding: "0 clamp(16px, 4vw, 32px)",
+            }}
+          >
+            {/* Conditional Tier Breakdown or Unified Sponsors Grid */}
+            {showCorporateTiers ? (
             <>
               {/* Gold Tier */}
               {goldPartners.length > 0 && (
@@ -381,6 +382,7 @@ export function PartnersPage() {
           )}
         </div>
       </section>
+      )}
 
       {/* CTA Section */}
       <section

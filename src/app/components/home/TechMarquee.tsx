@@ -2,7 +2,7 @@ import { useState, useMemo, memo } from "react";
 import { Link } from "react-router";
 import { ArrowRight } from "lucide-react";
 import { useTheme } from "next-themes";
-import { usePartners } from "../../../hooks/useSanityData";
+import { usePartners, useSiteSettings } from "../../../hooks/useSanityData";
 
 const MarqueeItem = memo(function MarqueeItem({
   partner,
@@ -95,10 +95,15 @@ const MarqueeItem = memo(function MarqueeItem({
 export function TechMarquee() {
   const { theme } = useTheme();
   const { partners } = usePartners();
+  const { settings } = useSiteSettings();
   const isLight = theme === "light";
 
   // ⚡ Bolt: Cache duplicated array to prevent O(N) allocation on every render
   const displayPartners = useMemo(() => [...partners, ...partners], [partners]);
+
+  if (settings?.hidePartners || !partners || partners.length === 0) {
+    return null;
+  }
 
   return (
     <div

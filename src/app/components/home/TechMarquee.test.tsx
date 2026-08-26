@@ -12,12 +12,17 @@ vi.mock('next-themes', () => ({
 
 vi.mock('../../../hooks/useSanityData', () => ({
   usePartners: vi.fn(),
+  useSiteSettings: vi.fn(),
 }));
 
 describe('TechMarquee', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     (nextThemes.useTheme as any).mockReturnValue({ theme: 'dark' });
+    (sanityHooks.useSiteSettings as any).mockReturnValue({
+      settings: { hidePartners: false },
+      loading: false,
+    });
     (sanityHooks.usePartners as any).mockReturnValue({
       partners: [
         { name: 'Texas Instruments', domain: 'ti.com', tier: 'Gold' },
@@ -77,5 +82,25 @@ describe('TechMarquee', () => {
     // Should fallback to span text
     const textFallback = screen.getAllByText('Texas Instruments');
     expect(textFallback.length).toBeGreaterThan(0);
+  });
+
+  it('renders nothing when hidePartners is true', () => {
+    (sanityHooks.useSiteSettings as any).mockReturnValue({
+      settings: { hidePartners: true },
+      loading: false,
+    });
+
+    const { container } = renderComponent();
+    expect(container.firstChild).toBeNull();
+  });
+
+  it('renders nothing when partners list is empty', () => {
+    (sanityHooks.usePartners as any).mockReturnValue({
+      partners: [],
+      loading: false,
+    });
+
+    const { container } = renderComponent();
+    expect(container.firstChild).toBeNull();
   });
 });

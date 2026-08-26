@@ -162,4 +162,21 @@ describe('PartnersPage', () => {
 
     expect(screen.getByText(/Empowering the next generation/i)).toBeInTheDocument();
   });
+
+  it('hides partner directory when hidePartners is true in settings', () => {
+    (useSanityData.useSiteSettings as any).mockReturnValue({
+      settings: { ...mockSettings, hidePartners: true },
+      loading: false,
+      error: null
+    });
+
+    render(
+      <MemoryRouter>
+        <PartnersPage />
+      </MemoryRouter>
+    );
+
+    expect(screen.queryByText('Our Corporate Partners & Sponsors')).not.toBeInTheDocument();
+    expect(screen.queryByText('Gold Partner 1')).not.toBeInTheDocument();
+  });
 });

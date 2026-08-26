@@ -107,6 +107,14 @@ export const siteSettings = defineType({
 
     // --- PARTNERS GROUP ---
     defineField({
+      name: 'hidePartners',
+      title: 'Hide Partners Directory (Production / Pre-Season)',
+      type: 'boolean',
+      group: 'partners',
+      description: 'When enabled, hides all partner logos and sponsor directory across the website.',
+      initialValue: true,
+    }),
+    defineField({
       name: 'showCorporateTiers',
       title: 'Show Corporate Tiers Breakdown',
       type: 'boolean',
