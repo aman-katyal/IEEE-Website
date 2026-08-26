@@ -1,17 +1,21 @@
 -- BoilerBooks 3.0 Migration: 0004_update_finance_passcodes.sql
--- Updates finance committee authentication passcodes with cryptographic PBKDF2-SHA256 hashes
-
-UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:36f7064042465dc501494cc1828b6071:b29d8ec3b49428e617570eec54058bc6e5094cfc6a97c7af88658d32ba966a07' WHERE id = 'treasurer';
-UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:782a6e7ffe01f100d9fccf0a0e328cf2:52a27c6d68c31dcd46c26050869ceb2f60e6432b9ca2b0352fe1ebb9a149bc54' WHERE id = 'general';
-UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:2cf3d438b1543a522e6d67f19c96169c:4329f38d27fadae1f7c1024e4e4b4accca45ba50b1b5df0b58dbc5e9a345cf5b' WHERE id = 'rov';
-UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:411b8d3d419f6397c8bd0fbaa2d3edda:004cf318ce0b0beabd00b630cb170c68e1a70bae685b5fa1c51376f46a1cb2f1' WHERE id = 'racing';
-UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:c9e3b5bbef80bf89e438c80af54a9c49:6636afcb842c740fd7f26bbcee63a793bd2e9be4c7d021e4b749169897c8921d' WHERE id = 'cs';
-UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:b4628de2957ef5c1e49b6bb29b07938c:0b9c18361a9aabab74c81a5668ce146953ab694bc693c186094bc97e0c80d419' WHERE id = 'embs';
-UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:aa00198334b9eb635be18ccb88af088b:60eaa8c91e2f90e5671dbcc3579e46fc63978a2bb28653d6355c71eb21512b96' WHERE id = 'mtts';
-UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:e04a0abfa319d5ec3bb084051d59972a:7c8208b3ae6d83bf52303575d907f6f0c4c56bf91a768c0dee6eed0878f45146' WHERE id = 'aess';
-UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:e564910ce6319c3f7a1e508d5647d45f:3ecb50311727e095d885e292779ac6361059725c151a743ee627d6ea5cecc80a' WHERE id = 'learning';
-UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:f0620ca77477bc948a633764944681dd:52d1627b963abbe1119076c6fcfc5d126c07c05c312982820a7baeff60b584f8' WHERE id = 'infrastructure';
-UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:a7abb7f01d3b784dcf0a8b7a406eff9e:2679f3d5d95f0c01262346ca2a2a873d490717f4a2d286a7cbaeefd73a31f7e1' WHERE id = 'events';
-UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:cde661de8b2c6d5fa3b9e4df3bc6d27e:6b72428d2e3d9ce5a76b72a972c936f2546da03c95a4246fc0e65a8ef830999d' WHERE id = 'industrial-relations';
-UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:6560b56c6bf6506701685cde362496df:594aa1d2cc230fa6923482500632c99577171c5e192ad58cf8ba815c783e1f75' WHERE id = 'member-involvement';
-UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:d194ba55a3458877ab26d70619bfd22e:042bff98007016117c5a05ac3d820de5ed7a60618ddcc49743343e901ce83224' WHERE id = 'operations';
+UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:f38c7ce916391eba077055be6b5e0980:45fd7c35da0ea33929010975bcbacdc44de18d7ae3ed8bdcff806b0357ecc3ab' WHERE id = 'treasurer';
+UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:f97b5433bc7bf7332edccc4b3cfc1f2f:54047a030608671477f80b72570694fdef817872865ce752035961adf9dc6df5' WHERE id = 'president';
+UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:974ca56c8644bde3a35c41ee329510b9:0cacadf3c5ea7311d64390f25ce29ce3066a49d44fa3614dae7694ca751467db' WHERE id = 'rov';
+UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:37d72f1d0c034ad7185a1a2c19c908b3:6e57e3123ec079dd935ba5e7be2542cd3be0c5d5e0693bb065abbf3e964e9902' WHERE id = 'racing';
+UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:979b6bdddf59ac748c15fc55eaba37f6:5cbe713c7f638fd9132bd7946575fec6f7c53daeac2a42bacdc8bdb94d6cfc6f' WHERE id = 'aess';
+UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:20378c1ee6d609547e9f3a3a462cb809:71475162e0eec238c63df57d70a6845032e06d89285fd2940b00a75060b8bfb3' WHERE id = 'aesc';
+UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:95fccdbb237d0db116b4d9a03cc9affe:3bb0a3d04dcb85eefa63e82ebb117916aa55b529f2b581d2296ce1cde3d635df' WHERE id = 'cs';
+UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:3eb549ffb13821f8ca1fc61646524eb0:9388dd811d9f0e24868c099882a48464c134c2b223991eb3f67538cc18939839' WHERE id = 'embs';
+UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:ad1b5800094e6a76ac8b6b3c600d41f3:daa8dde871db31c2fae175d99da9bb4d77a3c58627ea75a761e9f1e96754f242' WHERE id = 'mtts';
+UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:261e948ca5c74b4c45f2af0ba4fdeee0:898f3210da9f639e5fcbd544341869285aac72502e4f263231a1245a1505cf07' WHERE id = 'eds';
+UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:76dc23f0547e5585ab3b0df8aa9a3435:1efd2c129ce5ba178a0f59e103bd78ce977063f684b92edc9b571e79a48b62be' WHERE id = 'smc';
+UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:ae94bcf68c9226a389f346de96a5f40f:f892b4b9d71c699d20fd869abc0ea51a8b17135df51ad571101460e04606e709' WHERE id = 'software-sat';
+UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:697e7f995e6afd6f8ba1cda45948c9e7:0b520c98345a471d5f874d4391edd5863f5279d34c18f1d0f06cd43b5efa4dc5' WHERE id = 'learning';
+UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:c5c42d810eefa93ac190bdf3a57e2dac:717e74a035f845a7a85e5c5d3313b2dcba94d5be5459a86670e18ae5e0652f8d' WHERE id = 'general';
+UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:155ac28a73550d451229ecd548131055:5f7dc08265c6fc43031d6272f4e1d9aca379401add9db09ad6f47c643ed91d5e' WHERE id = 'infrastructure';
+UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:a0f9b100b02a7bbc82e894e3ca8d59e0:14b136793f2e2dc72e5c554adf2365bf45e68af52fb7e3dbae1493a3772cf38d' WHERE id = 'events';
+UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:869302f3422834a751db33346a5112d1:45eb45a3bdc3165f796dfe40b89722b62d7c6417b5d02f6f2785146144e92140' WHERE id = 'social';
+UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:4a67ffba5a1145c37b20756127147d38:b7d260818253853176e55af4a4cf23680a13cabe454062ee19251b7b925ad5c2' WHERE id = 'industrial-relations';
+UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:832d601ef18b8f7b61dfac3c86d25889:828b1b5f54a6a740389a9476c2160406a55097e4d5157ecd23a0efcbcbbf2bf4' WHERE id = 'member-involvement';
+UPDATE finance_committees SET passcode_hash = 'pbkdf2:sha256:100000:3772c0ebb184cec728c171bed380ca58:653e606820fa29d7d797d08feeb2a5a3b8e9a906932cf3c961fada720b184942' WHERE id = 'operations';

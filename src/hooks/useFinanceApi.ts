@@ -17,6 +17,7 @@ import {
   type PurchaseStatus,
   type InflowSourceType,
   type BosoAccountStatement,
+  type FinancialAuditLedgerEntry,
   OFFICIAL_BOSO_STATEMENT_SFAB_2026,
 } from '../app/components/finance/financeData';
 
@@ -28,6 +29,7 @@ export interface UseFinanceApiState {
   memberDues: MemberDuesRecord[];
   committees: CommitteeInfo[];
   fundingInflows: CommitteeFundingInflow[];
+  auditLogs: FinancialAuditLedgerEntry[];
   bosoStatement: BosoAccountStatement;
   isLoading: boolean;
   isSyncing: boolean;
@@ -41,6 +43,15 @@ export function useFinanceApi() {
       return stored ? JSON.parse(stored) : null;
     } catch {
       return null;
+    }
+  });
+
+  const [auditLogs, setAuditLogs] = useState<FinancialAuditLedgerEntry[]>(() => {
+    try {
+      const stored = localStorage.getItem('boilerbooks_audit_logs');
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
     }
   });
 
@@ -134,6 +145,12 @@ export function useFinanceApi() {
     } catch {}
   }, [bosoStatement]);
 
+  useEffect(() => {
+    try {
+      localStorage.setItem('boilerbooks_audit_logs', JSON.stringify(auditLogs));
+    } catch {}
+  }, [auditLogs]);
+
   // Fetch initial data from Cloudflare API if available
   const refreshData = useCallback(async (fiscalYearId = 'fy25-26') => {
     setIsSyncing(true);
@@ -167,26 +184,24 @@ export function useFinanceApi() {
             id: r.id,
             committeeId: r.committee_id || r.committeeId,
             committeeName: r.committee_name || r.committeeName || r.committee_id,
-            requesterName: r.payee_name || r.requesterName || 'Committee Member',
-            requesterEmail: r.contact_email || r.requesterEmail || 'member@purdue.edu',
-            purdueUsername: r.purdue_username || r.purdueUsername,
-            phoneNumber: r.payee_phone || r.phoneNumber,
-            streetAddress: r.payee_address || r.streetAddress,
-            fundingSource: (r.account_type === 'SFAB' ? 'SFAB' : 'GENERAL') as 'SFAB' | 'GENERAL',
-            sfabLineItem: r.sfab_line_item || r.sfabLineItem,
-            disbursementMethod: r.payment_preference === 'CHECK' ? 'MAIL_ADDRESS' : 'EPAYMENT',
-            vendorName: r.vendor_name || r.vendorName || 'Vendor',
-            category: r.category_name || r.category || 'General',
+            requesterName: r.requester_name || r.requesterName,
+            requesterEmail: r.requester_email || r.requesterEmail,
+            purdueUsername: r.purdue_username || r.purdueUsername || '',
+            streetAddress: r.street_address || r.streetAddress || '',
+            phoneNumber: r.phone_number || r.phoneNumber || '',
+            disbursementMethod: r.disbursement_method || r.disbursementMethod || 'BOSO_PICKUP',
+            vendorName: r.vendor_name || r.vendorName,
             totalAmount: Number(r.total_amount || r.totalAmount || 0),
-            description: r.item_description || r.description || 'Purchase request item',
-            status: (r.status || 'PENDING') as PurchaseStatus,
-            receiptUrl: r.receipt_url || (Array.isArray(r.receipt_urls) ? r.receipt_urls[0] : undefined),
-            receiptFilename: r.receipt_filename || 'receipt.pdf',
-            coolAccountNumber: r.cool_account_number || r.coolAccountNumber,
-            treasurerNotes: r.treasurer_notes || r.treasurerNotes,
-            submittedAt: r.created_at || r.submittedAt || new Date().toISOString(),
+            description: r.description,
+            categoryName: r.category_name || r.categoryName || 'General',
+            fundingSource: (r.funding_source || r.fundingSource || 'GENERAL') as 'GENERAL' | 'SFAB',
+            sfabLineItem: r.sfab_line_item || r.sfabLineItem,
+            status: r.status as PurchaseStatus,
+            receiptUrl: r.receipt_r2_key ? `/api/finance/receipts/${r.receipt_r2_key}` : undefined,
+            submittedAt: r.submitted_at || r.submittedAt || new Date().toISOString(),
             approvedAt: r.approved_at || r.approvedAt,
             reimbursedAt: r.reimbursed_at || r.reimbursedAt,
+            treasurerNotes: r.treasurer_notes || r.treasurerNotes,
           }));
           setPurchases(mapped);
         }
@@ -238,6 +253,15 @@ export function useFinanceApi() {
         const statementData = await statementRes.json();
         if (statementData.statement) {
           setBosoStatement(statementData.statement);
+        }
+      }
+
+      // 6. Fetch Banking Audit Ledger
+      const logsRes = await fetch(`${API_BASE}/audit-logs?fiscalYearId=${fiscalYearId}`);
+      if (logsRes.ok) {
+        const logsData = await logsRes.json();
+        if (logsData.entries && Array.isArray(logsData.entries)) {
+          setAuditLogs(logsData.entries);
         }
       }
     } catch {
@@ -603,6 +627,7 @@ export function useFinanceApi() {
     memberDues,
     committees,
     fundingInflows,
+    auditLogs,
     bosoStatement,
     setBosoStatement,
     isLoading,

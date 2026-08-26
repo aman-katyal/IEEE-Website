@@ -14,6 +14,7 @@ export function FinancePortalPage() {
     memberDues,
     committees,
     fundingInflows,
+    auditLogs,
     bosoStatement,
     logout,
     addPurchase,
@@ -110,6 +111,7 @@ export function FinancePortalPage() {
             memberDues={memberDues}
             committees={committees}
             fundingInflows={fundingInflows}
+            auditLogs={auditLogs}
             onAddPurchase={addPurchase}
             onRecordCashDues={recordCashDues}
             onLogout={handleLogout}
@@ -121,6 +123,7 @@ export function FinancePortalPage() {
             memberDues={memberDues}
             committees={committees}
             fundingInflows={fundingInflows}
+            auditLogs={auditLogs}
             bosoStatement={bosoStatement}
             onUpdatePurchaseStatus={updatePurchaseStatus}
             onRecordCashDues={recordCashDues}

@@ -436,3 +436,46 @@ export const DEFAULT_SEED_COMMITTEES: readonly SeedCommittee[] = [
     contact_email: 'social@purdueieee.org',
   },
 ] as const;
+
+export type AuditActionType =
+  | 'BUDGET_ALLOCATION'
+  | 'FUNDING_INFLOW'
+  | 'FUNDING_INFLOW_DELETED'
+  | 'PURCHASE_SUBMITTED'
+  | 'PURCHASE_APPROVED'
+  | 'PURCHASE_REIMBURSED'
+  | 'PURCHASE_REJECTED'
+  | 'CASH_DUES'
+  | 'PARAMETER_CHANGE';
+
+export interface FinancialAuditLedgerRow {
+  id: string;
+  fiscal_year_id: string;
+  committee_id: string;
+  action_type: string;
+  actor_role: string;
+  actor_name: string;
+  actor_email: string | null;
+  description: string;
+  previous_value: string | null;
+  new_value: string | null;
+  amount_delta: number;
+  created_at: string;
+}
+
+export interface FinancialAuditLedgerEntry {
+  id: string;
+  fiscalYearId: string;
+  committeeId: string;
+  committeeName?: string;
+  actionType: AuditActionType;
+  actorRole: string;
+  actorName: string;
+  actorEmail?: string | null;
+  description: string;
+  previousValue?: string | null;
+  newValue?: string | null;
+  amountDelta: number;
+  createdAt: string;
+}
+

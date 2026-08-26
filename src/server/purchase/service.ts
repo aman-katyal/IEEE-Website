@@ -5,6 +5,7 @@
 
 import type { DatabaseSync } from 'node:sqlite';
 import { adaptDatabase, type D1DatabaseLike } from '../db/adapter';
+import { recordAuditEntry } from '../db/audit';
 import type {
   PurchaseRequest,
   PurchaseRequestRow,
@@ -333,6 +334,21 @@ export async function createPurchaseRequest(
 
   const mapped = mapRowToPurchaseRequest(createdRow);
 
+  try {
+    await recordAuditEntry(db, {
+      fiscalYearId: payload.fiscalYearId,
+      committeeId: payload.committeeId,
+      actionType: 'PURCHASE_SUBMITTED',
+      actorRole: session?.role || 'COMMITTEE_LEAD',
+      actorName: payload.requesterName,
+      actorEmail: payload.requesterEmail,
+      description: `Submitted purchase requisition ${id} for $${payload.totalAmount.toFixed(2)} to vendor "${payload.vendorName}" (${payload.description})`,
+      previousValue: null,
+      newValue: String(payload.totalAmount),
+      amountDelta: -payload.totalAmount,
+    });
+  } catch {}
+
   return {
     ...mapped,
     budgetWarning,
@@ -553,6 +569,28 @@ export async function updatePurchaseStatus(
   if (!updatedRow) {
     throw new Error(`Failed to retrieve updated purchase request record for "${id}"`);
   }
+
+  try {
+    await recordAuditEntry(db, {
+      fiscalYearId: updatedRow.fiscal_year_id,
+      committeeId: updatedRow.committee_id,
+      actionType:
+        newStatus === 'APPROVED'
+          ? 'PURCHASE_APPROVED'
+          : newStatus === 'REIMBURSED'
+          ? 'PURCHASE_REIMBURSED'
+          : newStatus === 'REJECTED'
+          ? 'PURCHASE_REJECTED'
+          : 'PARAMETER_CHANGE',
+      actorRole: session.role,
+      actorName: session.name,
+      actorEmail: session.committeeId === 'treasurer' ? 'treasurer@purdueieee.org' : undefined,
+      description: `Purchase requisition ${id} ($${updatedRow.total_amount.toFixed(2)} at ${updatedRow.vendor_name}) changed from ${current.status} to ${newStatus}${treasurerNotes ? ` - Notes: "${treasurerNotes}"` : ''}`,
+      previousValue: current.status,
+      newValue: newStatus,
+      amountDelta: newStatus === 'APPROVED' ? -updatedRow.total_amount : 0,
+    });
+  } catch {}
 
   return mapRowToPurchaseRequest(updatedRow);
 }

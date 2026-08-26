@@ -45,10 +45,12 @@ import {
   type AuthSessionData,
   type CommitteeFundingInflow,
   type CommitteeInfo,
+  type FinancialAuditLedgerEntry,
   INITIAL_FUNDING_INFLOWS,
   REAL_COMMITTEES,
 } from './financeData';
 import { ReceiptPreviewModal } from './ReceiptPreviewModal';
+import { BankingAuditLedgerView } from './BankingAuditLedgerView';
 
 export interface CommitteeFinanceViewProps {
   session: AuthSessionData;
@@ -56,6 +58,7 @@ export interface CommitteeFinanceViewProps {
   memberDues: MemberDuesRecord[];
   committees?: CommitteeInfo[];
   fundingInflows?: CommitteeFundingInflow[];
+  auditLogs?: FinancialAuditLedgerEntry[];
   onAddPurchase: (newPurchase: PurchaseItem) => void;
   onRecordCashDues?: (record: {
     studentName: string;
@@ -74,6 +77,7 @@ export function CommitteeFinanceView({
   memberDues,
   committees = REAL_COMMITTEES,
   fundingInflows = INITIAL_FUNDING_INFLOWS,
+  auditLogs = [],
   onAddPurchase,
   onRecordCashDues,
   onLogout,
@@ -870,6 +874,14 @@ export function CommitteeFinanceView({
           </Table>
         </CardContent>
       </Card>
+
+      {/* Committee Banking Audit Ledger & Revision History */}
+      <BankingAuditLedgerView
+        entries={auditLogs}
+        currentCommitteeId={committee.id}
+        committees={committees}
+        isTreasurer={false}
+      />
 
       {/* New Purchase Request Modal */}
       <Dialog open={isSubmitModalOpen} onOpenChange={setIsSubmitModalOpen}>

@@ -5,6 +5,7 @@
 
 import { queryAll, queryFirst, roundCurrency, type D1DatabaseLike } from '../db/query';
 import { toD1Database } from '../db/adapter';
+import { recordAuditEntry } from '../db/audit';
 import type { CommitteeId } from '../db/types';
 
 export interface CommitteeSpendingRow {
@@ -374,11 +375,13 @@ export async function updateCommitteeParameters(
 
   // 1. Update budget allocation if specified
   if (payload.allocatedAmount !== undefined) {
-    const existingBudget = await queryFirst<{ id: string }>(
+    const existingBudget = await queryFirst<{ id: string; allocated_amount: number }>(
       db,
-      'SELECT id FROM committee_budgets WHERE fiscal_year_id = ? AND committee_id = ?',
+      'SELECT id, allocated_amount FROM committee_budgets WHERE fiscal_year_id = ? AND committee_id = ?',
       [fiscalYearId, committeeId]
     );
+    const prevAllocated = existingBudget?.allocated_amount ?? 0;
+    const delta = payload.allocatedAmount - prevAllocated;
 
     if (existingBudget) {
       await d1
@@ -393,6 +396,30 @@ export async function updateCommitteeParameters(
         )
         .bind(budgetId, fiscalYearId, committeeId, payload.allocatedAmount, payload.notes || null)
         .run();
+    }
+
+    if (delta !== 0) {
+      await recordBudgetAdjustmentAudit(db, {
+        committeeId,
+        fiscalYearId,
+        adjustedBy: 'Executive Treasurer',
+        previousAmount: prevAllocated,
+        newAmount: payload.allocatedAmount,
+        reason: payload.notes || undefined,
+      });
+
+      await recordAuditEntry(db, {
+        fiscalYearId,
+        committeeId,
+        actionType: 'BUDGET_ALLOCATION',
+        actorRole: 'TREASURER',
+        actorName: 'Executive Treasurer',
+        actorEmail: 'treasurer@purdueieee.org',
+        description: `Base allocated budget adjusted from $${prevAllocated.toLocaleString('en-US', { minimumFractionDigits: 2 })} to $${payload.allocatedAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })} (${delta > 0 ? '+' : ''}$${delta.toLocaleString('en-US', { minimumFractionDigits: 2 })})`,
+        previousValue: String(prevAllocated),
+        newValue: String(payload.allocatedAmount),
+        amountDelta: delta,
+      });
     }
   }
 
@@ -509,6 +536,19 @@ export async function recordCommitteeFundingInflow(
       payload.notes?.trim() || null
     )
     .run();
+
+  await recordAuditEntry(db, {
+    fiscalYearId: payload.fiscalYearId || 'fy25-26',
+    committeeId: payload.committeeId,
+    actionType: 'FUNDING_INFLOW',
+    actorRole: 'TREASURER',
+    actorName: 'Executive Treasurer',
+    actorEmail: 'treasurer@purdueieee.org',
+    description: `Recorded funding inflow of $${payload.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })} from ${sourceType}: "${payload.title}"`,
+    previousValue: null,
+    newValue: String(payload.amount),
+    amountDelta: payload.amount,
+  });
 
   return {
     success: true,

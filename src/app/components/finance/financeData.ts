@@ -85,6 +85,31 @@ export interface AuthSessionData {
   email: string;
 }
 
+export interface FinancialAuditLedgerEntry {
+  id: string;
+  fiscalYearId: string;
+  committeeId: string;
+  committeeName?: string;
+  actionType:
+    | 'BUDGET_ALLOCATION'
+    | 'FUNDING_INFLOW'
+    | 'FUNDING_INFLOW_DELETED'
+    | 'PURCHASE_SUBMITTED'
+    | 'PURCHASE_APPROVED'
+    | 'PURCHASE_REIMBURSED'
+    | 'PURCHASE_REJECTED'
+    | 'CASH_DUES'
+    | 'PARAMETER_CHANGE';
+  actorRole: string;
+  actorName: string;
+  actorEmail?: string | null;
+  description: string;
+  previousValue?: string | null;
+  newValue?: string | null;
+  amountDelta: number;
+  createdAt: string;
+}
+
 export const REAL_COMMITTEES: CommitteeInfo[] = [
   {
     id: 'general',

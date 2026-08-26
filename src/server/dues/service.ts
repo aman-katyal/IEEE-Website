@@ -6,6 +6,7 @@
 import type { DatabaseSync } from 'node:sqlite';
 import { adaptDatabase, type D1DatabaseLike } from '../db/adapter';
 import { queryAll, roundCurrency } from '../db/query';
+import { recordAuditEntry } from '../db/audit';
 import type { MemberDues, MemberDuesRow, FiscalYearRow } from '../db/types';
 import type { AuthSession } from '../auth/types';
 import type { ParsedDuesRow } from './parser';
@@ -304,6 +305,21 @@ export async function recordCashPayment(
   if (!createdRow) {
     throw new Error('Failed to retrieve created cash dues record');
   }
+
+  try {
+    await recordAuditEntry(db, {
+      fiscalYearId: payload.fiscalYearId,
+      committeeId: session.committeeId,
+      actionType: 'CASH_DUES',
+      actorRole: session.role,
+      actorName: session.name,
+      actorEmail: undefined,
+      description: `Collected $${payload.amountPaid.toFixed(2)} cash dues payment from ${payload.studentName.trim()} (${purdueEmail}) for ${payload.semester.trim()}`,
+      previousValue: null,
+      newValue: String(payload.amountPaid),
+      amountDelta: payload.amountPaid,
+    });
+  } catch {}
 
   return mapRowToMemberDues(createdRow);
 }

@@ -16,6 +16,7 @@ import {
 } from '../../../src/server/matrix/spending';
 import { importMemberDues, searchMemberDues, getMemberDuesSummary, recordCashPayment } from '../../../src/server/dues/service';
 import { generateCOOLBatch } from '../../../src/server/cool/exporter';
+import { listAuditEntries } from '../../../src/server/db/audit';
 import { queryAll } from '../../../src/server/db/query';
 import { toD1Database } from '../../../src/server/db/adapter';
 
@@ -340,7 +341,31 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
     }
 
     // -------------------------------------------------------------
-    // 9. BOSO Account Statements: /api/finance/statements
+    // 9. Banking Audit Ledger: /api/finance/audit-logs
+    // -------------------------------------------------------------
+    if (route === 'audit-logs' && request.method === 'GET') {
+      const fiscalYearId = url.searchParams.get('fiscalYearId') || 'fy25-26';
+      const committeeId = url.searchParams.get('committeeId') || undefined;
+      const roleParam = url.searchParams.get('role') || 'treasurer';
+      const sessionRole = roleParam === 'committee' ? 'COMMITTEE_LEAD' : 'TREASURER';
+
+      const entries = await listAuditEntries(
+        db,
+        { fiscalYearId, committeeId },
+        {
+          committeeId: committeeId || 'treasurer',
+          role: sessionRole as any,
+          name: sessionRole === 'TREASURER' ? 'Executive Treasurer' : 'Committee Lead',
+          isAdmin: sessionRole === 'TREASURER',
+          exp: 0,
+          iat: 0,
+        }
+      );
+      return jsonResponse({ success: true, entries });
+    }
+
+    // -------------------------------------------------------------
+    // 10. BOSO Account Statements: /api/finance/statements
     // -------------------------------------------------------------
     if (route === 'statements' && request.method === 'GET') {
       const statements = await queryAll(db, 'SELECT * FROM boso_account_statements ORDER BY soa_number ASC');

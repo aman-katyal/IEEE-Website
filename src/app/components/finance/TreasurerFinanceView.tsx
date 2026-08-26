@@ -56,6 +56,7 @@ import {
   type CommitteeFundingInflow,
   type InflowSourceType,
   type BosoAccountStatement,
+  type FinancialAuditLedgerEntry,
   INITIAL_FUNDING_INFLOWS,
   REAL_COMMITTEES,
   type PurchaseStatus,
@@ -63,6 +64,7 @@ import {
 } from './financeData';
 import { ReceiptPreviewModal } from './ReceiptPreviewModal';
 import { BosoCoolStatementView } from './BosoCoolStatementView';
+import { BankingAuditLedgerView } from './BankingAuditLedgerView';
 import { parseDuesFile } from '@/server/dues/parser';
 
 export interface TreasurerFinanceViewProps {
@@ -71,6 +73,7 @@ export interface TreasurerFinanceViewProps {
   memberDues: MemberDuesRecord[];
   committees?: CommitteeInfo[];
   fundingInflows?: CommitteeFundingInflow[];
+  auditLogs?: FinancialAuditLedgerEntry[];
   bosoStatement?: BosoAccountStatement;
   onUpdatePurchaseStatus: (
     id: string,
@@ -99,6 +102,7 @@ export function TreasurerFinanceView({
   memberDues,
   committees,
   fundingInflows = INITIAL_FUNDING_INFLOWS,
+  auditLogs = [],
   bosoStatement = OFFICIAL_BOSO_STATEMENT_SFAB_2026,
   onUpdatePurchaseStatus,
   onImportMemberDues,
@@ -777,6 +781,12 @@ export function TreasurerFinanceView({
           >
             BOSO Statement (SOA #04612)
           </TabsTrigger>
+          <TabsTrigger
+            value="audit"
+            className="data-[state=active]:bg-sky-600 data-[state=active]:text-white text-slate-300 text-xs px-4"
+          >
+            Banking Audit Ledger ({auditLogs.length})
+          </TabsTrigger>
         </TabsList>
 
         {/* Tab 1: Pending Approvals Queue */}
@@ -1309,6 +1319,15 @@ export function TreasurerFinanceView({
         {/* Tab 5: Official BOSO / COOL Account Statement */}
         <TabsContent value="statement" className="mt-4 space-y-4">
           <BosoCoolStatementView statement={bosoStatement || OFFICIAL_BOSO_STATEMENT_SFAB_2026} />
+        </TabsContent>
+
+        {/* Tab 6: Banking Audit Ledger & Revision History */}
+        <TabsContent value="audit" className="mt-4 space-y-4">
+          <BankingAuditLedgerView
+            entries={auditLogs}
+            committees={activeCommittees}
+            isTreasurer={true}
+          />
         </TabsContent>
       </Tabs>
 
