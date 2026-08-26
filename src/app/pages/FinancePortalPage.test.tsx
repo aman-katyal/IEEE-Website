@@ -22,6 +22,13 @@ describe('FinancePortalPage Integration Suite', () => {
       const urlStr = typeof url === 'string' ? url : '';
       if (urlStr.includes('/auth/verify-pin') && init?.body) {
         const body = JSON.parse(init.body as string);
+        if (body.pin === '0000' || body.pin === 'wrong') {
+          return {
+            ok: false,
+            status: 401,
+            json: async () => ({ authenticated: false, message: 'Invalid authentication PIN passcode.' }),
+          };
+        }
         if (body.role === 'treasurer') {
           return {
             ok: true,
@@ -60,7 +67,11 @@ describe('FinancePortalPage Integration Suite', () => {
         };
       }
       if (urlStr.includes('/dues')) {
-        const stored = JSON.parse(localStorage.getItem('boilerbooks_member_dues') || '[]');
+        const stored = JSON.parse(
+          localStorage.getItem('boilerbooks_dues') ||
+          localStorage.getItem('boilerbooks_member_dues') ||
+          '[]'
+        );
         return {
           ok: true,
           json: async () => ({ success: true, dues: stored }),
