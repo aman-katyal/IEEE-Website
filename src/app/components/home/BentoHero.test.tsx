@@ -55,7 +55,6 @@ describe('BentoHero', () => {
       { name: 'SpaceX', domain: 'spacex.com' },
       { name: 'Apple', domain: 'apple.com' },
     ],
-    alumniHighlightText: 'Top Tech Destinations',
   };
 
   const mockCommittees = [

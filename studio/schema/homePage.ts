@@ -55,14 +55,6 @@ export const homePage = defineType({
         },
       ],
     }),
-    defineField({
-      name: 'alumniHighlightText',
-      title: 'Alumni Card Tagline',
-      type: 'string',
-      group: 'hero',
-      description: 'Tagline displayed on the hero card (e.g., Top Tech, Aerospace & Semiconductor Destinations).',
-      initialValue: 'Top Tech, Aerospace & Semiconductor Destinations',
-    }),
 
     // --- ABOUT GROUP ---
     defineField({

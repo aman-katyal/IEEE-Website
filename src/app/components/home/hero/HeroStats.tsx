@@ -6,11 +6,10 @@ import type { AlumniCompany } from "../../../../data/sanity-types";
 
 export interface WhereEngineersGoCardProps {
   companies?: AlumniCompany[];
-  highlightText?: string;
 }
 
 export function BranchTelemetryCard(props: WhereEngineersGoCardProps) {
-  const { companies, highlightText } = props;
+  const { companies } = props;
 
   const activeCompanies = companies && companies.length > 0 ? companies : [];
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -106,13 +105,6 @@ export function BranchTelemetryCard(props: WhereEngineersGoCardProps) {
             </motion.div>
           </AnimatePresence>
         </div>
-
-        {/* Impact Subtitle */}
-        {highlightText && (
-          <p className="text-[11px] text-slate-400 leading-snug mt-1" style={{ fontFamily: "var(--font-body)" }}>
-            {highlightText}
-          </p>
-        )}
       </div>
 
       {/* Action Footer */}

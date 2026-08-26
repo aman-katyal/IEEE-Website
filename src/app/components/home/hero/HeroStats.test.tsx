@@ -15,7 +15,6 @@ describe('BranchTelemetryCard (Where Our Engineers Go)', () => {
       <MemoryRouter>
         <BranchTelemetryCard
           companies={customCompanies}
-          highlightText="Top Robotics & Cellular Destinations"
         />
       </MemoryRouter>
     );
@@ -24,7 +23,6 @@ describe('BranchTelemetryCard (Where Our Engineers Go)', () => {
     expect(screen.getByText('1 / 3')).toBeInTheDocument();
     expect(screen.getByText('NASA JPL')).toBeInTheDocument();
     expect(screen.getByText('Space Robotics')).toBeInTheDocument();
-    expect(screen.getByText('Top Robotics & Cellular Destinations')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Join a Project/i })).toHaveAttribute('href', '/committees');
     expect(screen.getByRole('link', { name: /9 Committees/i })).toHaveAttribute('href', '/committees');
   });

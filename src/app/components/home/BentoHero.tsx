@@ -186,7 +186,6 @@ export function BentoHero() {
             {/* 2. Where Our Engineers Go (1x1 span) */}
             <BranchTelemetryCard
               companies={homeData?.alumniCompanies}
-              highlightText={homeData?.alumniHighlightText}
             />
 
             {/* 3. Core Stats (1x1 span) */}

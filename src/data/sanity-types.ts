@@ -44,7 +44,6 @@ export interface HomePageData {
   aboutContent?: string;
   stats?: StatItem[];
   alumniCompanies?: AlumniCompany[];
-  alumniHighlightText?: string;
 }
 
 export interface AboutSectionData {
