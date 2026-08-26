@@ -20,6 +20,20 @@ export class ErrorBoundaryClass extends Component<Props, State> {
   };
 
   public static getDerivedStateFromError(error: Error): State {
+    const msg = error?.message || "";
+    const isDynamicImportError =
+      msg.includes("Failed to fetch dynamically imported module") ||
+      msg.includes("error loading dynamically imported module") ||
+      msg.includes("Importing a module script failed");
+
+    if (isDynamicImportError && typeof window !== "undefined") {
+      const hasReloaded = window.sessionStorage.getItem("chunk_reload");
+      if (!hasReloaded) {
+        window.sessionStorage.setItem("chunk_reload", "true");
+        window.location.reload();
+      }
+    }
+
     return { hasError: true, error };
   }
 
@@ -184,6 +198,26 @@ export function ErrorFallbackView({
  */
 export function RouteErrorBoundary() {
   const error = useRouteError();
+
+  const errorMessage =
+    error instanceof Error
+      ? error.message
+      : typeof error === "string"
+      ? error
+      : "";
+
+  const isDynamicImportError =
+    errorMessage.includes("Failed to fetch dynamically imported module") ||
+    errorMessage.includes("error loading dynamically imported module") ||
+    errorMessage.includes("Importing a module script failed");
+
+  if (isDynamicImportError && typeof window !== "undefined") {
+    const hasReloaded = window.sessionStorage.getItem("chunk_reload");
+    if (!hasReloaded) {
+      window.sessionStorage.setItem("chunk_reload", "true");
+      window.location.reload();
+    }
+  }
 
   if (isRouteErrorResponse(error)) {
     return (

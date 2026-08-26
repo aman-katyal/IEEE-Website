@@ -12,20 +12,52 @@ import { ErrorBoundary, RouteErrorBoundary } from "./app/components/shared/Error
 import { PageSkeleton } from "./app/components/shared/PageSkeleton";
 import { ThemeProvider } from "next-themes";
 
-const HomePage = React.lazy(() => import('./app/pages/HomePage').then(m => ({ default: m.HomePage })));
-const CommitteePage = React.lazy(() => import('./app/pages/CommitteePage').then(m => ({ default: m.CommitteePage })));
-const CommitteesPage = React.lazy(() => import('./app/pages/CommitteesPage').then(m => ({ default: m.CommitteesPage })));
-const OfficersPage = React.lazy(() => import('./app/pages/OfficersPage').then(m => ({ default: m.OfficersPage })));
-const CalendarPage = React.lazy(() => import('./app/pages/CalendarPage').then(m => ({ default: m.CalendarPage })));
-const JoinPage = React.lazy(() => import('./app/pages/JoinPage').then(m => ({ default: m.JoinPage })));
-const AboutUsPage = React.lazy(() => import('./app/pages/AboutUsPage').then(m => ({ default: m.AboutUsPage })));
-const PartnersPage = React.lazy(() => import('./app/pages/PartnersPage').then(m => ({ default: m.PartnersPage })));
-const ConstitutionPage = React.lazy(() => import('./app/pages/ConstitutionPage').then(m => ({ default: m.ConstitutionPage })));
-const PrivacyPage = React.lazy(() => import('./app/pages/PrivacyPage').then(m => ({ default: m.PrivacyPage })));
-const TermsPage = React.lazy(() => import('./app/pages/TermsPage').then(m => ({ default: m.TermsPage })));
-const AccessibilityPage = React.lazy(() => import('./app/pages/AccessibilityPage').then(m => ({ default: m.AccessibilityPage })));
-const FinancePortalPage = React.lazy(() => import('./app/pages/FinancePortalPage').then(m => ({ default: m.FinancePortalPage })));
-const NotFoundPage = React.lazy(() => import('./app/pages/NotFoundPage').then(m => ({ default: m.NotFoundPage })));
+// Handle stale chunks after new deployments
+if (typeof window !== "undefined") {
+  window.addEventListener("vite:preloadError", (event) => {
+    event.preventDefault();
+    const hasReloaded = window.sessionStorage.getItem("chunk_reload");
+    if (!hasReloaded) {
+      window.sessionStorage.setItem("chunk_reload", "true");
+      window.location.reload();
+    }
+  });
+}
+
+function lazyWithRetry<T extends React.ComponentType<any>>(
+  factory: () => Promise<{ default: T }>
+): React.LazyExoticComponent<T> {
+  return React.lazy(async () => {
+    try {
+      const component = await factory();
+      window.sessionStorage.removeItem("chunk_reload");
+      return component;
+    } catch (error) {
+      const hasReloaded = window.sessionStorage.getItem("chunk_reload");
+      if (!hasReloaded) {
+        window.sessionStorage.setItem("chunk_reload", "true");
+        window.location.reload();
+        return new Promise(() => {});
+      }
+      throw error;
+    }
+  });
+}
+
+const HomePage = lazyWithRetry(() => import('./app/pages/HomePage').then(m => ({ default: m.HomePage })));
+const CommitteePage = lazyWithRetry(() => import('./app/pages/CommitteePage').then(m => ({ default: m.CommitteePage })));
+const CommitteesPage = lazyWithRetry(() => import('./app/pages/CommitteesPage').then(m => ({ default: m.CommitteesPage })));
+const OfficersPage = lazyWithRetry(() => import('./app/pages/OfficersPage').then(m => ({ default: m.OfficersPage })));
+const CalendarPage = lazyWithRetry(() => import('./app/pages/CalendarPage').then(m => ({ default: m.CalendarPage })));
+const JoinPage = lazyWithRetry(() => import('./app/pages/JoinPage').then(m => ({ default: m.JoinPage })));
+const AboutUsPage = lazyWithRetry(() => import('./app/pages/AboutUsPage').then(m => ({ default: m.AboutUsPage })));
+const PartnersPage = lazyWithRetry(() => import('./app/pages/PartnersPage').then(m => ({ default: m.PartnersPage })));
+const ConstitutionPage = lazyWithRetry(() => import('./app/pages/ConstitutionPage').then(m => ({ default: m.ConstitutionPage })));
+const PrivacyPage = lazyWithRetry(() => import('./app/pages/PrivacyPage').then(m => ({ default: m.PrivacyPage })));
+const TermsPage = lazyWithRetry(() => import('./app/pages/TermsPage').then(m => ({ default: m.TermsPage })));
+const AccessibilityPage = lazyWithRetry(() => import('./app/pages/AccessibilityPage').then(m => ({ default: m.AccessibilityPage })));
+const FinancePortalPage = lazyWithRetry(() => import('./app/pages/FinancePortalPage').then(m => ({ default: m.FinancePortalPage })));
+const NotFoundPage = lazyWithRetry(() => import('./app/pages/NotFoundPage').then(m => ({ default: m.NotFoundPage })));
 
 const queryClient = new QueryClient({
   defaultOptions: {
