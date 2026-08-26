@@ -84,19 +84,19 @@ export function BranchTelemetryCard(props: WhereEngineersGoCardProps) {
       {/* Action Footer */}
       <div className="mt-3.5 pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
         <Link
-          to="/committees"
+          to="/destinations"
           className="px-2.5 py-1.5 rounded bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 text-sky-300 hover:text-sky-200 text-xs font-semibold transition-all flex items-center gap-1.5"
-          title="Explore Technical Committees"
+          title="Explore all alumni and internship destinations"
         >
-          <span>Join a Project</span>
+          <span>View Destinations</span>
         </Link>
 
         <Link
-          to="/committees"
+          to="/destinations"
           className="text-xs text-slate-300 hover:text-amber-300 font-semibold transition-colors flex items-center gap-1"
           style={{ color: "var(--cyber-gold)" }}
         >
-          <span>9 Committees</span>
+          <span>{activeCompanies.length > 6 ? `${activeCompanies.length}+ Companies` : "All Companies"}</span>
           <ArrowUpRight className="w-3.5 h-3.5 shrink-0" />
         </Link>
       </div>
