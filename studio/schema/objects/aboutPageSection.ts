@@ -33,5 +33,7 @@ export const aboutPageSection = defineType({
       initialValue: 'blue',
     }),
     defineField({ name: 'image', title: 'Image', type: 'image', options: { hotspot: true } }),
+    defineField({ name: 'cardTitle', title: 'Card Title', type: 'string' }),
+    defineField({ name: 'cardContent', title: 'Card Content', type: 'text' }),
   ],
 })
