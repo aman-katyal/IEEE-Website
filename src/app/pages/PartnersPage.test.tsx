@@ -111,14 +111,14 @@ describe('PartnersPage', () => {
     expect(screen.getByText('Bronze Partner 1')).toBeInTheDocument();
   });
 
-  it('renders IEEE Gold Partner recognition callout', () => {
+  it('does not render hardcoded gold partner recognition callout', () => {
     render(
       <MemoryRouter>
         <PartnersPage />
       </MemoryRouter>
     );
 
-    expect(screen.getByText(/IEEE Exemplary Student Branch — Gold Partner Recognition/i)).toBeInTheDocument();
+    expect(screen.queryByText(/IEEE Exemplary Student Branch — Gold Partner Recognition/i)).not.toBeInTheDocument();
   });
 
   it('renders partners provided from Sanity CMS', () => {
