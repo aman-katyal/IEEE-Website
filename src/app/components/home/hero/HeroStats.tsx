@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { Briefcase, ArrowUpRight, Building2, ChevronRight } from "lucide-react";
+import { ArrowUpRight, Building2, ChevronRight } from "lucide-react";
 import type { AlumniCompany } from "../../../../data/sanity-types";
 
 export interface WhereEngineersGoCardProps {
@@ -94,20 +94,19 @@ export function BranchTelemetryCard(props: WhereEngineersGoCardProps) {
       {/* Action Footer */}
       <div className="mt-3.5 pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
         <Link
-          to="/partners"
+          to="/committees"
           className="px-2.5 py-1.5 rounded bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 text-sky-300 hover:text-sky-200 text-xs font-semibold transition-all flex items-center gap-1.5"
-          title="Explore Corporate Partners & Sponsorship"
+          title="Explore Technical Committees"
         >
-          <Briefcase className="w-3.5 h-3.5 shrink-0" />
-          <span>Partners</span>
+          <span>Join a Project</span>
         </Link>
 
         <Link
-          to="/partners"
+          to="/committees"
           className="text-xs text-slate-300 hover:text-amber-300 font-semibold transition-colors flex items-center gap-1"
           style={{ color: "var(--cyber-gold)" }}
         >
-          <span>View All Partners</span>
+          <span>9 Committees</span>
           <ArrowUpRight className="w-3.5 h-3.5 shrink-0" />
         </Link>
       </div>

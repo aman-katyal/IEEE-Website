@@ -26,8 +26,8 @@ describe('BranchTelemetryCard (Where Our Engineers Go)', () => {
     expect(screen.getByText('Tesla Motors')).toBeInTheDocument();
     expect(screen.getByText('Qualcomm')).toBeInTheDocument();
     expect(screen.getByText('Top Robotics & Cellular Destinations')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /^Partners$/i })).toHaveAttribute('href', '/partners');
-    expect(screen.getByRole('link', { name: /View All Partners/i })).toHaveAttribute('href', '/partners');
+    expect(screen.getByRole('link', { name: /Join a Project/i })).toHaveAttribute('href', '/committees');
+    expect(screen.getByRole('link', { name: /9 Committees/i })).toHaveAttribute('href', '/committees');
   });
 
   it('renders default high-profile engineering destinations when CMS list is empty', () => {
