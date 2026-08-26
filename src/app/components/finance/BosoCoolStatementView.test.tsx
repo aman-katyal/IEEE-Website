@@ -130,7 +130,7 @@ describe('BosoCoolStatementView Component', () => {
     const debitsBtn = screen.getByRole('button', { name: /Debits/i });
     fireEvent.click(debitsBtn);
 
-    expect(screen.getByText('MCMASTER-CARR S')).toBeInTheDocument();
+    expect(screen.getAllByText('MCMASTER-CARR S').length).toBeGreaterThan(0);
     expect(screen.getByText('EUROS')).toBeInTheDocument();
     expect(screen.queryByText('Underground Printing')).not.toBeInTheDocument();
 

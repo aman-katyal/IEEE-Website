@@ -196,6 +196,24 @@ describe('FinancePortalPage Integration Suite', () => {
     }, 15000);
 
     it('approves a pending request in the queue', async () => {
+      const samplePending = [
+        {
+          id: 'PR-TEST-001',
+          committeeId: 'rov',
+          committeeName: 'ROV',
+          requesterName: 'Alex Rivera',
+          requesterEmail: 'arivera@purdue.edu',
+          vendorName: 'Blue Robotics',
+          category: 'Hardware & Thrusters',
+          totalAmount: 1489.5,
+          description: 'T200 Thrusters for subsea overhaul',
+          status: 'PENDING',
+          coolAccountNumber: '01-234-56',
+          submittedAt: '2026-02-10T14:32:00Z',
+        },
+      ];
+      localStorage.setItem('boilerbooks_purchases', JSON.stringify(samplePending));
+
       const user = userEvent.setup();
       render(<FinancePortalPage />);
 
