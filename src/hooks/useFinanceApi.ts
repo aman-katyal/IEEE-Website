@@ -336,24 +336,35 @@ export function useFinanceApi() {
           id: newPurchase.id,
           fiscalYearId: 'fy25-26',
           committeeId: newPurchase.committeeId,
+          fundingSource: newPurchase.fundingSource || 'GENERAL',
           accountType: newPurchase.fundingSource || 'GENERAL',
           sfabLineItem: newPurchase.sfabLineItem,
+          requesterName: newPurchase.requesterName,
           payeeName: newPurchase.requesterName,
+          requesterEmail: newPurchase.requesterEmail,
           purdueUsername: newPurchase.purdueUsername,
+          streetAddress: newPurchase.streetAddress,
           payeeAddress: newPurchase.streetAddress,
+          phoneNumber: newPurchase.phoneNumber,
           payeePhone: newPurchase.phoneNumber,
+          disbursementMethod: newPurchase.disbursementMethod || 'BOSO_PICKUP',
           paymentPreference: newPurchase.disbursementMethod === 'MAIL_ADDRESS' ? 'CHECK' : 'DIRECT_DEPOSIT',
+          category: newPurchase.category,
           totalAmount: newPurchase.totalAmount,
+          description: newPurchase.description,
           itemDescription: newPurchase.description,
           businessPurpose: newPurchase.description,
           vendorName: newPurchase.vendorName,
+          receiptFilename: newPurchase.receiptFilename || 'receipt.pdf',
+          receiptUrl: newPurchase.receiptUrl,
           receiptUrls: newPurchase.receiptUrl ? [newPurchase.receiptUrl] : [],
         }),
       });
 
       if (!res.ok && res.status >= 400 && res.status !== 404) {
+        const errorData = await res.json().catch(() => ({}));
         setPurchases(prevPurchases);
-        const err = `Failed to create purchase request (HTTP ${res.status})`;
+        const err = errorData.error || `Failed to create purchase request (HTTP ${res.status})`;
         setError(err);
         return { success: false, error: err };
       }

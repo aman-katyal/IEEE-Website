@@ -197,6 +197,45 @@ export async function getCommitteeBudgetSummary(
   };
 }
 
+export function normalizeCreatePurchasePayload(raw: any): CreatePurchaseRequestPayload {
+  const requesterName = (raw?.requesterName || raw?.payeeName || '').trim();
+  const purdueUsername = (raw?.purdueUsername || '').trim();
+  let requesterEmail = (raw?.requesterEmail || raw?.payeeEmail || '').trim().toLowerCase();
+  if (!requesterEmail && purdueUsername) {
+    requesterEmail = `${purdueUsername}@purdue.edu`;
+  }
+  const streetAddress = (raw?.streetAddress || raw?.payeeAddress || '').trim();
+  const phoneNumber = (raw?.phoneNumber || raw?.payeePhone || '').trim();
+  const fundingSource = raw?.fundingSource || (raw?.accountType === 'SFAB' ? 'SFAB' : 'GENERAL');
+  const disbursementMethod = raw?.disbursementMethod || (raw?.paymentPreference === 'CHECK' ? 'MAIL_ADDRESS' : 'BOSO_PICKUP');
+  const vendorName = (raw?.vendorName || '').trim();
+  const totalAmount = typeof raw?.totalAmount === 'number' ? raw.totalAmount : parseFloat(raw?.totalAmount);
+  const description = (raw?.description || raw?.itemDescription || raw?.businessPurpose || 'Requisition for committee technical project').trim();
+  const receiptFilename = raw?.receiptFilename || (Array.isArray(raw?.receiptUrls) && raw.receiptUrls[0] ? raw.receiptUrls[0] : null);
+
+  return {
+    id: raw?.id,
+    fiscalYearId: raw?.fiscalYearId || 'fy25-26',
+    committeeId: raw?.committeeId,
+    categoryId: raw?.categoryId || raw?.category || null,
+    fundingSource,
+    sfabLineItem: raw?.sfabLineItem || null,
+    purdueUsername,
+    streetAddress,
+    phoneNumber,
+    disbursementMethod,
+    requesterName,
+    requesterEmail,
+    vendorName,
+    totalAmount,
+    description,
+    receiptR2Key: raw?.receiptR2Key || null,
+    receiptFilename,
+    receiptContentType: raw?.receiptContentType || null,
+    coolAccountNumber: raw?.coolAccountNumber || null,
+  };
+}
+
 /**
  * Submits a new Purchase Request
  * Validates requester fields, enforces committee isolation, checks budget availability,
@@ -204,13 +243,14 @@ export async function getCommitteeBudgetSummary(
  */
 export async function createPurchaseRequest(
   dbLike: D1DatabaseLike | DatabaseSync,
-  payload: CreatePurchaseRequestPayload,
+  rawPayload: CreatePurchaseRequestPayload | Record<string, any>,
   session: AuthSession
 ): Promise<CreatePurchaseRequestResult> {
   if (!session) {
     throw new Error('Unauthorized: Active session required');
   }
 
+  const payload = normalizeCreatePurchasePayload(rawPayload);
   const db = adaptDatabase(dbLike);
 
   // Enforce Committee Role Isolation
@@ -245,17 +285,16 @@ export async function createPurchaseRequest(
     throw new Error(`Finance committee "${payload.committeeId}" does not exist`);
   }
 
-  // Verify Budget Category if provided
+  // Verify / resolve Budget Category if provided
+  let resolvedCategoryId: string | null = null;
   if (payload.categoryId) {
     const category = await db
-      .prepare('SELECT * FROM budget_categories WHERE id = ? AND committee_id = ?')
-      .bind(payload.categoryId, payload.committeeId)
+      .prepare('SELECT * FROM budget_categories WHERE (id = ? OR name = ?) AND committee_id = ?')
+      .bind(payload.categoryId, payload.categoryId, payload.committeeId)
       .first<{ id: string; name: string }>();
 
-    if (!category) {
-      throw new Error(
-        `Budget category "${payload.categoryId}" does not exist for committee "${payload.committeeId}"`
-      );
+    if (category) {
+      resolvedCategoryId = category.id;
     }
   }
 
@@ -297,7 +336,7 @@ export async function createPurchaseRequest(
       id,
       payload.fiscalYearId,
       payload.committeeId,
-      payload.categoryId || null,
+      resolvedCategoryId,
       payload.fundingSource || 'GENERAL',
       payload.sfabLineItem || null,
       (payload.purdueUsername || '').trim(),

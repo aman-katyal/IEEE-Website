@@ -59,7 +59,7 @@ export interface CommitteeFinanceViewProps {
   committees?: CommitteeInfo[];
   fundingInflows?: CommitteeFundingInflow[];
   auditLogs?: FinancialAuditLedgerEntry[];
-  onAddPurchase: (newPurchase: PurchaseItem) => void;
+  onAddPurchase: (newPurchase: PurchaseItem) => Promise<{ success: boolean; error?: string }> | void;
   onRecordCashDues?: (record: {
     studentName: string;
     purdueEmail: string;
@@ -155,6 +155,7 @@ export function CommitteeFinanceView({
   const [description, setDescription] = useState<string>('');
   const [receiptFile, setReceiptFile] = useState<{ name: string; url: string; size: string } | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isDragging, setIsDragging] = useState<boolean>(false);
 
   // Table Search & Filter State
@@ -226,7 +227,7 @@ export function CommitteeFinanceView({
     }
   };
 
-  const handleSubmitPurchase = (e: React.FormEvent) => {
+  const handleSubmitPurchase = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError(null);
 
@@ -285,26 +286,38 @@ export function CommitteeFinanceView({
       submittedAt: new Date().toISOString(),
     };
 
-    onAddPurchase(newPurchase);
+    setIsSubmitting(true);
+    try {
+      const result = await onAddPurchase(newPurchase);
+      if (result && result.success === false) {
+        setFormError(result.error || 'Failed to submit purchase request. Please check your inputs.');
+        setIsSubmitting(false);
+        return;
+      }
 
-    // Reset Form
-    setRequesterName('');
-    setRequesterEmail('');
-    setPurdueUsername('');
-    setStreetAddress1('');
-    setStreetAddress2('');
-    setCity('');
-    setState('');
-    setZipCode('');
-    setPhoneNumber('');
-    setFundingSource('GENERAL');
-    setSfabLineItem('');
-    setDisbursementMethod('BOSO_PICKUP');
-    setVendorName('');
-    setTotalAmount('');
-    setDescription('');
-    setReceiptFile(null);
-    setIsSubmitModalOpen(false);
+      // Reset Form on success
+      setRequesterName('');
+      setRequesterEmail('');
+      setPurdueUsername('');
+      setStreetAddress1('');
+      setStreetAddress2('');
+      setCity('');
+      setState('');
+      setZipCode('');
+      setPhoneNumber('');
+      setFundingSource('GENERAL');
+      setSfabLineItem('');
+      setDisbursementMethod('BOSO_PICKUP');
+      setVendorName('');
+      setTotalAmount('');
+      setDescription('');
+      setReceiptFile(null);
+      setIsSubmitModalOpen(false);
+    } catch (err: any) {
+      setFormError(err.message || 'An unexpected error occurred during submission.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const getStatusBadge = (status: PurchaseItem['status']) => {
@@ -1323,9 +1336,10 @@ export function CommitteeFinanceView({
                 <Button
                   type="submit"
                   size="sm"
-                  className="bg-sky-600 hover:bg-sky-500 text-white font-medium shadow-md"
+                  disabled={isSubmitting}
+                  className="bg-sky-600 hover:bg-sky-500 text-white font-medium shadow-md disabled:opacity-50"
                 >
-                  Submit Request
+                  {isSubmitting ? 'Submitting...' : 'Submit Request'}
                 </Button>
               </div>
             </DialogFooter>
