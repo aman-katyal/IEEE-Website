@@ -146,7 +146,7 @@ export function useOfficersConfig() {
 export function useHomePage() {
   const query = groq`*[_type == "homePage"][0]{
     ...,
-    "heroImage": coalesce(heroImage.asset->url + "?auto=format&w=1600&q=75", heroImage.asset->url),
+    "heroImage": coalesce(heroImage.asset->url, heroImage),
     "alumniCompanies": coalesce(alumniCompanies[], [])
   }`;
   const { data, loading, error, refetch } = useSanityQuery<HomePageData>(query);
@@ -162,7 +162,7 @@ export function useAboutPage() {
     }, []),
     "sections": coalesce(sections[]{
       ...,
-      "image": coalesce(image.asset->url + "?auto=format&w=1000&q=75", image.asset->url)
+      "image": coalesce(image.asset->url, image)
     }, [])
   }`;
   const { data, loading, error } = useSanityQuery<AboutPageData>(query);
