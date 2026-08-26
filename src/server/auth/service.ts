@@ -24,7 +24,7 @@ export interface VerifyPinResult {
 export async function verifyPin(
   dbLike: D1DatabaseLike | DatabaseSync,
   pin: string,
-  role: 'treasurer' | 'committee',
+  role: 'treasurer' | 'committee' | 'president' | string,
   committeeId?: string,
   jwtSecret = 'boilerbooks-session-secret-key-2026'
 ): Promise<VerifyPinResult> {
@@ -32,7 +32,7 @@ export async function verifyPin(
     return { authenticated: false, message: 'PIN passcode is required.' };
   }
 
-  const targetId = role === 'treasurer' ? 'treasurer' : (committeeId || 'general');
+  const targetId = committeeId || (role === 'treasurer' ? 'treasurer' : role === 'president' ? 'president' : 'general');
 
   const row = await queryFirst<{
     id: string;
