@@ -111,6 +111,9 @@ To deploy to Cloudflare Pages:
 20. **Zero GitHub Actions / Workflows (MANDATORY):**
     - **NEVER** create, commit, or configure `.github/workflows/` files.
     - All compilation, test suites, bundle builds, PR linting, and issue validation MUST run 100% locally via CLI (`npx tsc`, `npm test`, `npm run build`, `python -m gh_tool`).
+21. **Cloudflare Pages Functions Build Verification (MANDATORY):**
+    - Whenever modifications are made to `functions/` (Cloudflare Pages API gateway) or backend services in `src/server/`, the agent MUST execute `npx wrangler pages functions build` alongside `npx tsc --noEmit && npm test && npm run build` to verify Cloudflare Worker bundling succeeds before committing.
+    - Redundant `_redirects` SPA rewrite rules must never be committed alongside `wrangler.jsonc` `"not_found_handling": "single-page-application"` to prevent Cloudflare redirect loops.
 
 ## 🏛️ Three Tiers of Customization
 
