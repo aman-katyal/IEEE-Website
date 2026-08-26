@@ -80,9 +80,9 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
       const body = (await request.json()) as { pin: string; role?: 'committee' | 'treasurer'; committeeId?: string };
       const auth = await verifyPin(db, body.pin, body.role || 'committee', body.committeeId);
       if (!auth.authenticated || !auth.session) {
-        return errorResponse(auth.message, 401);
+        return errorResponse(auth.message || 'Invalid credentials', 401);
       }
-      return jsonResponse({ success: true, session: auth.session });
+      return jsonResponse({ success: true, authenticated: true, session: auth.session });
     }
 
     // -------------------------------------------------------------

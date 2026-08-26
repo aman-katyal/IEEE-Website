@@ -272,7 +272,7 @@ export function useFinanceApi() {
       const data = await res.json().catch(() => ({}));
       setIsLoading(false);
 
-      if (res.ok && data.authenticated && data.session) {
+      if (res.ok && (data.authenticated || data.success) && data.session) {
         const newSession: AuthSessionData = {
           role: data.session.role,
           committeeId: data.session.committeeId,

@@ -68,7 +68,7 @@ export function FinanceAuthModal({
       const data = await res.json().catch(() => ({}));
       setIsSubmitting(false);
 
-      if (res.ok && data.authenticated && data.session) {
+      if (res.ok && (data.authenticated || data.success) && data.session) {
         onLogin({
           role: data.session.role,
           committeeId: data.session.committeeId,
