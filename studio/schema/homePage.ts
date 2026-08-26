@@ -1,5 +1,5 @@
 import { defineField, defineType } from 'sanity'
-import { Home, Image as ImageIcon, BarChart, Info, Activity } from 'lucide-react'
+import { Home, Image as ImageIcon, BarChart, Info } from 'lucide-react'
 
 export const homePage = defineType({
   name: 'homePage',
