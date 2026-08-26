@@ -206,6 +206,17 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
     }
 
     // -------------------------------------------------------------
+    // 5. Committee Parameters: PATCH /api/finance/committees/:id/parameters
+    // -------------------------------------------------------------
+    if (pathParts[0] === 'committees' && pathParts.length === 3 && pathParts[2] === 'parameters' && request.method === 'PATCH') {
+      const committeeId = pathParts[1];
+      const body = await request.json();
+      const fiscalYearId = url.searchParams.get('fiscalYearId') || 'fy25-26';
+      const result = await updateCommitteeParameters(db, fiscalYearId, committeeId, body as any);
+      return jsonResponse(result);
+    }
+
+    // -------------------------------------------------------------
     // 5. Member Dues Engine: /api/finance/dues
     // -------------------------------------------------------------
     if (route === 'dues') {

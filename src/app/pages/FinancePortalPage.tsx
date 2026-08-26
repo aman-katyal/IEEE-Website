@@ -108,6 +108,7 @@ export function FinancePortalPage() {
             session={session}
             purchases={purchases}
             memberDues={memberDues}
+            committees={committees}
             fundingInflows={fundingInflows}
             onAddPurchase={addPurchase}
             onRecordCashDues={recordCashDues}

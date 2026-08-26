@@ -44,6 +44,7 @@ import {
   type MemberDuesRecord,
   type AuthSessionData,
   type CommitteeFundingInflow,
+  type CommitteeInfo,
   INITIAL_FUNDING_INFLOWS,
   REAL_COMMITTEES,
 } from './financeData';
@@ -53,6 +54,7 @@ export interface CommitteeFinanceViewProps {
   session: AuthSessionData;
   purchases: PurchaseItem[];
   memberDues: MemberDuesRecord[];
+  committees?: CommitteeInfo[];
   fundingInflows?: CommitteeFundingInflow[];
   onAddPurchase: (newPurchase: PurchaseItem) => void;
   onRecordCashDues?: (record: {
@@ -70,17 +72,19 @@ export function CommitteeFinanceView({
   session,
   purchases,
   memberDues,
+  committees = REAL_COMMITTEES,
   fundingInflows = INITIAL_FUNDING_INFLOWS,
   onAddPurchase,
   onRecordCashDues,
   onLogout,
 }: CommitteeFinanceViewProps) {
   const committee = useMemo(() => {
+    const list = committees && committees.length > 0 ? committees : REAL_COMMITTEES;
     return (
-      REAL_COMMITTEES.find((c) => c.id === session.committeeId) ||
-      REAL_COMMITTEES[0]
+      list.find((c) => c.id === session.committeeId) ||
+      list[0]
     );
-  }, [session.committeeId]);
+  }, [committees, session.committeeId]);
 
   // Committee Purchases
   const committeePurchases = useMemo(() => {
