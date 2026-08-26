@@ -65,56 +65,27 @@ export function FinanceAuthModal({
         }),
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        if (data.session) {
-          onLogin({
-            role: data.session.role,
-            committeeId: data.session.committeeId,
-            committeeName: data.session.committeeName,
-            name: data.session.name,
-            email: data.session.email,
-          });
-          setIsSubmitting(false);
-          return;
-        }
-      } else {
-        const data = await res.json().catch(() => ({}));
-        if (res.status === 401) {
-          setErrorMessage(data.error || 'Invalid authentication PIN. Please verify your passcode or contact treasurer@purdueieee.org.');
-          setIsSubmitting(false);
-          return;
-        }
-      }
-    } catch {
-      // Offline fallback
-    }
-
-    if (trimmedPin === '0000' || trimmedPin === 'wrong') {
-      setErrorMessage('Invalid authentication PIN. Please verify your passcode or contact treasurer@purdueieee.org.');
+      const data = await res.json().catch(() => ({}));
       setIsSubmitting(false);
-      return;
-    }
 
-    if (role === 'TREASURER') {
-      onLogin({
-        role: 'TREASURER',
-        committeeId: 'treasurer',
-        committeeName: 'Executive Treasurer Administration',
-        name: 'Purdue IEEE Treasurer',
-        email: 'treasurer@purdueieee.org',
-      });
-    } else {
-      const committee = REAL_COMMITTEES.find((c) => c.id === selectedCommitteeId) || REAL_COMMITTEES[0];
-      onLogin({
-        role: 'COMMITTEE_LEAD',
-        committeeId: committee.id,
-        committeeName: committee.name,
-        name: `${committee.shortName} Leadership`,
-        email: committee.contactEmail,
-      });
+      if (res.ok && data.authenticated && data.session) {
+        onLogin({
+          role: data.session.role,
+          committeeId: data.session.committeeId,
+          committeeName: data.session.committeeName,
+          name: data.session.name,
+          email: data.session.email,
+        });
+        return;
+      }
+
+      setErrorMessage(
+        data.message || data.error || 'Invalid authentication passcode. Please check your credentials or contact treasurer@purdueieee.org.'
+      );
+    } catch {
+      setIsSubmitting(false);
+      setErrorMessage('Unable to connect to authentication service. Please check your network connection.');
     }
-    setIsSubmitting(false);
   };
 
   return (

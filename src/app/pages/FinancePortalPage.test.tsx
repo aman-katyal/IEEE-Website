@@ -18,6 +18,45 @@ describe('FinancePortalPage Integration Suite', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.clear();
+    global.fetch = vi.fn().mockImplementation(async (url: string, init?: RequestInit) => {
+      const urlStr = typeof url === 'string' ? url : '';
+      if (urlStr.includes('/auth/verify-pin') && init?.body) {
+        const body = JSON.parse(init.body as string);
+        if (body.role === 'treasurer') {
+          return {
+            ok: true,
+            json: async () => ({
+              authenticated: true,
+              session: {
+                role: 'TREASURER',
+                committeeId: 'treasurer',
+                committeeName: 'Executive Treasurer Administration',
+                name: 'Purdue IEEE Treasurer',
+                email: 'treasurer@purdueieee.org',
+              },
+            }),
+          };
+        }
+        const commId = body.committeeId || 'rov';
+        return {
+          ok: true,
+          json: async () => ({
+            authenticated: true,
+            session: {
+              role: 'COMMITTEE_LEAD',
+              committeeId: commId,
+              committeeName: commId === 'rov' ? 'Remotely Operated underwater Vehicle (ROV)' : commId,
+              name: `${commId.toUpperCase()} Leadership`,
+              email: `${commId}@purdueieee.org`,
+            },
+          }),
+        };
+      }
+      return {
+        ok: true,
+        json: async () => ({ success: true, matrix: [], requests: [], inflows: [], dues: [] }),
+      };
+    });
   });
 
   describe('1. Authentication & Role Switching', () => {
