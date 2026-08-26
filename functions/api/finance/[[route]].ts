@@ -191,21 +191,8 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
       }
 
       if (request.method === 'POST') {
-        const payload = (await request.json()) as {
-          fiscalYearId: string;
-          committeeId: string;
-          amount: number;
-          source: string;
-          description?: string;
-        };
-        const result = await recordCommitteeFundingInflow(
-          db,
-          payload.fiscalYearId,
-          payload.committeeId,
-          payload.amount,
-          payload.source,
-          payload.description
-        );
+        const payload = await request.json();
+        const result = await recordCommitteeFundingInflow(db, payload as any);
         return jsonResponse(result, 201);
       }
     }
