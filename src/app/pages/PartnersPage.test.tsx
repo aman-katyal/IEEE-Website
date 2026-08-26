@@ -179,4 +179,21 @@ describe('PartnersPage', () => {
     expect(screen.queryByText('Our Corporate Partners & Sponsors')).not.toBeInTheDocument();
     expect(screen.queryByText('Gold Partner 1')).not.toBeInTheDocument();
   });
+
+  it('renders custom industrial relations email when provided in settings', () => {
+    (useSanityData.useSiteSettings as any).mockReturnValue({
+      settings: { ...mockSettings, industrialRelationsEmail: 'custom-ir@purdueieee.org' },
+      loading: false,
+      error: null
+    });
+
+    render(
+      <MemoryRouter>
+        <PartnersPage />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByRole('link', { name: /Become a Partner/i })).toHaveAttribute('href', 'mailto:custom-ir@purdueieee.org');
+    expect(screen.getByRole('link', { name: /Contact Industrial Relations/i })).toHaveAttribute('href', 'mailto:custom-ir@purdueieee.org');
+  });
 });

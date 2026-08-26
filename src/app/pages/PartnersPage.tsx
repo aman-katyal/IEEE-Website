@@ -76,6 +76,7 @@ export function PartnersPage() {
   }
 
   // Use dynamic content from settings or fall back to default values
+  const irEmail = settings?.industrialRelationsEmail || "industry@purdueieee.org";
   const heroTitle =
     settings?.partnersHeroTitle ||
     "Empowering the next generation of innovators";
@@ -154,7 +155,7 @@ export function PartnersPage() {
 
             <div style={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
               <a
-                href="mailto:industry@purdueieee.org"
+                href={`mailto:${irEmail}`}
                 className="btn-primary"
                 style={{
                   textDecoration: "none",
@@ -419,7 +420,7 @@ export function PartnersPage() {
             events, and project sponsorships.
           </p>
           <a
-            href="mailto:industry@purdueieee.org"
+            href={`mailto:${irEmail}`}
             className="btn-primary"
             style={{ textDecoration: "none" }}
           >

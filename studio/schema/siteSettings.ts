@@ -143,6 +143,14 @@ export const siteSettings = defineType({
       group: 'partners',
     }),
     defineField({
+      name: 'industrialRelationsEmail',
+      title: 'Industrial Relations Contact Email',
+      type: 'string',
+      group: 'partners',
+      description: 'Contact email address for corporate partnerships and sponsorships (e.g., industry@purdueieee.org or ir@purdueieee.org).',
+      initialValue: 'industry@purdueieee.org',
+    }),
+    defineField({
       name: 'partnerTierDescriptions',
       title: 'Partner Tier Descriptions & Criteria',
       type: 'array',

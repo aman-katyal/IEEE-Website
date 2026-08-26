@@ -188,6 +188,7 @@ export interface SiteSettings {
   partnersProspectusUrl?: string;
   showCorporateTiers?: boolean;
   hidePartners?: boolean;
+  industrialRelationsEmail?: string;
   partnerTierDescriptions?: {
     tier: string;
     color: string;
