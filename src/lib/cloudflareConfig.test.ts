@@ -3,14 +3,15 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 describe('Cloudflare Pages SPA and Routing Configuration', () => {
-  const publicDir = path.resolve(process.cwd(), 'public');
+  const rootDir = process.cwd();
+  const publicDir = path.resolve(rootDir, 'public');
 
-  it('validates _redirects has SPA fallback routing rule', () => {
-    const redirectsPath = path.join(publicDir, '_redirects');
-    expect(fs.existsSync(redirectsPath)).toBe(true);
+  it('validates wrangler.jsonc has single-page-application not_found_handling', () => {
+    const wranglerPath = path.join(rootDir, 'wrangler.jsonc');
+    expect(fs.existsSync(wranglerPath)).toBe(true);
 
-    const redirectsContent = fs.readFileSync(redirectsPath, 'utf-8');
-    expect(redirectsContent.replace(/\s+/g, ' ').trim()).toContain('/* /index.html 200');
+    const content = fs.readFileSync(wranglerPath, 'utf-8');
+    expect(content).toContain('"not_found_handling": "single-page-application"');
   });
 
   it('validates _routes.json exists and is valid JSON', () => {
