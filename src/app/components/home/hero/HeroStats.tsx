@@ -1,5 +1,7 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { ArrowUpRight, Building2, ChevronRight } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import type { AlumniCompany } from "../../../../data/sanity-types";
 
 export interface WhereEngineersGoCardProps {
@@ -11,18 +13,21 @@ export function BranchTelemetryCard(props: WhereEngineersGoCardProps) {
   const { companies, highlightText } = props;
 
   const activeCompanies = companies && companies.length > 0 ? companies : [];
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    if (activeCompanies.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % activeCompanies.length);
+    }, 2800);
+    return () => clearInterval(interval);
+  }, [activeCompanies.length]);
 
   if (activeCompanies.length === 0) {
     return null;
   }
 
-  const half = Math.ceil(activeCompanies.length / 2);
-  const row1 = activeCompanies.slice(0, half);
-  const row2 = activeCompanies.slice(half);
-
-  // Duplicate for smooth seamless infinite loop
-  const row1List = row1.length > 0 ? [...row1, ...row1, ...row1] : [];
-  const row2List = row2.length > 0 ? [...row2, ...row2, ...row2] : row1List;
+  const currentCompany = activeCompanies[currentIndex] || activeCompanies[0];
 
   return (
     <div
@@ -39,7 +44,7 @@ export function BranchTelemetryCard(props: WhereEngineersGoCardProps) {
 
       <div>
         {/* Header telemetry badge */}
-        <div className="flex items-center justify-between gap-2 mb-2">
+        <div className="flex items-center justify-between gap-2 mb-3">
           <div className="flex items-center gap-1.5">
             <Building2 className="w-3.5 h-3.5 text-sky-400 shrink-0" />
             <span
@@ -55,73 +60,51 @@ export function BranchTelemetryCard(props: WhereEngineersGoCardProps) {
             </span>
           </div>
           <span className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-400 text-[10px] font-mono border border-sky-500/20">
-            <span>{activeCompanies.length} DESTINATIONS</span>
+            <span>{currentIndex + 1} / {activeCompanies.length}</span>
           </span>
         </div>
 
-        {/* Scrolling Companies Marquee Tracks */}
-        <div className="relative overflow-hidden my-2.5 py-1 -mx-2">
-          {/* Edge fade gradient masks */}
-          <div
-            className="absolute left-0 inset-y-0 w-8 z-10 pointer-events-none"
-            style={{
-              background: "linear-gradient(to right, rgba(10, 10, 12, 0.95), transparent)",
-            }}
-          />
-          <div
-            className="absolute right-0 inset-y-0 w-8 z-10 pointer-events-none"
-            style={{
-              background: "linear-gradient(to left, rgba(10, 10, 12, 0.95), transparent)",
-            }}
-          />
-
-          <div className="flex flex-col gap-2">
-            {/* Track 1: Scrolls Left */}
-            <div className="bento-marquee-left flex gap-2 items-center" style={{ willChange: "transform" }}>
-              {row1List.map((c, i) => (
-                <div
-                  key={`r1-${c._key || c.name}-${i}`}
-                  className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-900/80 border border-slate-800/90 hover:border-sky-500/50 hover:bg-slate-800/90 transition-colors text-xs text-slate-200 shrink-0 select-none shadow-sm"
-                >
-                  {c.domain ? (
-                    <img
-                      src={`https://www.google.com/s2/favicons?domain=${c.domain}&sz=32`}
-                      alt=""
-                      className="w-3.5 h-3.5 rounded-sm shrink-0 object-contain"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <div className="w-1.5 h-1.5 rounded-full bg-sky-400 shrink-0" />
-                  )}
-                  <span className="font-medium truncate max-w-[130px]">{c.name}</span>
-                </div>
-              ))}
-            </div>
-
-            {/* Track 2: Scrolls Right */}
-            {row2List.length > 0 && (
-              <div className="bento-marquee-right flex gap-2 items-center" style={{ willChange: "transform" }}>
-                {row2List.map((c, i) => (
-                  <div
-                    key={`r2-${c._key || c.name}-${i}`}
-                    className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-900/80 border border-slate-800/90 hover:border-sky-500/50 hover:bg-slate-800/90 transition-colors text-xs text-slate-200 shrink-0 select-none shadow-sm"
-                  >
-                    {c.domain ? (
-                      <img
-                        src={`https://www.google.com/s2/favicons?domain=${c.domain}&sz=32`}
-                        alt=""
-                        className="w-3.5 h-3.5 rounded-sm shrink-0 object-contain"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="w-1.5 h-1.5 rounded-full bg-sky-400 shrink-0" />
-                    )}
-                    <span className="font-medium truncate max-w-[130px]">{c.name}</span>
-                  </div>
-                ))}
+        {/* Single Company Vertical Ticker Area */}
+        <div className="relative h-[72px] my-2 overflow-hidden flex items-center">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentCompany.name + currentIndex}
+              initial={{ y: 20, opacity: 0, scale: 0.98 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: -20, opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+              className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl bg-slate-900/80 border border-slate-800/90 shadow-inner"
+            >
+              {/* Company Logo Badge */}
+              <div className="w-9 h-9 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-center p-1.5 shrink-0 shadow-sm">
+                {currentCompany.domain ? (
+                  <img
+                    src={`https://www.google.com/s2/favicons?domain=${currentCompany.domain}&sz=64`}
+                    alt=""
+                    className="w-5 h-5 rounded-sm object-contain"
+                    loading="lazy"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = "none";
+                    }}
+                  />
+                ) : (
+                  <Building2 className="w-4 h-4 text-sky-400" />
+                )}
               </div>
-            )}
-          </div>
+
+              {/* Company Name & Focus */}
+              <div className="min-w-0 flex-1">
+                <div className="text-sm font-bold text-slate-100 truncate tracking-tight">
+                  {currentCompany.name}
+                </div>
+                {currentCompany.roleOrField && (
+                  <div className="text-[11px] font-mono text-sky-300 truncate mt-0.5">
+                    {currentCompany.roleOrField}
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </AnimatePresence>
         </div>
 
         {/* Impact Subtitle */}
