@@ -295,6 +295,17 @@ export async function createPurchaseRequest(
 
     if (category) {
       resolvedCategoryId = category.id;
+    } else {
+      const otherCategory = await db
+        .prepare('SELECT * FROM budget_categories WHERE id = ?')
+        .bind(payload.categoryId)
+        .first<{ id: string; committee_id: string }>();
+
+      if (otherCategory && otherCategory.committee_id !== payload.committeeId) {
+        throw new Error(
+          `Budget category "${payload.categoryId}" does not exist for committee "${payload.committeeId}"`
+        );
+      }
     }
   }
 

@@ -364,7 +364,9 @@ export function useFinanceApi() {
       if (!res.ok && res.status >= 400 && res.status !== 404) {
         const errorData = await res.json().catch(() => ({}));
         setPurchases(prevPurchases);
-        const err = errorData.error || `Failed to create purchase request (HTTP ${res.status})`;
+        const err = errorData.error
+          ? `${errorData.error} (HTTP ${res.status})`
+          : `Failed to create purchase request (HTTP ${res.status})`;
         setError(err);
         return { success: false, error: err };
       }
