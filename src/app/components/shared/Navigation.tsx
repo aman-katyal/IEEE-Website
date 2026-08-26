@@ -35,7 +35,6 @@ export function Navigation() {
       href: "/about",
       dropdown: [
         { label: "About Us", href: "/about" },
-        { label: "Where Engineers Go", href: "/destinations" },
         { label: "Partners", href: "/partners" },
         { label: "Constitution", href: "/constitution" },
       ]

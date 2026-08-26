@@ -15,7 +15,6 @@ import { MagneticWrapper } from "../ui/MagneticWrapper";
 const FOOTER_LINKS = {
   Organization: [
     { label: "About Us", href: "/about" },
-    { label: "Where Engineers Go", href: "/destinations" },
     { label: "Officers", href: "/officers" },
     { label: "Constitution", href: "/constitution" },
     { label: "Corporate Partners", href: "/partners" },

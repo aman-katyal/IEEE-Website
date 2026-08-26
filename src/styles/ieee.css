@@ -483,8 +483,38 @@ textarea:focus-visible,
   animation-play-state: paused;
 }
 
+/* ─── Bento Box Marquee ─────────────────────────── */
+@keyframes bento-marquee-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes bento-marquee-right {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+.bento-marquee-left {
+  display: flex;
+  width: max-content;
+  animation: bento-marquee-left 32s linear infinite;
+}
+
+.bento-marquee-right {
+  display: flex;
+  width: max-content;
+  animation: bento-marquee-right 36s linear infinite;
+}
+
+.bento-marquee-left:hover,
+.bento-marquee-right:hover {
+  animation-play-state: paused;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .marquee-track {
+  .marquee-track,
+  .bento-marquee-left,
+  .bento-marquee-right {
     animation: none;
     overflow-x: auto;
   }

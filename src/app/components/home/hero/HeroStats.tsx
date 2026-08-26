@@ -16,6 +16,14 @@ export function BranchTelemetryCard(props: WhereEngineersGoCardProps) {
     return null;
   }
 
+  const half = Math.ceil(activeCompanies.length / 2);
+  const row1 = activeCompanies.slice(0, half);
+  const row2 = activeCompanies.slice(half);
+
+  // Duplicate for smooth seamless infinite loop
+  const row1List = row1.length > 0 ? [...row1, ...row1, ...row1] : [];
+  const row2List = row2.length > 0 ? [...row2, ...row2, ...row2] : row1List;
+
   return (
     <div
       className="glass-card group hover:border-sky-500/40 transition-all duration-300 relative overflow-hidden flex flex-col justify-between"
@@ -31,7 +39,7 @@ export function BranchTelemetryCard(props: WhereEngineersGoCardProps) {
 
       <div>
         {/* Header telemetry badge */}
-        <div className="flex items-center justify-between gap-2 mb-3">
+        <div className="flex items-center justify-between gap-2 mb-2">
           <div className="flex items-center gap-1.5">
             <Building2 className="w-3.5 h-3.5 text-sky-400 shrink-0" />
             <span
@@ -47,30 +55,73 @@ export function BranchTelemetryCard(props: WhereEngineersGoCardProps) {
             </span>
           </div>
           <span className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-400 text-[10px] font-mono border border-sky-500/20">
-            <span>TOP DESTINATIONS</span>
+            <span>{activeCompanies.length} DESTINATIONS</span>
           </span>
         </div>
 
-        {/* Company Destination Badges */}
-        <div className="flex flex-wrap gap-1.5 my-2.5">
-          {activeCompanies.slice(0, 6).map((c, i) => (
-            <div
-              key={c._key || `${c.name}-${i}`}
-              className="flex items-center gap-1.5 px-2 py-1 rounded bg-slate-900/70 border border-slate-800 hover:border-sky-500/40 transition-colors text-xs text-slate-200"
-            >
-              {c.domain ? (
-                <img
-                  src={`https://www.google.com/s2/favicons?domain=${c.domain}&sz=32`}
-                  alt=""
-                  className="w-3.5 h-3.5 rounded-sm shrink-0 object-contain"
-                  loading="lazy"
-                />
-              ) : (
-                <div className="w-1.5 h-1.5 rounded-full bg-sky-400 shrink-0" />
-              )}
-              <span className="font-medium truncate">{c.name}</span>
+        {/* Scrolling Companies Marquee Tracks */}
+        <div className="relative overflow-hidden my-2.5 py-1 -mx-2">
+          {/* Edge fade gradient masks */}
+          <div
+            className="absolute left-0 inset-y-0 w-8 z-10 pointer-events-none"
+            style={{
+              background: "linear-gradient(to right, rgba(10, 10, 12, 0.95), transparent)",
+            }}
+          />
+          <div
+            className="absolute right-0 inset-y-0 w-8 z-10 pointer-events-none"
+            style={{
+              background: "linear-gradient(to left, rgba(10, 10, 12, 0.95), transparent)",
+            }}
+          />
+
+          <div className="flex flex-col gap-2">
+            {/* Track 1: Scrolls Left */}
+            <div className="bento-marquee-left flex gap-2 items-center" style={{ willChange: "transform" }}>
+              {row1List.map((c, i) => (
+                <div
+                  key={`r1-${c._key || c.name}-${i}`}
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-900/80 border border-slate-800/90 hover:border-sky-500/50 hover:bg-slate-800/90 transition-colors text-xs text-slate-200 shrink-0 select-none shadow-sm"
+                >
+                  {c.domain ? (
+                    <img
+                      src={`https://www.google.com/s2/favicons?domain=${c.domain}&sz=32`}
+                      alt=""
+                      className="w-3.5 h-3.5 rounded-sm shrink-0 object-contain"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="w-1.5 h-1.5 rounded-full bg-sky-400 shrink-0" />
+                  )}
+                  <span className="font-medium truncate max-w-[130px]">{c.name}</span>
+                </div>
+              ))}
             </div>
-          ))}
+
+            {/* Track 2: Scrolls Right */}
+            {row2List.length > 0 && (
+              <div className="bento-marquee-right flex gap-2 items-center" style={{ willChange: "transform" }}>
+                {row2List.map((c, i) => (
+                  <div
+                    key={`r2-${c._key || c.name}-${i}`}
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-900/80 border border-slate-800/90 hover:border-sky-500/50 hover:bg-slate-800/90 transition-colors text-xs text-slate-200 shrink-0 select-none shadow-sm"
+                  >
+                    {c.domain ? (
+                      <img
+                        src={`https://www.google.com/s2/favicons?domain=${c.domain}&sz=32`}
+                        alt=""
+                        className="w-3.5 h-3.5 rounded-sm shrink-0 object-contain"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="w-1.5 h-1.5 rounded-full bg-sky-400 shrink-0" />
+                    )}
+                    <span className="font-medium truncate max-w-[130px]">{c.name}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Impact Subtitle */}
@@ -84,19 +135,19 @@ export function BranchTelemetryCard(props: WhereEngineersGoCardProps) {
       {/* Action Footer */}
       <div className="mt-3.5 pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
         <Link
-          to="/destinations"
+          to="/committees"
           className="px-2.5 py-1.5 rounded bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 text-sky-300 hover:text-sky-200 text-xs font-semibold transition-all flex items-center gap-1.5"
-          title="Explore all alumni and internship destinations"
+          title="Explore Technical Committees"
         >
-          <span>View Destinations</span>
+          <span>Join a Project</span>
         </Link>
 
         <Link
-          to="/destinations"
+          to="/committees"
           className="text-xs text-slate-300 hover:text-amber-300 font-semibold transition-colors flex items-center gap-1"
           style={{ color: "var(--cyber-gold)" }}
         >
-          <span>{activeCompanies.length > 6 ? `${activeCompanies.length}+ Companies` : "All Companies"}</span>
+          <span>9 Committees</span>
           <ArrowUpRight className="w-3.5 h-3.5 shrink-0" />
         </Link>
       </div>

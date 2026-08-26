@@ -25,7 +25,6 @@ const PrivacyPage = React.lazy(() => import('./app/pages/PrivacyPage').then(m =>
 const TermsPage = React.lazy(() => import('./app/pages/TermsPage').then(m => ({ default: m.TermsPage })));
 const AccessibilityPage = React.lazy(() => import('./app/pages/AccessibilityPage').then(m => ({ default: m.AccessibilityPage })));
 const FinancePortalPage = React.lazy(() => import('./app/pages/FinancePortalPage').then(m => ({ default: m.FinancePortalPage })));
-const DestinationsPage = React.lazy(() => import('./app/pages/DestinationsPage').then(m => ({ default: m.DestinationsPage })));
 const NotFoundPage = React.lazy(() => import('./app/pages/NotFoundPage').then(m => ({ default: m.NotFoundPage })));
 
 const queryClient = new QueryClient({
@@ -48,8 +47,6 @@ const router = createBrowserRouter([
         children: [
           { path: "/", element: <PageTransition><Suspense fallback={<PageSkeleton />}><HomePage /></Suspense></PageTransition> },
           { path: "/about", element: <PageTransition><Suspense fallback={<PageSkeleton />}><AboutUsPage /></Suspense></PageTransition> },
-          { path: "/destinations", element: <PageTransition><Suspense fallback={<PageSkeleton />}><DestinationsPage /></Suspense></PageTransition> },
-          { path: "/internships", element: <PageTransition><Suspense fallback={<PageSkeleton />}><DestinationsPage /></Suspense></PageTransition> },
           { path: "/committees", element: <PageTransition><Suspense fallback={<PageSkeleton />}><CommitteesPage /></Suspense></PageTransition> },
           { path: "/committee/:id", element: <PageTransition><Suspense fallback={<PageSkeleton />}><CommitteePage /></Suspense></PageTransition> },
           { path: "/officers", element: <PageTransition><Suspense fallback={<PageSkeleton />}><OfficersPage /></Suspense></PageTransition> },

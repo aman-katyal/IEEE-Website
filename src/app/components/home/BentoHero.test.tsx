@@ -104,8 +104,8 @@ describe('BentoHero', () => {
 
     // Check Where Our Engineers Go Box
     expect(screen.getByText('// Where Our Engineers Go')).toBeInTheDocument();
-    expect(screen.getByText('TOP DESTINATIONS')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /View Destinations/i })).toBeInTheDocument();
+    expect(screen.getByText(/DESTINATIONS/)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Join a Project/i })).toBeInTheDocument();
 
     // Check About Us
     expect(screen.getByText(/Student Organization/)).toBeInTheDocument();

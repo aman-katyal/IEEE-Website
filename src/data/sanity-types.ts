@@ -33,7 +33,6 @@ export interface AlumniCompany {
   name: string;
   domain?: string;
   roleOrField?: string;
-  url?: string;
 }
 
 export interface HomePageData {
