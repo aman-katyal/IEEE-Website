@@ -251,7 +251,6 @@ export function useFinanceApi() {
     refreshData();
   }, [refreshData]);
 
-  // Auth
   const loginWithPin = async (
     pin: string,
     role: 'COMMITTEE_LEAD' | 'TREASURER',
@@ -264,60 +263,36 @@ export function useFinanceApi() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          pin,
+          pin: pin.trim(),
           role: role === 'TREASURER' ? 'treasurer' : 'committee',
           committeeId,
         }),
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        if (data.session) {
-          const newSession: AuthSessionData = {
-            role: data.session.role,
-            committeeId: data.session.committeeId,
-            committeeName: data.session.committeeName,
-            name: data.session.name,
-            email: data.session.email,
-          };
-          setSession(newSession);
-          setIsLoading(false);
-          return { success: true, session: newSession };
-        }
-      }
-    } catch {}
-
-    // Fallback logic for offline / demo
-    if (pin.trim() === '0000' || pin.trim() === 'wrong') {
+      const data = await res.json().catch(() => ({}));
       setIsLoading(false);
-      const msg = 'Invalid authentication PIN. Please verify your passcode.';
+
+      if (res.ok && data.authenticated && data.session) {
+        const newSession: AuthSessionData = {
+          role: data.session.role,
+          committeeId: data.session.committeeId,
+          committeeName: data.session.committeeName,
+          name: data.session.name,
+          email: data.session.email,
+        };
+        setSession(newSession);
+        return { success: true, session: newSession };
+      }
+
+      const msg = data.message || 'Invalid authentication PIN. Please verify your passcode.';
+      setError(msg);
+      return { success: false, message: msg };
+    } catch {
+      setIsLoading(false);
+      const msg = 'Unable to connect to database server. Please check your network connection.';
       setError(msg);
       return { success: false, message: msg };
     }
-
-    let fallbackSession: AuthSessionData;
-    if (role === 'TREASURER') {
-      fallbackSession = {
-        role: 'TREASURER',
-        committeeId: 'treasurer',
-        committeeName: 'Executive Treasurer Administration',
-        name: 'Purdue IEEE Treasurer',
-        email: 'treasurer@purdueieee.org',
-      };
-    } else {
-      const comm = REAL_COMMITTEES.find((c) => c.id === committeeId) || REAL_COMMITTEES[0];
-      fallbackSession = {
-        role: 'COMMITTEE_LEAD',
-        committeeId: comm.id,
-        committeeName: comm.name,
-        name: `${comm.shortName} Leadership`,
-        email: comm.contactEmail,
-      };
-    }
-
-    setSession(fallbackSession);
-    setIsLoading(false);
-    return { success: true, session: fallbackSession };
   };
 
   const logout = () => {
