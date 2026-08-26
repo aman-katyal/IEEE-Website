@@ -140,8 +140,7 @@ describe('HomePage', () => {
 
     expect(screen.getByText('Committees')).toBeInTheDocument();
     expect(screen.getByText('Technical')).toBeInTheDocument();
-    expect(screen.getByText('// Where Our Engineers Go')).toBeInTheDocument();
-    expect(screen.getByText('1 / 2')).toBeInTheDocument();
+    expect(screen.getByText('// Where Our Engineers Intern')).toBeInTheDocument();
   });
 
   it('renders events section with correct content', () => {

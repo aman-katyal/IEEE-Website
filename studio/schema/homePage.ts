@@ -34,7 +34,7 @@ export const homePage = defineType({
     }),
     defineField({
       name: 'alumniCompanies',
-      title: 'Where Our Engineers Go (Companies / Employers)',
+      title: 'Where Our Engineers Intern (Companies / Employers)',
       type: 'array',
       group: 'hero',
       description: 'List of top companies, employers, and organizations where Purdue IEEE members work and intern.',

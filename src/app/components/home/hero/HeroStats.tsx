@@ -43,23 +43,18 @@ export function BranchTelemetryCard(props: WhereEngineersGoCardProps) {
 
       <div>
         {/* Header telemetry badge */}
-        <div className="flex items-center justify-between gap-2 mb-3">
-          <div className="flex items-center gap-1.5">
-            <Building2 className="w-3.5 h-3.5 text-sky-400 shrink-0" />
-            <span
-              style={{
-                fontSize: "0.65rem",
-                letterSpacing: "0.15em",
-                color: "var(--electric-blue)",
-                textTransform: "uppercase",
-                fontWeight: 700,
-              }}
-            >
-              // Where Our Engineers Go
-            </span>
-          </div>
-          <span className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-400 text-[10px] font-mono border border-sky-500/20">
-            <span>{currentIndex + 1} / {activeCompanies.length}</span>
+        <div className="flex items-center gap-1.5 mb-3">
+          <Building2 className="w-3.5 h-3.5 text-sky-400 shrink-0" />
+          <span
+            style={{
+              fontSize: "0.65rem",
+              letterSpacing: "0.15em",
+              color: "var(--electric-blue)",
+              textTransform: "uppercase",
+              fontWeight: 700,
+            }}
+          >
+            // Where Our Engineers Intern
           </span>
         </div>
 

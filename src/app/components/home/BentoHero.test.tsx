@@ -101,9 +101,8 @@ describe('BentoHero', () => {
     expect(screen.getByText(/— IEEE Mission Statement/)).toBeInTheDocument();
     expect(screen.getByText('Explore Committees')).toBeInTheDocument();
 
-    // Check Where Our Engineers Go Box
-    expect(screen.getByText('// Where Our Engineers Go')).toBeInTheDocument();
-    expect(screen.getByText('1 / 2')).toBeInTheDocument();
+    // Check Where Our Engineers Intern Box
+    expect(screen.getByText('// Where Our Engineers Intern')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Join a Project/i })).toBeInTheDocument();
 
     // Check About Us

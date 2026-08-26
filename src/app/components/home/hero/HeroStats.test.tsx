@@ -19,8 +19,7 @@ describe('BranchTelemetryCard (Where Our Engineers Go)', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText('// Where Our Engineers Go')).toBeInTheDocument();
-    expect(screen.getByText('1 / 3')).toBeInTheDocument();
+    expect(screen.getByText('// Where Our Engineers Intern')).toBeInTheDocument();
     expect(screen.getByText('NASA JPL')).toBeInTheDocument();
     expect(screen.getByText('Space Robotics')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Join a Project/i })).toHaveAttribute('href', '/committees');
