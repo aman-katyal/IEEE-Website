@@ -20,10 +20,10 @@ describe('useFinanceApi Hook Suite', () => {
     const { result } = renderHook(() => useFinanceApi());
 
     expect(result.current.session).toBeNull();
-    expect(result.current.purchases.length).toBeGreaterThan(0);
+    expect(result.current.purchases.length).toBe(0);
     expect(result.current.committees.length).toBeGreaterThan(0);
-    expect(result.current.memberDues.length).toBeGreaterThan(0);
-    expect(result.current.fundingInflows.length).toBeGreaterThan(0);
+    expect(result.current.memberDues.length).toBe(0);
+    expect(result.current.fundingInflows.length).toBe(0);
   });
 
   it('handles committee login and logout', async () => {
@@ -96,13 +96,30 @@ describe('useFinanceApi Hook Suite', () => {
 
   it('updates purchase request status', async () => {
     const { result } = renderHook(() => useFinanceApi());
-    const target = result.current.purchases[0];
+
+    const newPurchase = {
+      id: 'PR-TARGET-001',
+      committeeId: 'rov',
+      committeeName: 'ROV',
+      requesterName: 'Test Requester',
+      requesterEmail: 'test@purdue.edu',
+      vendorName: 'DigiKey',
+      category: 'Electronics',
+      totalAmount: 150.0,
+      description: 'Sensor modules',
+      status: 'PENDING' as const,
+      submittedAt: new Date().toISOString(),
+    };
 
     await act(async () => {
-      await result.current.updatePurchaseStatus(target.id, 'APPROVED', 'Approved by treasurer', 'COOL-1234');
+      await result.current.addPurchase(newPurchase);
     });
 
-    const updated = result.current.purchases.find((p) => p.id === target.id);
+    await act(async () => {
+      await result.current.updatePurchaseStatus('PR-TARGET-001', 'APPROVED', 'Approved by treasurer', 'COOL-1234');
+    });
+
+    const updated = result.current.purchases.find((p) => p.id === 'PR-TARGET-001');
     expect(updated?.status).toBe('APPROVED');
     expect(updated?.treasurerNotes).toBe('Approved by treasurer');
     expect(updated?.coolAccountNumber).toBe('COOL-1234');
