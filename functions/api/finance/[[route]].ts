@@ -111,17 +111,25 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
         const committeeId = url.searchParams.get('committeeId') || undefined;
         const status = url.searchParams.get('status') as any;
 
-        const requests = await listPurchaseRequests(db, {
-          fiscalYearId,
-          committeeId: committeeId as any,
-          status,
-        });
+        const requests = await listPurchaseRequests(
+          db,
+          {
+            fiscalYearId,
+            committeeId: committeeId as any,
+            status,
+          },
+          { committeeId: 'treasurer', role: 'TREASURER', name: 'Executive Treasurer', isAdmin: true, exp: 0, iat: 0 }
+        );
         return jsonResponse({ success: true, requests });
       }
 
       if (request.method === 'POST') {
         const payload = await request.json();
-        const result = await createPurchaseRequest(db, payload as any);
+        const result = await createPurchaseRequest(
+          db,
+          payload as any,
+          { committeeId: 'treasurer', role: 'TREASURER', name: 'Executive Treasurer', isAdmin: true, exp: 0, iat: 0 }
+        );
         return jsonResponse(result, 201);
       }
     }
@@ -129,7 +137,7 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
     // Single Purchase Detail: GET /api/finance/purchases/:id
     if (pathParts[0] === 'purchases' && pathParts.length === 2 && request.method === 'GET') {
       const purchaseId = pathParts[1];
-      const result = await getPurchaseRequest(db, purchaseId);
+      const result = await getPurchaseRequest(db, purchaseId, { committeeId: 'treasurer', role: 'TREASURER', name: 'Executive Treasurer', isAdmin: true, exp: 0, iat: 0 });
       if (!result) {
         return errorResponse(`Purchase request ${purchaseId} not found.`, 404);
       }
@@ -152,11 +160,12 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
         body.status,
         body.treasurerNotes,
         {
-          userId: 'treasurer-admin',
-          name: 'Purdue IEEE Treasurer',
-          email: 'treasurer@purdueieee.org',
+          committeeId: 'treasurer',
           role: 'TREASURER',
-          authenticatedAt: new Date().toISOString(),
+          name: 'Executive Treasurer',
+          isAdmin: true,
+          exp: 0,
+          iat: 0,
         },
         body.coolBatchId
       );
@@ -168,22 +177,35 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
     // -------------------------------------------------------------
     if (route === 'inflows') {
       if (request.method === 'GET') {
+        const committeeId = url.searchParams.get('committeeId') || undefined;
         const fiscalYearId = url.searchParams.get('fiscalYearId') || 'fy25-26';
-        const committeeId = url.searchParams.get('committeeId');
-        let sql = 'SELECT * FROM committee_funding_inflows WHERE fiscal_year_id = ?';
-        const bindings: unknown[] = [fiscalYearId];
+        let query = 'SELECT * FROM committee_funding_inflows WHERE fiscal_year_id = ?';
+        const params: unknown[] = [fiscalYearId];
         if (committeeId) {
-          sql += ' AND committee_id = ?';
-          bindings.push(committeeId);
+          query += ' AND committee_id = ?';
+          params.push(committeeId);
         }
-        sql += ' ORDER BY received_date DESC';
-        const rows = await queryAll(db, sql, bindings);
-        return jsonResponse({ success: true, inflows: rows });
+        query += ' ORDER BY transaction_date DESC';
+        const inflows = await queryAll(db, query, params);
+        return jsonResponse({ success: true, inflows });
       }
 
       if (request.method === 'POST') {
-        const payload = (await request.json()) as any;
-        const result = await recordCommitteeFundingInflow(db, payload);
+        const payload = (await request.json()) as {
+          fiscalYearId: string;
+          committeeId: string;
+          amount: number;
+          source: string;
+          description?: string;
+        };
+        const result = await recordCommitteeFundingInflow(
+          db,
+          payload.fiscalYearId,
+          payload.committeeId,
+          payload.amount,
+          payload.source,
+          payload.description
+        );
         return jsonResponse(result, 201);
       }
     }
@@ -197,40 +219,19 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
     }
 
     // -------------------------------------------------------------
-    // 5. Member Dues: /api/finance/dues
+    // 5. Member Dues Engine: /api/finance/dues
     // -------------------------------------------------------------
-    if (route === 'dues/cash' || route === 'dues/record-cash') {
-      if (request.method === 'POST') {
-        const payload = (await request.json()) as any;
-        const result = await recordCashPayment(
-          db,
-          {
-            fiscalYearId: payload.fiscalYearId || 'fy25-26',
-            studentName: payload.studentName,
-            purdueEmail: payload.purdueEmail,
-            amountPaid: Number(payload.amountPaid),
-            semester: payload.semester || 'Spring 2026',
-            paymentDate: payload.paymentDate,
-          },
-          {
-            committeeId: payload.committeeId || 'committee',
-            role: payload.role || 'COMMITTEE_LEAD',
-            name: payload.recorderName || 'Committee Lead',
-            isAdmin: Boolean(payload.isAdmin),
-            exp: Date.now() + 86400000,
-            iat: Date.now(),
-          }
-        );
-        return jsonResponse({ success: true, dues: result }, 201);
-      }
-    }
-
     if (route === 'dues') {
       if (request.method === 'GET') {
         const query = url.searchParams.get('q') || '';
         const fiscalYearId = url.searchParams.get('fiscalYearId') || 'fy25-26';
         if (query) {
-          const dues = await searchMemberDues(db, query, fiscalYearId);
+          const dues = await searchMemberDues(
+            db,
+            query,
+            fiscalYearId,
+            { committeeId: 'treasurer', role: 'TREASURER', name: 'Executive Treasurer', isAdmin: true, exp: 0, iat: 0 }
+          );
           return jsonResponse({ success: true, dues });
         }
         const dues = await queryAll(db, 'SELECT * FROM member_dues WHERE fiscal_year_id = ? ORDER BY student_name ASC', [
@@ -245,6 +246,17 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
         const result = await importMemberDues(db, payload.csvData, payload.semester || 'Spring 2026', payload.fiscalYearId || 'fy25-26');
         return jsonResponse(result);
       }
+    }
+
+    // Cash Payment Recording: POST /api/finance/dues/cash
+    if (route === 'dues/cash' && request.method === 'POST') {
+      const payload = await request.json();
+      const result = await recordCashPayment(
+        db,
+        payload as any,
+        { committeeId: 'treasurer', role: 'TREASURER', name: 'Executive Treasurer', isAdmin: true, exp: 0, iat: 0 }
+      );
+      return jsonResponse(result, 201);
     }
 
     // -------------------------------------------------------------
@@ -321,10 +333,10 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
     if (route === 'export/cool' && request.method === 'GET') {
       const fiscalYearId = url.searchParams.get('fiscalYearId') || 'fy25-26';
       const exportResult = await generateCOOLBatch(db, fiscalYearId);
-      return new Response(exportResult.tsv, {
+      return new Response(exportResult.tabDelimited, {
         headers: {
           'Content-Type': 'text/tab-separated-values; charset=utf-8',
-          'Content-Disposition': `attachment; filename="${exportResult.filename}"`,
+          'Content-Disposition': `attachment; filename="cool_batch_${fiscalYearId}.tsv"`,
         },
       });
     }

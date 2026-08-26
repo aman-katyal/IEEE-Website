@@ -132,7 +132,11 @@ export function CommitteeFinanceView({
   const [requesterName, setRequesterName] = useState<string>('');
   const [requesterEmail, setRequesterEmail] = useState<string>('');
   const [purdueUsername, setPurdueUsername] = useState<string>('');
-  const [streetAddress, setStreetAddress] = useState<string>('');
+  const [streetAddress1, setStreetAddress1] = useState<string>('');
+  const [streetAddress2, setStreetAddress2] = useState<string>('');
+  const [city, setCity] = useState<string>('');
+  const [state, setState] = useState<string>('');
+  const [zipCode, setZipCode] = useState<string>('');
   const [phoneNumber, setPhoneNumber] = useState<string>('');
   const [fundingSource, setFundingSource] = useState<'SFAB' | 'GENERAL'>('GENERAL');
   const [sfabLineItem, setSfabLineItem] = useState<string>('');
@@ -229,6 +233,11 @@ export function CommitteeFinanceView({
       return;
     }
 
+    if (!streetAddress1.trim() || !city.trim() || !state.trim() || !zipCode.trim()) {
+      setFormError('Please fill out all required address fields (Street, City, State, ZIP).');
+      return;
+    }
+
     if (fundingSource === 'SFAB' && !sfabLineItem.trim()) {
       setFormError('Please specify the SFAB Line Item (or "N/A" if general).');
       return;
@@ -239,6 +248,12 @@ export function CommitteeFinanceView({
       return;
     }
 
+    const fullStreetAddress = [
+      streetAddress1.trim(),
+      streetAddress2.trim(),
+      `${city.trim()}, ${state.trim()} ${zipCode.trim()}`
+    ].filter(Boolean).join(', ');
+
     const newPurchase: PurchaseItem = {
       id: `PR-2026-${Math.floor(100 + Math.random() * 900)}`,
       committeeId: committee.id,
@@ -246,7 +261,7 @@ export function CommitteeFinanceView({
       requesterName: requesterName.trim(),
       requesterEmail: requesterEmail.trim().toLowerCase(),
       purdueUsername: purdueUsername.trim().toLowerCase(),
-      streetAddress: streetAddress.trim(),
+      streetAddress: fullStreetAddress,
       phoneNumber: phoneNumber.trim(),
       fundingSource,
       sfabLineItem: fundingSource === 'SFAB' ? sfabLineItem.trim() : undefined,
@@ -268,7 +283,11 @@ export function CommitteeFinanceView({
     setRequesterName('');
     setRequesterEmail('');
     setPurdueUsername('');
-    setStreetAddress('');
+    setStreetAddress1('');
+    setStreetAddress2('');
+    setCity('');
+    setState('');
+    setZipCode('');
     setPhoneNumber('');
     setFundingSource('GENERAL');
     setSfabLineItem('');
@@ -927,33 +946,107 @@ export function CommitteeFinanceView({
             </div>
 
             {/* Contact Phone & Mailing Address */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="space-y-1 sm:col-span-1">
-                <Label htmlFor="req-phone" className="text-xs font-medium text-slate-300">
-                  Phone (XXX-XXX-XXXX) *
-                </Label>
-                <Input
-                  id="req-phone"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  placeholder="e.g. 765-555-0199"
-                  className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
-                  required
-                />
+            <div className="space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="space-y-1 sm:col-span-1">
+                  <Label htmlFor="req-phone" className="text-xs font-medium text-slate-300">
+                    Phone (XXX-XXX-XXXX) *
+                  </Label>
+                  <Input
+                    id="req-phone"
+                    name="tel"
+                    type="tel"
+                    autoComplete="tel"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    placeholder="e.g. 765-555-0199"
+                    className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1 sm:col-span-2">
+                  <Label htmlFor="req-street1" className="text-xs font-medium text-slate-300">
+                    Street Address *
+                  </Label>
+                  <Input
+                    id="req-street1"
+                    name="address-line1"
+                    autoComplete="address-line1"
+                    value={streetAddress1}
+                    onChange={(e) => setStreetAddress1(e.target.value)}
+                    placeholder="e.g. 123 University St"
+                    className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
+                    required
+                  />
+                </div>
               </div>
 
-              <div className="space-y-1 sm:col-span-2">
-                <Label htmlFor="req-address" className="text-xs font-medium text-slate-300">
-                  Full Address (Street, City, State, Zip) *
-                </Label>
-                <Input
-                  id="req-address"
-                  value={streetAddress}
-                  onChange={(e) => setStreetAddress(e.target.value)}
-                  placeholder="e.g. 123 University St, Apt 4, West Lafayette, IN 47906"
-                  className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
-                  required
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
+                <div className="space-y-1 sm:col-span-4">
+                  <Label htmlFor="req-street2" className="text-xs font-medium text-slate-300">
+                    Apt / Suite / Unit
+                  </Label>
+                  <Input
+                    id="req-street2"
+                    name="address-line2"
+                    autoComplete="address-line2"
+                    value={streetAddress2}
+                    onChange={(e) => setStreetAddress2(e.target.value)}
+                    placeholder="e.g. Apt 4B (Optional)"
+                    className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
+                  />
+                </div>
+
+                <div className="space-y-1 sm:col-span-4">
+                  <Label htmlFor="req-city" className="text-xs font-medium text-slate-300">
+                    City *
+                  </Label>
+                  <Input
+                    id="req-city"
+                    name="address-level2"
+                    autoComplete="address-level2"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    placeholder="e.g. West Lafayette"
+                    className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1 sm:col-span-2">
+                  <Label htmlFor="req-state" className="text-xs font-medium text-slate-300">
+                    State *
+                  </Label>
+                  <Input
+                    id="req-state"
+                    name="address-level1"
+                    autoComplete="address-level1"
+                    value={state}
+                    onChange={(e) => setState(e.target.value)}
+                    placeholder="e.g. IN"
+                    maxLength={20}
+                    className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1 sm:col-span-2">
+                  <Label htmlFor="req-zip" className="text-xs font-medium text-slate-300">
+                    ZIP Code *
+                  </Label>
+                  <Input
+                    id="req-zip"
+                    name="postal-code"
+                    autoComplete="postal-code"
+                    value={zipCode}
+                    onChange={(e) => setZipCode(e.target.value)}
+                    placeholder="e.g. 47906"
+                    maxLength={10}
+                    className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
+                    required
+                  />
+                </div>
               </div>
             </div>
 

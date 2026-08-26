@@ -228,7 +228,10 @@ describe('FinancePortalPage Integration Suite', () => {
       fireEvent.change(screen.getByLabelText(/Purdue Username/i), { target: { value: 'jtaylor' } });
       fireEvent.change(screen.getByLabelText(/Purdue Email Address/i), { target: { value: 'jtaylor@purdue.edu' } });
       fireEvent.change(screen.getByLabelText(/Phone \(XXX-XXX-XXXX\)/i), { target: { value: '765-555-0199' } });
-      fireEvent.change(screen.getByLabelText(/Full Address/i), { target: { value: '123 Main St, West Lafayette, IN' } });
+      fireEvent.change(screen.getByLabelText(/Street Address \*/i), { target: { value: '123 Main St' } });
+      fireEvent.change(screen.getByLabelText(/City \*/i), { target: { value: 'West Lafayette' } });
+      fireEvent.change(screen.getByLabelText(/State \*/i), { target: { value: 'IN' } });
+      fireEvent.change(screen.getByLabelText(/ZIP Code \*/i), { target: { value: '47906' } });
       fireEvent.change(screen.getByLabelText(/Vendor \/ Store Name/i), { target: { value: 'Pololu Robotics' } });
       fireEvent.change(screen.getByLabelText(/Total Amount/i), { target: { value: '145.50' } });
 
