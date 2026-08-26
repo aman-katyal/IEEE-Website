@@ -103,6 +103,20 @@ describe('FinancePortalPage Integration Suite', () => {
     });
 
     it('filters dues verification search in real-time', async () => {
+      const sampleDues = [
+        {
+          id: 'DUES-179435',
+          studentName: 'Ryan Leviste',
+          purdueEmail: 'ryan.leviste@purdue.edu',
+          amountPaid: 10.0,
+          paymentMethod: 'TooCOOL',
+          paymentDate: '2026-03-05',
+          semester: 'Spring 2026',
+          status: 'Active',
+        },
+      ];
+      localStorage.setItem('boilerbooks_dues', JSON.stringify(sampleDues));
+
       const user = userEvent.setup();
       render(<FinancePortalPage />);
 
