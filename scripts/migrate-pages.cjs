@@ -34,7 +34,7 @@ const homePage = {
   aboutStatsValue: '1903',
   aboutStatsLabel: 'Established & Innovating',
   stats: [
-    { _key: 's1', label: 'Committees', sublabel: 'Technical & support', value: 11 },
+    { _key: 's1', label: 'Technical Committees', sublabel: 'Student-Led Projects', value: 9 },
     { _key: 's2', label: 'Founded', sublabel: 'Legacy of innovation', value: 1903 },
     { _key: 's3', label: 'Members', sublabel: 'Across all disciplines', suffix: '+', value: 750 },
     { _key: 's4', label: 'Raised Annually', prefix: '$', sublabel: 'Project funding', value: 50000 }
