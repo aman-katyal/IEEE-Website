@@ -59,7 +59,7 @@ export function BranchTelemetryCard(props: WhereEngineersGoCardProps) {
         </div>
 
         {/* Single Company Vertical Ticker Area */}
-        <div className="relative h-[88px] my-1.5 overflow-hidden flex items-center">
+        <div className="relative min-h-[84px] my-1.5 overflow-hidden flex items-center">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentCompany.name + currentIndex}
@@ -86,16 +86,11 @@ export function BranchTelemetryCard(props: WhereEngineersGoCardProps) {
                 )}
               </div>
 
-              {/* Company Name & Focus */}
+              {/* Company Name */}
               <div className="min-w-0 flex-1">
-                <div className="text-[15px] sm:text-base font-bold text-slate-100 truncate tracking-tight">
+                <div className="text-[15px] sm:text-base font-bold text-slate-100 leading-snug tracking-tight">
                   {currentCompany.name}
                 </div>
-                {currentCompany.roleOrField && (
-                  <div className="text-xs font-mono text-sky-300 truncate mt-0.5">
-                    {currentCompany.roleOrField}
-                  </div>
-                )}
               </div>
             </motion.div>
           </AnimatePresence>

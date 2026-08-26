@@ -44,12 +44,11 @@ export const homePage = defineType({
           fields: [
             { name: 'name', title: 'Company Name', type: 'string', validation: (Rule) => Rule.required() },
             { name: 'domain', title: 'Domain (for logo lookup, e.g. spacex.com, apple.com)', type: 'string' },
-            { name: 'roleOrField', title: 'Focus / Industry (e.g. Aerospace, Silicon, AI)', type: 'string' },
           ],
           preview: {
             select: {
               title: 'name',
-              subtitle: 'roleOrField',
+              subtitle: 'domain',
             },
           },
         },

@@ -21,7 +21,6 @@ describe('BranchTelemetryCard (Where Our Engineers Go)', () => {
 
     expect(screen.getByText('// Where Our Engineers Intern')).toBeInTheDocument();
     expect(screen.getByText('NASA JPL')).toBeInTheDocument();
-    expect(screen.getByText('Space Robotics')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Join a Project/i })).toHaveAttribute('href', '/committees');
     expect(screen.getByRole('link', { name: /9 Committees/i })).toHaveAttribute('href', '/committees');
   });
