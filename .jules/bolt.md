@@ -25,3 +25,7 @@
 ## 2026-08-10 - Synchronous Scroll Blocking
 **Learning:** Binding scroll event listeners without `{ passive: true }` blocks the main thread from scrolling the page until the event handler completes, causing jank and layout thrashing, especially when components update layout state on scroll.
 **Action:** Always add `{ passive: true }` to `addEventListener('scroll')` to allow the browser to scroll smoothly independently of script execution.
+
+## 2026-08-26 - Optimize Map Access in Tight Loops
+**Learning:** Using `Map.has(key)` followed by `Map.get(key)` inside tight loops (like `sort` or `map` callbacks) performs redundant hash lookups, doubling overhead.
+**Action:** Always prefer a single `Map.get(key) ?? fallback` to halve the number of hash lookups and improve performance.
