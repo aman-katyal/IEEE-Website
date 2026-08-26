@@ -73,7 +73,13 @@ export function AboutUsPage() {
             padding: "0 clamp(16px, 4vw, 32px)",
           }}
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div
+            className={`grid grid-cols-1 ${
+              data?.quote?.text
+                ? "md:grid-cols-2 lg:grid-cols-3"
+                : "md:grid-cols-2 max-w-4xl mx-auto"
+            } gap-8`}
+          >
             <div
               className="glass-card"
               style={{

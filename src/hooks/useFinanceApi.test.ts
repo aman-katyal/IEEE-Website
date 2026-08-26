@@ -27,10 +27,29 @@ describe('useFinanceApi Hook Suite', () => {
   });
 
   it('handles committee login and logout', async () => {
+    mockFetch.mockImplementation(async (url: string) => {
+      if (typeof url === 'string' && url.includes('/auth/verify-pin')) {
+        return {
+          ok: true,
+          json: async () => ({
+            authenticated: true,
+            session: {
+              role: 'COMMITTEE_LEAD',
+              committeeId: 'rov',
+              committeeName: 'Remotely Operated Vehicles',
+              name: 'ROV Leadership',
+              email: 'rov@purdueieee.org',
+            },
+          }),
+        };
+      }
+      return { ok: true, json: async () => ({ success: true }) };
+    });
+
     const { result } = renderHook(() => useFinanceApi());
 
     await act(async () => {
-      const auth = await result.current.loginWithPin('1903', 'COMMITTEE_LEAD', 'rov');
+      const auth = await result.current.loginWithPin('ROV-6T5DB6&835-HNT', 'COMMITTEE_LEAD', 'rov');
       expect(auth.success).toBe(true);
       expect(auth.session?.role).toBe('COMMITTEE_LEAD');
       expect(auth.session?.committeeId).toBe('rov');
@@ -46,10 +65,29 @@ describe('useFinanceApi Hook Suite', () => {
   });
 
   it('handles treasurer login', async () => {
+    mockFetch.mockImplementation(async (url: string) => {
+      if (typeof url === 'string' && url.includes('/auth/verify-pin')) {
+        return {
+          ok: true,
+          json: async () => ({
+            authenticated: true,
+            session: {
+              role: 'TREASURER',
+              committeeId: 'treasurer',
+              committeeName: 'Executive Treasurer Admin',
+              name: 'Purdue IEEE Treasurer',
+              email: 'treasurer@purdueieee.org',
+            },
+          }),
+        };
+      }
+      return { ok: true, json: async () => ({ success: true }) };
+    });
+
     const { result } = renderHook(() => useFinanceApi());
 
     await act(async () => {
-      const auth = await result.current.loginWithPin('1903', 'TREASURER');
+      const auth = await result.current.loginWithPin('TREA-RAALQH@379-Z6B', 'TREASURER');
       expect(auth.success).toBe(true);
       expect(auth.session?.role).toBe('TREASURER');
     });
@@ -58,6 +96,20 @@ describe('useFinanceApi Hook Suite', () => {
   });
 
   it('rejects invalid PIN', async () => {
+    mockFetch.mockImplementation(async (url: string) => {
+      if (typeof url === 'string' && url.includes('/auth/verify-pin')) {
+        return {
+          ok: false,
+          status: 401,
+          json: async () => ({
+            authenticated: false,
+            message: 'Invalid authentication passcode.',
+          }),
+        };
+      }
+      return { ok: true, json: async () => ({ success: true }) };
+    });
+
     const { result } = renderHook(() => useFinanceApi());
 
     await act(async () => {
