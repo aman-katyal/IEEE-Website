@@ -38,8 +38,8 @@ export const cornerstone = defineType({
           fields: [
             { name: 'role', type: 'string', title: 'Role' },
             { name: 'officer', type: 'reference', to: [{ type: 'leader' }], title: 'Officer' },
-            { name: 'name', type: 'string', title: 'Name (Fallback)' },
-            { name: 'email', type: 'string', title: 'Email (Fallback)' },
+            { name: 'name', type: 'string', title: 'Direct Name' },
+            { name: 'email', type: 'string', title: 'Direct Email' },
             { name: 'description', type: 'text', title: 'Bio/Description' },
           ],
         },
