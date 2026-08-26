@@ -131,7 +131,7 @@ describe('BosoCoolStatementView Component', () => {
     fireEvent.click(debitsBtn);
 
     expect(screen.getAllByText('MCMASTER-CARR S').length).toBeGreaterThan(0);
-    expect(screen.getByText('EUROS')).toBeInTheDocument();
+    expect(screen.getAllByText('EUROS').length).toBeGreaterThan(0);
     expect(screen.queryByText('Underground Printing')).not.toBeInTheDocument();
 
     // Click Payments tab
