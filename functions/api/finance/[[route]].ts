@@ -6,8 +6,7 @@ import {
   createPurchaseRequest,
   getPurchaseRequest,
   listPurchaseRequests,
-  updatePurchaseRequestStatus,
-  markPurchaseRequestReimbursed,
+  updatePurchaseStatus,
 } from '../../../src/server/purchase/service';
 import {
   calculateCommitteeSpending,
@@ -16,7 +15,7 @@ import {
   recordCommitteeFundingInflow,
 } from '../../../src/server/matrix/spending';
 import { importMemberDues, searchMemberDues, getMemberDuesSummary, recordCashPayment } from '../../../src/server/dues/service';
-import { generateCoolBatchExport } from '../../../src/server/cool/exporter';
+import { generateCOOLBatch } from '../../../src/server/cool/exporter';
 import { queryAll } from '../../../src/server/db/query';
 import { toD1Database } from '../../../src/server/db/adapter';
 
@@ -141,23 +140,25 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
     if (pathParts[0] === 'purchases' && pathParts.length === 3 && pathParts[2] === 'status' && request.method === 'PATCH') {
       const purchaseId = pathParts[1];
       const body = (await request.json()) as {
-        status: 'APPROVED' | 'REJECTED' | 'REIMBURSED';
+        status: 'PENDING' | 'APPROVED' | 'PURCHASED' | 'REIMBURSED' | 'REJECTED';
         treasurerNotes?: string;
         coolAccountNumber?: string;
         coolBatchId?: string;
       };
 
-      if (body.status === 'REIMBURSED') {
-        const result = await markPurchaseRequestReimbursed(db, purchaseId, body.coolBatchId);
-        return jsonResponse(result);
-      }
-
-      const result = await updatePurchaseRequestStatus(
+      const result = await updatePurchaseStatus(
         db,
         purchaseId,
         body.status,
         body.treasurerNotes,
-        body.coolAccountNumber
+        {
+          userId: 'treasurer-admin',
+          name: 'Purdue IEEE Treasurer',
+          email: 'treasurer@purdueieee.org',
+          role: 'TREASURER',
+          authenticatedAt: new Date().toISOString(),
+        },
+        body.coolBatchId
       );
       return jsonResponse(result);
     }
@@ -319,9 +320,8 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
     // -------------------------------------------------------------
     if (route === 'export/cool' && request.method === 'GET') {
       const fiscalYearId = url.searchParams.get('fiscalYearId') || 'fy25-26';
-      const batchId = url.searchParams.get('batchId') || `COOL-BATCH-${Date.now()}`;
-      const exportResult = await generateCoolBatchExport(db, fiscalYearId, batchId);
-      return new Response(exportResult.tsvContent, {
+      const exportResult = await generateCOOLBatch(db, fiscalYearId);
+      return new Response(exportResult.tsv, {
         headers: {
           'Content-Type': 'text/tab-separated-values; charset=utf-8',
           'Content-Disposition': `attachment; filename="${exportResult.filename}"`,
