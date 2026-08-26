@@ -64,7 +64,7 @@ export default defineConfig({
       previewUrl: {
         origin: (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
           ? 'http://localhost:5173' 
-          : 'https://purdue-ieee-website.ieeepurdueweb.workers.dev',
+          : 'https://purdueieee.org',
         previewMode: {
           enable: '/', // Match the frontend's preview route
         },
