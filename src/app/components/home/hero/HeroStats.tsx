@@ -5,11 +5,6 @@ import type { AlumniCompany } from "../../../../data/sanity-types";
 export interface WhereEngineersGoCardProps {
   companies?: AlumniCompany[];
   highlightText?: string;
-  // Backward-compatible props
-  hqLocation?: string | null;
-  committeesCount?: number;
-  discordMembers?: string | null;
-  campusLocation?: string | null;
 }
 
 export function BranchTelemetryCard(props: WhereEngineersGoCardProps) {

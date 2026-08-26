@@ -30,9 +30,6 @@ export function BentoHero() {
   const aboutTitle   = homeData?.aboutTitle   ?? null;
   const aboutContent = homeData?.aboutContent ?? null;
   const stats: StatItem[] = (homeData?.stats && homeData.stats.length > 0) ? homeData.stats : [];
-  const hqLocation        = homeData?.hqLocation     ?? null;
-  const discordMembers    = homeData?.discordMembers ?? null;
-  const campusLocation    = homeData?.campusLocation ?? null;
 
   // Optimize image URL for responsive format & compression safely without duplicate query strings
   const heroImage = rawHeroImage
@@ -190,10 +187,6 @@ export function BentoHero() {
             <BranchTelemetryCard
               companies={homeData?.alumniCompanies}
               highlightText={homeData?.alumniHighlightText}
-              hqLocation={hqLocation}
-              committeesCount={committees?.length}
-              discordMembers={discordMembers}
-              campusLocation={campusLocation}
             />
 
             {/* 3. Core Stats (1x1 span) */}

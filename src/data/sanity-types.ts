@@ -43,11 +43,7 @@ export interface HomePageData {
   heroImage?: string;
   aboutTitle?: string;
   aboutContent?: string;
-  aboutImage?: string;
   stats?: StatItem[];
-  hqLocation?: string;
-  discordMembers?: string;
-  campusLocation?: string;
   alumniCompanies?: AlumniCompany[];
   alumniHighlightText?: string;
 }

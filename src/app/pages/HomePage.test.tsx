@@ -26,11 +26,6 @@ describe('HomePage', () => {
     stats: [
       { value: 10, label: 'Committees', sublabel: 'Technical' }
     ],
-    sysUptime: 'ACTIVE',
-    semester: 'SP_2026',
-    hqLocation: 'EE 115 / EE 224',
-    discordMembers: '1,200+ Members',
-    campusLocation: 'Purdue West Lafayette'
   };
 
   const mockCommittees = [

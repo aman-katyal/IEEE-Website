@@ -147,7 +147,6 @@ export function useHomePage() {
   const query = groq`*[_type == "homePage"][0]{
     ...,
     "heroImage": coalesce(heroImage.asset->url + "?auto=format&w=1600&q=75", heroImage.asset->url),
-    "aboutImage": coalesce(aboutImage.asset->url + "?auto=format&w=1000&q=75", aboutImage.asset->url),
     "alumniCompanies": coalesce(alumniCompanies[], [])
   }`;
   const { data, loading, error, refetch } = useSanityQuery<HomePageData>(query);

@@ -51,9 +51,6 @@ describe('BentoHero', () => {
     stats: [
       { value: 10, label: 'Committees', sublabel: 'Technical', suffix: '' }
     ],
-    hqLocation: 'EE 115',
-    discordMembers: '1,200+ Members',
-    campusLocation: 'Purdue West Lafayette'
   };
 
   const mockCommittees = [
