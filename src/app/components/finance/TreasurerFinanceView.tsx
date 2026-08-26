@@ -367,7 +367,7 @@ export function TreasurerFinanceView({
   // Generate COOL Formatted Text
   const generatedCOOLText = useMemo(() => {
     if (approvedRequestsForCOOL.length === 0) {
-      return 'PURDUE COOL / BOSOP BATCH EXPORT\nNo approved purchase requests currently pending reimbursement transfer.';
+      return 'PURDUE COOL / BOSOP REIMBURSEMENT BATCH EXPORT\nNo approved purchase requests currently pending reimbursement transfer.';
     }
 
     const total = approvedRequestsForCOOL.reduce((sum, r) => sum + r.totalAmount, 0);

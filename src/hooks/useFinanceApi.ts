@@ -188,9 +188,7 @@ export function useFinanceApi() {
             approvedAt: r.approved_at || r.approvedAt,
             reimbursedAt: r.reimbursed_at || r.reimbursedAt,
           }));
-          if (mapped.length > 0) {
-            setPurchases(mapped);
-          }
+          setPurchases(mapped);
         }
       }
 
@@ -211,9 +209,7 @@ export function useFinanceApi() {
             notes: i.notes,
             createdAt: i.created_at,
           }));
-          if (mappedInflows.length > 0) {
-            setFundingInflows(mappedInflows);
-          }
+          setFundingInflows(mappedInflows);
         }
       }
 
@@ -232,9 +228,7 @@ export function useFinanceApi() {
             paymentMethod: (d.payment_method || d.paymentMethod || 'TooCOOL') as 'TooCOOL' | 'Cash' | 'Card',
             paymentDate: d.payment_date || d.paymentDate || new Date().toISOString().split('T')[0],
           }));
-          if (mappedDues.length > 0) {
-            setMemberDues(mappedDues);
-          }
+          setMemberDues(mappedDues);
         }
       }
 
