@@ -2,6 +2,16 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "purdue-ieee-website",
   "compatibility_date": "2026-04-28",
+  "routes": [
+    {
+      "pattern": "purdueieee.org",
+      "custom_domain": true
+    },
+    {
+      "pattern": "www.purdueieee.org",
+      "custom_domain": true
+    }
+  ],
   "observability": {
     "enabled": true
   },
