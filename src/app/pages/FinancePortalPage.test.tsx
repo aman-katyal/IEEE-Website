@@ -52,6 +52,27 @@ describe('FinancePortalPage Integration Suite', () => {
           }),
         };
       }
+      if (urlStr.includes('/purchases')) {
+        const stored = JSON.parse(localStorage.getItem('boilerbooks_purchases') || '[]');
+        return {
+          ok: true,
+          json: async () => ({ success: true, requests: stored }),
+        };
+      }
+      if (urlStr.includes('/dues')) {
+        const stored = JSON.parse(localStorage.getItem('boilerbooks_member_dues') || '[]');
+        return {
+          ok: true,
+          json: async () => ({ success: true, dues: stored }),
+        };
+      }
+      if (urlStr.includes('/inflows')) {
+        const stored = JSON.parse(localStorage.getItem('boilerbooks_funding_inflows') || '[]');
+        return {
+          ok: true,
+          json: async () => ({ success: true, inflows: stored }),
+        };
+      }
       return {
         ok: true,
         json: async () => ({ success: true, matrix: [], requests: [], inflows: [], dues: [] }),
