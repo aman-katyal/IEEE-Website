@@ -36,9 +36,10 @@ describe('AboutUsPage', () => {
 
     // Static layout sections (heritage & impact)
     expect(screen.getByText('Established 1903')).toBeInTheDocument();
-    expect(screen.getByText('Professional Growth')).toBeInTheDocument();
+    expect(screen.getByText('Hands-On Engineering')).toBeInTheDocument();
 
-    // No hardcoded fallback sections
+    // No hardcoded fallback quote or sections
+    expect(screen.queryByText(/Our alumni go on to work at some of the world's largest companies/i)).not.toBeInTheDocument();
     expect(screen.queryByText((_, element) => element?.textContent === 'At Purdue, we strive to be the best ')).not.toBeInTheDocument();
   });
 

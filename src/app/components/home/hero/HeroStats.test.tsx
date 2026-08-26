@@ -30,20 +30,14 @@ describe('BranchTelemetryCard (Where Our Engineers Go)', () => {
     expect(screen.getByRole('link', { name: /9 Committees/i })).toHaveAttribute('href', '/committees');
   });
 
-  it('renders default high-profile engineering destinations when CMS list is empty', () => {
-    render(
+  it('renders nothing when CMS companies list is empty (zero hardcoding)', () => {
+    const { container } = render(
       <MemoryRouter>
         <BranchTelemetryCard companies={[]} />
       </MemoryRouter>
     );
 
-    expect(screen.getByText('// Where Our Engineers Go')).toBeInTheDocument();
-    expect(screen.getByText('TOP DESTINATIONS')).toBeInTheDocument();
-    expect(screen.getByText('SpaceX')).toBeInTheDocument();
-    expect(screen.getByText('Apple')).toBeInTheDocument();
-    expect(screen.getByText('Tesla')).toBeInTheDocument();
-    expect(screen.getByText('Texas Instruments')).toBeInTheDocument();
-    expect(screen.getByText('Top Tech, Aerospace & Semiconductor Destinations')).toBeInTheDocument();
+    expect(container.firstChild).toBeNull();
   });
 });
 

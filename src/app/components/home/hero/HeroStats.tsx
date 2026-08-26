@@ -10,18 +10,11 @@ export interface WhereEngineersGoCardProps {
 export function BranchTelemetryCard(props: WhereEngineersGoCardProps) {
   const { companies, highlightText } = props;
 
-  const defaultCompanies: AlumniCompany[] = [
-    { name: "SpaceX", domain: "spacex.com", roleOrField: "Aerospace" },
-    { name: "Apple", domain: "apple.com", roleOrField: "Silicon & HW" },
-    { name: "Tesla", domain: "tesla.com", roleOrField: "EV & Autonomy" },
-    { name: "Texas Instruments", domain: "ti.com", roleOrField: "Semiconductors" },
-    { name: "Intel", domain: "intel.com", roleOrField: "Compute" },
-    { name: "Google", domain: "google.com", roleOrField: "Software & AI" },
-    { name: "Boeing", domain: "boeing.com", roleOrField: "Avionics" },
-    { name: "Northrop Grumman", domain: "northropgrumman.com", roleOrField: "Defense" },
-  ];
+  const activeCompanies = companies && companies.length > 0 ? companies : [];
 
-  const activeCompanies = companies && companies.length > 0 ? companies : defaultCompanies;
+  if (activeCompanies.length === 0) {
+    return null;
+  }
 
   return (
     <div
@@ -81,9 +74,11 @@ export function BranchTelemetryCard(props: WhereEngineersGoCardProps) {
         </div>
 
         {/* Impact Subtitle */}
-        <p className="text-[11px] text-slate-400 leading-snug mt-1" style={{ fontFamily: "var(--font-body)" }}>
-          {highlightText || "Top Tech, Aerospace & Semiconductor Destinations"}
-        </p>
+        {highlightText && (
+          <p className="text-[11px] text-slate-400 leading-snug mt-1" style={{ fontFamily: "var(--font-body)" }}>
+            {highlightText}
+          </p>
+        )}
       </div>
 
       {/* Action Footer */}

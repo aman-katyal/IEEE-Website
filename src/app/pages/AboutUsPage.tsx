@@ -119,105 +119,94 @@ export function AboutUsPage() {
                   marginBottom: "12px",
                 }}
               >
-                Professional Growth
+                Hands-On Engineering
               </h3>
-              <ul className="list-none p-0 m-0 grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {[
-                  "Professional Careers",
-                  "Engineering Software",
-                  "Practical Solutions",
-                  "Lasting Connections",
-                ].map((item) => (
-                  <li
-                    key={item}
+              <p
+                style={{
+                  fontSize: "14px",
+                  color: "var(--text-secondary)",
+                  lineHeight: 1.6,
+                  margin: 0,
+                }}
+              >
+                Empowering Purdue undergraduates with real-world technical project
+                experience, state-of-the-art lab spaces, and championship
+                competition teams.
+              </p>
+            </div>
+            {data?.quote?.text && (
+              <div
+                className="glass-card"
+                style={{
+                  padding: "32px",
+                  borderLeft: "4px solid var(--cyber-gold)",
+                }}
+              >
+                <figure style={{ margin: 0 }}>
+                  <blockquote
                     style={{
-                      fontSize: "12px",
+                      fontStyle: "italic",
+                      fontSize: "14px",
                       color: "var(--text-secondary)",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "6px",
+                      lineHeight: 1.6,
+                      margin: "0 0 16px",
                     }}
                   >
-                    <div
-                      style={{
-                        width: "4px",
-                        height: "4px",
-                        borderRadius: "50%",
-                        background: "var(--electric-blue)",
-                      }}
-                    />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div
-              className="glass-card"
-              style={{
-                padding: "32px",
-                borderLeft: "4px solid var(--cyber-gold)",
-              }}
-            >
-              <figure style={{ margin: 0 }}>
-                <blockquote
-                  style={{
-                    fontStyle: "italic",
-                    fontSize: "14px",
-                    color: "var(--text-secondary)",
-                    lineHeight: 1.6,
-                    margin: "0 0 16px",
-                  }}
-                >
-                  "Our alumni go on to work at some of the world's largest
-                  companies... helping shape the future of technology."
-                </blockquote>
-                <figcaption
-                  style={{ display: "flex", alignItems: "center", gap: "10px" }}
-                >
-                  <div
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "50%",
-                      background:
-                        "linear-gradient(135deg, var(--cyber-gold), var(--electric-blue))",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "12px",
-                      fontWeight: 700,
-                      color: "#000",
-                      flexShrink: 0,
-                    }}
-                  >
-                    PI
-                  </div>
-                  <div>
-                    <div
-                      style={{
-                        fontFamily: "var(--font-headline)",
-                        fontSize: "13px",
-                        fontWeight: 600,
-                        color: "var(--text-primary)",
-                      }}
+                    "{data.quote.text}"
+                  </blockquote>
+                  {(data.quote.author || data.quote.authorTitle) && (
+                    <figcaption
+                      style={{ display: "flex", alignItems: "center", gap: "10px" }}
                     >
-                      {data?.quoteAuthor || "Purdue IEEE Leadership"}
-                    </div>
-                    <div
-                      style={{
-                        fontFamily: "var(--font-mono)",
-                        fontSize: "11px",
-                        color: "var(--text-muted)",
-                        letterSpacing: "0.05em",
-                      }}
-                    >
-                      {data?.quoteAuthorTitle ||
-                        "Executive Officer, Purdue IEEE"}
-                    </div>
-                  </div>
-                </figcaption>
-              </figure>
-            </div>
+                      <div
+                        style={{
+                          width: "32px",
+                          height: "32px",
+                          borderRadius: "50%",
+                          background:
+                            "linear-gradient(135deg, var(--cyber-gold), var(--electric-blue))",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: "12px",
+                          fontWeight: 700,
+                          color: "#000",
+                          flexShrink: 0,
+                        }}
+                      >
+                        PI
+                      </div>
+                      <div>
+                        {data.quote.author && (
+                          <div
+                            style={{
+                              fontFamily: "var(--font-headline)",
+                              fontSize: "13px",
+                              fontWeight: 600,
+                              color: "var(--text-primary)",
+                            }}
+                          >
+                            {data.quote.author}
+                          </div>
+                        )}
+                        {data.quote.authorTitle && (
+                          <div
+                            style={{
+                              fontFamily: "var(--font-mono)",
+                              fontSize: "11px",
+                              color: "var(--text-muted)",
+                              letterSpacing: "0.05em",
+                            }}
+                          >
+                            {data.quote.authorTitle}
+                          </div>
+                        )}
+                      </div>
+                    </figcaption>
+                  )}
+                </figure>
+              </div>
+            )}
           </div>
         </div>
       </section>

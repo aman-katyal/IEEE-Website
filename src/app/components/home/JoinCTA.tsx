@@ -143,40 +143,42 @@ export function JoinCTA() {
           </MagneticButton>
 
           {/* Benefits list */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
-            {benefits.map((b) => (
-              <div
-                key={b}
-                style={{
-                  display: "flex",
-                  alignItems: "flex-start",
-                  gap: "8px",
-                }}
-              >
+          {benefits.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
+              {benefits.map((b) => (
                 <div
+                  key={b}
                   style={{
-                    width: "4px",
-                    height: "4px",
-                    background: "var(--electric-blue)",
-                    borderRadius: "50%",
-                    marginTop: "6px",
-                    flexShrink: 0,
-                    boxShadow: "0 0 6px rgba(0,98,155,0.8)",
-                  }}
-                />
-                <span
-                  style={{
-                    fontFamily: "var(--font-body)",
-                    fontSize: "13.5px",
-                    color: "var(--text-secondary)",
-                    lineHeight: 1.5,
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: "8px",
                   }}
                 >
-                  {b}
-                </span>
-              </div>
-            ))}
-          </div>
+                  <div
+                    style={{
+                      width: "4px",
+                      height: "4px",
+                      background: "var(--electric-blue)",
+                      borderRadius: "50%",
+                      marginTop: "6px",
+                      flexShrink: 0,
+                      boxShadow: "0 0 6px rgba(0,98,155,0.8)",
+                    }}
+                  />
+                  <span
+                    style={{
+                      fontFamily: "var(--font-body)",
+                      fontSize: "13.5px",
+                      color: "var(--text-secondary)",
+                      lineHeight: 1.5,
+                    }}
+                  >
+                    {b}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Right — Sign-up Discord (Aligned with Next Event sidebar) */}

@@ -51,6 +51,11 @@ describe('BentoHero', () => {
     stats: [
       { value: 10, label: 'Committees', sublabel: 'Technical', suffix: '' }
     ],
+    alumniCompanies: [
+      { name: 'SpaceX', domain: 'spacex.com' },
+      { name: 'Apple', domain: 'apple.com' },
+    ],
+    alumniHighlightText: 'Top Tech Destinations',
   };
 
   const mockCommittees = [

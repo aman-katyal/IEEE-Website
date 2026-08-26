@@ -26,6 +26,11 @@ describe('HomePage', () => {
     stats: [
       { value: 10, label: 'Committees', sublabel: 'Technical' }
     ],
+    alumniCompanies: [
+      { name: 'SpaceX', domain: 'spacex.com' },
+      { name: 'Apple', domain: 'apple.com' },
+    ],
+    alumniHighlightText: 'Top Tech Destinations',
   };
 
   const mockCommittees = [
