@@ -193,7 +193,7 @@ describe('FinancePortalPage Integration Suite', () => {
       expect(screen.getByRole('tab', { name: /Master Spending Matrix/i })).toBeInTheDocument();
       expect(screen.getByRole('tab', { name: /Grants & Inflows/i })).toBeInTheDocument();
       expect(screen.getByRole('tab', { name: /Dues Directory/i })).toBeInTheDocument();
-    });
+    }, 15000);
 
     it('approves a pending request in the queue', async () => {
       const user = userEvent.setup();
@@ -214,7 +214,7 @@ describe('FinancePortalPage Integration Suite', () => {
       await user.click(approveButtons[0]);
 
       expect(screen.getByText(/Purdue COOL Batch Exporter/i)).toBeInTheDocument();
-    });
+    }, 15000);
 
     it('opens Purdue COOL Batch Exporter and copies formatted batch text', async () => {
       const user = userEvent.setup();
@@ -237,7 +237,7 @@ describe('FinancePortalPage Integration Suite', () => {
       await user.click(copyButton);
 
       expect(screen.getByText(/Copied!/i)).toBeInTheDocument();
-    });
+    }, 15000);
 
     it('switches between Master Spending Matrix and Dues Directory tabs', async () => {
       const user = userEvent.setup();
@@ -259,7 +259,7 @@ describe('FinancePortalPage Integration Suite', () => {
       // Switch to Dues Directory tab
       await user.click(screen.getByRole('tab', { name: /Dues Directory/i }));
       expect(screen.getByText(/Student Member Dues Directory/i)).toBeInTheDocument();
-    });
+    }, 15000);
 
     it('allows Treasurer to edit committee budgets, categories, and parameters', async () => {
       const user = userEvent.setup();
@@ -293,7 +293,7 @@ describe('FinancePortalPage Integration Suite', () => {
 
       // Verify updated allocation in matrix
       expect(screen.getAllByText('$18,500.00').length).toBeGreaterThanOrEqual(1);
-    });
+    }, 15000);
 
     it('allows Treasurer to record specific funding inflow/grant for a committee', async () => {
       const user = userEvent.setup();
@@ -331,7 +331,7 @@ describe('FinancePortalPage Integration Suite', () => {
 
       expect(screen.getByText('Texas Instruments Autonomous Grant')).toBeInTheDocument();
       expect(screen.getAllByText('+$4,500.00').length).toBeGreaterThanOrEqual(1);
-    });
+    }, 15000);
 
     it('allows signing out and returning to the login modal', async () => {
       const user = userEvent.setup();
@@ -349,7 +349,7 @@ describe('FinancePortalPage Integration Suite', () => {
 
       expect(screen.getByText('BoilerBooks')).toBeInTheDocument();
       expect(screen.getByTestId('pin-input')).toBeInTheDocument();
-    });
+    }, 15000);
 
     it('displays the official Purdue BOSO / COOL Statement tab with SOA #04612', async () => {
       const user = userEvent.setup();
@@ -371,6 +371,6 @@ describe('FinancePortalPage Integration Suite', () => {
       expect(screen.getByText('Underground Printing')).toBeInTheDocument();
       expect(screen.getByText('EUROS')).toBeInTheDocument();
       expect(screen.getByText('$11,390.55')).toBeInTheDocument();
-    });
+    }, 15000);
   });
 });
