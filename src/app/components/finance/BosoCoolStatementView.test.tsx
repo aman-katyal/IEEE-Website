@@ -127,7 +127,7 @@ describe('BosoCoolStatementView Component', () => {
     render(<BosoCoolStatementView statement={mockTestStatement} />);
 
     // Click Debits tab
-    const debitsBtn = screen.getByRole('button', { name: /Debits/i });
+    const debitsBtn = screen.getByRole('button', { name: /Show Debits transactions/i });
     fireEvent.click(debitsBtn);
 
     expect(screen.getAllByText('MCMASTER-CARR S').length).toBeGreaterThan(0);
@@ -135,7 +135,7 @@ describe('BosoCoolStatementView Component', () => {
     expect(screen.queryByText('Underground Printing')).not.toBeInTheDocument();
 
     // Click Payments tab
-    const paymentsBtn = screen.getByRole('button', { name: /Payments/i });
+    const paymentsBtn = screen.getByRole('button', { name: /Show Payments transactions/i });
     fireEvent.click(paymentsBtn);
 
     expect(screen.getByText('Underground Printing')).toBeInTheDocument();

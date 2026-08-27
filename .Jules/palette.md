@@ -9,3 +9,6 @@
 ## 2026-08-13 - ARIA Group Role on Committee Toggle Buttons
 **Learning:** Filter button groups in React lack accessibility roles and labels for context.
 **Action:** Always wrap the container in `role="group"` with a descriptive `aria-label`, and use `aria-pressed` on the individual toggle buttons. Standalone text like 'All' must be contextualized using `aria-label`.
+## 2024-08-27 - Contextualize Filter Buttons
+**Learning:** Generic visually hidden labels or text-only tags like "Payments" or "Credits" inside a filter button group can lose context when read by screen readers. Furthermore, attempting to use the visible text within an aria-label requires keeping the visible text exact, or WCAG 2.5.3 issues (Label in Name) may arise for voice control users.
+**Action:** Always verify that `aria-label` includes the exact visible text as a substring (e.g., `aria-label="Show Debits transactions"` rather than `aria-label="Show debit transactions"` if the visible text is "Debits") when contextualizing isolated filter toggle buttons.
