@@ -48,6 +48,7 @@ import {
   REAL_COMMITTEES,
 } from './financeData';
 import { ReceiptPreviewModal } from './ReceiptPreviewModal';
+import { formatCurrencyUSD } from '@/lib/formatters';
 
 export interface CommitteeFinanceViewProps {
   session: AuthSessionData;
@@ -359,11 +360,11 @@ export function CommitteeFinanceView({
             ${stats.totalEffectiveBudget.toLocaleString('en-US', { minimumFractionDigits: 2 })}
           </div>
           <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
-            <span>${stats.baseAllocated.toLocaleString('en-US')} base</span>
+            <span>{formatCurrencyUSD(stats.baseAllocated, { decimals: 0 })} base</span>
             {stats.totalInflows > 0 && (
               <>
                 <span className="text-slate-600">+</span>
-                <span className="text-emerald-400 font-medium">+${stats.totalInflows.toLocaleString('en-US')} grants</span>
+                <span className="text-emerald-400 font-medium">+{formatCurrencyUSD(stats.totalInflows, { decimals: 0 })} grants</span>
               </>
             )}
           </p>
@@ -426,7 +427,7 @@ export function CommitteeFinanceView({
               </h3>
             </div>
             <span className="text-xs font-mono font-bold text-emerald-400">
-              +${stats.totalInflows.toLocaleString('en-US', { minimumFractionDigits: 2 })} Total Credited
+              +{formatCurrencyUSD(stats.totalInflows)} Total Credited
             </span>
           </div>
 
@@ -449,7 +450,7 @@ export function CommitteeFinanceView({
                     {inflow.sourceType}
                   </Badge>
                   <span className="font-mono text-xs font-bold text-emerald-400">
-                    +${inflow.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                    +{formatCurrencyUSD(inflow.amount)}
                   </span>
                 </div>
                 <div className="font-medium text-xs text-slate-200">{inflow.title}</div>
@@ -504,7 +505,7 @@ export function CommitteeFinanceView({
                       <span className="text-slate-500 ml-2">({m.semester})</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-slate-400">${m.amountPaid.toFixed(2)} via {m.paymentMethod}</span>
+                      <span className="text-slate-400">{formatCurrencyUSD(m.amountPaid)} via {m.paymentMethod}</span>
                       <Badge className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                         ACTIVE · DUES PAID
                       </Badge>

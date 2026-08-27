@@ -60,6 +60,7 @@ import {
   type PurchaseStatus,
 } from './financeData';
 import { ReceiptPreviewModal } from './ReceiptPreviewModal';
+import { formatCurrencyUSD } from '@/lib/formatters';
 
 export interface TreasurerFinanceViewProps {
   session: AuthSessionData;
@@ -362,7 +363,7 @@ export function TreasurerFinanceView({
     const header = [
       '================================================================================',
       `PURDUE COOL / BOSOP REIMBURSEMENT BATCH EXPORT`,
-      `Date: ${dateStr} | Total Count: ${approvedRequestsForCOOL.length} | Total Sum: $${total.toFixed(2)}`,
+      `Date: ${dateStr} | Total Count: ${approvedRequestsForCOOL.length} | Total Sum: ${formatCurrencyUSD(total)}`,
       '================================================================================',
     ].join('\n');
 
@@ -382,7 +383,7 @@ export function TreasurerFinanceView({
           `    Disbursement: ${disbursementLabel}`,
           `    Vendor: ${item.vendorName}`,
           `    Account Line: ${item.coolAccountNumber || '01-234-56'}`,
-          `    Amount: $${item.totalAmount.toFixed(2)}`,
+          `    Amount: ${formatCurrencyUSD(item.totalAmount)}`,
           `    Receipt: ${item.receiptFilename || 'Digital Attachment Verified'}`,
           `    Notes: ${item.treasurerNotes || 'None'}`,
           `    Description: ${item.description}`,
@@ -667,9 +668,9 @@ export function TreasurerFinanceView({
             ${branchTotals.totalBranchBudget.toLocaleString('en-US', { minimumFractionDigits: 2 })}
           </div>
           <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
-            <span>${branchTotals.totalAllocated.toLocaleString('en-US')} base</span>
+            <span>{formatCurrencyUSD(branchTotals.totalAllocated, { decimals: 0 })} base</span>
             <span className="text-slate-600">+</span>
-            <span className="text-emerald-400 font-medium">+${branchTotals.totalInflows.toLocaleString('en-US')} grants</span>
+            <span className="text-emerald-400 font-medium">+{formatCurrencyUSD(branchTotals.totalInflows, { decimals: 0 })} grants</span>
           </p>
         </Card>
 
@@ -949,7 +950,7 @@ export function TreasurerFinanceView({
                       <TableCell className="text-right py-3.5 font-mono text-xs">
                         {c.totalInflows > 0 ? (
                           <span className="inline-flex items-center gap-1 text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                            +${c.totalInflows.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                            +{formatCurrencyUSD(c.totalInflows)}
                           </span>
                         ) : (
                           <span className="text-slate-600">$0.00</span>
@@ -1145,7 +1146,7 @@ export function TreasurerFinanceView({
                           {item.receivedDate}
                         </TableCell>
                         <TableCell className="text-right py-3.5 font-mono text-xs font-bold text-emerald-400">
-                          +${item.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                          +{formatCurrencyUSD(item.amount)}
                         </TableCell>
                         <TableCell className="text-right py-3.5 pr-6">
                           {onDeleteFundingInflow && (
@@ -1446,7 +1447,7 @@ export function TreasurerFinanceView({
                   {importedCsvData.slice(0, 5).map((rec, i) => (
                     <div key={i} className="flex items-center justify-between p-1.5 rounded bg-slate-800/40 text-slate-300">
                       <span>{rec.studentName} ({rec.purdueEmail})</span>
-                      <span className="font-mono text-white">${rec.amountPaid.toFixed(2)}</span>
+                      <span className="font-mono text-white">{formatCurrencyUSD(rec.amountPaid)}</span>
                     </div>
                   ))}
                   {importedCsvData.length > 5 && (
