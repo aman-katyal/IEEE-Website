@@ -31,4 +31,24 @@ describe('announceToScreenReader', () => {
     expect(region).toHaveAttribute('aria-live', 'assertive');
     expect(region?.textContent).toBe('Payment rejected: Invalid PIN');
   });
+
+  it('handles undefined document gracefully', () => {
+    const originalDocument = global.document;
+    // @ts-ignore
+    delete global.document;
+
+    announceToScreenReader('Should not throw', 'polite');
+
+    global.document = originalDocument;
+  });
+
+  it('appends the live region to document.body', () => {
+    announceToScreenReader('Test DOM append', 'polite');
+    vi.advanceTimersByTime(100);
+
+    const region = document.getElementById('aria-live-polite');
+    expect(region).not.toBeNull();
+    // Using type assertion to bypass TypeScript null check since we just asserted it is not null
+    expect(document.body.contains(region as HTMLElement)).toBe(true);
+  });
 });
