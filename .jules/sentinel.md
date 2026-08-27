@@ -17,3 +17,7 @@
 **Vulnerability:** Found issue describing missing rel="noopener noreferrer" for target="_blank" links.
 **Learning:** Sometimes reported security vulnerabilities may have already been fixed in a recent PR or by another team member. In this case, `rel="noopener noreferrer"` was already present.
 **Prevention:** Always verify the codebase state directly before applying security patches to prevent unnecessary churn or overwriting good fixes.
+## 2024-08-26 - Prevent XSS in Breadcrumbs JSON-LD
+**Vulnerability:** XSS vulnerability in Breadcrumbs component due to unsanitized JSON string injection via `dangerouslySetInnerHTML`.
+**Learning:** When injecting serialized JSON into a `<script>` tag, HTML-sensitive characters must be escaped.
+**Prevention:** Always sanitize JSON injected into HTML contexts by replacing `<`, `>`, and `&` with their unicode escapes.
