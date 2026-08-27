@@ -16,7 +16,7 @@ export function useSoundEffects() {
       if (!soundEnabled || typeof window === "undefined") return;
 
       try {
-        const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
         if (!AudioCtx) return;
 
         const ctx = new AudioCtx();
