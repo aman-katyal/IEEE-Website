@@ -2,7 +2,7 @@ import { BentoHero } from "../components/home/BentoHero";
 import { TechMarquee } from "../components/home/TechMarquee";
 import { Events } from "../components/home/Events";
 import { JoinCTA } from "../components/home/JoinCTA";
-import { HomePageProvider } from "../../context/HomePageContext";
+import { HomePageProvider } from "../../context/HomePageProvider";
 
 export function HomePage() {
   return (
