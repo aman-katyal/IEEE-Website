@@ -1,5 +1,6 @@
 import { ArrowUpRight } from "lucide-react";
 import { Link } from "react-router";
+import { useState } from "react";
 import { useTheme } from "next-themes";
 import { useCommittees } from "../../../hooks/useSanityData";
 import { Skeleton as BoneyardSkeleton } from "boneyard-js/react";
@@ -135,6 +136,11 @@ export function Committees() {
   const { theme } = useTheme();
   const isLight = theme === "light";
 
+  const [displayCount, setDisplayCount] = useState(6);
+  const displayedCommittees = committees.slice(0, displayCount);
+  const hasMore = committees.length > displayCount;
+
+
   if (error) {
     return (
       <div className="py-12 text-center text-[var(--text-secondary)]">
@@ -173,7 +179,7 @@ export function Committees() {
         >
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 min-h-[200px]">
             <AnimatePresence mode="popLayout">
-              {committees.map((c) => (
+              {displayedCommittees.map((c) => (
                 <motion.div
                   key={c.id}
                   layout
@@ -187,6 +193,20 @@ export function Committees() {
               ))}
             </AnimatePresence>
           </div>
+
+          {!loading && hasMore && (
+            <div className="mt-12 flex justify-center">
+              <button
+                onClick={() => setDisplayCount((prev) => prev + 6)}
+                className="group relative px-8 py-3 bg-[var(--card-bg)] hover:bg-[var(--card-bg-hover)] border border-[var(--glass-border)] rounded-sm overflow-hidden transition-all duration-300 hover:border-[var(--electric-blue)]"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-[var(--electric-blue)]/0 via-[var(--electric-blue)]/10 to-[var(--electric-blue)]/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+                <span className="relative z-10 font-[family-name:var(--font-mono)] text-sm tracking-widest text-[var(--text-primary)] group-hover:text-[var(--electric-blue)] transition-colors uppercase">
+                  Load More
+                </span>
+              </button>
+            </div>
+          )}
         </BoneyardSkeleton>
       </div>
     </section>
