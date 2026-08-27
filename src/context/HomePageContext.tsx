@@ -1,6 +1,5 @@
 import { createContext, useContext } from "react";
 import { useHomePage } from "../hooks/useSanityData";
-export { HomePageProvider } from "./HomePageProvider";
 
 // ─── Type mirrors the return shape of useHomePage ─────────────────
 export type HomePageContextValue = ReturnType<typeof useHomePage>;
