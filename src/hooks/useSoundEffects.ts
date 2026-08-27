@@ -8,7 +8,7 @@ import { useLocalStorage } from "./useLocalStorage";
 export function useSoundEffects() {
   const [soundEnabled, setSoundEnabled] = useLocalStorage<boolean>(
     "ieee-sound-effects-enabled",
-    false
+    false,
   );
 
   const playTone = useCallback(
@@ -16,7 +16,7 @@ export function useSoundEffects() {
       if (!soundEnabled || typeof window === "undefined") return;
 
       try {
-        const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
         if (!AudioCtx) return;
 
         const ctx = new AudioCtx();
@@ -27,7 +27,10 @@ export function useSoundEffects() {
         osc.frequency.setValueAtTime(frequency, ctx.currentTime);
 
         gain.gain.setValueAtTime(0.05, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + durationMs / 1000);
+        gain.gain.exponentialRampToValueAtTime(
+          0.0001,
+          ctx.currentTime + durationMs / 1000,
+        );
 
         osc.connect(gain);
         gain.connect(ctx.destination);
@@ -36,7 +39,7 @@ export function useSoundEffects() {
         osc.stop(ctx.currentTime + durationMs / 1000);
       } catch (e) {}
     },
-    [soundEnabled]
+    [soundEnabled],
   );
 
   const playClick = useCallback(() => {
