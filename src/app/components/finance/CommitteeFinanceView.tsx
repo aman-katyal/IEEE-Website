@@ -108,15 +108,16 @@ export function CommitteeFinanceView({
   const stats = useMemo(() => {
     const baseAllocated = committee.allocated;
     const totalEffectiveBudget = baseAllocated + totalInflows;
-    const approved = committeePurchases
-      .filter((p) => p.status === 'APPROVED' || p.status === 'PURCHASED' || p.status === 'REIMBURSED')
-      .reduce((sum, p) => sum + p.totalAmount, 0);
-    const pending = committeePurchases
-      .filter((p) => p.status === 'PENDING')
-      .reduce((sum, p) => sum + p.totalAmount, 0);
-    const reimbursed = committeePurchases
-      .filter((p) => p.status === 'REIMBURSED')
-      .reduce((sum, p) => sum + p.totalAmount, 0);
+    // ⚡ Bolt Optimization: Combine O(3N) array filter/reduce passes into a single O(N) pass
+    const { approved, pending, reimbursed } = committeePurchases.reduce(
+      (acc, p) => {
+        if (p.status === 'APPROVED' || p.status === 'PURCHASED' || p.status === 'REIMBURSED') acc.approved += p.totalAmount;
+        if (p.status === 'PENDING') acc.pending += p.totalAmount;
+        if (p.status === 'REIMBURSED') acc.reimbursed += p.totalAmount;
+        return acc;
+      },
+      { approved: 0, pending: 0, reimbursed: 0 }
+    );
     const remaining = Math.max(totalEffectiveBudget - approved, 0);
     const percentSpent = totalEffectiveBudget > 0 ? Math.min(Math.round((approved / totalEffectiveBudget) * 100), 100) : 0;
 

@@ -29,3 +29,8 @@
 ## 2026-08-26 - Optimize Map Access in Tight Loops
 **Learning:** Using `Map.has(key)` followed by `Map.get(key)` inside tight loops (like `sort` or `map` callbacks) performs redundant hash lookups, doubling overhead.
 **Action:** Always prefer a single `Map.get(key) ?? fallback` to halve the number of hash lookups and improve performance.
+## 2024-05-24 - O(3N) Array Processing Anti-Pattern
+
+**Learning:** When calculating multiple aggregate values (like `approved`, `pending`, `reimbursed` totals) from the same array, developers often chain `.filter().reduce()` for each value separately. This results in traversing the array multiple times (O(kN) where k is the number of values).
+
+**Action:** Always combine multiple related aggregate calculations over the same array into a single `.reduce()` pass using an accumulator object. This drops the complexity to O(N).

@@ -124,15 +124,16 @@ export function TreasurerFinanceView({
       const baseAllocated = comm.allocated;
       const totalBudget = baseAllocated + totalInflows;
 
-      const approved = commPurchases
-        .filter((p) => p.status === 'APPROVED' || p.status === 'PURCHASED' || p.status === 'REIMBURSED')
-        .reduce((sum, p) => sum + p.totalAmount, 0);
-      const pending = commPurchases
-        .filter((p) => p.status === 'PENDING')
-        .reduce((sum, p) => sum + p.totalAmount, 0);
-      const reimbursed = commPurchases
-        .filter((p) => p.status === 'REIMBURSED')
-        .reduce((sum, p) => sum + p.totalAmount, 0);
+      // ⚡ Bolt Optimization: Combine O(3N) array filter/reduce passes into a single O(N) pass
+      const { approved, pending, reimbursed } = commPurchases.reduce(
+        (acc, p) => {
+          if (p.status === 'APPROVED' || p.status === 'PURCHASED' || p.status === 'REIMBURSED') acc.approved += p.totalAmount;
+          if (p.status === 'PENDING') acc.pending += p.totalAmount;
+          if (p.status === 'REIMBURSED') acc.reimbursed += p.totalAmount;
+          return acc;
+        },
+        { approved: 0, pending: 0, reimbursed: 0 }
+      );
       const remaining = Math.max(totalBudget - approved, 0);
       const percentSpent = totalBudget > 0 ? Math.min(Math.round((approved / totalBudget) * 100), 100) : 0;
 
