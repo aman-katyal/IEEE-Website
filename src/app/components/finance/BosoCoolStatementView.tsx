@@ -364,6 +364,7 @@ Ending Balance:    $${statement.endingBalance.toLocaleString("en-US", { minimumF
                 type="button"
                 onClick={() => setActiveCategory("PAYMENT")}
                 aria-pressed={activeCategory === "PAYMENT"}
+                aria-label="Filter to Payments"
                 className={`px-2.5 py-1 rounded text-xs font-mono transition-colors cursor-pointer ${
                   activeCategory === "PAYMENT"
                     ? "bg-amber-600 text-white font-semibold shadow-sm"
@@ -376,6 +377,7 @@ Ending Balance:    $${statement.endingBalance.toLocaleString("en-US", { minimumF
                 type="button"
                 onClick={() => setActiveCategory("CREDIT")}
                 aria-pressed={activeCategory === "CREDIT"}
+                aria-label="Filter to Credits"
                 className={`px-2.5 py-1 rounded text-xs font-mono transition-colors cursor-pointer ${
                   activeCategory === "CREDIT"
                     ? "bg-emerald-600 text-white font-semibold shadow-sm"
@@ -388,6 +390,7 @@ Ending Balance:    $${statement.endingBalance.toLocaleString("en-US", { minimumF
                 type="button"
                 onClick={() => setActiveCategory("DEBIT")}
                 aria-pressed={activeCategory === "DEBIT"}
+                aria-label="Filter to Debits"
                 className={`px-2.5 py-1 rounded text-xs font-mono transition-colors cursor-pointer ${
                   activeCategory === "DEBIT"
                     ? "bg-rose-600 text-white font-semibold shadow-sm"
@@ -400,6 +403,7 @@ Ending Balance:    $${statement.endingBalance.toLocaleString("en-US", { minimumF
                 type="button"
                 onClick={() => setActiveCategory("TRANSFER_OUT")}
                 aria-pressed={activeCategory === "TRANSFER_OUT"}
+                aria-label="Filter to Transfers Out"
                 className={`px-2.5 py-1 rounded text-xs font-mono transition-colors cursor-pointer ${
                   activeCategory === "TRANSFER_OUT"
                     ? "bg-purple-600 text-white font-semibold shadow-sm"
