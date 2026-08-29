@@ -26,8 +26,12 @@ export async function verifyPin(
   pin: string,
   role: 'treasurer' | 'committee' | 'president' | string,
   committeeId?: string,
-  jwtSecret = 'boilerbooks-session-secret-key-2026'
+  jwtSecret?: string
 ): Promise<VerifyPinResult> {
+  if (!jwtSecret) {
+    throw new Error('JWT_SECRET is required but was not provided. Configure it in your Cloudflare Worker environment secrets.');
+  }
+
   if (!pin || typeof pin !== 'string') {
     return { authenticated: false, message: 'PIN passcode is required.' };
   }
@@ -54,8 +58,9 @@ export async function verifyPin(
   if (row.passcode_hash.startsWith('pbkdf2:')) {
     isValid = await verifyPinHash(pin.trim(), row.passcode_hash);
   } else {
-    // Fallback comparison for plain-text passcodes
-    isValid = pin.trim() === row.passcode_hash.trim();
+    // Plaintext passcodes are no longer accepted — all passcodes must be PBKDF2-hashed.
+    // Run migration 0004 to upgrade any remaining plaintext passcodes.
+    return { authenticated: false, message: 'Passcode format is outdated. Please contact the treasurer to reset your PIN.' };
   }
 
   if (!isValid) {

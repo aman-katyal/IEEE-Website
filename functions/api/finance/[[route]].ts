@@ -1,7 +1,13 @@
 // BoilerBooks 3.0 Cloudflare Pages API Gateway
 // File: functions/api/finance/[[route]].ts
+//
+// Security hardening: auth middleware, rate limiting, CORS restriction,
+// file upload validation, security headers, sanitized error responses.
 
 import { verifyPin } from '../../../src/server/auth/service';
+import { authenticateRequest } from '../../../src/server/auth/middleware';
+import { pinAuthLimiter } from '../../../src/server/auth/rateLimit';
+import type { AuthSession } from '../../../src/server/auth/types';
 import {
   createPurchaseRequest,
   getPurchaseRequest,
@@ -19,6 +25,12 @@ import { generateCOOLBatch } from '../../../src/server/cool/exporter';
 import { listAuditEntries } from '../../../src/server/db/audit';
 import { queryAll } from '../../../src/server/db/query';
 import { toD1Database } from '../../../src/server/db/adapter';
+import {
+  validateReceiptFile,
+  generateReceiptKey,
+  getMimeType,
+  ALLOWED_RECEIPT_EXTENSIONS,
+} from '../../../src/server/storage/r2';
 
 export interface PagesContext<Env = any> {
   request: Request;
@@ -33,35 +45,117 @@ export type PagesFunctionHandler<Env = any> = (context: PagesContext<Env>) => Pr
 interface Env {
   DB: any;
   RECEIPTS_BUCKET?: any;
+  JWT_SECRET?: string;
 }
 
-function jsonResponse(data: unknown, status = 200) {
+// ---------------------------------------------------------------------------
+// Trusted CORS origins
+// ---------------------------------------------------------------------------
+const TRUSTED_ORIGINS = [
+  'https://purdueieee.org',
+  'https://www.purdueieee.org',
+  'https://purdue-ieee-website.pages.dev',
+];
+
+function isAllowedOrigin(origin: string | null): boolean {
+  if (!origin) return false;
+  if (TRUSTED_ORIGINS.includes(origin)) return true;
+  // Allow localhost in development
+  if (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) return true;
+  return false;
+}
+
+function getCorsOrigin(request: Request): string {
+  const origin = request.headers.get('Origin');
+  return isAllowedOrigin(origin) ? origin! : TRUSTED_ORIGINS[0];
+}
+
+// ---------------------------------------------------------------------------
+// Security response headers
+// ---------------------------------------------------------------------------
+const SECURITY_HEADERS: Record<string, string> = {
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
+  'Cache-Control': 'no-store, no-cache, must-revalidate',
+};
+
+function jsonResponse(data: unknown, status = 200, request?: Request) {
+  const corsOrigin = request ? getCorsOrigin(request) : TRUSTED_ORIGINS[0];
   return new Response(JSON.stringify(data), {
     status,
     headers: {
       'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Origin': corsOrigin,
       'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Vary': 'Origin',
+      ...SECURITY_HEADERS,
     },
   });
 }
 
-function errorResponse(message: string, status = 400) {
-  return jsonResponse({ success: false, error: message }, status);
+function errorResponse(message: string, status = 400, request?: Request) {
+  return jsonResponse({ success: false, error: message }, status, request);
 }
 
-export const onRequestOptions: PagesFunctionHandler = async () => {
+// ---------------------------------------------------------------------------
+// Client IP extraction
+// ---------------------------------------------------------------------------
+function getClientIp(request: Request): string {
+  return request.headers.get('cf-connecting-ip')
+    || request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+    || 'unknown';
+}
+
+// ---------------------------------------------------------------------------
+// Auth helper: returns session or error Response
+// ---------------------------------------------------------------------------
+async function requireAuth(
+  request: Request,
+  env: Env,
+  allowedRoles?: Array<'TREASURER' | 'COMMITTEE_LEAD' | 'PRESIDENT' | 'IT_ADMIN'>
+): Promise<AuthSession | Response> {
+  if (!env.JWT_SECRET) {
+    return errorResponse('Server authentication is not configured.', 500, request);
+  }
+
+  const session = await authenticateRequest(request, env.JWT_SECRET);
+  if (!session) {
+    return errorResponse('Authentication required. Please provide a valid session token.', 401, request);
+  }
+
+  if (allowedRoles && !allowedRoles.includes(session.role as any)) {
+    return errorResponse('Insufficient permissions for this operation.', 403, request);
+  }
+
+  return session;
+}
+
+function isResponse(value: AuthSession | Response): value is Response {
+  return value instanceof Response;
+}
+
+// ---------------------------------------------------------------------------
+// CORS Preflight
+// ---------------------------------------------------------------------------
+export const onRequestOptions: PagesFunctionHandler = async (context) => {
+  const corsOrigin = getCorsOrigin(context.request);
   return new Response(null, {
     status: 204,
     headers: {
-      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Origin': corsOrigin,
       'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Max-Age': '86400',
+      'Vary': 'Origin',
     },
   });
 };
 
+// ---------------------------------------------------------------------------
+// Main request handler
+// ---------------------------------------------------------------------------
 export const onRequest: PagesFunctionHandler<Env> = async (context) => {
   const { request, env, params } = context;
   const url = new URL(request.url);
@@ -70,37 +164,72 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
   const db = env.DB;
 
   if (!db) {
-    return errorResponse('Cloudflare D1 Database binding "DB" is not available.', 500);
+    return errorResponse('Cloudflare D1 Database binding "DB" is not available.', 500, request);
   }
 
   try {
     // -------------------------------------------------------------
-    // 1. Auth Endpoints: /api/finance/auth/verify-pin
+    // 1. Auth Endpoints: /api/finance/auth/verify-pin  (PUBLIC — rate-limited)
     // -------------------------------------------------------------
     if (route === 'auth/verify-pin' && request.method === 'POST') {
-      const body = (await request.json()) as { pin: string; role?: 'committee' | 'treasurer'; committeeId?: string };
-      const auth = await verifyPin(db, body.pin, body.role || 'committee', body.committeeId);
-      if (!auth.authenticated || !auth.session) {
-        return errorResponse(auth.message || 'Invalid credentials', 401);
+      const clientIp = getClientIp(request);
+
+      // Rate limit check (#588)
+      const rateCheck = pinAuthLimiter.check(clientIp);
+      if (!rateCheck.allowed) {
+        return errorResponse(
+          `Too many authentication attempts. Please try again in ${rateCheck.retryAfterSeconds} seconds.`,
+          429,
+          request
+        );
       }
-      return jsonResponse({ success: true, authenticated: true, session: auth.session });
+
+      // Apply exponential delay if approaching limit
+      if (rateCheck.delayMs > 0) {
+        await new Promise(resolve => setTimeout(resolve, rateCheck.delayMs));
+      }
+
+      if (!env.JWT_SECRET) {
+        return errorResponse('Server authentication is not configured.', 500, request);
+      }
+
+      const body = (await request.json()) as { pin: string; role?: 'committee' | 'treasurer'; committeeId?: string };
+      const auth = await verifyPin(db, body.pin, body.role || 'committee', body.committeeId, env.JWT_SECRET);
+
+      if (!auth.authenticated || !auth.session) {
+        pinAuthLimiter.recordFailure(clientIp);
+        return errorResponse(auth.message || 'Invalid credentials', 401, request);
+      }
+
+      pinAuthLimiter.recordSuccess(clientIp);
+      return jsonResponse({ success: true, authenticated: true, session: auth.session }, 200, request);
     }
 
+    // ═══════════════════════════════════════════════════════════════
+    // All endpoints below require authentication
+    // ═══════════════════════════════════════════════════════════════
+
     // -------------------------------------------------------------
-    // 2. Spending Matrix: /api/finance/matrix
+    // 2. Spending Matrix: /api/finance/matrix (TREASURER or COMMITTEE_LEAD)
     // -------------------------------------------------------------
     if (route === 'matrix' && request.method === 'GET') {
+      const authResult = await requireAuth(request, env);
+      if (isResponse(authResult)) return authResult;
+
       const fiscalYearId = url.searchParams.get('fiscalYearId') || 'fy25-26';
       const summary = await calculateCommitteeSpending(db, fiscalYearId);
-      return jsonResponse({ success: true, summary, matrix: summary.committees });
+      return jsonResponse({ success: true, summary, matrix: summary.committees }, 200, request);
     }
 
     // Category Breakdown: /api/finance/matrix/:committeeId
     if (pathParts[0] === 'matrix' && pathParts.length === 2 && request.method === 'GET') {
+      const authResult = await requireAuth(request, env);
+      if (isResponse(authResult)) return authResult;
+
       const committeeId = pathParts[1];
       const fiscalYearId = url.searchParams.get('fiscalYearId') || 'fy25-26';
       const breakdown = await calculateCategoryBreakdown(db, fiscalYearId, committeeId);
-      return jsonResponse({ success: true, breakdown });
+      return jsonResponse({ success: true, breakdown }, 200, request);
     }
 
     // -------------------------------------------------------------
@@ -108,45 +237,53 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
     // -------------------------------------------------------------
     if (route === 'purchases') {
       if (request.method === 'GET') {
+        const authResult = await requireAuth(request, env);
+        if (isResponse(authResult)) return authResult;
+        const session = authResult;
+
         const fiscalYearId = url.searchParams.get('fiscalYearId') || 'fy25-26';
         const committeeId = url.searchParams.get('committeeId') || undefined;
         const status = url.searchParams.get('status') as any;
 
         const requests = await listPurchaseRequests(
           db,
-          {
-            fiscalYearId,
-            committeeId: committeeId as any,
-            status,
-          },
-          { committeeId: 'treasurer', role: 'TREASURER', name: 'Executive Treasurer', isAdmin: true, exp: 0, iat: 0 }
+          { fiscalYearId, committeeId: committeeId as any, status },
+          session
         );
-        return jsonResponse({ success: true, requests });
+        return jsonResponse({ success: true, requests }, 200, request);
       }
 
       if (request.method === 'POST') {
+        const authResult = await requireAuth(request, env);
+        if (isResponse(authResult)) return authResult;
+        const session = authResult;
+
         const payload = await request.json();
-        const result = await createPurchaseRequest(
-          db,
-          payload as any,
-          { committeeId: 'treasurer', role: 'TREASURER', name: 'Executive Treasurer', isAdmin: true, exp: 0, iat: 0 }
-        );
-        return jsonResponse(result, 201);
+        const result = await createPurchaseRequest(db, payload as any, session);
+        return jsonResponse(result, 201, request);
       }
     }
 
     // Single Purchase Detail: GET /api/finance/purchases/:id
     if (pathParts[0] === 'purchases' && pathParts.length === 2 && request.method === 'GET') {
+      const authResult = await requireAuth(request, env);
+      if (isResponse(authResult)) return authResult;
+      const session = authResult;
+
       const purchaseId = pathParts[1];
-      const result = await getPurchaseRequest(db, purchaseId, { committeeId: 'treasurer', role: 'TREASURER', name: 'Executive Treasurer', isAdmin: true, exp: 0, iat: 0 });
+      const result = await getPurchaseRequest(db, purchaseId, session);
       if (!result) {
-        return errorResponse(`Purchase request ${purchaseId} not found.`, 404);
+        return errorResponse(`Purchase request ${purchaseId} not found.`, 404, request);
       }
-      return jsonResponse({ success: true, request: result });
+      return jsonResponse({ success: true, request: result }, 200, request);
     }
 
-    // Single Purchase Status: PATCH /api/finance/purchases/:id/status
+    // Single Purchase Status: PATCH /api/finance/purchases/:id/status (TREASURER only)
     if (pathParts[0] === 'purchases' && pathParts.length === 3 && pathParts[2] === 'status' && request.method === 'PATCH') {
+      const authResult = await requireAuth(request, env, ['TREASURER']);
+      if (isResponse(authResult)) return authResult;
+      const session = authResult;
+
       const purchaseId = pathParts[1];
       const body = (await request.json()) as {
         status: 'PENDING' | 'APPROVED' | 'PURCHASED' | 'REIMBURSED' | 'REJECTED';
@@ -160,17 +297,10 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
         purchaseId,
         body.status,
         body.treasurerNotes,
-        {
-          committeeId: 'treasurer',
-          role: 'TREASURER',
-          name: 'Executive Treasurer',
-          isAdmin: true,
-          exp: 0,
-          iat: 0,
-        },
+        session,
         body.coolBatchId
       );
-      return jsonResponse(result);
+      return jsonResponse(result, 200, request);
     }
 
     // -------------------------------------------------------------
@@ -178,6 +308,9 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
     // -------------------------------------------------------------
     if (route === 'inflows') {
       if (request.method === 'GET') {
+        const authResult = await requireAuth(request, env);
+        if (isResponse(authResult)) return authResult;
+
         const committeeId = url.searchParams.get('committeeId') || undefined;
         const fiscalYearId = url.searchParams.get('fiscalYearId') || 'fy25-26';
         let query = 'SELECT * FROM committee_funding_inflows WHERE fiscal_year_id = ?';
@@ -188,108 +321,126 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
         }
         query += ' ORDER BY transaction_date DESC';
         const inflows = await queryAll(db, query, params);
-        return jsonResponse({ success: true, inflows });
+        return jsonResponse({ success: true, inflows }, 200, request);
       }
 
       if (request.method === 'POST') {
+        const authResult = await requireAuth(request, env, ['TREASURER']);
+        if (isResponse(authResult)) return authResult;
+
         const payload = await request.json();
         const result = await recordCommitteeFundingInflow(db, payload as any);
-        return jsonResponse(result, 201);
+        return jsonResponse(result, 201, request);
       }
     }
 
-    // Delete Inflow: DELETE /api/finance/inflows/:id
+    // Delete Inflow: DELETE /api/finance/inflows/:id (TREASURER only)
     if (pathParts[0] === 'inflows' && pathParts.length === 2 && request.method === 'DELETE') {
+      const authResult = await requireAuth(request, env, ['TREASURER']);
+      if (isResponse(authResult)) return authResult;
+
       const inflowId = pathParts[1];
       const d1 = toD1Database(db);
       await d1.prepare('DELETE FROM committee_funding_inflows WHERE id = ?').bind(inflowId).run();
-      return jsonResponse({ success: true, message: `Inflow ${inflowId} deleted successfully.` });
+      return jsonResponse({ success: true, message: `Inflow ${inflowId} deleted successfully.` }, 200, request);
     }
 
     // -------------------------------------------------------------
-    // 5. Committee Parameters: PATCH /api/finance/committees/:id/parameters
+    // 5. Committee Parameters: PATCH /api/finance/committees/:id/parameters (TREASURER only)
     // -------------------------------------------------------------
     if (pathParts[0] === 'committees' && pathParts.length === 3 && pathParts[2] === 'parameters' && request.method === 'PATCH') {
+      const authResult = await requireAuth(request, env, ['TREASURER']);
+      if (isResponse(authResult)) return authResult;
+
       const committeeId = pathParts[1];
       const body = await request.json();
       const fiscalYearId = url.searchParams.get('fiscalYearId') || 'fy25-26';
       const result = await updateCommitteeParameters(db, fiscalYearId, committeeId, body as any);
-      return jsonResponse(result);
+      return jsonResponse(result, 200, request);
     }
 
     // -------------------------------------------------------------
-    // 5. Member Dues Engine: /api/finance/dues
+    // 6. Member Dues Engine: /api/finance/dues
     // -------------------------------------------------------------
     if (route === 'dues') {
       if (request.method === 'GET') {
+        const authResult = await requireAuth(request, env);
+        if (isResponse(authResult)) return authResult;
+        const session = authResult;
+
         const query = url.searchParams.get('q') || '';
         const fiscalYearId = url.searchParams.get('fiscalYearId') || 'fy25-26';
         if (query) {
-          const dues = await searchMemberDues(
-            db,
-            query,
-            fiscalYearId,
-            { committeeId: 'treasurer', role: 'TREASURER', name: 'Executive Treasurer', isAdmin: true, exp: 0, iat: 0 }
-          );
-          return jsonResponse({ success: true, dues });
+          const dues = await searchMemberDues(db, query, fiscalYearId, session);
+          return jsonResponse({ success: true, dues }, 200, request);
         }
         const dues = await queryAll(db, 'SELECT * FROM member_dues WHERE fiscal_year_id = ? ORDER BY student_name ASC', [
           fiscalYearId,
         ]);
         const summary = await getMemberDuesSummary(db, fiscalYearId);
-        return jsonResponse({ success: true, dues, summary });
+        return jsonResponse({ success: true, dues, summary }, 200, request);
       }
 
       if (request.method === 'POST') {
+        const authResult = await requireAuth(request, env, ['TREASURER']);
+        if (isResponse(authResult)) return authResult;
+
         const payload = (await request.json()) as { csvData: string; semester: string; fiscalYearId?: string };
         const result = await importMemberDues(db, payload.csvData, payload.semester || 'Spring 2026', payload.fiscalYearId || 'fy25-26');
-        return jsonResponse(result);
+        return jsonResponse(result, 200, request);
       }
     }
 
-    // Cash Payment Recording: POST /api/finance/dues/cash
+    // Cash Payment Recording: POST /api/finance/dues/cash (TREASURER only)
     if (route === 'dues/cash' && request.method === 'POST') {
+      const authResult = await requireAuth(request, env, ['TREASURER']);
+      if (isResponse(authResult)) return authResult;
+      const session = authResult;
+
       const payload = await request.json();
-      const result = await recordCashPayment(
-        db,
-        payload as any,
-        { committeeId: 'treasurer', role: 'TREASURER', name: 'Executive Treasurer', isAdmin: true, exp: 0, iat: 0 }
-      );
-      return jsonResponse(result, 201);
+      const result = await recordCashPayment(db, payload as any, session);
+      return jsonResponse(result, 201, request);
     }
 
     // -------------------------------------------------------------
-    // 6. Committee Parameters: PATCH /api/finance/committees/:id/parameters
-    // -------------------------------------------------------------
-    if (pathParts[0] === 'committees' && pathParts.length === 3 && pathParts[2] === 'parameters' && request.method === 'PATCH') {
-      const committeeId = pathParts[1];
-      const fiscalYearId = url.searchParams.get('fiscalYearId') || 'fy25-26';
-      const body = await request.json();
-      const result = await updateCommitteeParameters(db, fiscalYearId, committeeId, body as any);
-      return jsonResponse(result);
-    }
-
-    // -------------------------------------------------------------
-    // 7. Receipts Storage (R2): /api/finance/receipts
+    // 7. Receipts Storage (R2): /api/finance/receipts — secured upload & download
     // -------------------------------------------------------------
     if (route === 'receipts/upload' && request.method === 'POST') {
+      const authResult = await requireAuth(request, env);
+      if (isResponse(authResult)) return authResult;
+
       const formData = await request.formData();
       const file = formData.get('file') as File | null;
       const committeeId = (formData.get('committeeId') as string) || 'general';
       const fiscalYearId = (formData.get('fiscalYearId') as string) || 'fy25-26';
 
       if (!file) {
-        return errorResponse('No receipt file provided in form data.', 400);
+        return errorResponse('No receipt file provided in form data.', 400, request);
       }
 
-      const fileExt = file.name.split('.').pop() || 'png';
-      const key = `receipts/${fiscalYearId}/${committeeId}/${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
+      // Validate file using existing r2.ts utilities (#586)
+      const validation = validateReceiptFile({
+        filename: file.name,
+        size: file.size,
+        contentType: file.type || undefined,
+      });
+      if (!validation.valid) {
+        return errorResponse(
+          validation.error || `Invalid receipt file. Allowed types: ${ALLOWED_RECEIPT_EXTENSIONS.join(', ')}`,
+          400,
+          request
+        );
+      }
+
+      // Generate a safe, canonical storage key
+      const key = generateReceiptKey(fiscalYearId, committeeId, file.name);
+      const contentType = getMimeType(file.name) || file.type || 'application/octet-stream';
 
       if (env.RECEIPTS_BUCKET) {
         const fileBuffer = await file.arrayBuffer();
         await env.RECEIPTS_BUCKET.put(key, fileBuffer, {
           httpMetadata: {
-            contentType: file.type || 'application/octet-stream',
+            contentType,
           },
           customMetadata: {
             originalName: file.name,
@@ -305,37 +456,55 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
         key,
         name: file.name,
         size: file.size,
-        type: file.type,
+        type: contentType,
         url: `/api/finance/receipts/${encodeURIComponent(key)}`,
-      });
+      }, 200, request);
     }
 
     // View Receipt: GET /api/finance/receipts/:key
     if (pathParts[0] === 'receipts' && pathParts.length >= 2 && request.method === 'GET') {
+      const authResult = await requireAuth(request, env);
+      if (isResponse(authResult)) return authResult;
+
       const key = pathParts.slice(1).join('/');
       if (!env.RECEIPTS_BUCKET) {
-        return errorResponse('R2 bucket binding RECEIPTS_BUCKET is not configured.', 503);
+        return errorResponse('R2 bucket binding RECEIPTS_BUCKET is not configured.', 503, request);
       }
       const object = await env.RECEIPTS_BUCKET.get(key);
       if (!object) {
-        return errorResponse(`Receipt "${key}" not found.`, 404);
+        return errorResponse(`Receipt "${key}" not found.`, 404, request);
       }
+
+      const corsOrigin = getCorsOrigin(request);
       const headers = new Headers();
       object.writeHttpMetadata(headers);
       headers.set('etag', object.httpEtag);
+      // Security headers for served files (#586)
+      headers.set('X-Content-Type-Options', 'nosniff');
+      headers.set('Content-Disposition', `attachment; filename="receipt"`);
+      headers.set('Content-Security-Policy', "default-src 'none'");
+      headers.set('Access-Control-Allow-Origin', corsOrigin);
+      headers.set('Vary', 'Origin');
       return new Response(object.body, { headers });
     }
 
     // -------------------------------------------------------------
-    // 8. COOL TSV Exporter: /api/finance/export/cool
+    // 8. COOL TSV Exporter: /api/finance/export/cool (TREASURER only)
     // -------------------------------------------------------------
     if (route === 'export/cool' && request.method === 'GET') {
+      const authResult = await requireAuth(request, env, ['TREASURER']);
+      if (isResponse(authResult)) return authResult;
+
+      const corsOrigin = getCorsOrigin(request);
       const fiscalYearId = url.searchParams.get('fiscalYearId') || 'fy25-26';
       const exportResult = await generateCOOLBatch(db, fiscalYearId);
       return new Response(exportResult.tabDelimited, {
         headers: {
           'Content-Type': 'text/tab-separated-values; charset=utf-8',
           'Content-Disposition': `attachment; filename="cool_batch_${fiscalYearId}.tsv"`,
+          'Access-Control-Allow-Origin': corsOrigin,
+          'Vary': 'Origin',
+          ...SECURITY_HEADERS,
         },
       });
     }
@@ -344,39 +513,40 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
     // 9. Banking Audit Ledger: /api/finance/audit-logs
     // -------------------------------------------------------------
     if (route === 'audit-logs' && request.method === 'GET') {
+      const authResult = await requireAuth(request, env);
+      if (isResponse(authResult)) return authResult;
+      const session = authResult;
+
       const fiscalYearId = url.searchParams.get('fiscalYearId') || 'fy25-26';
       const committeeId = url.searchParams.get('committeeId') || undefined;
-      const roleParam = url.searchParams.get('role') || 'treasurer';
-      const sessionRole = roleParam === 'committee' ? 'COMMITTEE_LEAD' : 'TREASURER';
 
       const entries = await listAuditEntries(
         db,
         { fiscalYearId, committeeId },
-        {
-          committeeId: committeeId || 'treasurer',
-          role: sessionRole as any,
-          name: sessionRole === 'TREASURER' ? 'Executive Treasurer' : 'Committee Lead',
-          isAdmin: sessionRole === 'TREASURER',
-          exp: 0,
-          iat: 0,
-        }
+        session
       );
-      return jsonResponse({ success: true, entries });
+      return jsonResponse({ success: true, entries }, 200, request);
     }
 
     // -------------------------------------------------------------
     // 10. BOSO Account Statements: /api/finance/statements
     // -------------------------------------------------------------
     if (route === 'statements' && request.method === 'GET') {
+      const authResult = await requireAuth(request, env);
+      if (isResponse(authResult)) return authResult;
+
       const statements = await queryAll(db, 'SELECT * FROM boso_account_statements ORDER BY soa_number ASC');
-      return jsonResponse({ success: true, statements });
+      return jsonResponse({ success: true, statements }, 200, request);
     }
 
     if (pathParts[0] === 'statements' && pathParts.length === 2 && request.method === 'GET') {
+      const authResult = await requireAuth(request, env);
+      if (isResponse(authResult)) return authResult;
+
       const soaNumber = pathParts[1];
       const rows = await queryAll(db, 'SELECT * FROM boso_account_statements WHERE soa_number = ?', [soaNumber]);
       if (rows.length === 0) {
-        return errorResponse(`BOSO Statement SOA #${soaNumber} not found.`, 404);
+        return errorResponse(`BOSO Statement SOA #${soaNumber} not found.`, 404, request);
       }
       const statement = rows[0] as any;
       const items = await queryAll(
@@ -421,12 +591,13 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
           debits: items.filter((i: any) => i.item_type === 'DEBIT').map(formatItem),
           transfersOut: items.filter((i: any) => i.item_type === 'TRANSFER_OUT').map(formatItem),
         },
-      });
+      }, 200, request);
     }
 
-    return errorResponse(`Route "/api/finance/${route}" not found.`, 404);
+    return errorResponse(`Route "/api/finance/${route}" not found.`, 404, request);
   } catch (err) {
-    const errorMsg = err instanceof Error ? err.message : 'Internal Server Error';
-    return errorResponse(errorMsg, 500);
+    // Sanitize error messages — never leak internal DB errors to the client
+    console.error('[BoilerBooks API Error]', err instanceof Error ? err.message : err);
+    return errorResponse('An internal server error occurred. Please try again later.', 500, request);
   }
 };

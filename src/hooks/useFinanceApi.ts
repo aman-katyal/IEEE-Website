@@ -23,6 +23,17 @@ import {
 
 const API_BASE = '/api/finance';
 
+/** Returns Authorization headers if a session token is available */
+function getAuthHeaders(): Record<string, string> {
+  try {
+    const token = localStorage.getItem('boilerbooks_token');
+    if (token) {
+      return { Authorization: `Bearer ${token}` };
+    }
+  } catch {}
+  return {};
+}
+
 export interface UseFinanceApiState {
   session: AuthSessionData | null;
   purchases: PurchaseItem[];
@@ -154,9 +165,10 @@ export function useFinanceApi() {
   // Fetch initial data from Cloudflare API if available
   const refreshData = useCallback(async (fiscalYearId = 'fy25-26') => {
     setIsSyncing(true);
+    const authH = getAuthHeaders();
     try {
       // 1. Fetch Spending Matrix
-      const matrixRes = await fetch(`${API_BASE}/matrix?fiscalYearId=${fiscalYearId}`);
+      const matrixRes = await fetch(`${API_BASE}/matrix?fiscalYearId=${fiscalYearId}`, { headers: authH });
       if (matrixRes.ok) {
         const matrixData = await matrixRes.json();
         if (matrixData.matrix && Array.isArray(matrixData.matrix)) {
@@ -176,7 +188,7 @@ export function useFinanceApi() {
       }
 
       // 2. Fetch Purchases
-      const purchasesRes = await fetch(`${API_BASE}/purchases?fiscalYearId=${fiscalYearId}`);
+      const purchasesRes = await fetch(`${API_BASE}/purchases?fiscalYearId=${fiscalYearId}`, { headers: authH });
       if (purchasesRes.ok) {
         const purchasesData = await purchasesRes.json();
         if (purchasesData.requests && Array.isArray(purchasesData.requests)) {
@@ -208,7 +220,7 @@ export function useFinanceApi() {
       }
 
       // 3. Fetch Funding Inflows
-      const inflowsRes = await fetch(`${API_BASE}/inflows?fiscalYearId=${fiscalYearId}`);
+      const inflowsRes = await fetch(`${API_BASE}/inflows?fiscalYearId=${fiscalYearId}`, { headers: authH });
       if (inflowsRes.ok) {
         const inflowsData = await inflowsRes.json();
         if (inflowsData.inflows && Array.isArray(inflowsData.inflows)) {
@@ -229,7 +241,7 @@ export function useFinanceApi() {
       }
 
       // 4. Fetch Dues
-      const duesRes = await fetch(`${API_BASE}/dues?fiscalYearId=${fiscalYearId}`);
+      const duesRes = await fetch(`${API_BASE}/dues?fiscalYearId=${fiscalYearId}`, { headers: authH });
       if (duesRes.ok) {
         const duesData = await duesRes.json();
         if (duesData.dues && Array.isArray(duesData.dues)) {
@@ -248,7 +260,7 @@ export function useFinanceApi() {
       }
 
       // 5. Fetch BOSO Statement
-      const statementRes = await fetch(`${API_BASE}/statements/04612`);
+      const statementRes = await fetch(`${API_BASE}/statements/04612`, { headers: authH });
       if (statementRes.ok) {
         const statementData = await statementRes.json();
         if (statementData.statement) {
@@ -257,7 +269,7 @@ export function useFinanceApi() {
       }
 
       // 6. Fetch Banking Audit Ledger
-      const logsRes = await fetch(`${API_BASE}/audit-logs?fiscalYearId=${fiscalYearId}`);
+      const logsRes = await fetch(`${API_BASE}/audit-logs?fiscalYearId=${fiscalYearId}`, { headers: authH });
       if (logsRes.ok) {
         const logsData = await logsRes.json();
         if (logsData.entries && Array.isArray(logsData.entries)) {
@@ -305,6 +317,10 @@ export function useFinanceApi() {
           email: data.session.email,
         };
         setSession(newSession);
+        // Store JWT token for authenticated API requests
+        if (data.session.token) {
+          try { localStorage.setItem('boilerbooks_token', data.session.token); } catch {}
+        }
         return { success: true, session: newSession };
       }
 
@@ -321,6 +337,7 @@ export function useFinanceApi() {
 
   const logout = () => {
     setSession(null);
+    try { localStorage.removeItem('boilerbooks_token'); } catch {}
   };
 
   // Add Purchase with rollback on server failure
@@ -331,7 +348,7 @@ export function useFinanceApi() {
     try {
       const res = await fetch(`${API_BASE}/purchases`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify({
           id: newPurchase.id,
           fiscalYearId: 'fy25-26',
@@ -402,7 +419,7 @@ export function useFinanceApi() {
     try {
       const res = await fetch(`${API_BASE}/purchases/${id}/status`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify({
           status,
           treasurerNotes: notes,
@@ -449,7 +466,7 @@ export function useFinanceApi() {
     try {
       const res = await fetch(`${API_BASE}/dues/cash`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify({
           ...record,
           fiscalYearId: 'fy25-26',
@@ -479,7 +496,7 @@ export function useFinanceApi() {
       try {
         await fetch(`${API_BASE}/dues`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
           body: JSON.stringify({
             csvData: fileRaw,
             semester,
@@ -500,7 +517,7 @@ export function useFinanceApi() {
     try {
       const res = await fetch(`${API_BASE}/committees/${committeeId}/parameters`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify({
           allocatedAmount: updated.allocated,
           bankStatus: updated.bankStatus,
@@ -530,7 +547,7 @@ export function useFinanceApi() {
     try {
       const res = await fetch(`${API_BASE}/inflows`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify({
           id: newInflow.id,
           fiscalYearId: 'fy25-26',
@@ -564,6 +581,7 @@ export function useFinanceApi() {
     try {
       const res = await fetch(`${API_BASE}/inflows/${inflowId}`, {
         method: 'DELETE',
+        headers: getAuthHeaders(),
       });
 
       if (!res.ok && res.status >= 400 && res.status !== 404) {
@@ -592,6 +610,7 @@ export function useFinanceApi() {
 
       const res = await fetch(`${API_BASE}/receipts/upload`, {
         method: 'POST',
+        headers: getAuthHeaders(),
         body: formData,
       });
 
@@ -617,7 +636,7 @@ export function useFinanceApi() {
   // Export COOL TSV
   const exportCoolTsv = async (fiscalYearId = 'fy25-26') => {
     try {
-      const res = await fetch(`${API_BASE}/export/cool?fiscalYearId=${fiscalYearId}`);
+      const res = await fetch(`${API_BASE}/export/cool?fiscalYearId=${fiscalYearId}`, { headers: getAuthHeaders() });
       if (res.ok) {
         const blob = await res.blob();
         const downloadUrl = window.URL.createObjectURL(blob);
