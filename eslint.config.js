@@ -36,6 +36,11 @@ export default [
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+      // Security hardening rules
+      'no-eval': 'error',
+      'no-implied-eval': 'error',
+      'no-script-url': 'error',
+      'no-new-func': 'error',
     },
   },
 ];
