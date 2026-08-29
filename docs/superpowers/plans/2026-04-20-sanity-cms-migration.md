@@ -17,14 +17,14 @@
 - Verify: `.env` (ensure VITE_SANITY_API_TOKEN is present)
 
 - [x] **Step 1: Check for .env variables**
-Run: `powershell "Select-String -Path .env -Pattern 'VITE_SANITY_API_TOKEN'"`
+Run: `powershell "Select-String -Path .env -Pattern 'SANITY_API_TOKEN'"`
 Expected: Token is present.
 
 - [x] **Step 2: Update migration script to prefer environment variables**
 ```javascript
 // Modify scripts/migrate-to-sanity.cjs around line 6
 const SANITY_PROJECT_ID = process.env.VITE_SANITY_PROJECT_ID || 'vq0v7yv4';
-const SANITY_TOKEN = process.env.VITE_SANITY_API_TOKEN || 'sk8wOO...';
+const SANITY_TOKEN = process.env.SANITY_API_TOKEN || '<SANITY_TOKEN>';
 ```
 
 - [x] **Step 3: Commit environment verification** [63d19fc]

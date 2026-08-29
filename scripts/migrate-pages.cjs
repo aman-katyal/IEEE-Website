@@ -2,7 +2,7 @@ const { createClient } = require('@sanity/client');
 
 // --- CONFIGURATION ---
 const SANITY_PROJECT_ID = process.env.VITE_SANITY_PROJECT_ID;
-const SANITY_TOKEN = process.env.VITE_SANITY_API_TOKEN;
+const SANITY_TOKEN = process.env.SANITY_API_TOKEN || process.env.VITE_SANITY_API_TOKEN;
 const DATASET = process.env.VITE_SANITY_DATASET || 'production';
 
 if (!SANITY_PROJECT_ID) {
@@ -11,7 +11,7 @@ if (!SANITY_PROJECT_ID) {
 }
 
 if (!SANITY_TOKEN) {
-  console.error('Error: VITE_SANITY_API_TOKEN is missing in environment variables.');
+  console.error('Error: SANITY_API_TOKEN is missing in environment variables.');
   process.exit(1);
 }
 

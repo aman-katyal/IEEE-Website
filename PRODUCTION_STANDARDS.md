@@ -39,7 +39,7 @@ This document establishes the official pre-production audit protocol, performanc
 
 1. **Read-Only Client Security**:
    - Web application bundle MUST only consume public CDN endpoints with read-only permissions (`useCdn: true`).
-   - Write API tokens (`VITE_SANITY_API_TOKEN`) MUST never be bundled into client assets.
+   - Write API tokens (`SANITY_API_TOKEN`) MUST never use the `VITE_` prefix or be bundled into client assets.
 2. **External Link Hardening**:
    - Outbound links MUST use `rel="noopener noreferrer"` and `target="_blank"`.
 

@@ -26,7 +26,7 @@ The following must be set in the Cloudflare dashboard under **Settings > Environ
 - `VITE_SANITY_PROJECT_ID`: `vq0v7yv4`
 - `VITE_SANITY_DATASET`: `production`
 - `VITE_GOOGLE_CALENDAR_API_KEY`: (Obtain from Google Cloud Console)
-- `VITE_SANITY_API_TOKEN`: (Optional, only for previewing draft content)
+- `SANITY_API_TOKEN`: (Optional, only for running CLI migrations or server-side operations)
 
 ---
 
