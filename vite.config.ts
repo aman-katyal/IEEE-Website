@@ -15,7 +15,7 @@ export default defineConfig({
     ...(process.env.ANALYZE === "true"
       ? [
           visualizer({
-            filename: "dist/stats.html",
+            filename: "reports/stats.html",
             open: false,
             gzipSize: true,
             brotliSize: true,
@@ -79,7 +79,7 @@ export default defineConfig({
   },
   server: {
     fs: {
-      strict: false,
+      strict: true,
     },
     proxy: {
       '/sanity-api': {
