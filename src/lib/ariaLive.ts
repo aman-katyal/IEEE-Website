@@ -3,7 +3,7 @@
  * Injects invisible, screen-reader accessible live regions for dynamic search/filter updates (WCAG 2.2).
  */
 
-function getOrCreateRegion(mode: "polite" | "assertive"): HTMLElement | null {
+export function getOrCreateRegion(mode: "polite" | "assertive"): HTMLElement | null {
   if (typeof document === "undefined") return null;
 
   const id = `aria-live-${mode}`;
