@@ -11,7 +11,8 @@ const defaultValue: HomePageContextValue = {
   refetch: (() => Promise.resolve({} as any)) as any,
 };
 
-export const HomePageContext = createContext<HomePageContextValue>(defaultValue);
+export const HomePageContext =
+  createContext<HomePageContextValue>(defaultValue);
 
 export function useHomePageData(): HomePageContextValue {
   return useContext(HomePageContext);
