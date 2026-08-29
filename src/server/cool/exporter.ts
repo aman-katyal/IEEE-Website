@@ -84,11 +84,22 @@ interface RawExportRow {
 }
 
 /**
- * Escapes a field for CSV format following RFC 4180.
+ * Neutralizes formula triggers for CSV/TSV export to prevent CSV formula injection (CWE-1236).
+ */
+function sanitizeFormulaInjection(value: string): string {
+  if (/^[=+\-@\t\r%|]/.test(value)) {
+    return `'${value}`;
+  }
+  return value;
+}
+
+/**
+ * Escapes a field for CSV format following RFC 4180 with formula injection defense.
  */
 export function escapeCSVField(value: unknown): string {
   if (value === null || value === undefined) return '';
-  const str = String(value);
+  let str = String(value);
+  str = sanitizeFormulaInjection(str);
   if (str.includes('"') || str.includes(',') || str.includes('\n') || str.includes('\r')) {
     return `"${str.replace(/"/g, '""')}"`;
   }
@@ -96,11 +107,12 @@ export function escapeCSVField(value: unknown): string {
 }
 
 /**
- * Cleans a field for Tab-Delimited TSV paste by removing tabs and newlines.
+ * Cleans a field for Tab-Delimited TSV paste by removing tabs and newlines and neutralizing formulas.
  */
 export function escapeTSVField(value: unknown): string {
   if (value === null || value === undefined) return '';
-  return String(value).replace(/[\t\r\n]+/g, ' ').trim();
+  let str = String(value).replace(/[\t\r\n]+/g, ' ').trim();
+  return sanitizeFormulaInjection(str);
 }
 
 /**
