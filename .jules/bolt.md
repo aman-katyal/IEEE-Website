@@ -29,3 +29,7 @@
 ## 2026-08-26 - Optimize Map Access in Tight Loops
 **Learning:** Using `Map.has(key)` followed by `Map.get(key)` inside tight loops (like `sort` or `map` callbacks) performs redundant hash lookups, doubling overhead.
 **Action:** Always prefer a single `Map.get(key) ?? fallback` to halve the number of hash lookups and improve performance.
+
+## 2026-08-29 - Optimize Array Filter and Reduce
+**Learning:** Chaining `.filter(...).reduce(...)` multiple times over the same array to calculate distinct totals performs redundant array traversals, resulting in O(3N) operations instead of O(N). In performance-critical hooks like finance dashboards, this can cause unnecessary calculation overhead.
+**Action:** Replace multiple chained array passes over the same dataset with a single `for...of` loop or a single `.reduce()` that aggregates all the necessary variables in one O(N) pass.

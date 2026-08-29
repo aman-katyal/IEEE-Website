@@ -483,24 +483,27 @@ export function parseDuesFile(
     }
 
     // Check for in-file duplicates
-    if (seenEmails.has(purdueEmail)) {
+    // ⚡ Bolt: Optimize Map lookups by combining .has() and .get()
+    const originalEmailRow = seenEmails.get(purdueEmail);
+    if (originalEmailRow !== undefined) {
       duplicates.push({
         rowNumber,
         purdueEmail,
         studentName,
         transactionId,
-        originalRowNumber: seenEmails.get(purdueEmail)!,
+        originalRowNumber: originalEmailRow,
       });
       return;
     }
 
-    if (transactionId && seenTransactions.has(transactionId)) {
+    const originalTxRow = transactionId ? seenTransactions.get(transactionId) : undefined;
+    if (transactionId && originalTxRow !== undefined) {
       duplicates.push({
         rowNumber,
         purdueEmail,
         studentName,
         transactionId,
-        originalRowNumber: seenTransactions.get(transactionId)!,
+        originalRowNumber: originalTxRow,
       });
       return;
     }
