@@ -1,8 +1,14 @@
-import { useState, useMemo } from 'react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../ui/card';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Badge } from '../ui/badge';
+import { useState, useMemo } from "react";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "../ui/card";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Badge } from "../ui/badge";
 import {
   Table,
   TableHeader,
@@ -10,7 +16,7 @@ import {
   TableHead,
   TableRow,
   TableCell,
-} from '../ui/table';
+} from "../ui/table";
 import {
   Download,
   Copy,
@@ -23,12 +29,12 @@ import {
   FileText,
   HelpCircle,
   ExternalLink,
-} from 'lucide-react';
+} from "lucide-react";
 import {
   type BosoAccountStatement,
   type BosoStatementItem,
   OFFICIAL_BOSO_STATEMENT_SFAB_2026,
-} from './financeData';
+} from "./financeData";
 
 interface BosoCoolStatementViewProps {
   statement?: BosoAccountStatement;
@@ -38,9 +44,9 @@ export function BosoCoolStatementView({
   statement = OFFICIAL_BOSO_STATEMENT_SFAB_2026,
 }: BosoCoolStatementViewProps) {
   const [activeCategory, setActiveCategory] = useState<
-    'ALL' | 'PAYMENT' | 'CREDIT' | 'DEBIT' | 'TRANSFER_OUT'
-  >('ALL');
-  const [searchQuery, setSearchQuery] = useState('');
+    "ALL" | "PAYMENT" | "CREDIT" | "DEBIT" | "TRANSFER_OUT"
+  >("ALL");
+  const [searchQuery, setSearchQuery] = useState("");
   const [hasCopied, setHasCopied] = useState(false);
 
   // Combine all items with chronological and category metadata
@@ -57,7 +63,7 @@ export function BosoCoolStatementView({
   const filteredItems = useMemo(() => {
     return allItems.filter((item) => {
       const matchesCategory =
-        activeCategory === 'ALL' || item.type === activeCategory;
+        activeCategory === "ALL" || item.type === activeCategory;
 
       if (!matchesCategory) return false;
 
@@ -82,13 +88,13 @@ Account: ${statement.accountName} (SOA #${statement.soaNumber})
 Period: ${statement.statementPeriod}
 Office: ${statement.department} - ${statement.officeLocation}
 
-Beginning Balance: $${statement.beginningBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-- Payments:        $${statement.totalPayments.toLocaleString('en-US', { minimumFractionDigits: 2 })} (${statement.payments.length} items)
-+ Credits:         $${statement.totalCredits.toLocaleString('en-US', { minimumFractionDigits: 2 })} (${statement.credits.length} items)
-- Debits:          $${statement.totalDebits.toLocaleString('en-US', { minimumFractionDigits: 2 })} (${statement.debits.length} items)
-- Transfers Out:   $${statement.totalTransfersOut.toLocaleString('en-US', { minimumFractionDigits: 2 })} (${statement.transfersOut.length} items)
+Beginning Balance: $${statement.beginningBalance.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+- Payments:        $${statement.totalPayments.toLocaleString("en-US", { minimumFractionDigits: 2 })} (${statement.payments.length} items)
++ Credits:         $${statement.totalCredits.toLocaleString("en-US", { minimumFractionDigits: 2 })} (${statement.credits.length} items)
+- Debits:          $${statement.totalDebits.toLocaleString("en-US", { minimumFractionDigits: 2 })} (${statement.debits.length} items)
+- Transfers Out:   $${statement.totalTransfersOut.toLocaleString("en-US", { minimumFractionDigits: 2 })} (${statement.transfersOut.length} items)
 ----------------------------------------
-Ending Balance:    $${statement.endingBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })} [RECONCILED / ZERO BALANCE]`;
+Ending Balance:    $${statement.endingBalance.toLocaleString("en-US", { minimumFractionDigits: 2 })} [RECONCILED / ZERO BALANCE]`;
 
     navigator.clipboard.writeText(text);
     setHasCopied(true);
@@ -97,15 +103,15 @@ Ending Balance:    $${statement.endingBalance.toLocaleString('en-US', { minimumF
 
   const handleDownloadCsv = () => {
     const headers = [
-      'Category',
-      'Date',
-      'Doc/Check #',
-      'Ref Code',
-      'Ref #',
-      'Amount',
-      'Cleared Date',
-      'Expense/Income Code',
-      'Payee/Vendor',
+      "Category",
+      "Date",
+      "Doc/Check #",
+      "Ref Code",
+      "Ref #",
+      "Amount",
+      "Cleared Date",
+      "Expense/Income Code",
+      "Payee/Vendor",
     ];
 
     const rows = allItems.map((item) => [
@@ -113,17 +119,20 @@ Ending Balance:    $${statement.endingBalance.toLocaleString('en-US', { minimumF
       item.date,
       item.docOrCheckNumber,
       `"${item.refCode}"`,
-      `"${item.refNumber || ''}"`,
+      `"${item.refNumber || ""}"`,
       item.amount.toFixed(2),
       item.clearedDate,
       `"${item.expenseOrIncomeCode}"`,
-      `"${item.payeeOrVendor || ''}"`,
+      `"${item.payeeOrVendor || ""}"`,
     ]);
 
-    const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const csvContent = [
+      headers.join(","),
+      ...rows.map((r) => r.join(",")),
+    ].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
     link.download = `BOSO_Statement_SOA_${statement.soaNumber}_2026.csv`;
     link.click();
@@ -209,9 +218,14 @@ Ending Balance:    $${statement.endingBalance.toLocaleString('en-US', { minimumF
               <Landmark className="w-3.5 h-3.5 text-amber-400" />
             </div>
             <div className="text-lg sm:text-xl font-bold font-mono text-amber-400 mt-1">
-              ${statement.beginningBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              $
+              {statement.beginningBalance.toLocaleString("en-US", {
+                minimumFractionDigits: 2,
+              })}
             </div>
-            <p className="text-[10px] text-slate-500 mt-0.5">As of 06/01/2026</p>
+            <p className="text-[10px] text-slate-500 mt-0.5">
+              As of 06/01/2026
+            </p>
           </div>
 
           {/* Debits */}
@@ -221,9 +235,14 @@ Ending Balance:    $${statement.endingBalance.toLocaleString('en-US', { minimumF
               <ArrowDownRight className="w-3.5 h-3.5 text-rose-400" />
             </div>
             <div className="text-lg sm:text-xl font-bold font-mono text-rose-400 mt-1">
-              -${statement.totalDebits.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              -$
+              {statement.totalDebits.toLocaleString("en-US", {
+                minimumFractionDigits: 2,
+              })}
             </div>
-            <p className="text-[10px] text-rose-400/70 mt-0.5">{statement.debits.length} Invoices / Orders</p>
+            <p className="text-[10px] text-rose-400/70 mt-0.5">
+              {statement.debits.length} Invoices / Orders
+            </p>
           </div>
 
           {/* Payments */}
@@ -233,9 +252,14 @@ Ending Balance:    $${statement.endingBalance.toLocaleString('en-US', { minimumF
               <ArrowDownRight className="w-3.5 h-3.5 text-amber-400" />
             </div>
             <div className="text-lg sm:text-xl font-bold font-mono text-amber-400 mt-1">
-              -${statement.totalPayments.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              -$
+              {statement.totalPayments.toLocaleString("en-US", {
+                minimumFractionDigits: 2,
+              })}
             </div>
-            <p className="text-[10px] text-amber-400/70 mt-0.5">{statement.payments.length} Checks & E-Pays</p>
+            <p className="text-[10px] text-amber-400/70 mt-0.5">
+              {statement.payments.length} Checks & E-Pays
+            </p>
           </div>
 
           {/* Credits */}
@@ -245,9 +269,14 @@ Ending Balance:    $${statement.endingBalance.toLocaleString('en-US', { minimumF
               <ArrowUpRight className="w-3.5 h-3.5 text-emerald-400" />
             </div>
             <div className="text-lg sm:text-xl font-bold font-mono text-emerald-400 mt-1">
-              +${statement.totalCredits.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              +$
+              {statement.totalCredits.toLocaleString("en-US", {
+                minimumFractionDigits: 2,
+              })}
             </div>
-            <p className="text-[10px] text-emerald-400/70 mt-0.5">{statement.credits.length} Refunds & Voids</p>
+            <p className="text-[10px] text-emerald-400/70 mt-0.5">
+              {statement.credits.length} Refunds & Voids
+            </p>
           </div>
 
           {/* Transfers Out */}
@@ -257,9 +286,14 @@ Ending Balance:    $${statement.endingBalance.toLocaleString('en-US', { minimumF
               <RefreshCw className="w-3.5 h-3.5 text-purple-400" />
             </div>
             <div className="text-lg sm:text-xl font-bold font-mono text-purple-400 mt-1">
-              -${statement.totalTransfersOut.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              -$
+              {statement.totalTransfersOut.toLocaleString("en-US", {
+                minimumFractionDigits: 2,
+              })}
             </div>
-            <p className="text-[10px] text-purple-400/70 mt-0.5">Year-End SFAB Sweep</p>
+            <p className="text-[10px] text-purple-400/70 mt-0.5">
+              Year-End SFAB Sweep
+            </p>
           </div>
 
           {/* Ending Balance */}
@@ -269,9 +303,14 @@ Ending Balance:    $${statement.endingBalance.toLocaleString('en-US', { minimumF
               <Check className="w-3.5 h-3.5 text-sky-400" />
             </div>
             <div className="text-lg sm:text-xl font-bold font-mono text-white mt-1">
-              ${statement.endingBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              $
+              {statement.endingBalance.toLocaleString("en-US", {
+                minimumFractionDigits: 2,
+              })}
             </div>
-            <p className="text-[10px] text-sky-400/70 mt-0.5">100% Fully Closed Out</p>
+            <p className="text-[10px] text-sky-400/70 mt-0.5">
+              100% Fully Closed Out
+            </p>
           </div>
         </div>
       </Card>
@@ -285,7 +324,8 @@ Ending Balance:    $${statement.endingBalance.toLocaleString('en-US', { minimumF
               <span>BOSO Transaction Ledger & Voucher History</span>
             </CardTitle>
             <CardDescription className="text-xs text-slate-400">
-              Detailed itemization from Purdue University Business Office for Student Organizations (KRCH 365).
+              Detailed itemization from Purdue University Business Office for
+              Student Organizations (KRCH 365).
             </CardDescription>
           </div>
 
@@ -302,58 +342,68 @@ Ending Balance:    $${statement.endingBalance.toLocaleString('en-US', { minimumF
             </div>
 
             {/* Category Segmented Buttons */}
-            <div className="flex items-center bg-slate-900 p-0.5 rounded-lg border border-slate-700">
+            <div
+              className="flex items-center bg-slate-900 p-0.5 rounded-lg border border-slate-700"
+              role="group"
+              aria-label="Filter transactions by category"
+            >
               <button
                 type="button"
-                onClick={() => setActiveCategory('ALL')}
+                onClick={() => setActiveCategory("ALL")}
+                aria-pressed={activeCategory === "ALL"}
+                aria-label="Show all transactions"
                 className={`px-2.5 py-1 rounded text-xs font-mono transition-colors cursor-pointer ${
-                  activeCategory === 'ALL'
-                    ? 'bg-sky-600 text-white font-semibold shadow-sm'
-                    : 'text-slate-400 hover:text-white'
+                  activeCategory === "ALL"
+                    ? "bg-sky-600 text-white font-semibold shadow-sm"
+                    : "text-slate-400 hover:text-white"
                 }`}
               >
                 All ({allItems.length})
               </button>
               <button
                 type="button"
-                onClick={() => setActiveCategory('PAYMENT')}
+                onClick={() => setActiveCategory("PAYMENT")}
+                aria-pressed={activeCategory === "PAYMENT"}
                 className={`px-2.5 py-1 rounded text-xs font-mono transition-colors cursor-pointer ${
-                  activeCategory === 'PAYMENT'
-                    ? 'bg-amber-600 text-white font-semibold shadow-sm'
-                    : 'text-slate-400 hover:text-white'
+                  activeCategory === "PAYMENT"
+                    ? "bg-amber-600 text-white font-semibold shadow-sm"
+                    : "text-slate-400 hover:text-white"
                 }`}
               >
                 Payments ({statement.payments.length})
               </button>
               <button
                 type="button"
-                onClick={() => setActiveCategory('CREDIT')}
+                onClick={() => setActiveCategory("CREDIT")}
+                aria-pressed={activeCategory === "CREDIT"}
                 className={`px-2.5 py-1 rounded text-xs font-mono transition-colors cursor-pointer ${
-                  activeCategory === 'CREDIT'
-                    ? 'bg-emerald-600 text-white font-semibold shadow-sm'
-                    : 'text-slate-400 hover:text-white'
+                  activeCategory === "CREDIT"
+                    ? "bg-emerald-600 text-white font-semibold shadow-sm"
+                    : "text-slate-400 hover:text-white"
                 }`}
               >
                 Credits ({statement.credits.length})
               </button>
               <button
                 type="button"
-                onClick={() => setActiveCategory('DEBIT')}
+                onClick={() => setActiveCategory("DEBIT")}
+                aria-pressed={activeCategory === "DEBIT"}
                 className={`px-2.5 py-1 rounded text-xs font-mono transition-colors cursor-pointer ${
-                  activeCategory === 'DEBIT'
-                    ? 'bg-rose-600 text-white font-semibold shadow-sm'
-                    : 'text-slate-400 hover:text-white'
+                  activeCategory === "DEBIT"
+                    ? "bg-rose-600 text-white font-semibold shadow-sm"
+                    : "text-slate-400 hover:text-white"
                 }`}
               >
                 Debits ({statement.debits.length})
               </button>
               <button
                 type="button"
-                onClick={() => setActiveCategory('TRANSFER_OUT')}
+                onClick={() => setActiveCategory("TRANSFER_OUT")}
+                aria-pressed={activeCategory === "TRANSFER_OUT"}
                 className={`px-2.5 py-1 rounded text-xs font-mono transition-colors cursor-pointer ${
-                  activeCategory === 'TRANSFER_OUT'
-                    ? 'bg-purple-600 text-white font-semibold shadow-sm'
-                    : 'text-slate-400 hover:text-white'
+                  activeCategory === "TRANSFER_OUT"
+                    ? "bg-purple-600 text-white font-semibold shadow-sm"
+                    : "text-slate-400 hover:text-white"
                 }`}
               >
                 Transfers ({statement.transfersOut.length})
@@ -366,23 +416,39 @@ Ending Balance:    $${statement.endingBalance.toLocaleString('en-US', { minimumF
           <Table>
             <TableHeader className="bg-slate-900/60 border-b border-slate-800">
               <TableRow className="border-slate-800 hover:bg-transparent">
-                <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 pl-6">Type</TableHead>
-                <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">Date</TableHead>
-                <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">Check / Doc #</TableHead>
-                <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">Ref Code / Vendor</TableHead>
-                <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">Ref #</TableHead>
-                <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">Amount</TableHead>
-                <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-center">Cleared</TableHead>
-                <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 pr-6">Expense Code / Payee</TableHead>
+                <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 pl-6">
+                  Type
+                </TableHead>
+                <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">
+                  Date
+                </TableHead>
+                <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">
+                  Check / Doc #
+                </TableHead>
+                <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">
+                  Ref Code / Vendor
+                </TableHead>
+                <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">
+                  Ref #
+                </TableHead>
+                <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">
+                  Amount
+                </TableHead>
+                <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-center">
+                  Cleared
+                </TableHead>
+                <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 pr-6">
+                  Expense Code / Payee
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredItems.length > 0 ? (
                 filteredItems.map((item) => {
-                  const isPayment = item.type === 'PAYMENT';
-                  const isCredit = item.type === 'CREDIT';
-                  const isDebit = item.type === 'DEBIT';
-                  const isTransfer = item.type === 'TRANSFER_OUT';
+                  const isPayment = item.type === "PAYMENT";
+                  const isCredit = item.type === "CREDIT";
+                  const isDebit = item.type === "DEBIT";
+                  const isTransfer = item.type === "TRANSFER_OUT";
 
                   return (
                     <TableRow
@@ -439,22 +505,22 @@ Ending Balance:    $${statement.endingBalance.toLocaleString('en-US', { minimumF
 
                       {/* Ref # */}
                       <TableCell className="font-mono text-xs text-slate-400 py-3.5">
-                        {item.refNumber || '—'}
+                        {item.refNumber || "—"}
                       </TableCell>
 
                       {/* Amount */}
                       <TableCell
                         className={`text-right font-mono text-xs font-bold py-3.5 ${
                           isCredit
-                            ? 'text-emerald-400'
+                            ? "text-emerald-400"
                             : isDebit
-                            ? 'text-rose-400'
-                            : isPayment
-                            ? 'text-amber-400'
-                            : 'text-purple-400'
+                              ? "text-rose-400"
+                              : isPayment
+                                ? "text-amber-400"
+                                : "text-purple-400"
                         }`}
                       >
-                        {isCredit ? '+' : '-'}${item.amount.toFixed(2)}
+                        {isCredit ? "+" : "-"}${item.amount.toFixed(2)}
                       </TableCell>
 
                       {/* Cleared Date */}
@@ -476,8 +542,12 @@ Ending Balance:    $${statement.endingBalance.toLocaleString('en-US', { minimumF
                 })
               ) : (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-12 text-slate-500">
-                    No transactions matching the selected filter or search query.
+                  <TableCell
+                    colSpan={8}
+                    className="text-center py-12 text-slate-500"
+                  >
+                    No transactions matching the selected filter or search
+                    query.
                   </TableCell>
                 </TableRow>
               )}
@@ -491,12 +561,19 @@ Ending Balance:    $${statement.endingBalance.toLocaleString('en-US', { minimumF
         <div className="flex items-start gap-3">
           <HelpCircle className="w-5 h-5 text-sky-400 shrink-0 mt-0.5" />
           <div className="space-y-1 text-xs text-slate-400">
-            <h4 className="font-semibold text-white">BOSO Statement Reconciliation Formula</h4>
+            <h4 className="font-semibold text-white">
+              BOSO Statement Reconciliation Formula
+            </h4>
             <p className="font-mono text-[11px] text-slate-300 leading-relaxed">
-              Beginning Balance ($11,390.55) - Payments ($1,062.77) + Credits ($563.13) - Debits ($10,145.53) - Transfers Out ($745.38) = Ending Balance ($0.00)
+              Beginning Balance ($11,390.55) - Payments ($1,062.77) + Credits
+              ($563.13) - Debits ($10,145.53) - Transfers Out ($745.38) = Ending
+              Balance ($0.00)
             </p>
             <p className="text-[11px] text-slate-400">
-              Note: Void check E316419 ($304.61 + $255.53 = $560.14) was credited back on 06/23/26 and reissued as check E331903 on 06/26/26. Unused SFAB funds ($745.38) were transferred out during year-end closeout.
+              Note: Void check E316419 ($304.61 + $255.53 = $560.14) was
+              credited back on 06/23/26 and reissued as check E331903 on
+              06/26/26. Unused SFAB funds ($745.38) were transferred out during
+              year-end closeout.
             </p>
           </div>
         </div>
