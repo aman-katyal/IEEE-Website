@@ -258,22 +258,25 @@ export async function calculateCategoryBreakdown(
   // Accumulate request amounts
   for (const req of requests) {
     const total = Number(req.total_amount) || 0;
-    const catId = req.category_id && categoryMap.has(req.category_id) ? req.category_id : null;
 
-    if (catId === null) {
-      if (!categoryMap.has(null)) {
-        categoryMap.set(null, {
+    // ⚡ Bolt: Optimize Map lookups by avoiding .has() followed by .get()
+    let catData = req.category_id ? categoryMap.get(req.category_id) : undefined;
+
+    if (!catData) {
+      catData = categoryMap.get(null);
+      if (!catData) {
+        catData = {
           name: 'Uncategorized',
           approved: 0,
           pending: 0,
           reimbursed: 0,
           rejected: 0,
           count: 0,
-        });
+        };
+        categoryMap.set(null, catData);
       }
     }
 
-    const catData = categoryMap.get(catId)!;
     catData.count += 1;
 
     switch (req.status) {
