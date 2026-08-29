@@ -1,10 +1,16 @@
-import React, { useState, useMemo } from 'react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../ui/card';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { Badge } from '../ui/badge';
-import { Progress } from '../ui/progress';
+import React, { useState, useMemo } from "react";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "../ui/card";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Badge } from "../ui/badge";
+import { Progress } from "../ui/progress";
 import {
   Dialog,
   DialogContent,
@@ -12,9 +18,15 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from '../ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Textarea } from '../ui/textarea';
+} from "../ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { Textarea } from "../ui/textarea";
 import {
   Table,
   TableHeader,
@@ -22,8 +34,8 @@ import {
   TableHead,
   TableRow,
   TableCell,
-} from '../ui/table';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '../ui/tabs';
+} from "../ui/table";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "../ui/tabs";
 import {
   ShieldCheck,
   Building2,
@@ -47,7 +59,7 @@ import {
   Coins,
   Trash2,
   X,
-} from 'lucide-react';
+} from "lucide-react";
 import {
   type PurchaseItem,
   type MemberDuesRecord,
@@ -61,11 +73,11 @@ import {
   REAL_COMMITTEES,
   type PurchaseStatus,
   OFFICIAL_BOSO_STATEMENT_SFAB_2026,
-} from './financeData';
-import { ReceiptPreviewModal } from './ReceiptPreviewModal';
-import { BosoCoolStatementView } from './BosoCoolStatementView';
-import { BankingAuditLedgerView } from './BankingAuditLedgerView';
-import { parseDuesFile } from '@/server/dues/parser';
+} from "./financeData";
+import { ReceiptPreviewModal } from "./ReceiptPreviewModal";
+import { BosoCoolStatementView } from "./BosoCoolStatementView";
+import { BankingAuditLedgerView } from "./BankingAuditLedgerView";
+import { parseDuesFile } from "@/server/dues/parser";
 
 export interface TreasurerFinanceViewProps {
   session: AuthSessionData;
@@ -79,7 +91,7 @@ export interface TreasurerFinanceViewProps {
     id: string,
     status: PurchaseStatus,
     notes?: string,
-    coolAccountNumber?: string
+    coolAccountNumber?: string,
   ) => void;
   onRecordCashDues?: (record: {
     studentName: string;
@@ -89,8 +101,15 @@ export interface TreasurerFinanceViewProps {
     committeeId?: string;
     paymentDate?: string;
   }) => Promise<{ success: boolean; error?: string }> | void;
-  onImportMemberDues: (records: MemberDuesRecord[], fileRaw?: string, semester?: string) => void;
-  onUpdateCommittee: (committeeId: string, updated: Partial<CommitteeInfo>) => void;
+  onImportMemberDues: (
+    records: MemberDuesRecord[],
+    fileRaw?: string,
+    semester?: string,
+  ) => void;
+  onUpdateCommittee: (
+    committeeId: string,
+    updated: Partial<CommitteeInfo>,
+  ) => void;
   onAddFundingInflow: (newInflow: CommitteeFundingInflow) => void;
   onDeleteFundingInflow?: (id: string) => void;
   onLogout?: () => void;
@@ -119,22 +138,40 @@ export function TreasurerFinanceView({
   const matrixData = useMemo(() => {
     return activeCommittees.map((comm) => {
       const commPurchases = purchases.filter((p) => p.committeeId === comm.id);
-      const commInflows = (fundingInflows || []).filter((inf) => inf.committeeId === comm.id);
-      const totalInflows = commInflows.reduce((sum, inf) => sum + inf.amount, 0);
+      const commInflows = (fundingInflows || []).filter(
+        (inf) => inf.committeeId === comm.id,
+      );
+      const totalInflows = commInflows.reduce(
+        (sum, inf) => sum + inf.amount,
+        0,
+      );
       const baseAllocated = comm.allocated;
       const totalBudget = baseAllocated + totalInflows;
 
-      const approved = commPurchases
-        .filter((p) => p.status === 'APPROVED' || p.status === 'PURCHASED' || p.status === 'REIMBURSED')
-        .reduce((sum, p) => sum + p.totalAmount, 0);
-      const pending = commPurchases
-        .filter((p) => p.status === 'PENDING')
-        .reduce((sum, p) => sum + p.totalAmount, 0);
-      const reimbursed = commPurchases
-        .filter((p) => p.status === 'REIMBURSED')
-        .reduce((sum, p) => sum + p.totalAmount, 0);
+      // ⚡ Bolt: Replace 3 passes with a single pass for O(N) instead of O(3N)
+      let approved = 0;
+      let pending = 0;
+      let reimbursed = 0;
+      for (const p of commPurchases) {
+        if (
+          p.status === "APPROVED" ||
+          p.status === "PURCHASED" ||
+          p.status === "REIMBURSED"
+        ) {
+          approved += p.totalAmount;
+        }
+        if (p.status === "PENDING") {
+          pending += p.totalAmount;
+        }
+        if (p.status === "REIMBURSED") {
+          reimbursed += p.totalAmount;
+        }
+      }
       const remaining = Math.max(totalBudget - approved, 0);
-      const percentSpent = totalBudget > 0 ? Math.min(Math.round((approved / totalBudget) * 100), 100) : 0;
+      const percentSpent =
+        totalBudget > 0
+          ? Math.min(Math.round((approved / totalBudget) * 100), 100)
+          : 0;
 
       return {
         ...comm,
@@ -154,15 +191,23 @@ export function TreasurerFinanceView({
 
   // Branch-Wide Totals
   const branchTotals = useMemo(() => {
-    const totalAllocated = matrixData.reduce((sum, c) => sum + c.baseAllocated, 0);
-    const totalInflows = (fundingInflows || []).reduce((sum, inf) => sum + inf.amount, 0);
+    const totalAllocated = matrixData.reduce(
+      (sum, c) => sum + c.baseAllocated,
+      0,
+    );
+    const totalInflows = (fundingInflows || []).reduce(
+      (sum, inf) => sum + inf.amount,
+      0,
+    );
     const totalBranchBudget = totalAllocated + totalInflows;
     const totalSpent = matrixData.reduce((sum, c) => sum + c.approved, 0);
     const totalPending = matrixData.reduce((sum, c) => sum + c.pending, 0);
     const totalRemaining = matrixData.reduce((sum, c) => sum + c.remaining, 0);
     const totalRequests = purchases.length;
     const branchPercentSpent =
-      totalBranchBudget > 0 ? Math.min(Math.round((totalSpent / totalBranchBudget) * 100), 100) : 0;
+      totalBranchBudget > 0
+        ? Math.min(Math.round((totalSpent / totalBranchBudget) * 100), 100)
+        : 0;
 
     return {
       totalAllocated,
@@ -178,48 +223,55 @@ export function TreasurerFinanceView({
 
   // Pending Approvals Queue
   const pendingRequests = useMemo(() => {
-    return purchases.filter((p) => p.status === 'PENDING');
+    return purchases.filter((p) => p.status === "PENDING");
   }, [purchases]);
 
   // Approved Requests for COOL Batching
   const approvedRequestsForCOOL = useMemo(() => {
-    return purchases.filter((p) => p.status === 'APPROVED');
+    return purchases.filter((p) => p.status === "APPROVED");
   }, [purchases]);
 
   // Modals State
   const [isCOOLExporterOpen, setIsCOOLExporterOpen] = useState<boolean>(false);
   const [isDuesImporterOpen, setIsDuesImporterOpen] = useState<boolean>(false);
   const [previewItem, setPreviewItem] = useState<PurchaseItem | null>(null);
-  const [notesModalItem, setNotesModalItem] = useState<PurchaseItem | null>(null);
-  const [notesInput, setNotesInput] = useState<string>('');
-  const [accountNumberInput, setAccountNumberInput] = useState<string>('');
+  const [notesModalItem, setNotesModalItem] = useState<PurchaseItem | null>(
+    null,
+  );
+  const [notesInput, setNotesInput] = useState<string>("");
+  const [accountNumberInput, setAccountNumberInput] = useState<string>("");
 
   // Committee Parameters Editing Modal State
-  const [editingCommittee, setEditingCommittee] = useState<CommitteeInfo | null>(null);
-  const [editAllocated, setEditAllocated] = useState<string>('');
-  const [editBankStatus, setEditBankStatus] = useState<'Active' | 'Inactive' | 'Read-Only'>('Active');
-  const [editDuesStatus, setEditDuesStatus] = useState<'Active' | 'Inactive'>('Active');
-  const [editContactEmail, setEditContactEmail] = useState<string>('');
-  const [editNotes, setEditNotes] = useState<string>('');
+  const [editingCommittee, setEditingCommittee] =
+    useState<CommitteeInfo | null>(null);
+  const [editAllocated, setEditAllocated] = useState<string>("");
+  const [editBankStatus, setEditBankStatus] = useState<
+    "Active" | "Inactive" | "Read-Only"
+  >("Active");
+  const [editDuesStatus, setEditDuesStatus] = useState<"Active" | "Inactive">(
+    "Active",
+  );
+  const [editContactEmail, setEditContactEmail] = useState<string>("");
+  const [editNotes, setEditNotes] = useState<string>("");
   const [editCategories, setEditCategories] = useState<string[]>([]);
-  const [newCategoryText, setNewCategoryText] = useState<string>('');
+  const [newCategoryText, setNewCategoryText] = useState<string>("");
 
   const handleOpenEditCommittee = (c: CommitteeInfo) => {
     setEditingCommittee(c);
     setEditAllocated(String(c.allocated));
-    setEditBankStatus(c.bankStatus || 'Active');
-    setEditDuesStatus(c.duesStatus || 'Active');
-    setEditContactEmail(c.contactEmail || '');
-    setEditNotes(c.notes || '');
+    setEditBankStatus(c.bankStatus || "Active");
+    setEditDuesStatus(c.duesStatus || "Active");
+    setEditContactEmail(c.contactEmail || "");
+    setEditNotes(c.notes || "");
     setEditCategories([...(c.categories || [])]);
-    setNewCategoryText('');
+    setNewCategoryText("");
   };
 
   const handleAddCategory = () => {
     const trimmed = newCategoryText.trim();
     if (trimmed && !editCategories.includes(trimmed)) {
       setEditCategories((prev) => [...prev, trimmed]);
-      setNewCategoryText('');
+      setNewCategoryText("");
     }
   };
 
@@ -250,54 +302,63 @@ export function TreasurerFinanceView({
   const [copiedCOOL, setCopiedCOOL] = useState<boolean>(false);
 
   // TooCOOL Importer State
-  const [importedCsvData, setImportedCsvData] = useState<MemberDuesRecord[]>([]);
+  const [importedCsvData, setImportedCsvData] = useState<MemberDuesRecord[]>(
+    [],
+  );
   const [importFileName, setImportFileName] = useState<string | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
   const [isDraggingCsv, setIsDraggingCsv] = useState<boolean>(false);
 
   // Dues Directory Search & Filter
-  const [duesSearch, setDuesSearch] = useState<string>('');
-  const [duesSemesterFilter, setDuesSemesterFilter] = useState<string>('ALL');
+  const [duesSearch, setDuesSearch] = useState<string>("");
+  const [duesSemesterFilter, setDuesSemesterFilter] = useState<string>("ALL");
 
   const filteredDuesDirectory = useMemo(() => {
     return memberDues.filter((d) => {
       const matchesQuery =
-        duesSearch.trim() === '' ||
+        duesSearch.trim() === "" ||
         d.studentName.toLowerCase().includes(duesSearch.toLowerCase()) ||
         d.purdueEmail.toLowerCase().includes(duesSearch.toLowerCase());
       const matchesSemester =
-        duesSemesterFilter === 'ALL' || d.semester === duesSemesterFilter;
+        duesSemesterFilter === "ALL" || d.semester === duesSemesterFilter;
       return matchesQuery && matchesSemester;
     });
   }, [memberDues, duesSearch, duesSemesterFilter]);
 
   // Specific Funding Inflows State & Handlers
   const [isInflowModalOpen, setIsInflowModalOpen] = useState<boolean>(false);
-  const [inflowCommitteeId, setInflowCommitteeId] = useState<string>('rov');
-  const [inflowSourceType, setInflowSourceType] = useState<InflowSourceType>('SFAB Grant');
-  const [inflowTitle, setInflowTitle] = useState<string>('');
-  const [inflowAmount, setInflowAmount] = useState<string>('');
-  const [inflowRefNumber, setInflowRefNumber] = useState<string>('');
-  const [inflowDate, setInflowDate] = useState<string>(new Date().toISOString().split('T')[0]);
-  const [inflowNotes, setInflowNotes] = useState<string>('');
+  const [inflowCommitteeId, setInflowCommitteeId] = useState<string>("rov");
+  const [inflowSourceType, setInflowSourceType] =
+    useState<InflowSourceType>("SFAB Grant");
+  const [inflowTitle, setInflowTitle] = useState<string>("");
+  const [inflowAmount, setInflowAmount] = useState<string>("");
+  const [inflowRefNumber, setInflowRefNumber] = useState<string>("");
+  const [inflowDate, setInflowDate] = useState<string>(
+    new Date().toISOString().split("T")[0],
+  );
+  const [inflowNotes, setInflowNotes] = useState<string>("");
 
   // Inflows Tab Filters
-  const [inflowFilterCommittee, setInflowFilterCommittee] = useState<string>('ALL');
-  const [inflowFilterSource, setInflowFilterSource] = useState<string>('ALL');
-  const [inflowSearch, setInflowSearch] = useState<string>('');
+  const [inflowFilterCommittee, setInflowFilterCommittee] =
+    useState<string>("ALL");
+  const [inflowFilterSource, setInflowFilterSource] = useState<string>("ALL");
+  const [inflowSearch, setInflowSearch] = useState<string>("");
 
   const filteredInflows = useMemo(() => {
     return (fundingInflows || []).filter((item) => {
       const matchesCommittee =
-        inflowFilterCommittee === 'ALL' || item.committeeId === inflowFilterCommittee;
+        inflowFilterCommittee === "ALL" ||
+        item.committeeId === inflowFilterCommittee;
       const matchesSource =
-        inflowFilterSource === 'ALL' || item.sourceType === inflowFilterSource;
+        inflowFilterSource === "ALL" || item.sourceType === inflowFilterSource;
       const query = inflowSearch.toLowerCase().trim();
       const matchesSearch =
         !query ||
         item.title.toLowerCase().includes(query) ||
-        (item.referenceNumber && item.referenceNumber.toLowerCase().includes(query)) ||
-        (item.committeeName && item.committeeName.toLowerCase().includes(query)) ||
+        (item.referenceNumber &&
+          item.referenceNumber.toLowerCase().includes(query)) ||
+        (item.committeeName &&
+          item.committeeName.toLowerCase().includes(query)) ||
         (item.notes && item.notes.toLowerCase().includes(query));
       return matchesCommittee && matchesSource && matchesSearch;
     });
@@ -307,11 +368,11 @@ export function TreasurerFinanceView({
     if (defaultCommId) {
       setInflowCommitteeId(defaultCommId);
     }
-    setInflowTitle('');
-    setInflowAmount('');
-    setInflowRefNumber('');
-    setInflowNotes('');
-    setInflowDate(new Date().toISOString().split('T')[0]);
+    setInflowTitle("");
+    setInflowAmount("");
+    setInflowRefNumber("");
+    setInflowNotes("");
+    setInflowDate(new Date().toISOString().split("T")[0]);
     setIsInflowModalOpen(true);
   };
 
@@ -320,16 +381,21 @@ export function TreasurerFinanceView({
     const parsedAmount = parseFloat(inflowAmount);
     if (!inflowTitle.trim() || isNaN(parsedAmount) || parsedAmount <= 0) return;
 
-    const targetCommittee = activeCommittees.find((c) => c.id === inflowCommitteeId);
+    const targetCommittee = activeCommittees.find(
+      (c) => c.id === inflowCommitteeId,
+    );
     const newInflow: CommitteeFundingInflow = {
       id: `INFLOW-${Date.now().toString().slice(-4)}`,
       committeeId: inflowCommitteeId,
-      committeeName: targetCommittee?.shortName || targetCommittee?.name || inflowCommitteeId,
+      committeeName:
+        targetCommittee?.shortName ||
+        targetCommittee?.name ||
+        inflowCommitteeId,
       sourceType: inflowSourceType,
       title: inflowTitle.trim(),
       amount: parsedAmount,
       referenceNumber: inflowRefNumber.trim() || undefined,
-      receivedDate: inflowDate || new Date().toISOString().split('T')[0],
+      receivedDate: inflowDate || new Date().toISOString().split("T")[0],
       notes: inflowNotes.trim() || undefined,
       createdAt: new Date().toISOString(),
     };
@@ -343,11 +409,11 @@ export function TreasurerFinanceView({
 
   // Handle Approvals
   const handleApprove = (item: PurchaseItem) => {
-    onUpdatePurchaseStatus(item.id, 'APPROVED');
+    onUpdatePurchaseStatus(item.id, "APPROVED");
   };
 
   const handleReject = (item: PurchaseItem) => {
-    onUpdatePurchaseStatus(item.id, 'REJECTED');
+    onUpdatePurchaseStatus(item.id, "REJECTED");
   };
 
   const handleSaveNotes = (e: React.FormEvent) => {
@@ -357,63 +423,66 @@ export function TreasurerFinanceView({
       notesModalItem.id,
       notesModalItem.status,
       notesInput.trim(),
-      accountNumberInput.trim() || undefined
+      accountNumberInput.trim() || undefined,
     );
     setNotesModalItem(null);
   };
 
   const openNotesModal = (item: PurchaseItem) => {
     setNotesModalItem(item);
-    setNotesInput(item.treasurerNotes || '');
-    setAccountNumberInput(item.coolAccountNumber || '01-234-56');
+    setNotesInput(item.treasurerNotes || "");
+    setAccountNumberInput(item.coolAccountNumber || "01-234-56");
   };
 
   // Generate COOL Formatted Text
   const generatedCOOLText = useMemo(() => {
     if (approvedRequestsForCOOL.length === 0) {
-      return 'PURDUE COOL / BOSOP REIMBURSEMENT BATCH EXPORT\nNo approved purchase requests currently pending reimbursement transfer.';
+      return "PURDUE COOL / BOSOP REIMBURSEMENT BATCH EXPORT\nNo approved purchase requests currently pending reimbursement transfer.";
     }
 
-    const total = approvedRequestsForCOOL.reduce((sum, r) => sum + r.totalAmount, 0);
-    const dateStr = new Date().toLocaleDateString('en-US');
+    const total = approvedRequestsForCOOL.reduce(
+      (sum, r) => sum + r.totalAmount,
+      0,
+    );
+    const dateStr = new Date().toLocaleDateString("en-US");
 
     const header = [
-      '================================================================================',
+      "================================================================================",
       `PURDUE COOL / BOSOP REIMBURSEMENT BATCH EXPORT`,
       `Date: ${dateStr} | Total Count: ${approvedRequestsForCOOL.length} | Total Sum: $${total.toFixed(2)}`,
-      '================================================================================',
-    ].join('\n');
+      "================================================================================",
+    ].join("\n");
 
     const body = approvedRequestsForCOOL
       .map((item, idx) => {
-        let disbursementLabel = 'BOSO Office Pickup (Krach 365)';
-        if (item.disbursementMethod === 'MAIL_ADDRESS') {
-          disbursementLabel = `Mail to Address (${item.streetAddress || 'Address on file'})`;
-        } else if (item.disbursementMethod === 'EPAYMENT') {
-          disbursementLabel = 'E-Payment to Bank Account';
+        let disbursementLabel = "BOSO Office Pickup (Krach 365)";
+        if (item.disbursementMethod === "MAIL_ADDRESS") {
+          disbursementLabel = `Mail to Address (${item.streetAddress || "Address on file"})`;
+        } else if (item.disbursementMethod === "EPAYMENT") {
+          disbursementLabel = "E-Payment to Bank Account";
         }
 
         return [
           `[${idx + 1}] Req ID: ${item.id} | Committee: ${item.committeeName}`,
-          `    Student: ${item.requesterName} (Purdue ID: ${item.purdueUsername || 'N/A'}) <${item.requesterEmail}> | Phone: ${item.phoneNumber || 'N/A'}`,
-          `    Funding Source: ${item.fundingSource || 'GENERAL'}${item.fundingSource === 'SFAB' ? ` (SFAB Line: ${item.sfabLineItem || 'N/A'})` : ''}`,
+          `    Student: ${item.requesterName} (Purdue ID: ${item.purdueUsername || "N/A"}) <${item.requesterEmail}> | Phone: ${item.phoneNumber || "N/A"}`,
+          `    Funding Source: ${item.fundingSource || "GENERAL"}${item.fundingSource === "SFAB" ? ` (SFAB Line: ${item.sfabLineItem || "N/A"})` : ""}`,
           `    Disbursement: ${disbursementLabel}`,
           `    Vendor: ${item.vendorName}`,
-          `    Account Line: ${item.coolAccountNumber || '01-234-56'}`,
+          `    Account Line: ${item.coolAccountNumber || "01-234-56"}`,
           `    Amount: $${item.totalAmount.toFixed(2)}`,
-          `    Receipt: ${item.receiptFilename || 'Digital Attachment Verified'}`,
-          `    Notes: ${item.treasurerNotes || 'None'}`,
+          `    Receipt: ${item.receiptFilename || "Digital Attachment Verified"}`,
+          `    Notes: ${item.treasurerNotes || "None"}`,
           `    Description: ${item.description}`,
-        ].join('\n');
+        ].join("\n");
       })
-      .join('\n\n');
+      .join("\n\n");
 
     return `${header}\n\n${body}\n`;
   }, [approvedRequestsForCOOL]);
 
   // Copy COOL text to clipboard
   const handleCopyCOOLText = () => {
-    if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+    if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
       navigator.clipboard.writeText(generatedCOOLText).catch(() => {});
     }
     setCopiedCOOL(true);
@@ -425,22 +494,22 @@ export function TreasurerFinanceView({
     if (approvedRequestsForCOOL.length === 0) return;
 
     const headers = [
-      'Request ID',
-      'Committee',
-      'Student Requester',
-      'Purdue Username',
-      'Purdue Email',
-      'Phone Number',
-      'Funding Source',
-      'SFAB Line Item',
-      'Disbursement Method',
-      'Mailing Address',
-      'Vendor',
-      'Account Line',
-      'Total Amount',
-      'Receipt Filename',
-      'Description',
-      'Submitted Date',
+      "Request ID",
+      "Committee",
+      "Student Requester",
+      "Purdue Username",
+      "Purdue Email",
+      "Phone Number",
+      "Funding Source",
+      "SFAB Line Item",
+      "Disbursement Method",
+      "Mailing Address",
+      "Vendor",
+      "Account Line",
+      "Total Amount",
+      "Receipt Filename",
+      "Description",
+      "Submitted Date",
     ];
 
     const escapeCsv = (val: string) => `"${val.replace(/"/g, '""')}"`;
@@ -449,27 +518,30 @@ export function TreasurerFinanceView({
       escapeCsv(r.id),
       escapeCsv(r.committeeName),
       escapeCsv(r.requesterName),
-      escapeCsv(r.purdueUsername || ''),
+      escapeCsv(r.purdueUsername || ""),
       escapeCsv(r.requesterEmail),
-      escapeCsv(r.phoneNumber || ''),
-      escapeCsv(r.fundingSource || 'GENERAL'),
-      escapeCsv(r.sfabLineItem || 'N/A'),
-      escapeCsv(r.disbursementMethod || 'BOSO_PICKUP'),
-      escapeCsv(r.streetAddress || ''),
+      escapeCsv(r.phoneNumber || ""),
+      escapeCsv(r.fundingSource || "GENERAL"),
+      escapeCsv(r.sfabLineItem || "N/A"),
+      escapeCsv(r.disbursementMethod || "BOSO_PICKUP"),
+      escapeCsv(r.streetAddress || ""),
       escapeCsv(r.vendorName),
-      escapeCsv(r.coolAccountNumber || '01-234-56'),
+      escapeCsv(r.coolAccountNumber || "01-234-56"),
       r.totalAmount.toFixed(2),
-      escapeCsv(r.receiptFilename || ''),
+      escapeCsv(r.receiptFilename || ""),
       escapeCsv(r.description),
       escapeCsv(r.submittedAt),
     ]);
 
-    const csvContent = [headers.join(','), ...rows.map((row) => row.join(','))].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const csvContent = [
+      headers.join(","),
+      ...rows.map((row) => row.join(",")),
+    ].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
-    link.download = `purdue-cool-batch-${new Date().toISOString().split('T')[0]}.csv`;
+    link.download = `purdue-cool-batch-${new Date().toISOString().split("T")[0]}.csv`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -481,16 +553,16 @@ export function TreasurerFinanceView({
     if (matrixData.length === 0) return;
 
     const headers = [
-      'Committee ID',
-      'Committee Name',
-      'Base Allocated',
-      'Grants and Inflows',
-      'Total Budget',
-      'Spent and Disbursed',
-      'Pending Amount',
-      'Remaining Balance',
-      'Percent Spent',
-      'Total Requests',
+      "Committee ID",
+      "Committee Name",
+      "Base Allocated",
+      "Grants and Inflows",
+      "Total Budget",
+      "Spent and Disbursed",
+      "Pending Amount",
+      "Remaining Balance",
+      "Percent Spent",
+      "Total Requests",
     ];
 
     const escapeCsv = (val: string) => `"${val.replace(/"/g, '""')}"`;
@@ -508,12 +580,15 @@ export function TreasurerFinanceView({
       c.totalRequests.toString(),
     ]);
 
-    const csvContent = [headers.join(','), ...rows.map((row) => row.join(','))].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const csvContent = [
+      headers.join(","),
+      ...rows.map((row) => row.join(",")),
+    ].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
-    link.download = `purdue-ieee-spending-matrix-${new Date().toISOString().split('T')[0]}.csv`;
+    link.download = `purdue-ieee-spending-matrix-${new Date().toISOString().split("T")[0]}.csv`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -523,32 +598,36 @@ export function TreasurerFinanceView({
   // Mark all approved as reimbursed
   const handleBatchMarkReimbursed = () => {
     approvedRequestsForCOOL.forEach((item) => {
-      onUpdatePurchaseStatus(item.id, 'REIMBURSED', 'Batch processed in Purdue COOL');
+      onUpdatePurchaseStatus(
+        item.id,
+        "REIMBURSED",
+        "Batch processed in Purdue COOL",
+      );
     });
     setIsCOOLExporterOpen(false);
   };
 
   // CSV & Excel XML Parsing for TooCOOL / vECOrders Dues
   const [skippedCount, setSkippedCount] = useState<number>(0);
-  const [rawFileContent, setRawFileContent] = useState<string>('');
+  const [rawFileContent, setRawFileContent] = useState<string>("");
 
   const handleParseCsv = (content: string, filename: string) => {
     setImportError(null);
     setRawFileContent(content);
     try {
-      const parsed = parseDuesFile(content, 'fy25-26', 'Spring 2026');
+      const parsed = parseDuesFile(content, "fy25-26", "Spring 2026");
       if (parsed.validRecords.length === 0) {
         setImportError(
           parsed.errors.length > 0
             ? `Could not parse valid records: ${parsed.errors[0].reason}`
-            : 'File appears empty or missing valid student dues data.'
+            : "File appears empty or missing valid student dues data.",
         );
         return;
       }
 
       // Check against existing memberDues in database to disregard existing
       const existingKeys = new Set(
-        memberDues.map((d) => `${d.purdueEmail.toLowerCase()}::${d.semester}`)
+        memberDues.map((d) => `${d.purdueEmail.toLowerCase()}::${d.semester}`),
       );
 
       const uniqueNewRecords: MemberDuesRecord[] = [];
@@ -560,15 +639,17 @@ export function TreasurerFinanceView({
           skipped++;
         } else {
           uniqueNewRecords.push({
-            id: r.transactionId ? `DUES-${r.transactionId}` : `DUES-${Date.now()}-${idx}`,
+            id: r.transactionId
+              ? `DUES-${r.transactionId}`
+              : `DUES-${Date.now()}-${idx}`,
             studentName: r.studentName,
             purdueEmail: r.purdueEmail,
             amountPaid: r.amountPaid,
-            paymentMethod: 'TooCOOL',
+            paymentMethod: "TooCOOL",
             paymentDate: r.paymentDate,
             semester: r.semester,
-            fiscalYear: '2025-2026',
-            status: 'Active',
+            fiscalYear: "2025-2026",
+            status: "Active",
           });
         }
       });
@@ -577,7 +658,10 @@ export function TreasurerFinanceView({
       setImportedCsvData(uniqueNewRecords);
       setImportFileName(filename);
     } catch (err: any) {
-      setImportError(err?.message || 'Failed to parse file. Please ensure valid CSV or Excel format.');
+      setImportError(
+        err?.message ||
+          "Failed to parse file. Please ensure valid CSV or Excel format.",
+      );
     }
   };
 
@@ -607,10 +691,10 @@ export function TreasurerFinanceView({
 
   const handleExecuteDuesImport = () => {
     if (importedCsvData.length === 0 && skippedCount === 0) return;
-    onImportMemberDues(importedCsvData, rawFileContent, 'Spring 2026');
+    onImportMemberDues(importedCsvData, rawFileContent, "Spring 2026");
     setImportedCsvData([]);
     setImportFileName(null);
-    setRawFileContent('');
+    setRawFileContent("");
     setSkippedCount(0);
     setIsDuesImporterOpen(false);
   };
@@ -625,7 +709,9 @@ export function TreasurerFinanceView({
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold text-white">Executive Treasurer Console</h2>
+              <h2 className="text-xl font-bold text-white">
+                Executive Treasurer Console
+              </h2>
               <Badge className="bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs">
                 Master Administration
               </Badge>
@@ -652,7 +738,9 @@ export function TreasurerFinanceView({
             className="bg-gradient-to-r from-sky-600 to-sky-500 hover:from-sky-500 hover:to-sky-400 text-white font-medium shadow-md flex items-center gap-2"
           >
             <FileSpreadsheet className="w-4 h-4" />
-            <span>Purdue COOL Batch Exporter ({approvedRequestsForCOOL.length})</span>
+            <span>
+              Purdue COOL Batch Exporter ({approvedRequestsForCOOL.length})
+            </span>
           </Button>
 
           <Button
@@ -689,12 +777,19 @@ export function TreasurerFinanceView({
             <DollarSign className="w-4 h-4 text-[#EBD3A9]" />
           </div>
           <div className="text-2xl font-bold text-white mt-2 font-mono">
-            ${branchTotals.totalBranchBudget.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+            $
+            {branchTotals.totalBranchBudget.toLocaleString("en-US", {
+              minimumFractionDigits: 2,
+            })}
           </div>
           <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
-            <span>${branchTotals.totalAllocated.toLocaleString('en-US')} base</span>
+            <span>
+              ${branchTotals.totalAllocated.toLocaleString("en-US")} base
+            </span>
             <span className="text-slate-600">+</span>
-            <span className="text-emerald-400 font-medium">+${branchTotals.totalInflows.toLocaleString('en-US')} grants</span>
+            <span className="text-emerald-400 font-medium">
+              +${branchTotals.totalInflows.toLocaleString("en-US")} grants
+            </span>
           </p>
         </Card>
 
@@ -707,10 +802,16 @@ export function TreasurerFinanceView({
             <TrendingUp className="w-4 h-4 text-sky-400" />
           </div>
           <div className="text-2xl font-bold text-sky-400 mt-2 font-mono">
-            ${branchTotals.totalSpent.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+            $
+            {branchTotals.totalSpent.toLocaleString("en-US", {
+              minimumFractionDigits: 2,
+            })}
           </div>
           <div className="flex items-center gap-2 mt-2">
-            <Progress value={branchTotals.branchPercentSpent} className="h-1.5 bg-slate-800 flex-1" />
+            <Progress
+              value={branchTotals.branchPercentSpent}
+              className="h-1.5 bg-slate-800 flex-1"
+            />
             <span className="text-[11px] font-mono text-slate-400">
               {branchTotals.branchPercentSpent}%
             </span>
@@ -726,7 +827,10 @@ export function TreasurerFinanceView({
             <Clock className="w-4 h-4 text-amber-400" />
           </div>
           <div className="text-2xl font-bold text-amber-400 mt-2 font-mono">
-            ${branchTotals.totalPending.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+            $
+            {branchTotals.totalPending.toLocaleString("en-US", {
+              minimumFractionDigits: 2,
+            })}
           </div>
           <p className="text-[11px] text-amber-400/80 mt-1">
             {pendingRequests.length} requests awaiting your review
@@ -742,9 +846,14 @@ export function TreasurerFinanceView({
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
           </div>
           <div className="text-2xl font-bold text-emerald-400 mt-2 font-mono">
-            ${branchTotals.totalRemaining.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+            $
+            {branchTotals.totalRemaining.toLocaleString("en-US", {
+              minimumFractionDigits: 2,
+            })}
           </div>
-          <p className="text-[11px] text-slate-500 mt-1">Available branch-wide surplus</p>
+          <p className="text-[11px] text-slate-500 mt-1">
+            Available branch-wide surplus
+          </p>
         </Card>
       </div>
 
@@ -803,7 +912,8 @@ export function TreasurerFinanceView({
                 </span>
               </CardTitle>
               <CardDescription className="text-xs text-slate-400">
-                Review receipts, verify Purdue sales tax exemption status, and approve or reject submissions.
+                Review receipts, verify Purdue sales tax exemption status, and
+                approve or reject submissions.
               </CardDescription>
             </CardHeader>
 
@@ -811,13 +921,27 @@ export function TreasurerFinanceView({
               <Table>
                 <TableHeader className="bg-slate-900/60 border-b border-slate-800">
                   <TableRow className="border-slate-800 hover:bg-transparent">
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 pl-6">Req ID</TableHead>
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">Committee</TableHead>
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">Requester</TableHead>
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">Vendor / Item</TableHead>
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">Amount</TableHead>
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-center">Receipt</TableHead>
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right pr-6">Actions</TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 pl-6">
+                      Req ID
+                    </TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">
+                      Committee
+                    </TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">
+                      Requester
+                    </TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">
+                      Vendor / Item
+                    </TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">
+                      Amount
+                    </TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-center">
+                      Receipt
+                    </TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right pr-6">
+                      Actions
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -831,16 +955,28 @@ export function TreasurerFinanceView({
                           {item.id}
                         </TableCell>
                         <TableCell className="py-3.5">
-                          <span className="font-semibold text-xs text-slate-200">{item.committeeName}</span>
-                          <div className="text-[11px] text-slate-500">{item.category}</div>
+                          <span className="font-semibold text-xs text-slate-200">
+                            {item.committeeName}
+                          </span>
+                          <div className="text-[11px] text-slate-500">
+                            {item.category}
+                          </div>
                         </TableCell>
                         <TableCell className="py-3.5">
-                          <div className="font-medium text-xs text-slate-200">{item.requesterName}</div>
-                          <div className="text-[11px] text-slate-500 font-mono">{item.requesterEmail}</div>
+                          <div className="font-medium text-xs text-slate-200">
+                            {item.requesterName}
+                          </div>
+                          <div className="text-[11px] text-slate-500 font-mono">
+                            {item.requesterEmail}
+                          </div>
                         </TableCell>
                         <TableCell className="py-3.5 max-w-[240px]">
-                          <div className="font-semibold text-xs text-slate-100">{item.vendorName}</div>
-                          <div className="text-[11px] text-slate-400 truncate">{item.description}</div>
+                          <div className="font-semibold text-xs text-slate-100">
+                            {item.vendorName}
+                          </div>
+                          <div className="text-[11px] text-slate-400 truncate">
+                            {item.description}
+                          </div>
                         </TableCell>
                         <TableCell className="text-right py-3.5 font-mono text-xs font-bold text-amber-400">
                           ${item.totalAmount.toFixed(2)}
@@ -856,7 +992,9 @@ export function TreasurerFinanceView({
                               <span>View</span>
                             </button>
                           ) : (
-                            <span className="text-[11px] text-slate-600">None</span>
+                            <span className="text-[11px] text-slate-600">
+                              None
+                            </span>
                           )}
                         </TableCell>
                         <TableCell className="text-right py-3.5 pr-6">
@@ -895,11 +1033,17 @@ export function TreasurerFinanceView({
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center py-12 text-slate-500">
+                      <TableCell
+                        colSpan={7}
+                        className="text-center py-12 text-slate-500"
+                      >
                         <CheckCircle2 className="w-8 h-8 text-emerald-400/60 mx-auto mb-2" />
-                        <p className="text-sm font-medium text-slate-300">Approvals Queue is Clear</p>
+                        <p className="text-sm font-medium text-slate-300">
+                          Approvals Queue is Clear
+                        </p>
                         <p className="text-xs text-slate-500 mt-1">
-                          No purchase requests are currently awaiting treasurer sign-off.
+                          No purchase requests are currently awaiting treasurer
+                          sign-off.
                         </p>
                       </TableCell>
                     </TableRow>
@@ -920,7 +1064,8 @@ export function TreasurerFinanceView({
                   <span>Technical Committees Master Spending Matrix</span>
                 </CardTitle>
                 <CardDescription className="text-xs text-slate-400">
-                  Comparative budget overview, base capital, specific grants & inflows, liabilities, and surplus per committee.
+                  Comparative budget overview, base capital, specific grants &
+                  inflows, liabilities, and surplus per committee.
                 </CardDescription>
               </div>
 
@@ -952,16 +1097,36 @@ export function TreasurerFinanceView({
               <Table>
                 <TableHeader className="bg-slate-900/60 border-b border-slate-800">
                   <TableRow className="border-slate-800 hover:bg-transparent">
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 pl-6">Committee</TableHead>
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">Base Allocated</TableHead>
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">Grants / Inflows</TableHead>
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">Total Budget</TableHead>
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">Spent / Disbursed</TableHead>
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">Pending</TableHead>
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">Remaining</TableHead>
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-center w-36">% Spent</TableHead>
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-center">Reqs</TableHead>
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right pr-6">Manage</TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 pl-6">
+                      Committee
+                    </TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">
+                      Base Allocated
+                    </TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">
+                      Grants / Inflows
+                    </TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">
+                      Total Budget
+                    </TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">
+                      Spent / Disbursed
+                    </TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">
+                      Pending
+                    </TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">
+                      Remaining
+                    </TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-center w-36">
+                      % Spent
+                    </TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-center">
+                      Reqs
+                    </TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right pr-6">
+                      Manage
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -971,38 +1136,60 @@ export function TreasurerFinanceView({
                       className="border-b border-slate-800/60 hover:bg-slate-800/30 transition-colors"
                     >
                       <TableCell className="pl-6 py-3.5">
-                        <div className="font-semibold text-xs text-white">{c.name}</div>
+                        <div className="font-semibold text-xs text-white">
+                          {c.name}
+                        </div>
                         <div className="text-[11px] text-slate-500 font-mono flex items-center gap-1.5 mt-0.5">
                           <span>{c.contactEmail}</span>
                           <span className="text-slate-600">·</span>
-                          <span className={`text-[10px] ${c.bankStatus === 'Inactive' ? 'text-red-400' : c.bankStatus === 'Read-Only' ? 'text-amber-400' : 'text-emerald-400'}`}>
-                            {c.bankStatus || 'Active'}
+                          <span
+                            className={`text-[10px] ${c.bankStatus === "Inactive" ? "text-red-400" : c.bankStatus === "Read-Only" ? "text-amber-400" : "text-emerald-400"}`}
+                          >
+                            {c.bankStatus || "Active"}
                           </span>
                         </div>
                       </TableCell>
                       <TableCell className="text-right py-3.5 font-mono text-xs font-medium text-slate-300">
-                        ${c.baseAllocated.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                        $
+                        {c.baseAllocated.toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                        })}
                       </TableCell>
                       <TableCell className="text-right py-3.5 font-mono text-xs">
                         {c.totalInflows > 0 ? (
                           <span className="inline-flex items-center gap-1 text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                            +${c.totalInflows.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                            +$
+                            {c.totalInflows.toLocaleString("en-US", {
+                              minimumFractionDigits: 2,
+                            })}
                           </span>
                         ) : (
                           <span className="text-slate-600">$0.00</span>
                         )}
                       </TableCell>
                       <TableCell className="text-right py-3.5 font-mono text-xs font-bold text-white">
-                        ${c.totalBudget.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                        $
+                        {c.totalBudget.toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                        })}
                       </TableCell>
                       <TableCell className="text-right py-3.5 font-mono text-xs font-bold text-sky-400">
-                        ${c.approved.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                        $
+                        {c.approved.toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                        })}
                       </TableCell>
                       <TableCell className="text-right py-3.5 font-mono text-xs text-amber-400">
-                        ${c.pending.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                        $
+                        {c.pending.toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                        })}
                       </TableCell>
                       <TableCell className="text-right py-3.5 font-mono text-xs font-bold text-emerald-400">
-                        ${c.remaining.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                        $
+                        {c.remaining.toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                        })}
                       </TableCell>
                       <TableCell className="text-center py-3.5">
                         <div className="flex items-center gap-2 px-2">
@@ -1010,10 +1197,10 @@ export function TreasurerFinanceView({
                             value={c.percentSpent}
                             className={`h-2 flex-1 ${
                               c.percentSpent > 90
-                                ? 'bg-red-950 text-red-500'
+                                ? "bg-red-950 text-red-500"
                                 : c.percentSpent > 70
-                                ? 'bg-amber-950 text-amber-500'
-                                : 'bg-slate-800'
+                                  ? "bg-amber-950 text-amber-500"
+                                  : "bg-slate-800"
                             }`}
                           />
                           <span className="text-[11px] font-mono text-slate-300 w-10 text-right">
@@ -1068,7 +1255,8 @@ export function TreasurerFinanceView({
                   <span>Committee Specific Funding & Grants Ledger</span>
                 </CardTitle>
                 <CardDescription className="text-xs text-slate-400">
-                  Track external grants (SFAB), corporate sponsorships, departmental awards, and prize money credited to committees.
+                  Track external grants (SFAB), corporate sponsorships,
+                  departmental awards, and prize money credited to committees.
                 </CardDescription>
               </div>
 
@@ -1084,7 +1272,10 @@ export function TreasurerFinanceView({
                   />
                 </div>
 
-                <Select value={inflowFilterCommittee} onValueChange={setInflowFilterCommittee}>
+                <Select
+                  value={inflowFilterCommittee}
+                  onValueChange={setInflowFilterCommittee}
+                >
                   <SelectTrigger className="h-8 w-36 bg-slate-900 border-slate-700 text-xs text-slate-200">
                     <SelectValue placeholder="All Committees" />
                   </SelectTrigger>
@@ -1098,16 +1289,25 @@ export function TreasurerFinanceView({
                   </SelectContent>
                 </Select>
 
-                <Select value={inflowFilterSource} onValueChange={setInflowFilterSource}>
+                <Select
+                  value={inflowFilterSource}
+                  onValueChange={setInflowFilterSource}
+                >
                   <SelectTrigger className="h-8 w-40 bg-slate-900 border-slate-700 text-xs text-slate-200">
                     <SelectValue placeholder="All Source Types" />
                   </SelectTrigger>
                   <SelectContent className="bg-slate-900 border-slate-700 text-slate-200 text-xs">
                     <SelectItem value="ALL">All Source Types</SelectItem>
                     <SelectItem value="SFAB Grant">SFAB Grant</SelectItem>
-                    <SelectItem value="Corporate Sponsorship">Corporate Sponsorship</SelectItem>
-                    <SelectItem value="Department Allocation">Department Allocation</SelectItem>
-                    <SelectItem value="Competition Prize">Competition Prize</SelectItem>
+                    <SelectItem value="Corporate Sponsorship">
+                      Corporate Sponsorship
+                    </SelectItem>
+                    <SelectItem value="Department Allocation">
+                      Department Allocation
+                    </SelectItem>
+                    <SelectItem value="Competition Prize">
+                      Competition Prize
+                    </SelectItem>
                     <SelectItem value="Donation">Donation</SelectItem>
                     <SelectItem value="Other">Other</SelectItem>
                   </SelectContent>
@@ -1129,14 +1329,30 @@ export function TreasurerFinanceView({
               <Table>
                 <TableHeader className="bg-slate-900/60 border-b border-slate-800">
                   <TableRow className="border-slate-800 hover:bg-transparent">
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 pl-6">Inflow ID</TableHead>
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">Committee</TableHead>
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">Source Type</TableHead>
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">Grant / Title</TableHead>
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">Reference / Code</TableHead>
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">Date</TableHead>
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">Amount</TableHead>
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right pr-6">Action</TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 pl-6">
+                      Inflow ID
+                    </TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">
+                      Committee
+                    </TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">
+                      Source Type
+                    </TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">
+                      Grant / Title
+                    </TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">
+                      Reference / Code
+                    </TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">
+                      Date
+                    </TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">
+                      Amount
+                    </TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right pr-6">
+                      Action
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -1151,38 +1367,46 @@ export function TreasurerFinanceView({
                         </TableCell>
                         <TableCell className="py-3.5">
                           <span className="font-semibold text-xs text-slate-200">
-                            {item.committeeName || item.committeeId.toUpperCase()}
+                            {item.committeeName ||
+                              item.committeeId.toUpperCase()}
                           </span>
                         </TableCell>
                         <TableCell className="py-3.5">
                           <Badge
                             className={`text-[10px] px-2 py-0.5 border ${
-                              item.sourceType === 'SFAB Grant'
-                                ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
-                                : item.sourceType === 'Corporate Sponsorship'
-                                ? 'bg-sky-500/15 text-sky-300 border-sky-500/30'
-                                : item.sourceType === 'Department Allocation'
-                                ? 'bg-purple-500/15 text-purple-300 border-purple-500/30'
-                                : 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+                              item.sourceType === "SFAB Grant"
+                                ? "bg-amber-500/15 text-amber-300 border-amber-500/30"
+                                : item.sourceType === "Corporate Sponsorship"
+                                  ? "bg-sky-500/15 text-sky-300 border-sky-500/30"
+                                  : item.sourceType === "Department Allocation"
+                                    ? "bg-purple-500/15 text-purple-300 border-purple-500/30"
+                                    : "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
                             }`}
                           >
                             {item.sourceType}
                           </Badge>
                         </TableCell>
                         <TableCell className="py-3.5 max-w-[280px]">
-                          <div className="font-medium text-xs text-slate-100">{item.title}</div>
+                          <div className="font-medium text-xs text-slate-100">
+                            {item.title}
+                          </div>
                           {item.notes && (
-                            <div className="text-[11px] text-slate-400 truncate mt-0.5">{item.notes}</div>
+                            <div className="text-[11px] text-slate-400 truncate mt-0.5">
+                              {item.notes}
+                            </div>
                           )}
                         </TableCell>
                         <TableCell className="py-3.5 font-mono text-xs text-slate-400">
-                          {item.referenceNumber || 'N/A'}
+                          {item.referenceNumber || "N/A"}
                         </TableCell>
                         <TableCell className="py-3.5 font-mono text-xs text-slate-400">
                           {item.receivedDate}
                         </TableCell>
                         <TableCell className="text-right py-3.5 font-mono text-xs font-bold text-emerald-400">
-                          +${item.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                          +$
+                          {item.amount.toLocaleString("en-US", {
+                            minimumFractionDigits: 2,
+                          })}
                         </TableCell>
                         <TableCell className="text-right py-3.5 pr-6">
                           {onDeleteFundingInflow && (
@@ -1202,11 +1426,17 @@ export function TreasurerFinanceView({
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={8} className="text-center py-12 text-slate-500">
+                      <TableCell
+                        colSpan={8}
+                        className="text-center py-12 text-slate-500"
+                      >
                         <Coins className="w-8 h-8 text-emerald-400/60 mx-auto mb-2" />
-                        <p className="text-sm font-medium text-slate-300">No Funding Inflows Found</p>
+                        <p className="text-sm font-medium text-slate-300">
+                          No Funding Inflows Found
+                        </p>
                         <p className="text-xs text-slate-500 mt-1">
-                          No specific grants or corporate sponsorships match the active filters.
+                          No specific grants or corporate sponsorships match the
+                          active filters.
                         </p>
                       </TableCell>
                     </TableRow>
@@ -1227,7 +1457,8 @@ export function TreasurerFinanceView({
                   <span>Student Member Dues Directory</span>
                 </CardTitle>
                 <CardDescription className="text-xs text-slate-400">
-                  Real-time dues payment records imported from Purdue TooCOOL and direct cash payments.
+                  Real-time dues payment records imported from Purdue TooCOOL
+                  and direct cash payments.
                 </CardDescription>
               </div>
 
@@ -1243,7 +1474,10 @@ export function TreasurerFinanceView({
                   />
                 </div>
 
-                <Select value={duesSemesterFilter} onValueChange={setDuesSemesterFilter}>
+                <Select
+                  value={duesSemesterFilter}
+                  onValueChange={setDuesSemesterFilter}
+                >
                   <SelectTrigger className="h-8 w-36 bg-slate-900 border-slate-700 text-xs text-slate-200">
                     <SelectValue placeholder="All Semesters" />
                   </SelectTrigger>
@@ -1260,13 +1494,27 @@ export function TreasurerFinanceView({
               <Table>
                 <TableHeader className="bg-slate-900/60 border-b border-slate-800">
                   <TableRow className="border-slate-800 hover:bg-transparent">
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 pl-6">Record ID</TableHead>
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">Student Name</TableHead>
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">Purdue Email</TableHead>
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">Semester</TableHead>
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">Payment Method</TableHead>
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">Amount</TableHead>
-                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-center pr-6">Status</TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 pl-6">
+                      Record ID
+                    </TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">
+                      Student Name
+                    </TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">
+                      Purdue Email
+                    </TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">
+                      Semester
+                    </TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">
+                      Payment Method
+                    </TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">
+                      Amount
+                    </TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-center pr-6">
+                      Status
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -1305,7 +1553,10 @@ export function TreasurerFinanceView({
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center py-12 text-slate-500">
+                      <TableCell
+                        colSpan={7}
+                        className="text-center py-12 text-slate-500"
+                      >
                         No member dues records matching your search query.
                       </TableCell>
                     </TableRow>
@@ -1318,7 +1569,9 @@ export function TreasurerFinanceView({
 
         {/* Tab 5: Official BOSO / COOL Account Statement */}
         <TabsContent value="statement" className="mt-4 space-y-4">
-          <BosoCoolStatementView statement={bosoStatement || OFFICIAL_BOSO_STATEMENT_SFAB_2026} />
+          <BosoCoolStatementView
+            statement={bosoStatement || OFFICIAL_BOSO_STATEMENT_SFAB_2026}
+          />
         </TabsContent>
 
         {/* Tab 6: Banking Audit Ledger & Revision History */}
@@ -1333,24 +1586,25 @@ export function TreasurerFinanceView({
 
       {/* Purdue COOL Batch Exporter Modal */}
       <Dialog open={isCOOLExporterOpen} onOpenChange={setIsCOOLExporterOpen}>
-        <DialogContent
-          className="max-w-3xl bg-[#121214] text-slate-100 border border-slate-700/80 shadow-2xl p-6 overflow-y-auto max-h-[90vh]"
-        >
+        <DialogContent className="max-w-3xl bg-[#121214] text-slate-100 border border-slate-700/80 shadow-2xl p-6 overflow-y-auto max-h-[90vh]">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold text-white flex items-center gap-2">
               <FileSpreadsheet className="w-5 h-5 text-sky-400" />
               <span>Purdue COOL / BOSOP Batch Exporter</span>
             </DialogTitle>
             <DialogDescription className="text-xs text-slate-400">
-              Generates formatted data for administrative entry into Purdue University COOL / BOSO financial system.
+              Generates formatted data for administrative entry into Purdue
+              University COOL / BOSO financial system.
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-2">
             <div className="flex items-center justify-between p-3.5 rounded-lg bg-sky-500/10 border border-sky-500/20 text-xs">
               <div>
-                <span className="font-semibold text-white">Batch Ready:</span>{' '}
-                <span className="text-sky-300">{approvedRequestsForCOOL.length} Approved Requests</span>
+                <span className="font-semibold text-white">Batch Ready:</span>{" "}
+                <span className="text-sky-300">
+                  {approvedRequestsForCOOL.length} Approved Requests
+                </span>
               </div>
               <div className="font-mono text-sm font-bold text-white">
                 Total: $
@@ -1362,7 +1616,10 @@ export function TreasurerFinanceView({
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <Label htmlFor="cool-preview-text" className="text-xs font-medium text-slate-300">
+                <Label
+                  htmlFor="cool-preview-text"
+                  className="text-xs font-medium text-slate-300"
+                >
                   Formatted Purdue COOL Batch Text (1-Click Clipboard Copy)
                 </Label>
                 <button
@@ -1434,16 +1691,15 @@ export function TreasurerFinanceView({
 
       {/* TooCOOL / vECOrders Dues Importer Modal */}
       <Dialog open={isDuesImporterOpen} onOpenChange={setIsDuesImporterOpen}>
-        <DialogContent
-          className="max-w-2xl bg-[#121214] text-slate-100 border border-slate-700/80 shadow-2xl p-6 overflow-y-auto max-h-[90vh]"
-        >
+        <DialogContent className="max-w-2xl bg-[#121214] text-slate-100 border border-slate-700/80 shadow-2xl p-6 overflow-y-auto max-h-[90vh]">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold text-white flex items-center gap-2">
               <UploadCloud className="w-5 h-5 text-sky-400" />
               <span>Import Purdue TooCOOL / vECOrders Dues File</span>
             </DialogTitle>
             <DialogDescription className="text-xs text-slate-400">
-              Batch ingest membership dues exported from Purdue TooCOOL (supports .xls XML, .xlsx, and .csv formats).
+              Batch ingest membership dues exported from Purdue TooCOOL
+              (supports .xls XML, .xlsx, and .csv formats).
             </DialogDescription>
           </DialogHeader>
 
@@ -1458,10 +1714,10 @@ export function TreasurerFinanceView({
               onDrop={handleCsvFileDrop}
               className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer ${
                 isDraggingCsv
-                  ? 'border-sky-400 bg-sky-500/10'
-                  : 'border-slate-700 bg-slate-900/50 hover:border-slate-600'
+                  ? "border-sky-400 bg-sky-500/10"
+                  : "border-slate-700 bg-slate-900/50 hover:border-slate-600"
               }`}
-              onClick={() => document.getElementById('dues-csv-input')?.click()}
+              onClick={() => document.getElementById("dues-csv-input")?.click()}
             >
               <input
                 id="dues-csv-input"
@@ -1472,10 +1728,12 @@ export function TreasurerFinanceView({
               />
               <FileSpreadsheet className="w-8 h-8 text-sky-400 mx-auto mb-2" />
               <p className="text-xs font-semibold text-slate-200">
-                Click to browse or drop TooCOOL / vECOrders (.xls / .csv) file here
+                Click to browse or drop TooCOOL / vECOrders (.xls / .csv) file
+                here
               </p>
               <p className="text-[11px] text-slate-500 mt-1">
-                Supports vECOrders XML spreadsheets and TooCOOL exports with automatic name formatting and duplicate protection
+                Supports vECOrders XML spreadsheets and TooCOOL exports with
+                automatic name formatting and duplicate protection
               </p>
             </div>
 
@@ -1489,15 +1747,24 @@ export function TreasurerFinanceView({
               <div className="space-y-2 p-3 bg-slate-900/90 border border-slate-800 rounded-lg">
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-semibold text-white">
-                    File: <span className="font-mono text-slate-300">{importFileName}</span>
+                    File:{" "}
+                    <span className="font-mono text-slate-300">
+                      {importFileName}
+                    </span>
                   </span>
                   <div className="flex items-center gap-2">
                     {skippedCount > 0 && (
-                      <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-300 border-amber-500/30">
+                      <Badge
+                        variant="outline"
+                        className="text-[10px] bg-amber-500/10 text-amber-300 border-amber-500/30"
+                      >
                         {skippedCount} Existing Disregarded
                       </Badge>
                     )}
-                    <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-300 border-emerald-500/30 font-mono">
+                    <Badge
+                      variant="outline"
+                      className="text-[10px] bg-emerald-500/10 text-emerald-300 border-emerald-500/30 font-mono"
+                    >
                       {importedCsvData.length} New to Ingest
                     </Badge>
                   </div>
@@ -1506,9 +1773,16 @@ export function TreasurerFinanceView({
                 {importedCsvData.length > 0 ? (
                   <div className="max-h-36 overflow-y-auto space-y-1 pr-1 text-[11px]">
                     {importedCsvData.slice(0, 5).map((rec, i) => (
-                      <div key={i} className="flex items-center justify-between p-1.5 rounded bg-slate-800/40 text-slate-300">
-                        <span>{rec.studentName} ({rec.purdueEmail})</span>
-                        <span className="font-mono text-white">${rec.amountPaid.toFixed(2)}</span>
+                      <div
+                        key={i}
+                        className="flex items-center justify-between p-1.5 rounded bg-slate-800/40 text-slate-300"
+                      >
+                        <span>
+                          {rec.studentName} ({rec.purdueEmail})
+                        </span>
+                        <span className="font-mono text-white">
+                          ${rec.amountPaid.toFixed(2)}
+                        </span>
                       </div>
                     ))}
                     {importedCsvData.length > 5 && (
@@ -1519,7 +1793,8 @@ export function TreasurerFinanceView({
                   </div>
                 ) : (
                   <div className="text-xs text-slate-400 italic py-1">
-                    All {skippedCount} members in this file are already recorded in the database.
+                    All {skippedCount} members in this file are already recorded
+                    in the database.
                   </div>
                 )}
               </div>
@@ -1551,23 +1826,30 @@ export function TreasurerFinanceView({
 
       {/* Edit Notes / Account Line Modal */}
       {notesModalItem && (
-        <Dialog open={!!notesModalItem} onOpenChange={(open) => !open && setNotesModalItem(null)}>
-          <DialogContent
-            className="max-w-md bg-[#121214] text-slate-100 border border-slate-700/80 shadow-2xl p-6"
-          >
+        <Dialog
+          open={!!notesModalItem}
+          onOpenChange={(open) => !open && setNotesModalItem(null)}
+        >
+          <DialogContent className="max-w-md bg-[#121214] text-slate-100 border border-slate-700/80 shadow-2xl p-6">
             <DialogHeader>
               <DialogTitle className="text-base font-bold text-white flex items-center gap-2">
                 <MessageSquare className="w-4 h-4 text-sky-400" />
-                <span>Treasurer Notes & Account Line · {notesModalItem.id}</span>
+                <span>
+                  Treasurer Notes & Account Line · {notesModalItem.id}
+                </span>
               </DialogTitle>
               <DialogDescription className="text-xs text-slate-400">
-                Update BOSO account line number and feedback for {notesModalItem.requesterName}.
+                Update BOSO account line number and feedback for{" "}
+                {notesModalItem.requesterName}.
               </DialogDescription>
             </DialogHeader>
 
             <form onSubmit={handleSaveNotes} className="space-y-3 py-2">
               <div className="space-y-1.5">
-                <Label htmlFor="account-line" className="text-xs font-medium text-slate-300">
+                <Label
+                  htmlFor="account-line"
+                  className="text-xs font-medium text-slate-300"
+                >
                   Purdue BOSO Account Line
                 </Label>
                 <Input
@@ -1580,7 +1862,10 @@ export function TreasurerFinanceView({
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="treasurer-notes" className="text-xs font-medium text-slate-300">
+                <Label
+                  htmlFor="treasurer-notes"
+                  className="text-xs font-medium text-slate-300"
+                >
                   Treasurer Audit Notes
                 </Label>
                 <Textarea
@@ -1628,14 +1913,18 @@ export function TreasurerFinanceView({
                 <span>Edit Parameters · {editingCommittee.name}</span>
               </DialogTitle>
               <DialogDescription className="text-xs text-slate-400">
-                Update allocated budget capital, operational bank status, member dues policy, and spending categories.
+                Update allocated budget capital, operational bank status, member
+                dues policy, and spending categories.
               </DialogDescription>
             </DialogHeader>
 
             <form onSubmit={handleSaveCommittee} className="space-y-4 py-2">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label htmlFor="edit-allocated" className="text-xs font-medium text-slate-300">
+                  <Label
+                    htmlFor="edit-allocated"
+                    className="text-xs font-medium text-slate-300"
+                  >
                     Allocated Budget Capital ($) *
                   </Label>
                   <Input
@@ -1652,7 +1941,10 @@ export function TreasurerFinanceView({
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="edit-email" className="text-xs font-medium text-slate-300">
+                  <Label
+                    htmlFor="edit-email"
+                    className="text-xs font-medium text-slate-300"
+                  >
                     Official Contact Email
                   </Label>
                   <Input
@@ -1674,15 +1966,23 @@ export function TreasurerFinanceView({
                   </Label>
                   <Select
                     value={editBankStatus}
-                    onValueChange={(val: 'Active' | 'Inactive' | 'Read-Only') => setEditBankStatus(val)}
+                    onValueChange={(val: "Active" | "Inactive" | "Read-Only") =>
+                      setEditBankStatus(val)
+                    }
                   >
                     <SelectTrigger className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-slate-900 border-slate-700 text-slate-100 text-xs">
-                      <SelectItem value="Active">Active (Reimbursements Open)</SelectItem>
-                      <SelectItem value="Read-Only">Read-Only (View Only)</SelectItem>
-                      <SelectItem value="Inactive">Inactive (Frozen)</SelectItem>
+                      <SelectItem value="Active">
+                        Active (Reimbursements Open)
+                      </SelectItem>
+                      <SelectItem value="Read-Only">
+                        Read-Only (View Only)
+                      </SelectItem>
+                      <SelectItem value="Inactive">
+                        Inactive (Frozen)
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -1693,14 +1993,20 @@ export function TreasurerFinanceView({
                   </Label>
                   <Select
                     value={editDuesStatus}
-                    onValueChange={(val: 'Active' | 'Inactive') => setEditDuesStatus(val)}
+                    onValueChange={(val: "Active" | "Inactive") =>
+                      setEditDuesStatus(val)
+                    }
                   >
                     <SelectTrigger className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-slate-900 border-slate-700 text-slate-100 text-xs">
-                      <SelectItem value="Active">Active (Requires Paid Dues)</SelectItem>
-                      <SelectItem value="Inactive">Inactive (Exempt / Open)</SelectItem>
+                      <SelectItem value="Active">
+                        Active (Requires Paid Dues)
+                      </SelectItem>
+                      <SelectItem value="Inactive">
+                        Inactive (Exempt / Open)
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -1729,7 +2035,9 @@ export function TreasurerFinanceView({
                     </span>
                   ))}
                   {editCategories.length === 0 && (
-                    <span className="text-xs text-slate-500 italic py-1">No categories assigned.</span>
+                    <span className="text-xs text-slate-500 italic py-1">
+                      No categories assigned.
+                    </span>
                   )}
                 </div>
 
@@ -1738,7 +2046,7 @@ export function TreasurerFinanceView({
                     value={newCategoryText}
                     onChange={(e) => setNewCategoryText(e.target.value)}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
+                      if (e.key === "Enter") {
                         e.preventDefault();
                         handleAddCategory();
                       }
@@ -1762,7 +2070,10 @@ export function TreasurerFinanceView({
 
               {/* Budget Allocation Notes */}
               <div className="space-y-1.5">
-                <Label htmlFor="edit-notes" className="text-xs font-medium text-slate-300">
+                <Label
+                  htmlFor="edit-notes"
+                  className="text-xs font-medium text-slate-300"
+                >
                   Treasurer Budget Allocation Notes
                 </Label>
                 <Textarea
@@ -1815,7 +2126,9 @@ export function TreasurerFinanceView({
                 <span>Record Specific Committee Funding & Grants</span>
               </DialogTitle>
               <DialogDescription className="text-xs text-slate-400">
-                Credit external grants (SFAB), corporate sponsorships, departmental awards, or prize money directly to a committee's available budget.
+                Credit external grants (SFAB), corporate sponsorships,
+                departmental awards, or prize money directly to a committee's
+                available budget.
               </DialogDescription>
             </DialogHeader>
 
@@ -1848,25 +2161,42 @@ export function TreasurerFinanceView({
                   </Label>
                   <Select
                     value={inflowSourceType}
-                    onValueChange={(val: InflowSourceType) => setInflowSourceType(val)}
+                    onValueChange={(val: InflowSourceType) =>
+                      setInflowSourceType(val)
+                    }
                   >
                     <SelectTrigger className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-slate-900 border-slate-700 text-slate-100 text-xs">
-                      <SelectItem value="SFAB Grant">SFAB Grant (Student Fee Advisory Board)</SelectItem>
-                      <SelectItem value="Corporate Sponsorship">Corporate Sponsorship (Lockheed, TI, etc.)</SelectItem>
-                      <SelectItem value="Department Allocation">Department Allocation (ECE, ME, AAE)</SelectItem>
-                      <SelectItem value="Competition Prize">Competition Prize & Awards</SelectItem>
-                      <SelectItem value="Donation">Alumni / Donor Gift</SelectItem>
-                      <SelectItem value="Other">Other Miscellaneous Inflow</SelectItem>
+                      <SelectItem value="SFAB Grant">
+                        SFAB Grant (Student Fee Advisory Board)
+                      </SelectItem>
+                      <SelectItem value="Corporate Sponsorship">
+                        Corporate Sponsorship (Lockheed, TI, etc.)
+                      </SelectItem>
+                      <SelectItem value="Department Allocation">
+                        Department Allocation (ECE, ME, AAE)
+                      </SelectItem>
+                      <SelectItem value="Competition Prize">
+                        Competition Prize & Awards
+                      </SelectItem>
+                      <SelectItem value="Donation">
+                        Alumni / Donor Gift
+                      </SelectItem>
+                      <SelectItem value="Other">
+                        Other Miscellaneous Inflow
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="inflow-title" className="text-xs font-medium text-slate-300">
+                <Label
+                  htmlFor="inflow-title"
+                  className="text-xs font-medium text-slate-300"
+                >
                   Grant / Sponsorship Title *
                 </Label>
                 <Input
@@ -1881,7 +2211,10 @@ export function TreasurerFinanceView({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label htmlFor="inflow-amount" className="text-xs font-medium text-slate-300">
+                  <Label
+                    htmlFor="inflow-amount"
+                    className="text-xs font-medium text-slate-300"
+                  >
                     Amount ($) *
                   </Label>
                   <Input
@@ -1898,7 +2231,10 @@ export function TreasurerFinanceView({
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="inflow-date" className="text-xs font-medium text-slate-300">
+                  <Label
+                    htmlFor="inflow-date"
+                    className="text-xs font-medium text-slate-300"
+                  >
                     Received Date *
                   </Label>
                   <Input
@@ -1913,7 +2249,10 @@ export function TreasurerFinanceView({
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="inflow-ref" className="text-xs font-medium text-slate-300">
+                <Label
+                  htmlFor="inflow-ref"
+                  className="text-xs font-medium text-slate-300"
+                >
                   Grant Reference / PO # / Code (Optional)
                 </Label>
                 <Input
@@ -1926,7 +2265,10 @@ export function TreasurerFinanceView({
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="inflow-notes" className="text-xs font-medium text-slate-300">
+                <Label
+                  htmlFor="inflow-notes"
+                  className="text-xs font-medium text-slate-300"
+                >
                   Notes & Earmark Details
                 </Label>
                 <Textarea
