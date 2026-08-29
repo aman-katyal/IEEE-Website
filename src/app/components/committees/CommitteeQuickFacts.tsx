@@ -3,6 +3,7 @@ import { Mail, ChevronRight, ExternalLink, AlertCircle, Clock } from "lucide-rea
 import { Skeleton } from "boneyard-js/react";
 import { getPlatformIcon } from "../icons/getPlatformIcon";
 import type { Committee } from "../../../data/committees/types";
+import { sanitizeExternalUrl } from "../../../lib/urlSafety";
 
 interface CommitteeQuickFactsProps {
   committee: Committee | null | undefined;
@@ -155,7 +156,7 @@ export function CommitteeQuickFacts({
               {committee.socialLinks!.map((social) => (
                 <a
                   key={social.url}
-                  href={social.url}
+                  href={sanitizeExternalUrl(social.url)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="social-tag inline-flex items-center gap-1.5 py-1 px-2.5 rounded border border-[var(--glass-border)] text-[var(--text-secondary)] no-underline font-[family-name:var(--font-mono)] text-xs transition-all hover:text-[var(--electric-blue)] hover:border-[var(--electric-blue)]"

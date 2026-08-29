@@ -7,6 +7,7 @@ import {
   useSiteSettings,
   Partner,
 } from "../../hooks/useSanityData";
+import { sanitizeExternalUrl } from "../../lib/urlSafety";
 
 export function PartnersPage() {
   const { theme } = useTheme();
@@ -539,7 +540,7 @@ function PartnerCard({
   if (destinationUrl) {
     return (
       <a
-        href={destinationUrl}
+        href={sanitizeExternalUrl(destinationUrl)}
         target="_blank"
         rel="noopener noreferrer"
         aria-label={`Visit ${partner.name}${partner.tier ? ` (${partner.tier} Partner)` : ""} website`}

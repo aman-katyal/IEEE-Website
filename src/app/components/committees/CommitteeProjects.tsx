@@ -10,6 +10,7 @@ import {
   DialogDescription,
 } from "../ui/dialog";
 import type { CommitteeSection, CommitteeProject } from "../../../data/committees/types";
+import { sanitizeExternalUrl } from "../../../lib/urlSafety";
 
 interface CommitteeProjectsProps {
   sections: CommitteeSection[];
@@ -194,7 +195,7 @@ export function CommitteeProjects({ sections, loading, isLight }: CommitteeProje
                     </span>
                   </div>
                   <a
-                    href={selectedProject.url || selectedProject.link}
+                    href={sanitizeExternalUrl(selectedProject.url || selectedProject.link || "#")}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn-primary inline-flex items-center gap-2 py-2.5 px-5 text-xs font-semibold font-[family-name:var(--font-mono)] uppercase tracking-wider cursor-pointer hover:shadow-lg transition-all"
