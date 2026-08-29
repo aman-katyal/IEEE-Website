@@ -378,20 +378,22 @@ describe('BoilerBooks Auth: Middleware & RBAC', () => {
           ('rov', 'Remotely Operated underwater Vehicle (ROV)', '${rovHash}', 0, 'rov@purdueieee.org');
       `);
 
+      const TEST_JWT_SECRET = 'test-jwt-secret-key-for-unit-tests';
+
       // Verify valid treasurer password
-      const trResult = await verifyPinService(db, 'TR-872R$565-3ED', 'treasurer');
+      const trResult = await verifyPinService(db, 'TR-872R$565-3ED', 'treasurer', undefined, TEST_JWT_SECRET);
       expect(trResult.authenticated).toBe(true);
       expect(trResult.session?.role).toBe('TREASURER');
       expect(trResult.session?.email).toBe('treasurer@purdueieee.org');
 
       // Verify valid committee lead password
-      const rovResult = await verifyPinService(db, 'ROV-CVJL$897-GLV', 'committee', 'rov');
+      const rovResult = await verifyPinService(db, 'ROV-CVJL$897-GLV', 'committee', 'rov', TEST_JWT_SECRET);
       expect(rovResult.authenticated).toBe(true);
       expect(rovResult.session?.role).toBe('COMMITTEE_LEAD');
       expect(rovResult.session?.committeeId).toBe('rov');
 
       // Reject invalid password
-      const badResult = await verifyPinService(db, 'WrongPass123!', 'treasurer');
+      const badResult = await verifyPinService(db, 'WrongPass123!', 'treasurer', undefined, TEST_JWT_SECRET);
       expect(badResult.authenticated).toBe(false);
       expect(badResult.message).toContain('Invalid authentication passcode');
 
@@ -399,7 +401,7 @@ describe('BoilerBooks Auth: Middleware & RBAC', () => {
       const updated = await updateCommitteePasscode(db, 'rov', 'ROV-NewSecretPass#99');
       expect(updated).toBe(true);
 
-      const newPassResult = await verifyPinService(db, 'ROV-NewSecretPass#99', 'committee', 'rov');
+      const newPassResult = await verifyPinService(db, 'ROV-NewSecretPass#99', 'committee', 'rov', TEST_JWT_SECRET);
       expect(newPassResult.authenticated).toBe(true);
 
       db.close();
