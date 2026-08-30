@@ -78,6 +78,8 @@ import { ReceiptPreviewModal } from "./ReceiptPreviewModal";
 import { BosoCoolStatementView } from "./BosoCoolStatementView";
 import { BankingAuditLedgerView } from "./BankingAuditLedgerView";
 import { parseDuesFile } from "@/server/dues/parser";
+import { exportToExcelXml, type ExcelSheet } from "@/lib/excelUtils";
+import { calculateSpendingVelocity } from "@/lib/budgetUtils";
 
 export interface TreasurerFinanceViewProps {
   session: AuthSessionData;
@@ -549,6 +551,67 @@ export function TreasurerFinanceView({
   };
 
   // Download Master Spending Matrix CSV
+  const handleExportMatrixExcel = () => {
+    if (matrixData.length === 0) return;
+
+    const headers = [
+      "Committee ID",
+      "Committee Name",
+      "Base Allocated",
+      "Grants and Inflows",
+      "Total Budget",
+      "Spent and Disbursed",
+      "Pending Amount",
+      "Remaining Balance",
+      "Percent Spent",
+      "Total Requests",
+      "Runway Weeks",
+      "Status",
+    ];
+
+    const rows = matrixData.map((c) => {
+      const velocity = calculateSpendingVelocity(
+        purchases
+          .filter(
+            (p) =>
+              p.committeeId === c.id &&
+              (p.status === "APPROVED" ||
+                p.status === "PURCHASED" ||
+                p.status === "REIMBURSED"),
+          )
+          .map((p) => ({ date: p.submittedAt, amount: p.totalAmount })),
+        c.totalBudget,
+      );
+      return [
+        c.id,
+        c.name,
+        c.baseAllocated,
+        c.totalInflows,
+        c.totalBudget,
+        c.approved,
+        c.pending,
+        c.remaining,
+        c.percentSpent,
+        c.totalRequests,
+        velocity.runwayWeeks,
+        velocity.status,
+      ];
+    });
+
+    const sheets: ExcelSheet[] = [
+      {
+        name: "Spending Matrix",
+        headers,
+        rows,
+      },
+    ];
+
+    exportToExcelXml(
+      `purdue-ieee-spending-matrix-${new Date().toISOString().split("T")[0]}.xlsx`,
+      sheets,
+    );
+  };
+
   const handleExportMatrixCsv = () => {
     if (matrixData.length === 0) return;
 
@@ -1083,6 +1146,17 @@ export function TreasurerFinanceView({
 
                 <Button
                   type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleExportMatrixExcel}
+                  className="border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs flex items-center gap-1.5"
+                >
+                  <Download className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Export Excel (.xls)</span>
+                </Button>
+
+                <Button
+                  type="button"
                   size="sm"
                   onClick={() => handleOpenInflowModal()}
                   className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs flex items-center gap-1.5"
@@ -1123,6 +1197,9 @@ export function TreasurerFinanceView({
                     </TableHead>
                     <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-center">
                       Reqs
+                    </TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">
+                      Runway
                     </TableHead>
                     <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right pr-6">
                       Manage
@@ -1210,6 +1287,39 @@ export function TreasurerFinanceView({
                       </TableCell>
                       <TableCell className="text-center py-3.5 font-mono text-xs text-slate-400">
                         {c.totalRequests}
+                      </TableCell>
+                      <TableCell className="text-right py-3.5 font-mono text-xs">
+                        {(() => {
+                          const velocity = calculateSpendingVelocity(
+                            purchases
+                              .filter(
+                                (p) =>
+                                  p.committeeId === c.id &&
+                                  (p.status === "APPROVED" ||
+                                    p.status === "PURCHASED" ||
+                                    p.status === "REIMBURSED"),
+                              )
+                              .map((p) => ({
+                                date: p.submittedAt,
+                                amount: p.totalAmount,
+                              })),
+                            c.totalBudget,
+                          );
+                          return (
+                            <>
+                              {velocity.runwayWeeks}w ·{" "}
+                              <span
+                                className={
+                                  velocity.status === "On Track"
+                                    ? "text-emerald-400"
+                                    : "text-red-400"
+                                }
+                              >
+                                {velocity.status}
+                              </span>
+                            </>
+                          );
+                        })()}
                       </TableCell>
                       <TableCell className="text-right py-3.5 pr-6">
                         <div className="flex items-center justify-end gap-1.5">
