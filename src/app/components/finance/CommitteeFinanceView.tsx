@@ -97,11 +97,15 @@ export function CommitteeFinanceView({
   onRecordCashDues,
   onLogout,
 }: CommitteeFinanceViewProps) {
-  const committee = useMemo(() => {
+  const committeeMap = useMemo(() => {
     const list =
       committees && committees.length > 0 ? committees : REAL_COMMITTEES;
-    return list.find((c) => c.id === session.committeeId) || list[0];
-  }, [committees, session.committeeId]);
+    return new Map(list.map((c) => [c.id, c]));
+  }, [committees]);
+
+  const committee = useMemo(() => {
+    return committeeMap.get(session.committeeId) ?? [...committeeMap.values()][0];
+  }, [committeeMap, session.committeeId]);
 
   // Committee Purchases
   const committeePurchases = useMemo(() => {

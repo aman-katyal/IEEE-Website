@@ -33,3 +33,6 @@
 ## 2026-08-29 - Optimize Array Filter and Reduce
 **Learning:** Chaining `.filter(...).reduce(...)` multiple times over the same array to calculate distinct totals performs redundant array traversals, resulting in O(3N) operations instead of O(N). In performance-critical hooks like finance dashboards, this can cause unnecessary calculation overhead.
 **Action:** Replace multiple chained array passes over the same dataset with a single `for...of` loop or a single `.reduce()` that aggregates all the necessary variables in one O(N) pass.
+## 2026-08-30 - Optimize Array.find() to Map.get()
+**Learning:** Using Array.find() repeatedly inside loops or frequent re-renders causes O(N) linear search overhead. Converting the array to a Map allows for O(1) constant time lookups, significantly improving performance for large arrays or high-frequency calls.
+**Action:** Pre-compute a Map lookup table before frequent search operations instead of using Array.find().
