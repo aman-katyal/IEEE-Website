@@ -78,6 +78,8 @@ import { ReceiptPreviewModal } from "./ReceiptPreviewModal";
 import { BosoCoolStatementView } from "./BosoCoolStatementView";
 import { BankingAuditLedgerView } from "./BankingAuditLedgerView";
 import { parseDuesFile } from "@/server/dues/parser";
+import { exportToExcelXml, type ExcelSheet } from "@/lib/excelUtils";
+import { calculateSpendingVelocity } from "@/lib/budgetUtils";
 
 export interface TreasurerFinanceViewProps {
   session: AuthSessionData;
@@ -1195,6 +1197,9 @@ export function TreasurerFinanceView({
                     </TableHead>
                     <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-center">
                       Reqs
+                    </TableHead>
+                    <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">
+                      Runway
                     </TableHead>
                     <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right pr-6">
                       Manage
