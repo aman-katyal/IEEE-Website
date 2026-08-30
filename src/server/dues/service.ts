@@ -125,6 +125,24 @@ export async function importDuesBatch(
   const skippedRecords: Array<{ purdueEmail: string; studentName: string; reason: string }> = [];
   let totalAmountImported = 0;
 
+  const existingRecords = new Set<string>();
+  if (skipDuplicates && records.length > 0) {
+    const fiscalYearIds = Array.from(new Set(records.map((r) => (('fiscalYearId' in r ? r.fiscalYearId : r.fiscal_year_id) || '') as string).filter(Boolean)));
+    if (fiscalYearIds.length > 0) {
+      const placeholders = fiscalYearIds.map(() => '?').join(',');
+      const rows = await db
+        .prepare(`SELECT fiscal_year_id, LOWER(purdue_email) as purdue_email, semester FROM member_dues WHERE fiscal_year_id IN (${placeholders})`)
+        .bind(...fiscalYearIds)
+        .all<{ fiscal_year_id: string; purdue_email: string; semester: string }>();
+
+      if (rows.results) {
+        for (const row of rows.results) {
+          existingRecords.add(`${row.fiscal_year_id}:${row.purdue_email}:${row.semester}`);
+        }
+      }
+    }
+  }
+
   for (const record of records) {
     const recordAny = record as Record<string, unknown>;
     const fiscalYearId = (('fiscalYearId' in record ? record.fiscalYearId : record.fiscal_year_id) || '') as string;
@@ -156,15 +174,7 @@ export async function importDuesBatch(
 
     // Check for existing database duplicate
     if (skipDuplicates) {
-      const existing = await db
-        .prepare(
-          `SELECT id FROM member_dues 
-           WHERE fiscal_year_id = ? AND LOWER(purdue_email) = ? AND semester = ?`
-        )
-        .bind(fiscalYearId, purdueEmail, semester)
-        .first<{ id: string }>();
-
-      if (existing) {
+      if (existingRecords.has(`${fiscalYearId}:${purdueEmail}:${semester}`)) {
         skippedRecords.push({
           purdueEmail,
           studentName,

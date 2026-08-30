@@ -33,3 +33,6 @@
 ## 2026-08-29 - Optimize Array Filter and Reduce
 **Learning:** Chaining `.filter(...).reduce(...)` multiple times over the same array to calculate distinct totals performs redundant array traversals, resulting in O(3N) operations instead of O(N). In performance-critical hooks like finance dashboards, this can cause unnecessary calculation overhead.
 **Action:** Replace multiple chained array passes over the same dataset with a single `for...of` loop or a single `.reduce()` that aggregates all the necessary variables in one O(N) pass.
+## 2026-08-30 - Optimize Bulk Member Dues Import N+1 Queries
+**Learning:** Checking for duplicates inside a bulk insert loop by making individual database queries (N+1 queries) scales terribly and causes severe performance bottlenecks for large batches.
+**Action:** Extract the keys (like IDs or emails) for the entire batch, fetch all potentially existing duplicate records in a single upfront query using an `IN` clause, and load them into an in-memory `Set` or `Map` for O(1) duplicate lookups during the loop.
