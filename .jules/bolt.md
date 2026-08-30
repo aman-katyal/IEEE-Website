@@ -33,3 +33,6 @@
 ## 2026-08-29 - Optimize Array Filter and Reduce
 **Learning:** Chaining `.filter(...).reduce(...)` multiple times over the same array to calculate distinct totals performs redundant array traversals, resulting in O(3N) operations instead of O(N). In performance-critical hooks like finance dashboards, this can cause unnecessary calculation overhead.
 **Action:** Replace multiple chained array passes over the same dataset with a single `for...of` loop or a single `.reduce()` that aggregates all the necessary variables in one O(N) pass.
+## 2026-08-30 - Optimize D1 category inserts using batching
+**Learning:** Inserting many items sequentially inside a for-loop results in an N+1 query issue, increasing latency due to individual network roundtrips.
+**Action:** When executing multiple insert or update queries against Cloudflare D1, aggregate the statements into an array and send them as a single network request using `await d1.batch(stmts)`. Ensure fallback sequential execution for local/test environments if the adapter does not fully implement batch.

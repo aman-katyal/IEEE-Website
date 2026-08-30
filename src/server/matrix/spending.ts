@@ -494,13 +494,29 @@ export async function updateCommitteeParameters(
       .run();
 
     // Insert new category set
-    for (const cat of payload.categories) {
-      if (cat.trim().length > 0) {
-        const catId = `cat-${committeeId}-${cat.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
-        await d1
-          .prepare('INSERT INTO budget_categories (id, committee_id, name) VALUES (?, ?, ?)')
-          .bind(catId, committeeId, cat.trim())
-          .run();
+    if (typeof d1.batch === 'function') {
+      const stmts = [];
+      for (const cat of payload.categories) {
+        if (cat.trim().length > 0) {
+          const catId = `cat-${committeeId}-${cat.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
+          stmts.push(
+            d1.prepare('INSERT INTO budget_categories (id, committee_id, name) VALUES (?, ?, ?)')
+              .bind(catId, committeeId, cat.trim())
+          );
+        }
+      }
+      if (stmts.length > 0) {
+        await d1.batch(stmts);
+      }
+    } else {
+      for (const cat of payload.categories) {
+        if (cat.trim().length > 0) {
+          const catId = `cat-${committeeId}-${cat.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
+          await d1
+            .prepare('INSERT INTO budget_categories (id, committee_id, name) VALUES (?, ?, ?)')
+            .bind(catId, committeeId, cat.trim())
+            .run();
+        }
       }
     }
   }
@@ -589,13 +605,29 @@ export async function createCommittee(
     .run();
 
   // 3. Insert categories
-  for (const cat of categories) {
-    if (cat.trim().length > 0) {
-      const catId = `cat-${committeeId}-${cat.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
-      await d1
-        .prepare('INSERT INTO budget_categories (id, committee_id, name) VALUES (?, ?, ?)')
-        .bind(catId, committeeId, cat.trim())
-        .run();
+  if (typeof d1.batch === 'function') {
+    const stmts = [];
+    for (const cat of categories) {
+      if (cat.trim().length > 0) {
+        const catId = `cat-${committeeId}-${cat.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
+        stmts.push(
+          d1.prepare('INSERT INTO budget_categories (id, committee_id, name) VALUES (?, ?, ?)')
+            .bind(catId, committeeId, cat.trim())
+        );
+      }
+    }
+    if (stmts.length > 0) {
+      await d1.batch(stmts);
+    }
+  } else {
+    for (const cat of categories) {
+      if (cat.trim().length > 0) {
+        const catId = `cat-${committeeId}-${cat.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
+        await d1
+          .prepare('INSERT INTO budget_categories (id, committee_id, name) VALUES (?, ?, ?)')
+          .bind(catId, committeeId, cat.trim())
+          .run();
+      }
     }
   }
 
