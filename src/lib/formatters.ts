@@ -14,6 +14,8 @@ export function centsToDollars(cents: number): number {
   return cents / 100;
 }
 
+const numberFormatCache = new Map<number, Intl.NumberFormat>();
+
 /**
  * Formats a number as USD currency using Intl.NumberFormat.
  * Supports options for decimal precision and passing values directly in cents.
@@ -34,12 +36,18 @@ export function formatCurrencyUSD(
 
   const value = inCents ? centsToDollars(amount) : amount;
 
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  }).format(value);
+  let formatter = numberFormatCache.get(decimals);
+  if (!formatter) {
+    formatter = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    });
+    numberFormatCache.set(decimals, formatter);
+  }
+
+  return formatter.format(value);
 }
 
 /**
