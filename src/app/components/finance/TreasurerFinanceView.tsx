@@ -112,6 +112,18 @@ export interface TreasurerFinanceViewProps {
     committeeId: string,
     updated: Partial<CommitteeInfo>,
   ) => void;
+  onCreateCommittee?: (newCommittee: {
+    id?: string;
+    name: string;
+    allocated?: number;
+    bankStatus?: "Active" | "Inactive" | "Read-Only";
+    duesStatus?: "Active" | "Inactive";
+    contactEmail?: string;
+    categories?: string[];
+    notes?: string;
+    passcode?: string;
+  }) => Promise<{ success: boolean; committee?: CommitteeInfo; error?: string }> | void;
+  onDeleteCommittee?: (committeeId: string) => Promise<{ success: boolean; error?: string }> | void;
   onAddFundingInflow: (newInflow: CommitteeFundingInflow) => void;
   onDeleteFundingInflow?: (id: string) => void;
   onLogout?: () => void;
@@ -128,6 +140,8 @@ export function TreasurerFinanceView({
   onUpdatePurchaseStatus,
   onImportMemberDues,
   onUpdateCommittee,
+  onCreateCommittee,
+  onDeleteCommittee,
   onAddFundingInflow,
   onDeleteFundingInflow,
   onLogout,
@@ -246,6 +260,7 @@ export function TreasurerFinanceView({
   // Committee Parameters Editing Modal State
   const [editingCommittee, setEditingCommittee] =
     useState<CommitteeInfo | null>(null);
+  const [editName, setEditName] = useState<string>("");
   const [editAllocated, setEditAllocated] = useState<string>("");
   const [editBankStatus, setEditBankStatus] = useState<
     "Active" | "Inactive" | "Read-Only"
@@ -258,8 +273,37 @@ export function TreasurerFinanceView({
   const [editCategories, setEditCategories] = useState<string[]>([]);
   const [newCategoryText, setNewCategoryText] = useState<string>("");
 
+  // Committee Deletion State
+  const [deletingCommittee, setDeletingCommittee] =
+    useState<CommitteeInfo | null>(null);
+  const [isDeletingLoading, setIsDeletingLoading] = useState<boolean>(false);
+
+  // Add New Committee Modal State
+  const [isAddCommitteeModalOpen, setIsAddCommitteeModalOpen] =
+    useState<boolean>(false);
+  const [addName, setAddName] = useState<string>("");
+  const [addId, setAddId] = useState<string>("");
+  const [addAllocated, setAddAllocated] = useState<string>("1000");
+  const [addBankStatus, setAddBankStatus] = useState<
+    "Active" | "Inactive" | "Read-Only"
+  >("Active");
+  const [addDuesStatus, setAddDuesStatus] = useState<"Active" | "Inactive">(
+    "Active",
+  );
+  const [addContactEmail, setAddContactEmail] = useState<string>("");
+  const [addPasscode, setAddPasscode] = useState<string>("");
+  const [addNotes, setAddNotes] = useState<string>("");
+  const [addCategories, setAddCategories] = useState<string[]>([
+    "General",
+    "Hardware",
+  ]);
+  const [newAddCategoryText, setNewAddCategoryText] = useState<string>("");
+  const [isSubmittingAddCommittee, setIsSubmittingAddCommittee] =
+    useState<boolean>(false);
+
   const handleOpenEditCommittee = (c: CommitteeInfo) => {
     setEditingCommittee(c);
+    setEditName(c.name || "");
     setEditAllocated(String(c.allocated));
     setEditBankStatus(c.bankStatus || "Active");
     setEditDuesStatus(c.duesStatus || "Active");
@@ -289,6 +333,7 @@ export function TreasurerFinanceView({
 
     if (onUpdateCommittee) {
       onUpdateCommittee(editingCommittee.id, {
+        name: editName.trim() || editingCommittee.name,
         allocated: parsedAllocated,
         bankStatus: editBankStatus,
         duesStatus: editDuesStatus,
@@ -298,6 +343,67 @@ export function TreasurerFinanceView({
       });
     }
     setEditingCommittee(null);
+  };
+
+  const handleConfirmDeleteCommittee = async () => {
+    if (!deletingCommittee) return;
+    setIsDeletingLoading(true);
+    try {
+      if (onDeleteCommittee) {
+        await onDeleteCommittee(deletingCommittee.id);
+      }
+      setDeletingCommittee(null);
+      if (editingCommittee?.id === deletingCommittee.id) {
+        setEditingCommittee(null);
+      }
+    } finally {
+      setIsDeletingLoading(false);
+    }
+  };
+
+  const handleSaveNewCommittee = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!addName.trim()) return;
+    const parsedAllocated = parseFloat(addAllocated) || 0;
+    const derivedId =
+      (addId.trim() ||
+        addName
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9]/g, "-")
+          .replace(/-+/g, "-")
+          .replace(/^-|-$/g, "")) ||
+      `comm-${Date.now()}`;
+
+    setIsSubmittingAddCommittee(true);
+    try {
+      if (onCreateCommittee) {
+        await onCreateCommittee({
+          id: derivedId,
+          name: addName.trim(),
+          allocated: parsedAllocated,
+          bankStatus: addBankStatus,
+          duesStatus: addDuesStatus,
+          contactEmail:
+            addContactEmail.trim() || `${derivedId}@purdueieee.org`,
+          categories: addCategories,
+          notes: addNotes.trim(),
+          passcode: addPasscode.trim() || undefined,
+        });
+      }
+      setIsAddCommitteeModalOpen(false);
+      setAddName("");
+      setAddId("");
+      setAddAllocated("1000");
+      setAddBankStatus("Active");
+      setAddDuesStatus("Active");
+      setAddContactEmail("");
+      setAddPasscode("");
+      setAddNotes("");
+      setAddCategories(["General", "Hardware"]);
+    } finally {
+      setIsSubmittingAddCommittee(false);
+    }
   };
 
   // COOL Exporter Clipboard & Download Feedback
@@ -1158,6 +1264,16 @@ export function TreasurerFinanceView({
                 <Button
                   type="button"
                   size="sm"
+                  onClick={() => setIsAddCommitteeModalOpen(true)}
+                  className="bg-sky-600 hover:bg-sky-500 text-white text-xs flex items-center gap-1.5"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add Committee</span>
+                </Button>
+
+                <Button
+                  type="button"
+                  size="sm"
                   onClick={() => handleOpenInflowModal()}
                   className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs flex items-center gap-1.5"
                 >
@@ -1345,6 +1461,19 @@ export function TreasurerFinanceView({
                             <Settings2 className="w-3 h-3" />
                             <span>Edit</span>
                           </Button>
+                          {onDeleteCommittee && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setDeletingCommittee(c)}
+                              className="h-7 px-2 text-xs bg-slate-900 border-slate-700 text-red-400 hover:text-white hover:bg-red-900/60 inline-flex items-center gap-1"
+                              title={`Delete ${c.shortName}`}
+                            >
+                              <Trash2 className="w-3 h-3" />
+                              <span>Delete</span>
+                            </Button>
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>
@@ -2023,13 +2152,30 @@ export function TreasurerFinanceView({
                 <span>Edit Parameters · {editingCommittee.name}</span>
               </DialogTitle>
               <DialogDescription className="text-xs text-slate-400">
-                Update allocated budget capital, operational bank status, member
+                Update committee name, allocated budget capital, operational bank status, member
                 dues policy, and spending categories.
               </DialogDescription>
             </DialogHeader>
 
             <form onSubmit={handleSaveCommittee} className="space-y-4 py-2">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5 sm:col-span-2">
+                  <Label
+                    htmlFor="edit-name"
+                    className="text-xs font-medium text-slate-300"
+                  >
+                    Committee Name *
+                  </Label>
+                  <Input
+                    id="edit-name"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    placeholder="e.g. Aerial Robotics"
+                    className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
+                    required
+                  />
+                </div>
+
                 <div className="space-y-1.5">
                   <Label
                     htmlFor="edit-allocated"
@@ -2196,9 +2342,22 @@ export function TreasurerFinanceView({
               </div>
 
               <DialogFooter className="pt-3 border-t border-slate-800 flex items-center justify-between sm:justify-between">
-                <span className="text-[11px] text-slate-500">
-                  Updates apply across the finance portal and D1 database.
-                </span>
+                <div>
+                  {onDeleteCommittee && (
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => {
+                        setDeletingCommittee(editingCommittee);
+                      }}
+                      className="bg-red-950/80 border border-red-800/80 hover:bg-red-900 text-red-300 text-xs flex items-center gap-1.5"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Delete Committee</span>
+                    </Button>
+                  )}
+                </div>
                 <div className="flex items-center gap-2">
                   <Button
                     type="button"
@@ -2215,6 +2374,350 @@ export function TreasurerFinanceView({
                     className="bg-sky-600 hover:bg-sky-500 text-white font-medium"
                   >
                     Save Parameters
+                  </Button>
+                </div>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Delete Committee Confirmation Dialog */}
+      {deletingCommittee && (
+        <Dialog
+          open={!!deletingCommittee}
+          onOpenChange={(open) => !open && setDeletingCommittee(null)}
+        >
+          <DialogContent className="max-w-md bg-[#121214] text-slate-100 border border-red-900/60 shadow-2xl p-6">
+            <DialogHeader>
+              <DialogTitle className="text-base font-bold text-red-400 flex items-center gap-2">
+                <Trash2 className="w-5 h-5" />
+                <span>Delete Committee: {deletingCommittee.name}?</span>
+              </DialogTitle>
+              <DialogDescription className="text-xs text-slate-300 pt-2 leading-relaxed">
+                Are you sure you want to delete <strong className="text-white">{deletingCommittee.name}</strong> (<span className="font-mono text-sky-400">{deletingCommittee.id}</span>)? This will permanently remove its budget allocations, subcategories, and associated financial records from the database.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter className="pt-4 border-t border-slate-800 flex items-center justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setDeletingCommittee(null)}
+                className="bg-slate-900 border-slate-700 text-slate-300"
+                disabled={isDeletingLoading}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                variant="destructive"
+                size="sm"
+                onClick={handleConfirmDeleteCommittee}
+                disabled={isDeletingLoading}
+                className="bg-red-600 hover:bg-red-500 text-white font-medium"
+              >
+                {isDeletingLoading ? "Deleting..." : "Confirm Delete"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Add New Committee Modal */}
+      {isAddCommitteeModalOpen && (
+        <Dialog
+          open={isAddCommitteeModalOpen}
+          onOpenChange={(open) => !open && setIsAddCommitteeModalOpen(false)}
+        >
+          <DialogContent className="max-w-xl bg-[#121214] text-slate-100 border border-slate-700/80 shadow-2xl p-6 overflow-y-auto max-h-[90vh]">
+            <DialogHeader>
+              <DialogTitle className="text-lg font-bold text-white flex items-center gap-2">
+                <Plus className="w-5 h-5 text-sky-400" />
+                <span>Create New Technical Committee</span>
+              </DialogTitle>
+              <DialogDescription className="text-xs text-slate-400">
+                Add a new technical committee to Purdue IEEE BoilerBooks 3.0 with initial budget allocation and credentials.
+              </DialogDescription>
+            </DialogHeader>
+
+            <form onSubmit={handleSaveNewCommittee} className="space-y-4 py-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5 sm:col-span-2">
+                  <Label
+                    htmlFor="add-name"
+                    className="text-xs font-medium text-slate-300"
+                  >
+                    Committee Name *
+                  </Label>
+                  <Input
+                    id="add-name"
+                    value={addName}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setAddName(val);
+                      if (
+                        !addId ||
+                        addId ===
+                          addName
+                            .toLowerCase()
+                            .replace(/[^a-z0-9]/g, "-")
+                            .replace(/-+/g, "-")
+                      ) {
+                        setAddId(
+                          val
+                            .toLowerCase()
+                            .replace(/[^a-z0-9]/g, "-")
+                            .replace(/-+/g, "-")
+                            .replace(/^-|-$/g, ""),
+                        );
+                      }
+                    }}
+                    placeholder="e.g. Assistive Technology & Bionics"
+                    className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label
+                    htmlFor="add-id"
+                    className="text-xs font-medium text-slate-300"
+                  >
+                    Identifier / Slug *
+                  </Label>
+                  <Input
+                    id="add-id"
+                    value={addId}
+                    onChange={(e) =>
+                      setAddId(
+                        e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""),
+                      )
+                    }
+                    placeholder="e.g. assistive-tech"
+                    className="bg-slate-900 border-slate-700 text-slate-100 text-xs font-mono h-9"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label
+                    htmlFor="add-allocated"
+                    className="text-xs font-medium text-slate-300"
+                  >
+                    Initial Allocated Budget ($) *
+                  </Label>
+                  <Input
+                    id="add-allocated"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={addAllocated}
+                    onChange={(e) => setAddAllocated(e.target.value)}
+                    placeholder="3000.00"
+                    className="bg-slate-900 border-slate-700 text-slate-100 text-xs font-mono h-9"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label
+                    htmlFor="add-email"
+                    className="text-xs font-medium text-slate-300"
+                  >
+                    Contact Email
+                  </Label>
+                  <Input
+                    id="add-email"
+                    type="email"
+                    value={addContactEmail}
+                    onChange={(e) => setAddContactEmail(e.target.value)}
+                    placeholder="committee@purdueieee.org"
+                    className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label
+                    htmlFor="add-passcode"
+                    className="text-xs font-medium text-slate-300"
+                  >
+                    Lead PIN Passcode (Default: 1903)
+                  </Label>
+                  <Input
+                    id="add-passcode"
+                    type="password"
+                    value={addPasscode}
+                    onChange={(e) => setAddPasscode(e.target.value)}
+                    placeholder="Leave blank for 1903"
+                    className="bg-slate-900 border-slate-700 text-slate-100 text-xs font-mono h-9"
+                  />
+                </div>
+              </div>
+
+              {/* Status Controls */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-3 bg-slate-900/60 border border-slate-800 rounded-lg">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium text-slate-300">
+                    Bank Operational Status
+                  </Label>
+                  <Select
+                    value={addBankStatus}
+                    onValueChange={(val: "Active" | "Inactive" | "Read-Only") =>
+                      setAddBankStatus(val)
+                    }
+                  >
+                    <SelectTrigger className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-900 border-slate-700 text-slate-100 text-xs">
+                      <SelectItem value="Active">
+                        Active (Reimbursements Open)
+                      </SelectItem>
+                      <SelectItem value="Read-Only">
+                        Read-Only (View Only)
+                      </SelectItem>
+                      <SelectItem value="Inactive">
+                        Inactive (Frozen)
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium text-slate-300">
+                    Member Dues Requirement
+                  </Label>
+                  <Select
+                    value={addDuesStatus}
+                    onValueChange={(val: "Active" | "Inactive") =>
+                      setAddDuesStatus(val)
+                    }
+                  >
+                    <SelectTrigger className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-900 border-slate-700 text-slate-100 text-xs">
+                      <SelectItem value="Active">
+                        Active (Requires Paid Dues)
+                      </SelectItem>
+                      <SelectItem value="Inactive">
+                        Inactive (Exempt / Open)
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Budget Categories Manager */}
+              <div className="space-y-2">
+                <Label className="text-xs font-medium text-slate-300">
+                  Initial Budget Categories ({addCategories.length})
+                </Label>
+                <div className="flex flex-wrap gap-1.5 p-2.5 bg-slate-900/80 border border-slate-800 rounded-lg min-h-[44px]">
+                  {addCategories.map((cat) => (
+                    <span
+                      key={cat}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-sky-500/15 text-sky-300 border border-sky-500/30 text-xs"
+                    >
+                      <span>{cat}</span>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setAddCategories((prev) =>
+                            prev.filter((c) => c !== cat),
+                          )
+                        }
+                        className="text-sky-400 hover:text-red-400 p-0.5"
+                        title={`Remove ${cat}`}
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Input
+                    value={newAddCategoryText}
+                    onChange={(e) => setNewAddCategoryText(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        const trimmed = newAddCategoryText.trim();
+                        if (trimmed && !addCategories.includes(trimmed)) {
+                          setAddCategories((prev) => [...prev, trimmed]);
+                          setNewAddCategoryText("");
+                        }
+                      }
+                    }}
+                    placeholder="Add category (e.g. Microcontrollers, Travel)..."
+                    className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-8"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const trimmed = newAddCategoryText.trim();
+                      if (trimmed && !addCategories.includes(trimmed)) {
+                        setAddCategories((prev) => [...prev, trimmed]);
+                        setNewAddCategoryText("");
+                      }
+                    }}
+                    disabled={!newAddCategoryText.trim()}
+                    className="h-8 bg-slate-900 border-slate-700 text-sky-400 hover:text-white"
+                  >
+                    <Plus className="w-3.5 h-3.5 mr-1" />
+                    <span>Add</span>
+                  </Button>
+                </div>
+              </div>
+
+              {/* Notes */}
+              <div className="space-y-1.5">
+                <Label
+                  htmlFor="add-notes"
+                  className="text-xs font-medium text-slate-300"
+                >
+                  Initial Allocation Notes
+                </Label>
+                <Textarea
+                  id="add-notes"
+                  value={addNotes}
+                  onChange={(e) => setAddNotes(e.target.value)}
+                  placeholder="Charter notes, lab workspace details, faculty advisor..."
+                  className="bg-slate-900 border-slate-700 text-slate-100 text-xs min-h-[60px]"
+                />
+              </div>
+
+              <DialogFooter className="pt-3 border-t border-slate-800 flex items-center justify-between sm:justify-between">
+                <span className="text-[11px] text-slate-500">
+                  New committee will be immediately available across BoilerBooks.
+                </span>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsAddCommitteeModalOpen(false)}
+                    className="bg-slate-900 border-slate-700 text-slate-300"
+                    disabled={isSubmittingAddCommittee}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    size="sm"
+                    disabled={isSubmittingAddCommittee || !addName.trim()}
+                    className="bg-sky-600 hover:bg-sky-500 text-white font-medium flex items-center gap-1.5"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>
+                      {isSubmittingAddCommittee
+                        ? "Creating..."
+                        : "Create Committee"}
+                    </span>
                   </Button>
                 </div>
               </DialogFooter>

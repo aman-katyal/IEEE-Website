@@ -8,6 +8,9 @@ import {
   recordCommitteeFundingInflow,
   recordBudgetAdjustmentAudit,
   getBudgetAuditHistory,
+  updateCommitteeParameters,
+  createCommittee,
+  deleteCommittee,
 } from './spending';
 
 describe('BoilerBooks Treasurer Master Spending Matrix', () => {
@@ -306,6 +309,115 @@ describe('BoilerBooks Treasurer Master Spending Matrix', () => {
       expect(history.length).toBe(1);
       expect(history[0].adjustedBy).toBe('treasurer@purdueieee.org');
       expect(history[0].reason).toBe('Fall Callout Equipment Grants Expansion');
+    });
+  });
+
+  describe('Committee Lifecycle CRUD (Create, Update Name/Parameters, Delete)', () => {
+    it('creates a new committee with initial budget, PIN hash, categories, and audit log', async () => {
+      const result = await createCommittee(db, {
+        id: 'assistive-tech',
+        name: 'Assistive Tech & Bionics',
+        allocatedAmount: 3500.0,
+        contactEmail: 'assistive-tech@purdueieee.org',
+        bankStatus: 'Active',
+        duesStatus: 'Active',
+        categories: ['Motors & Actuators', 'Sensors & MCU', 'Travel'],
+        notes: 'Initial charter grant',
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.committee.id).toBe('assistive-tech');
+      expect(result.committee.name).toBe('Assistive Tech & Bionics');
+      expect(result.committee.allocated).toBe(3500.0);
+
+      // Verify committee in database
+      const row = db
+        .prepare('SELECT id, name, bank_status, dues_status, contact_email FROM finance_committees WHERE id = ?')
+        .get('assistive-tech') as any;
+      expect(row).toBeDefined();
+      expect(row.name).toBe('Assistive Tech & Bionics');
+      expect(row.bank_status).toBe('Active');
+
+      // Verify budget in database
+      const budget = db
+        .prepare('SELECT allocated_amount FROM committee_budgets WHERE committee_id = ?')
+        .get('assistive-tech') as any;
+      expect(budget).toBeDefined();
+      expect(budget.allocated_amount).toBe(3500.0);
+
+      // Verify categories
+      const categories = db
+        .prepare('SELECT name FROM budget_categories WHERE committee_id = ?')
+        .all('assistive-tech') as any[];
+      expect(categories.length).toBe(3);
+      expect(categories.map((c) => c.name)).toContain('Motors & Actuators');
+
+      // Verify in calculateCommitteeSpending
+      const summary = await calculateCommitteeSpending(db, 'fy25-26');
+      const found = summary.committees.find((c) => c.committeeId === 'assistive-tech');
+      expect(found).toBeDefined();
+      expect(found?.committeeName).toBe('Assistive Tech & Bionics');
+      expect(found?.allocatedAmount).toBe(3500.0);
+    });
+
+    it('updates committee name, budget allocation, and parameters', async () => {
+      const updateResult = await updateCommitteeParameters(db, 'fy25-26', 'rov', {
+        name: 'Remotely Operated Vehicles (Marine & Sub)',
+        allocatedAmount: 7000.0,
+        bankStatus: 'Read-Only',
+        duesStatus: 'Active',
+        contactEmail: 'rov-leads@purdueieee.org',
+        categories: ['New Hull', 'Telemetry'],
+      });
+
+      expect(updateResult.success).toBe(true);
+
+      const comm = db
+        .prepare('SELECT name, bank_status, contact_email FROM finance_committees WHERE id = ?')
+        .get('rov') as any;
+      expect(comm.name).toBe('Remotely Operated Vehicles (Marine & Sub)');
+      expect(comm.bank_status).toBe('Read-Only');
+      expect(comm.contactEmail || comm.contact_email).toBe('rov-leads@purdueieee.org');
+
+      const budget = db
+        .prepare('SELECT allocated_amount FROM committee_budgets WHERE committee_id = ? AND fiscal_year_id = ?')
+        .get('rov', 'fy25-26') as any;
+      expect(budget.allocated_amount).toBe(7000.0);
+
+      const categories = db
+        .prepare('SELECT name FROM budget_categories WHERE committee_id = ?')
+        .all('rov') as any[];
+      expect(categories.length).toBe(2);
+      expect(categories.map((c) => c.name)).toEqual(['New Hull', 'Telemetry']);
+    });
+
+    it('deletes a committee and cleans up dependent budget, category, and purchase records', async () => {
+      // First verify 'cs' committee exists
+      const beforeRow = db
+        .prepare('SELECT id FROM finance_committees WHERE id = ?')
+        .get('cs');
+      expect(beforeRow).toBeDefined();
+
+      const deleteResult = await deleteCommittee(db, 'cs', 'fy25-26');
+      expect(deleteResult.success).toBe(true);
+
+      // Verify deletion from finance_committees
+      const afterRow = db
+        .prepare('SELECT id FROM finance_committees WHERE id = ?')
+        .get('cs');
+      expect(afterRow).toBeUndefined();
+
+      // Verify deletion from committee_budgets
+      const afterBudget = db
+        .prepare('SELECT id FROM committee_budgets WHERE committee_id = ?')
+        .get('cs');
+      expect(afterBudget).toBeUndefined();
+
+      // Verify deletion from budget_categories
+      const afterCats = db
+        .prepare('SELECT id FROM budget_categories WHERE committee_id = ?')
+        .all('cs');
+      expect(afterCats.length).toBe(0);
     });
   });
 });

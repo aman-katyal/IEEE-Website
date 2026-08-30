@@ -7,6 +7,7 @@ import { queryAll, queryFirst, roundCurrency, type D1DatabaseLike } from '../db/
 import { toD1Database } from '../db/adapter';
 import { recordAuditEntry } from '../db/audit';
 import type { CommitteeId } from '../db/types';
+import { hashPin } from '../auth/crypto';
 
 export interface CommitteeSpendingRow {
   committeeId: CommitteeId;
@@ -356,6 +357,7 @@ export async function calculateCategoryBreakdown(
 }
 
 export interface UpdateCommitteeParametersPayload {
+  name?: string;
   allocatedAmount?: number;
   notes?: string | null;
   bankStatus?: 'Active' | 'Inactive' | 'Read-Only';
@@ -365,7 +367,7 @@ export interface UpdateCommitteeParametersPayload {
 }
 
 /**
- * Updates committee budget allocation and organizational settings (bank status, dues status, contact email, categories).
+ * Updates committee budget allocation and organizational settings (name, bank status, dues status, contact email, categories).
  * Restricted to Branch Treasurer role.
  */
 export async function updateCommitteeParameters(
@@ -426,14 +428,40 @@ export async function updateCommitteeParameters(
     }
   }
 
-  // 2. Update committee operational parameters
+  // 2. Update committee operational parameters (name, bank status, dues status, contact email)
   if (
+    payload.name !== undefined ||
     payload.bankStatus !== undefined ||
     payload.duesStatus !== undefined ||
     payload.contactEmail !== undefined
   ) {
     const updates: string[] = [];
     const params: unknown[] = [];
+
+    if (payload.name !== undefined && payload.name.trim().length > 0) {
+      const currentComm = await queryFirst<{ name: string }>(
+        db,
+        'SELECT name FROM finance_committees WHERE id = ?',
+        [committeeId]
+      );
+      const newName = payload.name.trim();
+      if (currentComm && currentComm.name !== newName) {
+        updates.push('name = ?');
+        params.push(newName);
+
+        await recordAuditEntry(db, {
+          fiscalYearId,
+          committeeId,
+          actionType: 'BUDGET_ALLOCATION',
+          actorRole: 'TREASURER',
+          actorName: 'Executive Treasurer',
+          actorEmail: 'treasurer@purdueieee.org',
+          description: `Committee name updated from "${currentComm.name}" to "${newName}"`,
+          previousValue: currentComm.name,
+          newValue: newName,
+        });
+      }
+    }
 
     if (payload.bankStatus !== undefined) {
       updates.push('bank_status = ?');
@@ -480,6 +508,170 @@ export async function updateCommitteeParameters(
   return {
     success: true,
     message: `Updated parameters for committee "${committeeId}" successfully.`,
+  };
+}
+
+export interface CreateCommitteePayload {
+  id?: string;
+  name: string;
+  allocatedAmount?: number;
+  notes?: string | null;
+  bankStatus?: 'Active' | 'Inactive' | 'Read-Only';
+  duesStatus?: 'Active' | 'Inactive';
+  contactEmail?: string | null;
+  categories?: string[];
+  passcode?: string;
+  fiscalYearId?: string;
+}
+
+/**
+ * Creates a new committee with initial budget allocation, categories, and credentials.
+ * Restricted to Branch Treasurer role.
+ */
+export async function createCommittee(
+  db: D1DatabaseLike,
+  payload: CreateCommitteePayload
+): Promise<{
+  success: boolean;
+  committee: {
+    id: string;
+    name: string;
+    allocated: number;
+    bankStatus: 'Active' | 'Inactive' | 'Read-Only';
+    duesStatus: 'Active' | 'Inactive';
+    contactEmail: string;
+    categories: string[];
+    notes: string;
+  };
+  message: string;
+}> {
+  if (!payload.name || payload.name.trim().length === 0) {
+    throw new Error('Committee name is required.');
+  }
+
+  const d1 = toD1Database(db);
+  const name = payload.name.trim();
+  const rawId = (payload.id && payload.id.trim()) || name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+  const committeeId = rawId || `comm-${Date.now()}`;
+  const fiscalYearId = payload.fiscalYearId || 'fy25-26';
+  const allocatedAmount = roundCurrency(Number(payload.allocatedAmount) || 0);
+  const bankStatus = payload.bankStatus || 'Active';
+  const duesStatus = payload.duesStatus || 'Active';
+  const contactEmail = payload.contactEmail?.trim() || `${committeeId}@purdueieee.org`;
+  const passcode = payload.passcode?.trim() || '1903';
+  const passcodeHash = await hashPin(passcode);
+  const categories = payload.categories && payload.categories.length > 0 ? payload.categories : ['General', 'Hardware'];
+  const notes = payload.notes?.trim() || '';
+
+  // Check if committee ID already exists
+  const existing = await queryFirst<{ id: string }>(db, 'SELECT id FROM finance_committees WHERE id = ?', [committeeId]);
+  if (existing) {
+    throw new Error(`Committee with ID "${committeeId}" already exists.`);
+  }
+
+  // 1. Insert into finance_committees
+  await d1
+    .prepare(
+      `INSERT INTO finance_committees (id, name, passcode_hash, is_admin, bank_status, dues_status, contact_email)
+       VALUES (?, ?, ?, 0, ?, ?, ?)`
+    )
+    .bind(committeeId, name, passcodeHash, bankStatus, duesStatus, contactEmail)
+    .run();
+
+  // 2. Insert budget
+  const budgetId = `cb-${committeeId}-${fiscalYearId}`;
+  await d1
+    .prepare(
+      `INSERT INTO committee_budgets (id, fiscal_year_id, committee_id, allocated_amount, notes)
+       VALUES (?, ?, ?, ?, ?)`
+    )
+    .bind(budgetId, fiscalYearId, committeeId, allocatedAmount, notes || null)
+    .run();
+
+  // 3. Insert categories
+  for (const cat of categories) {
+    if (cat.trim().length > 0) {
+      const catId = `cat-${committeeId}-${cat.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
+      await d1
+        .prepare('INSERT INTO budget_categories (id, committee_id, name) VALUES (?, ?, ?)')
+        .bind(catId, committeeId, cat.trim())
+        .run();
+    }
+  }
+
+  // 4. Audit Log
+  await recordAuditEntry(db, {
+    fiscalYearId,
+    committeeId,
+    actionType: 'BUDGET_ALLOCATION',
+    actorRole: 'TREASURER',
+    actorName: 'Executive Treasurer',
+    actorEmail: 'treasurer@purdueieee.org',
+    description: `Created new technical committee "${name}" (${committeeId}) with initial budget of $${allocatedAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
+    previousValue: null,
+    newValue: String(allocatedAmount),
+    amountDelta: allocatedAmount,
+  });
+
+  return {
+    success: true,
+    committee: {
+      id: committeeId,
+      name,
+      allocated: allocatedAmount,
+      bankStatus,
+      duesStatus,
+      contactEmail,
+      categories,
+      notes,
+    },
+    message: `Created committee "${name}" successfully.`,
+  };
+}
+
+/**
+ * Deletes a committee and cleans up its associated budgets, categories, and data.
+ * Restricted to Branch Treasurer role.
+ */
+export async function deleteCommittee(
+  db: D1DatabaseLike,
+  committeeId: string,
+  fiscalYearId: string = 'fy25-26'
+): Promise<{ success: boolean; message: string }> {
+  const existing = await queryFirst<{ id: string; name: string }>(
+    db,
+    'SELECT id, name FROM finance_committees WHERE id = ?',
+    [committeeId]
+  );
+  if (!existing) {
+    throw new Error(`Committee "${committeeId}" does not exist.`);
+  }
+
+  const d1 = toD1Database(db);
+
+  // Clean up child tables
+  await d1.prepare('DELETE FROM purchase_requests WHERE committee_id = ?').bind(committeeId).run();
+  await d1.prepare('DELETE FROM committee_funding_inflows WHERE committee_id = ?').bind(committeeId).run();
+  await d1.prepare('DELETE FROM budget_categories WHERE committee_id = ?').bind(committeeId).run();
+  await d1.prepare('DELETE FROM committee_budgets WHERE committee_id = ?').bind(committeeId).run();
+  await d1.prepare('DELETE FROM budget_audit_logs WHERE committee_id = ?').bind(committeeId).run();
+  await d1.prepare('DELETE FROM finance_committees WHERE id = ?').bind(committeeId).run();
+
+  await recordAuditEntry(db, {
+    fiscalYearId,
+    committeeId,
+    actionType: 'BUDGET_ALLOCATION',
+    actorRole: 'TREASURER',
+    actorName: 'Executive Treasurer',
+    actorEmail: 'treasurer@purdueieee.org',
+    description: `Deleted committee "${existing.name}" (${committeeId}) and all associated budgets`,
+    previousValue: existing.name,
+    newValue: null,
+  });
+
+  return {
+    success: true,
+    message: `Committee "${existing.name}" deleted successfully.`,
   };
 }
 

@@ -22,6 +22,8 @@ export function FinancePortalPage() {
     recordCashDues,
     importMemberDues,
     updateCommittee,
+    createCommittee,
+    deleteCommittee,
     addFundingInflow,
     deleteFundingInflow,
   } = useFinanceApi();
@@ -129,6 +131,8 @@ export function FinancePortalPage() {
             onRecordCashDues={recordCashDues}
             onImportMemberDues={importMemberDues}
             onUpdateCommittee={updateCommittee}
+            onCreateCommittee={createCommittee}
+            onDeleteCommittee={deleteCommittee}
             onAddFundingInflow={addFundingInflow}
             onDeleteFundingInflow={deleteFundingInflow}
             onLogout={handleLogout}

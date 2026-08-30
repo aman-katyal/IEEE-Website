@@ -18,6 +18,8 @@ import {
   calculateCommitteeSpending,
   calculateCategoryBreakdown,
   updateCommitteeParameters,
+  createCommittee,
+  deleteCommittee,
   recordCommitteeFundingInflow,
 } from '../../../src/server/matrix/spending';
 import { importMemberDues, searchMemberDues, getMemberDuesSummary, recordCashPayment } from '../../../src/server/dues/service';
@@ -346,9 +348,24 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
     }
 
     // -------------------------------------------------------------
-    // 5. Committee Parameters: PATCH /api/finance/committees/:id/parameters (TREASURER only)
+    // 5. Committees: /api/finance/committees (TREASURER only for mutations)
     // -------------------------------------------------------------
-    if (pathParts[0] === 'committees' && pathParts.length === 3 && pathParts[2] === 'parameters' && request.method === 'PATCH') {
+    if (route === 'committees') {
+      if (request.method === 'POST') {
+        const authResult = await requireAuth(request, env, ['TREASURER']);
+        if (isResponse(authResult)) return authResult;
+
+        const body = await request.json();
+        const result = await createCommittee(db, body as any);
+        return jsonResponse(result, 201, request);
+      }
+    }
+
+    // Committee Parameter / Name Update: PATCH /api/finance/committees/:id/parameters or PATCH /api/finance/committees/:id
+    if (
+      (pathParts[0] === 'committees' && pathParts.length === 3 && pathParts[2] === 'parameters' && request.method === 'PATCH') ||
+      (pathParts[0] === 'committees' && pathParts.length === 2 && request.method === 'PATCH')
+    ) {
       const authResult = await requireAuth(request, env, ['TREASURER']);
       if (isResponse(authResult)) return authResult;
 
@@ -356,6 +373,17 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
       const body = await request.json();
       const fiscalYearId = url.searchParams.get('fiscalYearId') || 'fy25-26';
       const result = await updateCommitteeParameters(db, fiscalYearId, committeeId, body as any);
+      return jsonResponse(result, 200, request);
+    }
+
+    // Delete Committee: DELETE /api/finance/committees/:id (TREASURER only)
+    if (pathParts[0] === 'committees' && pathParts.length === 2 && request.method === 'DELETE') {
+      const authResult = await requireAuth(request, env, ['TREASURER']);
+      if (isResponse(authResult)) return authResult;
+
+      const committeeId = pathParts[1];
+      const fiscalYearId = url.searchParams.get('fiscalYearId') || 'fy25-26';
+      const result = await deleteCommittee(db, committeeId, fiscalYearId);
       return jsonResponse(result, 200, request);
     }
 

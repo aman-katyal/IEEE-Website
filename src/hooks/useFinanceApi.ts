@@ -519,10 +519,12 @@ export function useFinanceApi() {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify({
+          name: updated.name,
           allocatedAmount: updated.allocated,
           bankStatus: updated.bankStatus,
           duesStatus: updated.duesStatus,
           contactEmail: updated.contactEmail,
+          notes: updated.notes,
           categories: updated.categories,
         }),
       });
@@ -530,6 +532,89 @@ export function useFinanceApi() {
       if (!res.ok && res.status >= 400 && res.status !== 404) {
         setCommittees(prevCommittees);
         const err = `Failed to update committee parameters (HTTP ${res.status})`;
+        setError(err);
+        return { success: false, error: err };
+      }
+      return { success: true };
+    } catch {
+      return { success: true };
+    }
+  };
+
+  // Create New Committee with rollback
+  const createCommittee = async (newCommittee: {
+    id?: string;
+    name: string;
+    shortName?: string;
+    allocated?: number;
+    bankStatus?: 'Active' | 'Inactive' | 'Read-Only';
+    duesStatus?: 'Active' | 'Inactive';
+    contactEmail?: string;
+    categories?: string[];
+    notes?: string;
+    passcode?: string;
+  }): Promise<{ success: boolean; committee?: CommitteeInfo; error?: string }> => {
+    const slug = (newCommittee.id && newCommittee.id.trim()) || newCommittee.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') || `comm-${Date.now()}`;
+    const committeeObj: CommitteeInfo = {
+      id: slug,
+      name: newCommittee.name.trim(),
+      shortName: newCommittee.shortName?.trim() || newCommittee.name.trim(),
+      allocated: newCommittee.allocated ?? 0,
+      bankStatus: newCommittee.bankStatus ?? 'Active',
+      duesStatus: newCommittee.duesStatus ?? 'Active',
+      contactEmail: newCommittee.contactEmail?.trim() || `${slug}@purdueieee.org`,
+      categories: newCommittee.categories && newCommittee.categories.length > 0 ? newCommittee.categories : ['General', 'Hardware'],
+      notes: newCommittee.notes || '',
+    };
+
+    const prevCommittees = committees;
+    setCommittees((prev) => [...prev, committeeObj]);
+
+    try {
+      const res = await fetch(`${API_BASE}/committees`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+        body: JSON.stringify({
+          id: committeeObj.id,
+          name: committeeObj.name,
+          allocatedAmount: committeeObj.allocated,
+          bankStatus: committeeObj.bankStatus,
+          duesStatus: committeeObj.duesStatus,
+          contactEmail: committeeObj.contactEmail,
+          categories: committeeObj.categories,
+          notes: committeeObj.notes,
+          passcode: newCommittee.passcode,
+        }),
+      });
+
+      if (!res.ok && res.status >= 400 && res.status !== 404) {
+        setCommittees(prevCommittees);
+        const errorData = await res.json().catch(() => ({}));
+        const err = errorData.error || `Failed to create committee (HTTP ${res.status})`;
+        setError(err);
+        return { success: false, error: err };
+      }
+      return { success: true, committee: committeeObj };
+    } catch {
+      return { success: true, committee: committeeObj };
+    }
+  };
+
+  // Delete Committee with rollback
+  const deleteCommittee = async (committeeId: string): Promise<{ success: boolean; error?: string }> => {
+    const prevCommittees = committees;
+    setCommittees((prev) => prev.filter((c) => c.id !== committeeId));
+
+    try {
+      const res = await fetch(`${API_BASE}/committees/${committeeId}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+      });
+
+      if (!res.ok && res.status >= 400 && res.status !== 404) {
+        setCommittees(prevCommittees);
+        const errorData = await res.json().catch(() => ({}));
+        const err = errorData.error || `Failed to delete committee (HTTP ${res.status})`;
         setError(err);
         return { success: false, error: err };
       }
@@ -672,6 +757,8 @@ export function useFinanceApi() {
     recordCashDues,
     importMemberDues,
     updateCommittee,
+    createCommittee,
+    deleteCommittee,
     addFundingInflow,
     deleteFundingInflow,
     uploadReceipt,
