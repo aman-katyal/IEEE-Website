@@ -63,6 +63,7 @@ import {
 } from "./financeData";
 import { ReceiptPreviewModal } from "./ReceiptPreviewModal";
 import { BankingAuditLedgerView } from "./BankingAuditLedgerView";
+import { calculateSpendingVelocity } from "@/lib/budgetUtils";
 
 export interface CommitteeFinanceViewProps {
   session: AuthSessionData;
@@ -147,7 +148,20 @@ export function CommitteeFinanceView({
         ? Math.min(Math.round((approved / totalEffectiveBudget) * 100), 100)
         : 0;
 
+    const velocity = calculateSpendingVelocity(
+      committeePurchases
+        .filter(
+          (p) =>
+            p.status === "APPROVED" ||
+            p.status === "PURCHASED" ||
+            p.status === "REIMBURSED",
+        )
+        .map((p) => ({ date: p.submittedAt, amount: p.totalAmount })),
+      totalEffectiveBudget,
+    );
+
     return {
+      velocity,
       baseAllocated,
       totalInflows,
       totalEffectiveBudget,
@@ -462,6 +476,32 @@ export function CommitteeFinanceView({
 
       {/* Spending Gauge & Budget Metric Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {/* Runway */}
+        <Card className="bg-[#121214] border-slate-800 p-5 relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-mono uppercase tracking-wider text-slate-400">
+              Runway Projection
+            </span>
+            <TrendingUp className="w-4 h-4 text-[#EBD3A9]" />
+          </div>
+          <div className="text-2xl font-bold text-white mt-2 font-mono">
+            {stats.velocity.runwayWeeks} weeks
+          </div>
+          <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
+            <span
+              className={
+                stats.velocity.status === "On Track"
+                  ? "text-emerald-400"
+                  : "text-red-400"
+              }
+            >
+              {stats.velocity.status}
+            </span>
+            <span className="text-slate-500">·</span>
+            <span>${stats.velocity.projectedEndBalance} proj.</span>
+          </p>
+        </Card>
+
         {/* Total Effective Budget */}
         <Card className="bg-[#121214] border-slate-800 p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
