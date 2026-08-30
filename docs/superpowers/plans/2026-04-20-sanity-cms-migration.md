@@ -14,7 +14,7 @@
 
 **Files:**
 - Modify: `scripts/migrate-to-sanity.cjs` (to ensure it uses environment variables if available)
-- Verify: `.env` (ensure VITE_SANITY_API_TOKEN is present)
+- Verify: `.env` (ensure SANITY_API_TOKEN is present)
 
 - [x] **Step 1: Check for .env variables**
 Run: `powershell "Select-String -Path .env -Pattern 'SANITY_API_TOKEN'"`
