@@ -67,6 +67,26 @@ const queryClient = new QueryClient({
   },
 });
 
+import { Navigate, useLocation } from "react-router";
+import { getLegacyRedirectTarget } from "./lib/legacyRedirects";
+
+function CatchAllRoute() {
+  const location = useLocation();
+  const target = getLegacyRedirectTarget(location.pathname);
+
+  if (target) {
+    return <Navigate to={target} replace />;
+  }
+
+  return (
+    <PageTransition>
+      <Suspense fallback={<PageSkeleton />}>
+        <NotFoundPage />
+      </Suspense>
+    </PageTransition>
+  );
+}
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -90,7 +110,52 @@ const router = createBrowserRouter([
           { path: "/terms", element: <PageTransition><Suspense fallback={<PageSkeleton />}><TermsPage /></Suspense></PageTransition> },
           { path: "/accessibility", element: <PageTransition><Suspense fallback={<PageSkeleton />}><AccessibilityPage /></Suspense></PageTransition> },
           { path: "/finance", element: <PageTransition><Suspense fallback={<PageSkeleton />}><FinancePortalPage /></Suspense></PageTransition> },
-          { path: "*", element: <PageTransition><Suspense fallback={<PageSkeleton />}><NotFoundPage /></Suspense></PageTransition> },
+
+          // Legacy Committee Direct Aliases (WordPress & Google Index backward compatibility)
+          { path: "/rov", element: <Navigate to="/committee/rov" replace /> },
+          { path: "/racing", element: <Navigate to="/committee/racing" replace /> },
+          { path: "/aerial", element: <Navigate to="/committee/aerial-robotics" replace /> },
+          { path: "/part", element: <Navigate to="/committee/aerial-robotics" replace /> },
+          { path: "/aesc", element: <Navigate to="/committee/aerial-robotics" replace /> },
+          { path: "/aess", element: <Navigate to="/committee/aerial-robotics" replace /> },
+          { path: "/aerial-robotics", element: <Navigate to="/committee/aerial-robotics" replace /> },
+          { path: "/cs", element: <Navigate to="/committee/computer-society" replace /> },
+          { path: "/csociety", element: <Navigate to="/committee/computer-society" replace /> },
+          { path: "/computer-society", element: <Navigate to="/committee/computer-society" replace /> },
+          { path: "/embs", element: <Navigate to="/committee/embs" replace /> },
+          { path: "/mtts", element: <Navigate to="/committee/mtts" replace /> },
+          { path: "/mtt-s", element: <Navigate to="/committee/mtts" replace /> },
+          { path: "/eds", element: <Navigate to="/committee/eds" replace /> },
+          { path: "/smc", element: <Navigate to="/committee/smc" replace /> },
+          { path: "/software-saturdays", element: <Navigate to="/committee/software-saturdays" replace /> },
+          { path: "/social", element: <Navigate to="/committee/social" replace /> },
+          { path: "/growth", element: <Navigate to="/committee/growth" replace /> },
+          { path: "/learning", element: <Navigate to="/committee/learning" replace /> },
+          { path: "/workspace", element: <Navigate to="/committee/workspace" replace /> },
+          { path: "/infrastructure", element: <Navigate to="/committee/workspace" replace /> },
+          { path: "/general", element: <Navigate to="/committee/general" replace /> },
+          { path: "/hardware", element: <Navigate to="/committee/hardware" replace /> },
+          { path: "/assistive-tech", element: <Navigate to="/committee/assistive-tech" replace /> },
+
+          // Legacy Top-Level Page Aliases
+          { path: "/sponsors", element: <Navigate to="/partners" replace /> },
+          { path: "/sponsorship", element: <Navigate to="/partners" replace /> },
+          { path: "/sponsor", element: <Navigate to="/partners" replace /> },
+          { path: "/bylaws", element: <Navigate to="/constitution" replace /> },
+          { path: "/by-laws", element: <Navigate to="/constitution" replace /> },
+          { path: "/dues", element: <Navigate to="/join" replace /> },
+          { path: "/membership", element: <Navigate to="/join" replace /> },
+          { path: "/history", element: <Navigate to="/about" replace /> },
+          { path: "/archive", element: <Navigate to="/about" replace /> },
+          { path: "/archives", element: <Navigate to="/about" replace /> },
+          { path: "/events", element: <Navigate to="/calendar" replace /> },
+          { path: "/leadership", element: <Navigate to="/officers" replace /> },
+          { path: "/exec", element: <Navigate to="/officers" replace /> },
+          { path: "/executive", element: <Navigate to="/officers" replace /> },
+          { path: "/boso", element: <Navigate to="/finance" replace /> },
+
+          // Smart Catch-all Route (handles legacy subpaths like /rov/team, /cs/index.php, and true 404s)
+          { path: "*", element: <CatchAllRoute /> },
         ]
       }
     ]
