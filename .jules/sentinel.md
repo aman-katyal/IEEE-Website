@@ -21,3 +21,7 @@
 **Vulnerability:** XSS vulnerability in Breadcrumbs component due to unsanitized JSON string injection via `dangerouslySetInnerHTML`.
 **Learning:** When injecting serialized JSON into a `<script>` tag, HTML-sensitive characters must be escaped.
 **Prevention:** Always sanitize JSON injected into HTML contexts by replacing `<`, `>`, and `&` with their unicode escapes.
+## 2026-08-31 - [HIGH] Hardcoded security token and unsafe CSP
+**Vulnerability:** Sanity API Token was using VITE_ prefix leaking it into browser bundles.
+**Learning:** VITE_ prefixes automatically embed environment variables in the frontend JS bundle regardless of usage in vite config.
+**Prevention:** Avoid VITE_ prefix on secrets.
