@@ -62,6 +62,13 @@ export default {
     }
 
     // 3. Fallback to static assets
-    return env.ASSETS.fetch(request);
+    try {
+      return await env.ASSETS.fetch(request);
+    } catch (err: any) {
+      return new Response(`Worker ASSETS Fetch Error: ${err?.message || err}\nStack: ${err?.stack || ''}`, {
+        status: 500,
+        headers: { 'Content-Type': 'text/plain' },
+      });
+    }
   },
 };
