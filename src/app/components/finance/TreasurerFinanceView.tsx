@@ -122,8 +122,14 @@ export interface TreasurerFinanceViewProps {
     categories?: string[];
     notes?: string;
     passcode?: string;
-  }) => Promise<{ success: boolean; committee?: CommitteeInfo; error?: string }> | void;
-  onDeleteCommittee?: (committeeId: string) => Promise<{ success: boolean; error?: string }> | void;
+  }) => Promise<{
+    success: boolean;
+    committee?: CommitteeInfo;
+    error?: string;
+  }> | void;
+  onDeleteCommittee?: (
+    committeeId: string,
+  ) => Promise<{ success: boolean; error?: string }> | void;
   onAddFundingInflow: (newInflow: CommitteeFundingInflow) => void;
   onDeleteFundingInflow?: (id: string) => void;
   onLogout?: () => void;
@@ -207,18 +213,23 @@ export function TreasurerFinanceView({
 
   // Branch-Wide Totals
   const branchTotals = useMemo(() => {
-    const totalAllocated = matrixData.reduce(
-      (sum, c) => sum + c.baseAllocated,
-      0,
-    );
+    // ⚡ Bolt: Replace 4 passes over matrixData with a single pass for O(N) instead of O(4N)
+    let totalAllocated = 0;
+    let totalSpent = 0;
+    let totalPending = 0;
+    let totalRemaining = 0;
+    for (const c of matrixData) {
+      totalAllocated += c.baseAllocated;
+      totalSpent += c.approved;
+      totalPending += c.pending;
+      totalRemaining += c.remaining;
+    }
+
     const totalInflows = (fundingInflows || []).reduce(
       (sum, inf) => sum + inf.amount,
       0,
     );
     const totalBranchBudget = totalAllocated + totalInflows;
-    const totalSpent = matrixData.reduce((sum, c) => sum + c.approved, 0);
-    const totalPending = matrixData.reduce((sum, c) => sum + c.pending, 0);
-    const totalRemaining = matrixData.reduce((sum, c) => sum + c.remaining, 0);
     const totalRequests = purchases.length;
     const branchPercentSpent =
       totalBranchBudget > 0
@@ -366,13 +377,13 @@ export function TreasurerFinanceView({
     if (!addName.trim()) return;
     const parsedAllocated = parseFloat(addAllocated) || 0;
     const derivedId =
-      (addId.trim() ||
-        addName
-          .trim()
-          .toLowerCase()
-          .replace(/[^a-z0-9]/g, "-")
-          .replace(/-+/g, "-")
-          .replace(/^-|-$/g, "")) ||
+      addId.trim() ||
+      addName
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-|-$/g, "") ||
       `comm-${Date.now()}`;
 
     setIsSubmittingAddCommittee(true);
@@ -384,8 +395,7 @@ export function TreasurerFinanceView({
           allocated: parsedAllocated,
           bankStatus: addBankStatus,
           duesStatus: addDuesStatus,
-          contactEmail:
-            addContactEmail.trim() || `${derivedId}@purdueieee.org`,
+          contactEmail: addContactEmail.trim() || `${derivedId}@purdueieee.org`,
           categories: addCategories,
           notes: addNotes.trim(),
           passcode: addPasscode.trim() || undefined,
@@ -2152,8 +2162,8 @@ export function TreasurerFinanceView({
                 <span>Edit Parameters · {editingCommittee.name}</span>
               </DialogTitle>
               <DialogDescription className="text-xs text-slate-400">
-                Update committee name, allocated budget capital, operational bank status, member
-                dues policy, and spending categories.
+                Update committee name, allocated budget capital, operational
+                bank status, member dues policy, and spending categories.
               </DialogDescription>
             </DialogHeader>
 
@@ -2395,7 +2405,15 @@ export function TreasurerFinanceView({
                 <span>Delete Committee: {deletingCommittee.name}?</span>
               </DialogTitle>
               <DialogDescription className="text-xs text-slate-300 pt-2 leading-relaxed">
-                Are you sure you want to delete <strong className="text-white">{deletingCommittee.name}</strong> (<span className="font-mono text-sky-400">{deletingCommittee.id}</span>)? This will permanently remove its budget allocations, subcategories, and associated financial records from the database.
+                Are you sure you want to delete{" "}
+                <strong className="text-white">{deletingCommittee.name}</strong>{" "}
+                (
+                <span className="font-mono text-sky-400">
+                  {deletingCommittee.id}
+                </span>
+                )? This will permanently remove its budget allocations,
+                subcategories, and associated financial records from the
+                database.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter className="pt-4 border-t border-slate-800 flex items-center justify-end gap-2">
@@ -2437,7 +2455,8 @@ export function TreasurerFinanceView({
                 <span>Create New Technical Committee</span>
               </DialogTitle>
               <DialogDescription className="text-xs text-slate-400">
-                Add a new technical committee to Purdue IEEE BoilerBooks 3.0 with initial budget allocation and credentials.
+                Add a new technical committee to Purdue IEEE BoilerBooks 3.0
+                with initial budget allocation and credentials.
               </DialogDescription>
             </DialogHeader>
 
@@ -2693,7 +2712,8 @@ export function TreasurerFinanceView({
 
               <DialogFooter className="pt-3 border-t border-slate-800 flex items-center justify-between sm:justify-between">
                 <span className="text-[11px] text-slate-500">
-                  New committee will be immediately available across BoilerBooks.
+                  New committee will be immediately available across
+                  BoilerBooks.
                 </span>
                 <div className="flex items-center gap-2">
                   <Button

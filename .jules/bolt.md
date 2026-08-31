@@ -33,3 +33,6 @@
 ## 2026-08-29 - Optimize Array Filter and Reduce
 **Learning:** Chaining `.filter(...).reduce(...)` multiple times over the same array to calculate distinct totals performs redundant array traversals, resulting in O(3N) operations instead of O(N). In performance-critical hooks like finance dashboards, this can cause unnecessary calculation overhead.
 **Action:** Replace multiple chained array passes over the same dataset with a single `for...of` loop or a single `.reduce()` that aggregates all the necessary variables in one O(N) pass.
+## 2025-03-01 - Replace multiple reduces with a single pass
+**Learning:** Found multiple chained array passes via `.reduce` inside useMemo computing branch totals. This creates redundant array traversal overhead (O(4N)).
+**Action:** Always replace multiple `.reduce` calls on the same array with a single `for...of` loop to traverse the array once (O(N)), avoiding unnecessary CPU cycles in hot paths.
