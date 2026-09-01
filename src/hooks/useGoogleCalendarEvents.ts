@@ -161,7 +161,7 @@ export function useGoogleCalendarEvents() {
       fetchPromise = null;
       setLoading(false);
     }
-  }, []);
+  }, [cacheKey]);
 
   useEffect(() => {
     const controller = new AbortController();
