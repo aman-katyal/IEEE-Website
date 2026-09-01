@@ -33,3 +33,6 @@
 ## 2026-08-29 - Optimize Array Filter and Reduce
 **Learning:** Chaining `.filter(...).reduce(...)` multiple times over the same array to calculate distinct totals performs redundant array traversals, resulting in O(3N) operations instead of O(N). In performance-critical hooks like finance dashboards, this can cause unnecessary calculation overhead.
 **Action:** Replace multiple chained array passes over the same dataset with a single `for...of` loop or a single `.reduce()` that aggregates all the necessary variables in one O(N) pass.
+## 2024-10-24 - Cache Intl.NumberFormat
+**Learning:** Instantiating `Intl.NumberFormat` repeatedly is a huge performance bottleneck.
+**Action:** Cache the `Intl.NumberFormat` instances globally when using standard locales and options. The cache key should correspond to variable parameters (e.g., decimals).
