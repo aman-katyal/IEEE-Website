@@ -90,3 +90,39 @@ export interface OfficeHoursData {
   notes?: string;
 }
 
+export interface JoinStep {
+  _key?: string;
+  icon?: "users" | "credit-card" | "calendar" | "check" | string;
+  title: string;
+  description: string;
+}
+
+export interface DuesOption {
+  _key?: string;
+  name: string;
+  subtitle?: string;
+  price: string;
+}
+
+export interface JoinPageData {
+  _id?: string;
+  heroEyebrow?: string;
+  heroTitle?: string;
+  heroSubtitle?: string;
+  steps?: JoinStep[];
+  connectTitle?: string;
+  connectDescription?: string;
+  discordButtonText?: string;
+  discordUrl?: string;
+  duesTitle?: string;
+  duesDescription?: string;
+  duesBenefits?: string[];
+  membershipYearTitle?: string;
+  duesOptions?: DuesOption[];
+  paymentButtonText?: string;
+  paymentUrl?: string;
+  paymentSearchNote?: string;
+  exemptionNote?: string;
+}
+
+

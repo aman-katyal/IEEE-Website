@@ -5,6 +5,7 @@ import { officersConfig } from './officersConfig'
 import { siteSettings } from './siteSettings'
 import { homePage } from './homePage'
 import { aboutPage, timelineMilestone } from './aboutPage'
+import { joinPage } from './joinPage'
 import { partner } from './partner'
 import { officeHours } from './officeHours'
 
@@ -22,6 +23,7 @@ export const schemaTypes = [
   siteSettings,
   homePage,
   aboutPage,
+  joinPage,
   partner,
   officeHours,
 

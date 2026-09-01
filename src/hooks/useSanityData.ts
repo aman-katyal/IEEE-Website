@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { client, previewClient } from '../lib/sanity';
 import groq from 'groq';
 import type { Committee, CornerstoneCommittee } from '../data/committees/types';
-import type { Leader, OfficersConfig, HomePageData, AboutPageData } from '../data/sanity-types';
+import type { Leader, OfficersConfig, HomePageData, AboutPageData, JoinPageData, DuesOption } from '../data/sanity-types';
 
 const SECTION_PROJECTION = `
   "sections": coalesce(sections[]{
@@ -169,15 +169,22 @@ export function useAboutPage() {
   return { data, loading, error };
 }
 
+export function useJoinPage() {
+  const query = groq`*[_type == "joinPage"][0]{
+    ...,
+    "steps": coalesce(steps[], []),
+    "duesBenefits": coalesce(duesBenefits[], []),
+    "duesOptions": coalesce(duesOptions[], [])
+  }`;
+  const { data, loading, error, refetch } = useSanityQuery<JoinPageData>(query);
+  return { data, loading, error, refetch };
+}
+
 export interface SiteSettings {
   discordUrl?: string;
   duesDescription?: string;
   duesBenefits?: string[];
-  duesOptions?: {
-    name: string;
-    subtitle: string;
-    price: string;
-  }[];
+  duesOptions?: DuesOption[];
   paymentUrl?: string;
   calendarUrl?: string;
   calendarId?: string;

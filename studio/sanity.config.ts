@@ -5,7 +5,7 @@ import { schemaTypes } from './schema'
 
 // Define the singleton document types
 const singletonActions = new Set(["publish", "discardChanges", "restore"])
-const singletonTypes = new Set(["officersConfig", "siteSettings", "homePage", "aboutPage"])
+const singletonTypes = new Set(["officersConfig", "siteSettings", "homePage", "aboutPage", "joinPage"])
 
 export default defineConfig({
   name: 'default',
@@ -44,6 +44,14 @@ export default defineConfig({
                 S.document()
                   .schemaType("aboutPage")
                   .documentId("aboutPage")
+              ),
+            S.listItem()
+              .title("Join Page")
+              .id("joinPage")
+              .child(
+                S.document()
+                  .schemaType("joinPage")
+                  .documentId("joinPage")
               ),
             S.listItem()
               .title("Officers Config")

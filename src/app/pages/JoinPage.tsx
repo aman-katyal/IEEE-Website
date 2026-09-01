@@ -2,23 +2,96 @@ import {
   MessageCircle,
   CreditCard,
   Users,
+  Calendar,
   CheckCircle2,
   ExternalLink,
 } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useSiteSettings } from "../../hooks/useSanityData";
+import { useJoinPage, useSiteSettings } from "../../hooks/useSanityData";
+import { usePageMeta } from "../../hooks/usePageMeta";
+import type { JoinStep } from "../../data/sanity-types";
+
+function getStepIcon(iconName?: string, index = 0) {
+  switch (iconName) {
+    case "credit-card":
+      return <CreditCard size={24} className="text-[var(--cyber-gold)]" />;
+    case "calendar":
+      return <Calendar size={24} className="text-[var(--electric-blue)]" />;
+    case "check":
+      return <CheckCircle2 size={24} className="text-[var(--electric-blue)]" />;
+    case "users":
+    default:
+      return index % 2 === 1 ? (
+        <CreditCard size={24} className="text-[var(--cyber-gold)]" />
+      ) : (
+        <Users size={24} className="text-[var(--electric-blue)]" />
+      );
+  }
+}
+
+const DEFAULT_STEPS: JoinStep[] = [
+  {
+    icon: "users",
+    title: "Attend Meetings",
+    description:
+      "Check out our list of committees and find one that interests you. You're welcome to attend any meeting to see what we're about.",
+  },
+  {
+    icon: "credit-card",
+    title: "Pay Dues",
+    description:
+      "Official membership requires small annual dues, which fund our projects, competitions, and events.",
+  },
+];
 
 export function JoinPage() {
   const { theme } = useTheme();
   const isLight = theme === "light";
-  const { settings, loading } = useSiteSettings();
+  const { data: joinData, loading: joinLoading } = useJoinPage();
+  const { settings, loading: settingsLoading } = useSiteSettings();
 
+  usePageMeta({
+    title: "Join",
+    description:
+      "Learn how to join the Purdue University IEEE Student Branch. Attend committee meetings, connect on Discord, and explore membership options.",
+  });
 
-  const duesBenefits = settings?.duesBenefits || [];
-  const discordUrl = settings?.discordUrl || "";
-  const paymentUrl = settings?.paymentUrl || "";
-  const duesDescription = settings?.duesDescription || "";
-  const duesOptions = settings?.duesOptions || [];
+  const loading = joinLoading && settingsLoading;
+
+  const heroEyebrow = joinData?.heroEyebrow || "// Get Started";
+  const heroTitle = joinData?.heroTitle || "Joining Purdue IEEE is easier than ever!";
+  const heroSubtitle =
+    joinData?.heroSubtitle || "To join, simply attend any committee meeting and pay dues.";
+
+  const steps =
+    joinData?.steps && joinData.steps.length > 0 ? joinData.steps : DEFAULT_STEPS;
+
+  const connectTitle = joinData?.connectTitle || "Connect with us";
+  const connectDescription =
+    joinData?.connectDescription ||
+    "Join Purdue IEEE today and start connecting with fellow members on Discord. Stay engaged with all committee updates and event announcements.";
+  const discordButtonText = joinData?.discordButtonText || "Join Discord";
+  const discordUrl = joinData?.discordUrl || settings?.discordUrl || "https://discord.gg/sPPQequ9ws";
+
+  const duesTitle = joinData?.duesTitle || "Dues";
+  const duesDescription = joinData?.duesDescription || settings?.duesDescription || "";
+  const duesBenefits =
+    joinData?.duesBenefits && joinData.duesBenefits.length > 0
+      ? joinData.duesBenefits
+      : settings?.duesBenefits || [];
+  const membershipYearTitle =
+    joinData?.membershipYearTitle || "2025-26 Membership Options";
+  const duesOptions =
+    joinData?.duesOptions && joinData.duesOptions.length > 0
+      ? joinData.duesOptions
+      : settings?.duesOptions || [];
+  const paymentButtonText = joinData?.paymentButtonText || "Pay via TooCool";
+  const paymentUrl = joinData?.paymentUrl || settings?.paymentUrl || "";
+  const paymentSearchNote =
+    joinData?.paymentSearchNote || 'Search for "IEEE" in the search box on TooCool';
+  const exemptionNote =
+    joinData?.exemptionNote ||
+    "* Local dues apply only to Purdue West Lafayette campus students. If you have an active International IEEE Membership, you are exempt from local dues. Contact an officer to complete registration.";
 
   if (loading) {
     return (
@@ -41,48 +114,48 @@ export function JoinPage() {
           <p
             className={`section-eyebrow mb-4 ${isLight ? "opacity-100" : "opacity-90"}`}
           >
-            // Get Started
+            {heroEyebrow}
           </p>
           <h2 className="font-[family-name:var(--font-headline)] text-[clamp(32px,5vw,56px)] font-bold text-[var(--text-primary)] leading-[1.1] tracking-[-0.03em] mb-6">
-            Joining Purdue IEEE is{" "}
-            <span className="text-[var(--electric-blue)]">
-              easier than ever!
-            </span>
+            {heroTitle.includes("easier than ever!") ? (
+              <>
+                {heroTitle.replace("easier than ever!", "")}
+                <span className="text-[var(--electric-blue)]">
+                  easier than ever!
+                </span>
+              </>
+            ) : (
+              heroTitle
+            )}
           </h2>
           <p className="font-[family-name:var(--font-body)] text-lg text-[var(--text-secondary)] leading-[1.6] max-w-[700px] mx-auto">
-            To join, simply attend any committee meeting and pay dues.
+            {heroSubtitle}
           </p>
         </div>
 
         <div className="flex flex-col gap-12">
           {/* Quick Steps */}
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6">
-            <div className="glass-card p-6">
-              <div className="flex items-center gap-4 mb-5">
-                <Users size={24} className="text-[var(--electric-blue)]" />
-                <h3 className="font-[family-name:var(--font-headline)] text-xl font-semibold text-[var(--text-primary)]">
-                  Attend Meetings
-                </h3>
-              </div>
-              <p className="font-[family-name:var(--font-body)] text-[15px] text-[var(--text-secondary)] leading-[1.6]">
-                Check out our list of committees and find one that interests
-                you. You're welcome to attend any meeting to see what we're
-                about.
-              </p>
+          {steps.length > 0 && (
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6">
+              {steps.map((step, idx) => (
+                <div
+                  key={step._key || idx}
+                  id={step.title.toLowerCase().includes("due") ? "dues-section" : undefined}
+                  className="glass-card p-6"
+                >
+                  <div className="flex items-center gap-4 mb-5">
+                    {getStepIcon(step.icon, idx)}
+                    <h3 className="font-[family-name:var(--font-headline)] text-xl font-semibold text-[var(--text-primary)]">
+                      {step.title}
+                    </h3>
+                  </div>
+                  <p className="font-[family-name:var(--font-body)] text-[15px] text-[var(--text-secondary)] leading-[1.6]">
+                    {step.description}
+                  </p>
+                </div>
+              ))}
             </div>
-            <div id="dues-section" className="glass-card p-6">
-              <div className="flex items-center gap-4 mb-5">
-                <CreditCard size={24} className="text-[var(--cyber-gold)]" />
-                <h3 className="font-[family-name:var(--font-headline)] text-xl font-semibold text-[var(--text-primary)]">
-                  Pay Dues
-                </h3>
-              </div>
-              <p className="font-[family-name:var(--font-body)] text-[15px] text-[var(--text-secondary)] leading-[1.6]">
-                Official membership requires small annual dues, which fund our
-                projects, competitions, and events.
-              </p>
-            </div>
-          </div>
+          )}
 
           {/* Connect Section */}
           <div
@@ -91,23 +164,23 @@ export function JoinPage() {
             <div className="flex gap-8 items-center flex-wrap">
               <div className="flex-1 min-w-[260px]">
                 <h3 className="font-[family-name:var(--font-headline)] text-[28px] font-semibold text-[var(--text-primary)] mb-4">
-                  Connect with us
+                  {connectTitle}
                 </h3>
                 <p className="font-[family-name:var(--font-body)] text-base text-[var(--text-secondary)] leading-[1.6] mb-6">
-                  Join Purdue IEEE today and start connecting with fellow
-                  members on Discord. Stay engaged with all committee updates
-                  and event announcements.
+                  {connectDescription}
                 </p>
-                <a
-                  href={discordUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Join Purdue IEEE Discord server"
-                  className="btn-primary inline-flex items-center gap-2.5 no-underline bg-[#5865F2] border-[#5865F2] hover:bg-[#4752C4] hover:border-[#4752C4]"
-                >
-                  <MessageCircle size={18} />
-                  Join Discord
-                </a>
+                {discordUrl && (
+                  <a
+                    href={discordUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Join Purdue IEEE Discord server"
+                    className="btn-primary inline-flex items-center gap-2.5 no-underline bg-[#5865F2] border-[#5865F2] hover:bg-[#4752C4] hover:border-[#4752C4]"
+                  >
+                    <MessageCircle size={18} />
+                    {discordButtonText}
+                  </a>
+                )}
               </div>
               <div className="w-[120px] h-[120px] bg-[#5865F21A] rounded-3xl hidden sm:flex items-center justify-center">
                 <svg
@@ -129,28 +202,32 @@ export function JoinPage() {
             <div className="flex items-center gap-4 mb-8">
               <div className="w-10 h-px bg-[var(--cyber-gold)]" />
               <h3 className="font-[family-name:var(--font-headline)] text-[32px] font-bold text-[var(--text-primary)]">
-                Dues
+                {duesTitle}
               </h3>
             </div>
 
             <div className="ieee-grid-2 gap-8">
               <div>
-                <div className="font-[family-name:var(--font-body)] text-base text-[var(--text-secondary)] leading-[1.7] mb-6 whitespace-pre-wrap">
-                  {duesDescription}
-                </div>
-                <div className="flex flex-col gap-4">
-                  {duesBenefits.map((benefit) => (
-                    <div key={benefit} className="flex gap-3 items-start">
-                      <CheckCircle2
-                        size={18}
-                        className="text-[var(--electric-blue)] shrink-0 mt-0.5"
-                      />
-                      <span className="font-[family-name:var(--font-body)] text-[15px] text-[var(--text-primary)]">
-                        {benefit}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                {duesDescription && (
+                  <div className="font-[family-name:var(--font-body)] text-base text-[var(--text-secondary)] leading-[1.7] mb-6 whitespace-pre-wrap">
+                    {duesDescription}
+                  </div>
+                )}
+                {duesBenefits.length > 0 && (
+                  <div className="flex flex-col gap-4">
+                    {duesBenefits.map((benefit) => (
+                      <div key={benefit} className="flex gap-3 items-start">
+                        <CheckCircle2
+                          size={18}
+                          className="text-[var(--electric-blue)] shrink-0 mt-0.5"
+                        />
+                        <span className="font-[family-name:var(--font-body)] text-[15px] text-[var(--text-primary)]">
+                          {benefit}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div
@@ -159,69 +236,76 @@ export function JoinPage() {
                 <h4
                   className={`font-[family-name:var(--font-headline)] text-lg font-semibold text-[var(--cyber-gold)] mb-6 uppercase tracking-[0.1em] ${isLight ? "opacity-100" : "opacity-90"}`}
                 >
-                  2025-26 Membership Options
+                  {membershipYearTitle}
                 </h4>
-                <div className="flex flex-col gap-4 mb-8">
-                  {duesOptions.map((option, idx) => (
-                    <div key={idx} className="flex flex-col gap-4">
-                      {idx > 0 && (
-                        <div className="flex items-center gap-3 my-1">
-                          <div className="flex-1 h-px bg-[var(--glass-border)]" />
-                          <span className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-widest text-[var(--cyber-gold)] font-bold px-2 py-0.5 rounded bg-[rgba(235,211,169,0.06)] border border-[rgba(235,211,169,0.15)]">
-                            OR
-                          </span>
-                          <div className="flex-1 h-px bg-[var(--glass-border)]" />
-                        </div>
-                      )}
-                      <div
-                        className={`p-5 rounded-lg border transition-all ${
-                          isLight
-                            ? "bg-[rgba(255,255,255,0.8)] border-[rgba(0,90,135,0.18)]"
-                            : "bg-[rgba(10,10,12,0.4)] border-[var(--glass-border)]"
-                        }`}
-                      >
-                        <div className="font-[family-name:var(--font-mono)] text-xs font-semibold text-[var(--electric-blue)] uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                          <span className="opacity-80" aria-hidden="true">
-                            //
-                          </span>
-                          <span>{option.name}</span>
-                        </div>
+                {duesOptions.length > 0 && (
+                  <div className="flex flex-col gap-4 mb-8">
+                    {duesOptions.map((option, idx) => (
+                      <div key={option._key || idx} className="flex flex-col gap-4">
+                        {idx > 0 && (
+                          <div className="flex items-center gap-3 my-1">
+                            <div className="flex-1 h-px bg-[var(--glass-border)]" />
+                            <span className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-widest text-[var(--cyber-gold)] font-bold px-2 py-0.5 rounded bg-[rgba(235,211,169,0.06)] border border-[rgba(235,211,169,0.15)]">
+                              OR
+                            </span>
+                            <div className="flex-1 h-px bg-[var(--glass-border)]" />
+                          </div>
+                        )}
                         <div
-                          className={`text-xs text-[var(--text-muted)] mb-3 ${isLight ? "opacity-90" : "opacity-80"}`}
+                          className={`p-5 rounded-lg border transition-all ${
+                            isLight
+                              ? "bg-[rgba(255,255,255,0.8)] border-[rgba(0,90,135,0.18)]"
+                              : "bg-[rgba(10,10,12,0.4)] border-[var(--glass-border)]"
+                          }`}
                         >
-                          {option.subtitle}
-                        </div>
-                        <div className="text-3xl font-bold text-[var(--text-primary)]">
-                          {option.price}
+                          <div className="font-[family-name:var(--font-mono)] text-xs font-semibold text-[var(--electric-blue)] uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                            <span className="opacity-80" aria-hidden="true">
+                              //
+                            </span>
+                            <span>{option.name}</span>
+                          </div>
+                          {option.subtitle && (
+                            <div
+                              className={`text-xs text-[var(--text-muted)] mb-3 ${isLight ? "opacity-90" : "opacity-80"}`}
+                            >
+                              {option.subtitle}
+                            </div>
+                          )}
+                          <div className="text-3xl font-bold text-[var(--text-primary)]">
+                            {option.price}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
 
-                <a
-                  href={paymentUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Pay Purdue IEEE membership dues via TooCool"
-                  className="w-full text-center flex items-center justify-center gap-2 no-underline bg-[var(--electric-blue)] hover:bg-[#005085] text-white font-bold py-3.5 px-4 rounded-lg shadow-md transition-colors uppercase tracking-wider text-sm"
-                >
-                  Pay via TooCool
-                  <ExternalLink size={16} />
-                </a>
+                {paymentUrl && (
+                  <a
+                    href={paymentUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Pay Purdue IEEE membership dues via TooCool"
+                    className="w-full text-center flex items-center justify-center gap-2 no-underline bg-[var(--electric-blue)] hover:bg-[#005085] text-white font-bold py-3.5 px-4 rounded-lg shadow-md transition-colors uppercase tracking-wider text-sm"
+                  >
+                    {paymentButtonText}
+                    <ExternalLink size={16} />
+                  </a>
+                )}
 
-                <p className="mt-4 text-xs text-[var(--text-secondary)] text-center font-[family-name:var(--font-body)]">
-                  Search for "IEEE" in the search box on TooCool
-                </p>
+                {paymentSearchNote && (
+                  <p className="mt-4 text-xs text-[var(--text-secondary)] text-center font-[family-name:var(--font-body)]">
+                    {paymentSearchNote}
+                  </p>
+                )}
 
-                <p
-                  className={`mt-6 text-[13px] text-[var(--text-muted)] leading-relaxed ${isLight ? "opacity-100" : "opacity-80"}`}
-                >
-                  * Local dues apply only to Purdue West Lafayette campus
-                  students. If you have an active International IEEE Membership,
-                  you are exempt from local dues. Contact an officer to complete
-                  registration.
-                </p>
+                {exemptionNote && (
+                  <p
+                    className={`mt-6 text-[13px] text-[var(--text-muted)] leading-relaxed ${isLight ? "opacity-100" : "opacity-80"}`}
+                  >
+                    {exemptionNote}
+                  </p>
+                )}
               </div>
             </div>
           </div>
