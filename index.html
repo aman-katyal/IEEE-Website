@@ -3,8 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Purdue IEEE — Engineering Tomorrow's Technology</title>
-    <meta name="description" content="Purdue University's premier IEEE student branch. Fostering technological innovation and excellence since 1903." />
+    <title>Purdue IEEE | Official Student Branch of Purdue University</title>
+    <meta name="description" content="The official website of the Purdue University IEEE Student Branch. Purdue's premier student-run engineering organization featuring technical project committees, workshops, and professional development since 1903." />
+    <meta name="keywords" content="Purdue IEEE, IEEE Purdue, Purdue University IEEE, Purdue Engineering, IEEE Student Branch, Purdue ROV, IEEE Racing, Aerial Robotics, Computer Society, EMBS, MTT-S, Software Saturdays" />
+    <meta name="author" content="Purdue University IEEE Student Branch" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="google-site-verification" content="-3uK7nkKMC-ZuV-hiacmFNVNEwcPARBzzsjdBgcUN3M" />
     <link rel="canonical" href="https://purdueieee.org/" />
 
@@ -45,11 +48,16 @@
             "@type": "EducationalOrganization",
             "@id": "https://purdueieee.org/#organization",
             "name": "Purdue IEEE Student Branch",
-            "alternateName": "Purdue University IEEE",
+            "alternateName": ["Purdue IEEE", "Purdue University IEEE", "IEEE Purdue"],
             "url": "https://purdueieee.org/",
-            "logo": "https://purdueieee.org/images/logo/logo_clean.png",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://purdueieee.org/images/logo/logo_clean.png",
+              "width": "512",
+              "height": "512"
+            },
             "foundingDate": "1903",
-            "description": "Purdue University's premier IEEE student branch. Fostering technological innovation and excellence since 1903.",
+            "description": "Purdue University's premier IEEE student branch. Fostering technological innovation, engineering excellence, and student development since 1903.",
             "parentOrganization": {
               "@type": "CollegeOrUniversity",
               "name": "Purdue University",
@@ -57,16 +65,72 @@
             },
             "address": {
               "@type": "PostalAddress",
+              "streetAddress": "465 Northwestern Ave, EE Building Room 014",
               "addressLocality": "West Lafayette",
               "addressRegion": "IN",
               "postalCode": "47907",
               "addressCountry": "US"
             },
             "sameAs": [
+              "https://boilerlink.purdue.edu/organization/ieee",
               "https://www.instagram.com/purdueieee/",
               "https://www.linkedin.com/company/purdue-ieee-student-branch/",
-              "https://github.com/PurdueIEEE"
+              "https://github.com/PurdueIEEE",
+              "https://discord.gg/sPPQequ9ws"
+            ],
+            "department": [
+              {
+                "@type": "Organization",
+                "name": "Purdue IEEE ROV",
+                "url": "https://purdueieee.org/committee/rov",
+                "description": "Remotely Operated underwater Vehicle technical committee"
+              },
+              {
+                "@type": "Organization",
+                "name": "Purdue IEEE Racing",
+                "url": "https://purdueieee.org/committee/racing",
+                "description": "Electric vehicle racing and go-kart engineering committee"
+              },
+              {
+                "@type": "Organization",
+                "name": "Purdue Aerial Robotics Team (PART)",
+                "url": "https://purdueieee.org/committee/aerial-robotics",
+                "description": "Autonomous unmanned aerial vehicles committee"
+              },
+              {
+                "@type": "Organization",
+                "name": "Purdue IEEE Computer Society",
+                "url": "https://purdueieee.org/committee/computer-society",
+                "description": "Computing, open source development, and hackathons"
+              },
+              {
+                "@type": "Organization",
+                "name": "Purdue IEEE EMBS",
+                "url": "https://purdueieee.org/committee/embs",
+                "description": "Engineering in Medicine and Biology Society student chapter"
+              },
+              {
+                "@type": "Organization",
+                "name": "Purdue IEEE MTT-S",
+                "url": "https://purdueieee.org/committee/mtts",
+                "description": "Microwave Theory and Techniques Society student chapter"
+              },
+              {
+                "@type": "Organization",
+                "name": "Purdue Software Saturdays",
+                "url": "https://purdueieee.org/committee/software-saturdays",
+                "description": "Hands-on software development educational workshops"
+              }
             ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://purdueieee.org/#website",
+            "url": "https://purdueieee.org/",
+            "name": "Purdue IEEE",
+            "publisher": {
+              "@id": "https://purdueieee.org/#organization"
+            }
           }
         ]
       }
@@ -81,16 +145,17 @@
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Purdue IEEE" />
     <meta property="og:url" content="https://purdueieee.org/" />
-    <meta property="og:title" content="Purdue IEEE — Engineering Tomorrow's Technology" />
-    <meta property="og:description" content="Purdue University's premier IEEE student branch. Fostering technological innovation and excellence since 1903." />
+    <meta property="og:title" content="Purdue IEEE | Official Student Branch of Purdue University" />
+    <meta property="og:description" content="Official website of the Purdue University IEEE Student Branch. Engineering tomorrow's technology through hands-on technical committees, workshops, and leadership." />
     <meta property="og:image" content="https://purdueieee.org/images/general%20IEEE%20pictures/ieee%20whole%20team%20photo.webp" />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content="https://purdueieee.org/" />
-    <meta property="twitter:title" content="Purdue IEEE — Engineering Tomorrow's Technology" />
-    <meta property="twitter:description" content="Purdue University's premier IEEE student branch. Fostering technological innovation and excellence since 1903." />
+    <meta property="twitter:title" content="Purdue IEEE | Official Student Branch of Purdue University" />
+    <meta property="twitter:description" content="Official website of the Purdue University IEEE Student Branch. Engineering tomorrow's technology through hands-on technical committees, workshops, and leadership." />
     <meta property="twitter:image" content="https://purdueieee.org/images/general%20IEEE%20pictures/ieee%20whole%20team%20photo.webp" />
 
     <link rel="icon" type="image/png" href="/images/logo/logo_clean.png" />

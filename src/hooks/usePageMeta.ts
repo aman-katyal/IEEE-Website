@@ -5,16 +5,16 @@ export interface PageMetaOptions {
   description?: string;
 }
 
-const DEFAULT_TITLE = "Purdue University IEEE Student Branch";
+const DEFAULT_TITLE = "Purdue IEEE | Official Student Branch of Purdue University";
 const DEFAULT_DESCRIPTION =
-  "Official website for the Purdue University IEEE Student Branch. Advancing technology for humanity through student-led engineering committees and innovation.";
+  "The official website of the Purdue University IEEE Student Branch. Purdue's premier student-run engineering organization featuring technical project committees, workshops, and professional development since 1903.";
 
 export function usePageMeta({ title, description }: PageMetaOptions): void {
   useEffect(() => {
     const prevTitle = document.title;
-    const formattedTitle = title
-      ? `${title} | Purdue IEEE`
-      : DEFAULT_TITLE;
+    const formattedTitle = (!title || title === "Home" || title === "Purdue IEEE")
+      ? DEFAULT_TITLE
+      : `${title} | Purdue IEEE`;
     document.title = formattedTitle;
 
     let metaDesc = document.querySelector('meta[name="description"]');

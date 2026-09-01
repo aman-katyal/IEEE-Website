@@ -4,6 +4,7 @@ import { useTheme } from "next-themes";
 import ReactMarkdown from "react-markdown";
 import { Skeleton } from "boneyard-js/react";
 import { useCommittee } from "../../hooks/useSanityData";
+import { usePageMeta } from "../../hooks/usePageMeta";
 import { CommitteeHeader } from "../components/committees/CommitteeHeader";
 import { CommitteeQuickFacts } from "../components/committees/CommitteeQuickFacts";
 import { CommitteeProjects } from "../components/committees/CommitteeProjects";
@@ -16,6 +17,14 @@ export function CommitteePage() {
   const { committee, loading, error } = useCommittee(id || "");
   const { theme } = useTheme();
   const isLight = theme === "light";
+
+  usePageMeta({
+    title: committee?.name || "Committee",
+    description:
+      committee?.tagline ||
+      committee?.description ||
+      "Purdue University IEEE Student Branch Technical Committee.",
+  });
 
   if (!loading && (error || !committee)) {
     return (

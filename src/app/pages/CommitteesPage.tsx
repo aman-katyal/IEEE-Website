@@ -4,8 +4,15 @@ import { JoinCTA } from "../components/home/JoinCTA";
 import { useState, startTransition } from "react";
 import { useTheme } from "next-themes";
 import { motion, AnimatePresence } from "motion/react";
+import { usePageMeta } from "../../hooks/usePageMeta";
 
 export function CommitteesPage() {
+  usePageMeta({
+    title: "Committees",
+    description:
+      "Explore Purdue IEEE technical committees: ROV, Racing, Aerial Robotics, Computer Society, EMBS, MTT-S, and Software Saturdays.",
+  });
+
   const [viewMode, setViewMode] = useState<"technical" | "involvement" | "operations">(
     "technical",
   );
