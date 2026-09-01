@@ -104,7 +104,9 @@ export function CommitteeFinanceView({
   }, [committees]);
 
   const committee = useMemo(() => {
-    return committeeMap.get(session.committeeId) ?? [...committeeMap.values()][0];
+    return (
+      committeeMap.get(session.committeeId) ?? [...committeeMap.values()][0]
+    );
   }, [committeeMap, session.committeeId]);
 
   // Committee Purchases
@@ -131,6 +133,7 @@ export function CommitteeFinanceView({
     let approved = 0;
     let pending = 0;
     let reimbursed = 0;
+    const spendingPoints = [];
     for (const p of committeePurchases) {
       if (
         p.status === "APPROVED" ||
@@ -138,6 +141,7 @@ export function CommitteeFinanceView({
         p.status === "REIMBURSED"
       ) {
         approved += p.totalAmount;
+        spendingPoints.push({ date: p.submittedAt, amount: p.totalAmount });
       }
       if (p.status === "PENDING") {
         pending += p.totalAmount;
@@ -153,14 +157,7 @@ export function CommitteeFinanceView({
         : 0;
 
     const velocity = calculateSpendingVelocity(
-      committeePurchases
-        .filter(
-          (p) =>
-            p.status === "APPROVED" ||
-            p.status === "PURCHASED" ||
-            p.status === "REIMBURSED",
-        )
-        .map((p) => ({ date: p.submittedAt, amount: p.totalAmount })),
+      spendingPoints,
       totalEffectiveBudget,
     );
 

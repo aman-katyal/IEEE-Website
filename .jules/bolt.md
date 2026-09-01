@@ -36,3 +36,7 @@
 ## 2024-10-24 - Cache Intl.NumberFormat
 **Learning:** Instantiating `Intl.NumberFormat` repeatedly is a huge performance bottleneck.
 **Action:** Cache the `Intl.NumberFormat` instances globally when using standard locales and options. The cache key should correspond to variable parameters (e.g., decimals).
+
+## 2024-10-31 - Optimize React Component Nested Array Filtering
+**Learning:** Using `.filter()` inside a `.map()` callback over arrays derived from props creates an O(N^2) bottleneck that can stall rendering on large datasets (like purchases mapped across committees). Furthermore, computing derived data (like velocity) within render functions instead of attaching it to memoized row objects causes redundant calculations on every render.
+**Action:** Pre-group array data into O(1) Maps before mapping over lists. Precompute complex calculations (like `velocity`) within the memoized data derivation step and attach them directly to the object so they only compute once, eliminating inline filtering and mapping from the view layer.
