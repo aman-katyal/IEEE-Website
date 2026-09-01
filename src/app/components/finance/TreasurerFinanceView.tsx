@@ -207,18 +207,22 @@ export function TreasurerFinanceView({
 
   // Branch-Wide Totals
   const branchTotals = useMemo(() => {
-    const totalAllocated = matrixData.reduce(
-      (sum, c) => sum + c.baseAllocated,
-      0,
-    );
+    let totalAllocated = 0;
+    let totalSpent = 0;
+    let totalPending = 0;
+    let totalRemaining = 0;
+    for (const c of matrixData) {
+      totalAllocated += c.baseAllocated;
+      totalSpent += c.approved;
+      totalPending += c.pending;
+      totalRemaining += c.remaining;
+    }
+
     const totalInflows = (fundingInflows || []).reduce(
       (sum, inf) => sum + inf.amount,
       0,
     );
     const totalBranchBudget = totalAllocated + totalInflows;
-    const totalSpent = matrixData.reduce((sum, c) => sum + c.approved, 0);
-    const totalPending = matrixData.reduce((sum, c) => sum + c.pending, 0);
-    const totalRemaining = matrixData.reduce((sum, c) => sum + c.remaining, 0);
     const totalRequests = purchases.length;
     const branchPercentSpent =
       totalBranchBudget > 0
