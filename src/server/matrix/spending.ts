@@ -558,7 +558,10 @@ export async function createCommittee(
   const bankStatus = payload.bankStatus || 'Active';
   const duesStatus = payload.duesStatus || 'Active';
   const contactEmail = payload.contactEmail?.trim() || `${committeeId}@purdueieee.org`;
-  const passcode = payload.passcode?.trim() || '1903';
+  if (!payload.passcode || !payload.passcode.trim()) {
+    throw new Error('A secure committee passcode is required.');
+  }
+  const passcode = payload.passcode.trim();
   const passcodeHash = await hashPin(passcode);
   const categories = payload.categories && payload.categories.length > 0 ? payload.categories : ['General', 'Hardware'];
   const notes = payload.notes?.trim() || '';

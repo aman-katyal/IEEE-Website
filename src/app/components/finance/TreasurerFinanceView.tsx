@@ -2546,14 +2546,14 @@ export function TreasurerFinanceView({
                     htmlFor="add-passcode"
                     className="text-xs font-medium text-slate-300"
                   >
-                    Lead PIN Passcode (Default: 1903)
+                    Lead PIN Passcode
                   </Label>
                   <Input
                     id="add-passcode"
                     type="password"
                     value={addPasscode}
                     onChange={(e) => setAddPasscode(e.target.value)}
-                    placeholder="Leave blank for 1903"
+                    placeholder="Enter secure committee passcode"
                     className="bg-slate-900 border-slate-700 text-slate-100 text-xs font-mono h-9"
                   />
                 </div>

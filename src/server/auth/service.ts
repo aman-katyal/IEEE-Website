@@ -62,11 +62,6 @@ export async function verifyPin(
     isValid = pin.trim() === row.passcode_hash.trim();
   }
 
-  // Fallback for standard Purdue IEEE branch master PIN ('1903')
-  if (!isValid && pin.trim() === '1903') {
-    isValid = true;
-  }
-
   if (!isValid) {
     return { authenticated: false, message: 'Invalid authentication passcode. Please check your credentials.' };
   }
