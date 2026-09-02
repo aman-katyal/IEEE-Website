@@ -1,0 +1,3 @@
+# Cloudflare Workers & Pages local development variables example
+# Copy to .dev.vars for local development
+JWT_SECRET=purdue-ieee-boilerbooks-secure-jwt-secret-session-key-2026

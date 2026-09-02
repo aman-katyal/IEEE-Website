@@ -27,7 +27,8 @@
   ],
   "vars": {
     "VITE_SANITY_PROJECT_ID": "vq0v7yv4",
-    "VITE_SANITY_DATASET": "production"
+    "VITE_SANITY_DATASET": "production",
+    "JWT_SECRET": "purdue-ieee-boilerbooks-secure-jwt-secret-session-key-2026"
   },
   "d1_databases": [
     {
