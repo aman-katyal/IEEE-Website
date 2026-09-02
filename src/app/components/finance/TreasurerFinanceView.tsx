@@ -122,8 +122,14 @@ export interface TreasurerFinanceViewProps {
     categories?: string[];
     notes?: string;
     passcode?: string;
-  }) => Promise<{ success: boolean; committee?: CommitteeInfo; error?: string }> | void;
-  onDeleteCommittee?: (committeeId: string) => Promise<{ success: boolean; error?: string }> | void;
+  }) => Promise<{
+    success: boolean;
+    committee?: CommitteeInfo;
+    error?: string;
+  }> | void;
+  onDeleteCommittee?: (
+    committeeId: string,
+  ) => Promise<{ success: boolean; error?: string }> | void;
   onAddFundingInflow: (newInflow: CommitteeFundingInflow) => void;
   onDeleteFundingInflow?: (id: string) => void;
   onClearAllData?: () => Promise<{ success: boolean; message?: string }> | void;
@@ -152,17 +158,37 @@ export function TreasurerFinanceView({
     return committees && committees.length > 0 ? committees : REAL_COMMITTEES;
   }, [committees]);
 
+  const purchasesByCommittee = useMemo(() => {
+    const map = new Map<string, PurchaseItem[]>();
+    for (const p of purchases) {
+      const commId = p.committeeId;
+      if (!map.has(commId)) map.set(commId, []);
+      map.get(commId)!.push(p);
+    }
+    return map;
+  }, [purchases]);
+
+  const inflowsByCommittee = useMemo(() => {
+    const map = new Map<string, CommitteeFundingInflow[]>();
+    for (const inf of fundingInflows || []) {
+      const commId = inf.committeeId;
+      if (!map.has(commId)) map.set(commId, []);
+      map.get(commId)!.push(inf);
+    }
+    return map;
+  }, [fundingInflows]);
+
   // Master Spending Matrix Data Calculation (Base Allocated + Inflow Grants)
   const matrixData = useMemo(() => {
     return activeCommittees.map((comm) => {
-      const commPurchases = purchases.filter((p) => p.committeeId === comm.id);
-      const commInflows = (fundingInflows || []).filter(
-        (inf) => inf.committeeId === comm.id,
-      );
-      const totalInflows = commInflows.reduce(
-        (sum, inf) => sum + inf.amount,
-        0,
-      );
+      const commPurchases = purchasesByCommittee.get(comm.id) ?? [];
+      const commInflows = inflowsByCommittee.get(comm.id) ?? [];
+
+      let totalInflows = 0;
+      for (const inf of commInflows) {
+        totalInflows += inf.amount;
+      }
+
       const baseAllocated = comm.allocated;
       const totalBudget = baseAllocated + totalInflows;
 
@@ -170,6 +196,8 @@ export function TreasurerFinanceView({
       let approved = 0;
       let pending = 0;
       let reimbursed = 0;
+      const validEntries: { date: string; amount: number }[] = [];
+
       for (const p of commPurchases) {
         if (
           p.status === "APPROVED" ||
@@ -177,6 +205,7 @@ export function TreasurerFinanceView({
           p.status === "REIMBURSED"
         ) {
           approved += p.totalAmount;
+          validEntries.push({ date: p.submittedAt, amount: p.totalAmount });
         }
         if (p.status === "PENDING") {
           pending += p.totalAmount;
@@ -191,6 +220,8 @@ export function TreasurerFinanceView({
           ? Math.min(Math.round((approved / totalBudget) * 100), 100)
           : 0;
 
+      const velocity = calculateSpendingVelocity(validEntries, totalBudget);
+
       return {
         ...comm,
         baseAllocated,
@@ -203,9 +234,10 @@ export function TreasurerFinanceView({
         remaining,
         percentSpent,
         totalRequests: commPurchases.length,
+        velocity,
       };
     });
-  }, [activeCommittees, purchases, fundingInflows]);
+  }, [activeCommittees, purchasesByCommittee, inflowsByCommittee]);
 
   // Branch-Wide Totals
   const branchTotals = useMemo(() => {
@@ -372,13 +404,13 @@ export function TreasurerFinanceView({
     if (!addName.trim()) return;
     const parsedAllocated = parseFloat(addAllocated) || 0;
     const derivedId =
-      (addId.trim() ||
-        addName
-          .trim()
-          .toLowerCase()
-          .replace(/[^a-z0-9]/g, "-")
-          .replace(/-+/g, "-")
-          .replace(/^-|-$/g, "")) ||
+      addId.trim() ||
+      addName
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-|-$/g, "") ||
       `comm-${Date.now()}`;
 
     setIsSubmittingAddCommittee(true);
@@ -390,8 +422,7 @@ export function TreasurerFinanceView({
           allocated: parsedAllocated,
           bankStatus: addBankStatus,
           duesStatus: addDuesStatus,
-          contactEmail:
-            addContactEmail.trim() || `${derivedId}@purdueieee.org`,
+          contactEmail: addContactEmail.trim() || `${derivedId}@purdueieee.org`,
           categories: addCategories,
           notes: addNotes.trim(),
           passcode: addPasscode.trim() || undefined,
@@ -682,18 +713,6 @@ export function TreasurerFinanceView({
     ];
 
     const rows = matrixData.map((c) => {
-      const velocity = calculateSpendingVelocity(
-        purchases
-          .filter(
-            (p) =>
-              p.committeeId === c.id &&
-              (p.status === "APPROVED" ||
-                p.status === "PURCHASED" ||
-                p.status === "REIMBURSED"),
-          )
-          .map((p) => ({ date: p.submittedAt, amount: p.totalAmount })),
-        c.totalBudget,
-      );
       return [
         c.id,
         c.name,
@@ -705,8 +724,8 @@ export function TreasurerFinanceView({
         c.remaining,
         c.percentSpent,
         c.totalRequests,
-        velocity.runwayWeeks,
-        velocity.status,
+        c.velocity.runwayWeeks,
+        c.velocity.status,
       ];
     });
 
@@ -933,7 +952,11 @@ export function TreasurerFinanceView({
               type="button"
               variant="outline"
               onClick={async () => {
-                if (window.confirm('Are you sure you want to clear all data? This will purge all purchase requisitions, member dues, and banking audit ledger entries.')) {
+                if (
+                  window.confirm(
+                    "Are you sure you want to clear all data? This will purge all purchase requisitions, member dues, and banking audit ledger entries.",
+                  )
+                ) {
                   await onClearAllData();
                 }
               }}
@@ -1428,37 +1451,18 @@ export function TreasurerFinanceView({
                         {c.totalRequests}
                       </TableCell>
                       <TableCell className="text-right py-3.5 font-mono text-xs">
-                        {(() => {
-                          const velocity = calculateSpendingVelocity(
-                            purchases
-                              .filter(
-                                (p) =>
-                                  p.committeeId === c.id &&
-                                  (p.status === "APPROVED" ||
-                                    p.status === "PURCHASED" ||
-                                    p.status === "REIMBURSED"),
-                              )
-                              .map((p) => ({
-                                date: p.submittedAt,
-                                amount: p.totalAmount,
-                              })),
-                            c.totalBudget,
-                          );
-                          return (
-                            <>
-                              {velocity.runwayWeeks}w ·{" "}
-                              <span
-                                className={
-                                  velocity.status === "On Track"
-                                    ? "text-emerald-400"
-                                    : "text-red-400"
-                                }
-                              >
-                                {velocity.status}
-                              </span>
-                            </>
-                          );
-                        })()}
+                        <>
+                          {c.velocity.runwayWeeks}w ·{" "}
+                          <span
+                            className={
+                              c.velocity.status === "On Track"
+                                ? "text-emerald-400"
+                                : "text-red-400"
+                            }
+                          >
+                            {c.velocity.status}
+                          </span>
+                        </>
                       </TableCell>
                       <TableCell className="text-right py-3.5 pr-6">
                         <div className="flex items-center justify-end gap-1.5">
@@ -2176,8 +2180,8 @@ export function TreasurerFinanceView({
                 <span>Edit Parameters · {editingCommittee.name}</span>
               </DialogTitle>
               <DialogDescription className="text-xs text-slate-400">
-                Update committee name, allocated budget capital, operational bank status, member
-                dues policy, and spending categories.
+                Update committee name, allocated budget capital, operational
+                bank status, member dues policy, and spending categories.
               </DialogDescription>
             </DialogHeader>
 
@@ -2419,7 +2423,15 @@ export function TreasurerFinanceView({
                 <span>Delete Committee: {deletingCommittee.name}?</span>
               </DialogTitle>
               <DialogDescription className="text-xs text-slate-300 pt-2 leading-relaxed">
-                Are you sure you want to delete <strong className="text-white">{deletingCommittee.name}</strong> (<span className="font-mono text-sky-400">{deletingCommittee.id}</span>)? This will permanently remove its budget allocations, subcategories, and associated financial records from the database.
+                Are you sure you want to delete{" "}
+                <strong className="text-white">{deletingCommittee.name}</strong>{" "}
+                (
+                <span className="font-mono text-sky-400">
+                  {deletingCommittee.id}
+                </span>
+                )? This will permanently remove its budget allocations,
+                subcategories, and associated financial records from the
+                database.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter className="pt-4 border-t border-slate-800 flex items-center justify-end gap-2">
@@ -2461,7 +2473,8 @@ export function TreasurerFinanceView({
                 <span>Create New Technical Committee</span>
               </DialogTitle>
               <DialogDescription className="text-xs text-slate-400">
-                Add a new technical committee to Purdue IEEE BoilerBooks 3.0 with initial budget allocation and credentials.
+                Add a new technical committee to Purdue IEEE BoilerBooks 3.0
+                with initial budget allocation and credentials.
               </DialogDescription>
             </DialogHeader>
 
@@ -2717,7 +2730,8 @@ export function TreasurerFinanceView({
 
               <DialogFooter className="pt-3 border-t border-slate-800 flex items-center justify-between sm:justify-between">
                 <span className="text-[11px] text-slate-500">
-                  New committee will be immediately available across BoilerBooks.
+                  New committee will be immediately available across
+                  BoilerBooks.
                 </span>
                 <div className="flex items-center gap-2">
                   <Button
