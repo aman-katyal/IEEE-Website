@@ -3,13 +3,24 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PrivacyPage } from './PrivacyPage';
 import { MemoryRouter } from 'react-router';
 
+import * as useSanityData from '../../hooks/useSanityData';
+
 vi.mock('next-themes', () => ({
   useTheme: () => ({ theme: 'dark' }),
+}));
+
+vi.mock('../../hooks/useSanityData', () => ({
+  useSiteSettings: vi.fn(),
 }));
 
 describe('PrivacyPage', () => {
   beforeEach(() => {
     vi.stubGlobal('scrollTo', vi.fn());
+    (useSanityData.useSiteSettings as any).mockReturnValue({
+      settings: {},
+      loading: false,
+      error: null,
+    });
   });
 
   it('renders privacy policy heading and key sections', () => {

@@ -1,10 +1,103 @@
 import { useTheme } from "next-themes";
 import { Link } from "react-router";
-import { FileText, ShieldAlert, Cpu, Award, ArrowLeft, ExternalLink } from "lucide-react";
+import { FileText, ShieldAlert, Cpu, Award, ArrowLeft } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import { useSiteSettings } from "../../hooks/useSanityData";
+import { usePageMeta } from "../../hooks/usePageMeta";
+import type { LegalSection } from "../../data/sanity-types";
+
+function getTermsIcon(iconName?: string, index = 0) {
+  switch (iconName?.toLowerCase()) {
+    case "file":
+    case "acceptance":
+      return <FileText size={22} style={{ color: "var(--electric-blue)" }} />;
+    case "shield":
+    case "conduct":
+      return <ShieldAlert size={22} style={{ color: "var(--cyber-gold)" }} />;
+    case "cpu":
+    case "lab":
+      return <Cpu size={22} style={{ color: "var(--electric-blue)" }} />;
+    case "award":
+    case "ip":
+      return <Award size={22} style={{ color: "var(--cyber-gold)" }} />;
+    default:
+      return index % 2 === 1 ? (
+        <ShieldAlert size={22} style={{ color: "var(--cyber-gold)" }} />
+      ) : (
+        <FileText size={22} style={{ color: "var(--electric-blue)" }} />
+      );
+  }
+}
+
+const DEFAULT_TERMS_SECTIONS: LegalSection[] = [
+  {
+    title: "1. Acceptance of Terms",
+    icon: "file",
+    content:
+      "By accessing or using the Purdue IEEE website ([purdueieee.org](https://purdueieee.org)), participating in technical committee projects, or attending official branch events, you agree to comply with and be bound by these Terms of Use, our [Branch Constitution](/constitution), and the official policies of Purdue University and the IEEE.",
+  },
+  {
+    title: "2. Member Code of Conduct",
+    icon: "shield",
+    content:
+      "Purdue IEEE is dedicated to providing an inclusive, collaborative, and harassment-free experience for all members regardless of race, gender, background, major, or experience level. Members and visitors agree to:\n\n- Foster an environment of mutual respect, safety, and constructive teamwork.\n- Adhere strictly to the Purdue University Student Code of Honor and lab safety regulations.\n- Refrain from abusive, discriminatory, or disruptive conduct in online forums (Discord) and physical workspaces (EE 014 / EE 115 / EE 224).",
+  },
+  {
+    title: "3. Lab & Equipment Access",
+    icon: "cpu",
+    content:
+      "Access to Purdue IEEE technical facilities, tools, 3D printers, soldering stations, and specialized hardware is reserved for active dues-paying members who have completed mandatory safety orientations. Equipment must be operated responsibly according to lab safety protocols and returned in good working order.",
+  },
+  {
+    title: "4. Projects & Open Source",
+    icon: "award",
+    content:
+      "Codebases, hardware designs, and engineering documentation produced by technical committees are maintained under relevant open-source licenses or branch project guidelines. You may inspect and contribute to active projects via the [Purdue IEEE GitHub organization](https://github.com/PurdueIEEE).",
+  },
+  {
+    title: "5. Governance & Bylaws",
+    icon: "file",
+    content:
+      "Official branch governing documents, election rules, officer responsibilities, and committee bylaws are publicly available for review on our [Constitution and Bylaws](/constitution) page.",
+  },
+];
 
 export function TermsPage() {
   const { theme } = useTheme();
   const isLight = theme === "light";
+  const { settings, loading } = useSiteSettings();
+
+  usePageMeta({
+    title: "Terms of Use",
+    description:
+      "Terms of use, member code of conduct, and lab policies for the Purdue University IEEE Student Branch.",
+  });
+
+  const pageTitle = settings?.termsTitle || "Terms of Use";
+  const effectiveDate =
+    settings?.termsEffectiveDate ||
+    "Effective Date: Spring Semester 2026 · Purdue IEEE Student Branch";
+  const sections =
+    settings?.termsSections && settings.termsSections.length > 0
+      ? settings.termsSections
+      : DEFAULT_TERMS_SECTIONS;
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          background: "var(--boiler-black)",
+          color: "var(--text-primary)",
+        }}
+      >
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <section
@@ -44,15 +137,22 @@ export function TermsPage() {
             marginBottom: "32px",
             transition: "color 0.2s ease",
           }}
-          onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--text-primary)")}
-          onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--text-secondary)")}
+          onMouseEnter={(e) =>
+            ((e.currentTarget as HTMLElement).style.color = "var(--text-primary)")
+          }
+          onMouseLeave={(e) =>
+            ((e.currentTarget as HTMLElement).style.color = "var(--text-secondary)")
+          }
         >
           <ArrowLeft size={16} /> Back to Home
         </Link>
 
         {/* Header */}
         <div style={{ marginBottom: "56px" }}>
-          <p className="section-eyebrow" style={{ marginBottom: "16px", opacity: isLight ? 1 : 0.9 }}>
+          <p
+            className="section-eyebrow"
+            style={{ marginBottom: "16px", opacity: isLight ? 1 : 0.9 }}
+          >
             // Legal & Governance
           </p>
           <h1
@@ -66,7 +166,14 @@ export function TermsPage() {
               marginBottom: "16px",
             }}
           >
-            Terms of <span style={{ color: "var(--electric-blue)" }}>Use</span>
+            {pageTitle.includes("Use") ? (
+              <>
+                {pageTitle.replace("Use", "")}
+                <span style={{ color: "var(--electric-blue)" }}>Use</span>
+              </>
+            ) : (
+              pageTitle
+            )}
           </h1>
           <p
             style={{
@@ -76,93 +183,49 @@ export function TermsPage() {
               letterSpacing: "0.05em",
             }}
           >
-            Effective Date: Spring Semester 2026 · Purdue IEEE Student Branch
+            {effectiveDate}
           </p>
         </div>
 
         {/* Terms Content Sections */}
         <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-
-          {/* Section 1: Acceptance */}
-          <div className="glass-card" style={{ padding: "clamp(24px, 4vw, 36px)" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
-              <FileText size={22} style={{ color: "var(--electric-blue)" }} />
-              <h2 style={{ fontFamily: "var(--font-headline)", fontSize: "1.25rem", fontWeight: 600, color: "var(--text-primary)" }}>
-                1. Acceptance of Terms
-              </h2>
-            </div>
-            <p style={{ color: "var(--text-secondary)", lineHeight: 1.7, fontSize: "0.95rem" }}>
-              By accessing or using the Purdue IEEE website (<a href="https://purdueieee.org" style={{ color: "var(--electric-blue)" }}>purdueieee.org</a>), participating in technical committee projects, or attending official branch events, you agree to comply with and be bound by these Terms of Use, our <Link to="/constitution" style={{ color: "var(--cyber-gold)" }}>Branch Constitution</Link>, and the official policies of Purdue University and the IEEE.
-            </p>
-          </div>
-
-          {/* Section 2: Code of Conduct */}
-          <div className="glass-card" style={{ padding: "clamp(24px, 4vw, 36px)" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
-              <ShieldAlert size={22} style={{ color: "var(--cyber-gold)" }} />
-              <h2 style={{ fontFamily: "var(--font-headline)", fontSize: "1.25rem", fontWeight: 600, color: "var(--text-primary)" }}>
-                2. Member Code of Conduct
-              </h2>
-            </div>
-            <div style={{ color: "var(--text-secondary)", lineHeight: 1.7, fontSize: "0.95rem", display: "flex", flexDirection: "column", gap: "12px" }}>
-              <p>Purdue IEEE is dedicated to providing an inclusive, collaborative, and harassment-free experience for all members regardless of race, gender, background, major, or experience level. Members and visitors agree to:</p>
-              <ul style={{ paddingLeft: "24px", display: "flex", flexDirection: "column", gap: "8px" }}>
-                <li>Foster an environment of mutual respect, safety, and constructive teamwork.</li>
-                <li>Adhere strictly to the Purdue University Student Code of Honor and lab safety regulations.</li>
-                <li>Refrain from abusive, discriminatory, or disruptive conduct in online forums (Discord) and physical workspaces (EE 115 / EE 224).</li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Section 3: Lab Access & Equipment Use */}
-          <div className="glass-card" style={{ padding: "clamp(24px, 4vw, 36px)" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
-              <Cpu size={22} style={{ color: "var(--electric-blue)" }} />
-              <h2 style={{ fontFamily: "var(--font-headline)", fontSize: "1.25rem", fontWeight: 600, color: "var(--text-primary)" }}>
-                3. Lab & Equipment Access
-              </h2>
-            </div>
-            <p style={{ color: "var(--text-secondary)", lineHeight: 1.7, fontSize: "0.95rem" }}>
-              Access to Purdue IEEE technical facilities, tools, 3D printers, soldering stations, and specialized hardware is reserved for active dues-paying members who have completed mandatory safety orientations. Equipment must be operated responsibly according to lab safety protocols and returned in good working order.
-            </p>
-          </div>
-
-          {/* Section 4: Projects & Intellectual Property */}
-          <div className="glass-card" style={{ padding: "clamp(24px, 4vw, 36px)" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
-              <Award size={22} style={{ color: "var(--cyber-gold)" }} />
-              <h2 style={{ fontFamily: "var(--font-headline)", fontSize: "1.25rem", fontWeight: 600, color: "var(--text-primary)" }}>
-                4. Projects & Open Source
-              </h2>
-            </div>
-            <p style={{ color: "var(--text-secondary)", lineHeight: 1.7, fontSize: "0.95rem", marginBottom: "16px" }}>
-              Codebases, hardware designs, and engineering documentation produced by technical committees are maintained under relevant open-source licenses or branch project guidelines. You may inspect and contribute to active projects via the <a href="https://github.com/PurdueIEEE" target="_blank" rel="noopener noreferrer" style={{ color: "var(--electric-blue)", display: "inline-flex", alignItems: "center", gap: "4px" }}>Purdue IEEE GitHub organization <ExternalLink size={12} /></a>.
-            </p>
-          </div>
-
-          {/* Section 5: Governance */}
-          <div className="glass-card" style={{ padding: "clamp(24px, 4vw, 36px)" }}>
-            <h2 style={{ fontFamily: "var(--font-headline)", fontSize: "1.25rem", fontWeight: 600, color: "var(--text-primary)", marginBottom: "12px" }}>
-              5. Governance & Bylaws
-            </h2>
-            <p style={{ color: "var(--text-secondary)", lineHeight: 1.7, fontSize: "0.95rem", marginBottom: "16px" }}>
-              Official branch governing documents, election rules, officer responsibilities, and committee bylaws are publicly available for review:
-            </p>
-            <Link
-              to="/constitution"
-              className="btn-ghost"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "8px",
-                textDecoration: "none",
-                fontSize: "0.875rem",
-              }}
+          {sections.map((sec, idx) => (
+            <div
+              key={sec._key || idx}
+              className="glass-card"
+              style={{ padding: "clamp(24px, 4vw, 36px)" }}
             >
-              <FileText size={16} /> View Branch Constitution & Bylaws
-            </Link>
-          </div>
-
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                  marginBottom: "16px",
+                }}
+              >
+                {getTermsIcon(sec.icon, idx)}
+                <h2
+                  style={{
+                    fontFamily: "var(--font-headline)",
+                    fontSize: "1.25rem",
+                    fontWeight: 600,
+                    color: "var(--text-primary)",
+                  }}
+                >
+                  {sec.title}
+                </h2>
+              </div>
+              <div
+                style={{
+                  color: "var(--text-secondary)",
+                  lineHeight: 1.7,
+                  fontSize: "0.95rem",
+                }}
+              >
+                <ReactMarkdown>{sec.content}</ReactMarkdown>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { client, previewClient } from '../lib/sanity';
 import groq from 'groq';
 import type { Committee, CornerstoneCommittee } from '../data/committees/types';
-import type { Leader, OfficersConfig, HomePageData, AboutPageData, JoinPageData, DuesOption } from '../data/sanity-types';
+import type { Leader, OfficersConfig, HomePageData, AboutPageData, JoinPageData, DuesOption, LegalSection } from '../data/sanity-types';
 
 const SECTION_PROJECTION = `
   "sections": coalesce(sections[]{
@@ -214,6 +214,15 @@ export interface SiteSettings {
     name: string;
     pdfUrl: string;
   }[];
+  accessibilityTitle?: string;
+  accessibilityTarget?: string;
+  accessibilitySections?: LegalSection[];
+  privacyTitle?: string;
+  privacyEffectiveDate?: string;
+  privacySections?: LegalSection[];
+  termsTitle?: string;
+  termsEffectiveDate?: string;
+  termsSections?: LegalSection[];
 }
 
 export function useSiteSettings() {
@@ -227,6 +236,9 @@ export function useSiteSettings() {
       ...,
       "pdfUrl": pdfFile.asset->url
     }, []),
+    "accessibilitySections": coalesce(accessibilitySections[], []),
+    "privacySections": coalesce(privacySections[], []),
+    "termsSections": coalesce(termsSections[], []),
     "socialLinks": coalesce(socialLinks[], []),
     "ctaBenefits": coalesce(ctaBenefits[], []),
     "partnersProspectusUrl": partnersProspectusFile.asset->url

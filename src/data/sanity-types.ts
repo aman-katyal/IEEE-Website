@@ -125,4 +125,12 @@ export interface JoinPageData {
   exemptionNote?: string;
 }
 
+export interface LegalSection {
+  _key?: string;
+  title: string;
+  content: string;
+  icon?: string;
+}
+
+
 

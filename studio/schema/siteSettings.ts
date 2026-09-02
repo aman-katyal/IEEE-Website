@@ -104,6 +104,114 @@ export const siteSettings = defineType({
         },
       ],
     }),
+    defineField({
+      name: 'accessibilityTitle',
+      title: 'Accessibility Page Title',
+      type: 'string',
+      group: 'legal',
+      initialValue: 'Accessibility Statement',
+    }),
+    defineField({
+      name: 'accessibilityTarget',
+      title: 'Accessibility Conformance Subtitle',
+      type: 'string',
+      group: 'legal',
+      initialValue: 'Conformance Target: WCAG 2.2 Level AA · Purdue IEEE Student Branch',
+    }),
+    defineField({
+      name: 'accessibilitySections',
+      title: 'Accessibility Policy Sections',
+      type: 'array',
+      group: 'legal',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            { name: 'title', title: 'Section Title', type: 'string', validation: (Rule) => Rule.required() },
+            { name: 'content', title: 'Markdown Content', type: 'text', rows: 4, validation: (Rule) => Rule.required() },
+            { name: 'icon', title: 'Icon Name (accessibility, check, eye, mail)', type: 'string' },
+          ],
+          preview: {
+            select: {
+              title: 'title',
+              subtitle: 'content',
+            },
+          },
+        },
+      ],
+    }),
+    defineField({
+      name: 'privacyTitle',
+      title: 'Privacy Policy Page Title',
+      type: 'string',
+      group: 'legal',
+      initialValue: 'Privacy Policy',
+    }),
+    defineField({
+      name: 'privacyEffectiveDate',
+      title: 'Privacy Policy Effective Date',
+      type: 'string',
+      group: 'legal',
+      initialValue: 'Effective Date: Spring Semester 2026 · Purdue IEEE Student Branch',
+    }),
+    defineField({
+      name: 'privacySections',
+      title: 'Privacy Policy Sections',
+      type: 'array',
+      group: 'legal',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            { name: 'title', title: 'Section Title', type: 'string', validation: (Rule) => Rule.required() },
+            { name: 'content', title: 'Markdown Content', type: 'text', rows: 4, validation: (Rule) => Rule.required() },
+            { name: 'icon', title: 'Icon Name (shield, users, lock, camera, mail)', type: 'string' },
+          ],
+          preview: {
+            select: {
+              title: 'title',
+              subtitle: 'content',
+            },
+          },
+        },
+      ],
+    }),
+    defineField({
+      name: 'termsTitle',
+      title: 'Terms of Use Page Title',
+      type: 'string',
+      group: 'legal',
+      initialValue: 'Terms of Use',
+    }),
+    defineField({
+      name: 'termsEffectiveDate',
+      title: 'Terms of Use Effective Date',
+      type: 'string',
+      group: 'legal',
+      initialValue: 'Effective Date: Spring Semester 2026 · Purdue IEEE Student Branch',
+    }),
+    defineField({
+      name: 'termsSections',
+      title: 'Terms of Use Sections',
+      type: 'array',
+      group: 'legal',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            { name: 'title', title: 'Section Title', type: 'string', validation: (Rule) => Rule.required() },
+            { name: 'content', title: 'Markdown Content', type: 'text', rows: 4, validation: (Rule) => Rule.required() },
+            { name: 'icon', title: 'Icon Name (file, shield, cpu, award, governance)', type: 'string' },
+          ],
+          preview: {
+            select: {
+              title: 'title',
+              subtitle: 'content',
+            },
+          },
+        },
+      ],
+    }),
 
     // --- PARTNERS GROUP ---
     defineField({
