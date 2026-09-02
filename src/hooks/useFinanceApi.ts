@@ -5,9 +5,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import {
-  INITIAL_PURCHASES,
-  INITIAL_MEMBER_DUES,
-  INITIAL_FUNDING_INFLOWS,
   REAL_COMMITTEES,
   type AuthSessionData,
   type PurchaseItem,
@@ -57,65 +54,18 @@ export function useFinanceApi() {
     }
   });
 
-  const [auditLogs, setAuditLogs] = useState<FinancialAuditLedgerEntry[]>(() => {
-    try {
-      const stored = localStorage.getItem('boilerbooks_audit_logs');
-      return stored ? JSON.parse(stored) : [];
-    } catch {
-      return [];
-    }
-  });
-
-  const [purchases, setPurchases] = useState<PurchaseItem[]>(() => {
-    try {
-      const stored = localStorage.getItem('boilerbooks_purchases');
-      return stored ? JSON.parse(stored) : INITIAL_PURCHASES;
-    } catch {
-      return INITIAL_PURCHASES;
-    }
-  });
-
-  const [memberDues, setMemberDues] = useState<MemberDuesRecord[]>(() => {
-    try {
-      const stored = localStorage.getItem('boilerbooks_dues');
-      return stored ? JSON.parse(stored) : INITIAL_MEMBER_DUES;
-    } catch {
-      return INITIAL_MEMBER_DUES;
-    }
-  });
-
-  const [committees, setCommittees] = useState<CommitteeInfo[]>(() => {
-    try {
-      const stored = localStorage.getItem('boilerbooks_committees');
-      return stored ? JSON.parse(stored) : REAL_COMMITTEES;
-    } catch {
-      return REAL_COMMITTEES;
-    }
-  });
-
-  const [fundingInflows, setFundingInflows] = useState<CommitteeFundingInflow[]>(() => {
-    try {
-      const stored = localStorage.getItem('boilerbooks_inflows');
-      return stored ? JSON.parse(stored) : INITIAL_FUNDING_INFLOWS;
-    } catch {
-      return INITIAL_FUNDING_INFLOWS;
-    }
-  });
-
-  const [bosoStatement, setBosoStatement] = useState<BosoAccountStatement>(() => {
-    try {
-      const stored = localStorage.getItem('boilerbooks_boso_statement');
-      return stored ? JSON.parse(stored) : OFFICIAL_BOSO_STATEMENT_SFAB_2026;
-    } catch {
-      return OFFICIAL_BOSO_STATEMENT_SFAB_2026;
-    }
-  });
+  const [auditLogs, setAuditLogs] = useState<FinancialAuditLedgerEntry[]>([]);
+  const [purchases, setPurchases] = useState<PurchaseItem[]>([]);
+  const [memberDues, setMemberDues] = useState<MemberDuesRecord[]>([]);
+  const [committees, setCommittees] = useState<CommitteeInfo[]>(REAL_COMMITTEES);
+  const [fundingInflows, setFundingInflows] = useState<CommitteeFundingInflow[]>([]);
+  const [bosoStatement, setBosoStatement] = useState<BosoAccountStatement>(OFFICIAL_BOSO_STATEMENT_SFAB_2026);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Sync to localStorage
+  // Sync session authentication to localStorage
   useEffect(() => {
     try {
       if (session) {
@@ -125,42 +75,6 @@ export function useFinanceApi() {
       }
     } catch {}
   }, [session]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('boilerbooks_purchases', JSON.stringify(purchases));
-    } catch {}
-  }, [purchases]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('boilerbooks_dues', JSON.stringify(memberDues));
-    } catch {}
-  }, [memberDues]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('boilerbooks_committees', JSON.stringify(committees));
-    } catch {}
-  }, [committees]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('boilerbooks_inflows', JSON.stringify(fundingInflows));
-    } catch {}
-  }, [fundingInflows]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('boilerbooks_boso_statement', JSON.stringify(bosoStatement));
-    } catch {}
-  }, [bosoStatement]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('boilerbooks_audit_logs', JSON.stringify(auditLogs));
-    } catch {}
-  }, [auditLogs]);
 
   // Fetch initial data from Cloudflare API if available
   const refreshData = useCallback(async (fiscalYearId = 'fy25-26') => {
@@ -275,9 +189,13 @@ export function useFinanceApi() {
         if (logsData.entries && Array.isArray(logsData.entries)) {
           setAuditLogs(logsData.entries);
         }
+      } else if (logsRes.status !== 401) {
+        const errJson = await logsRes.json().catch(() => ({}));
+        throw new Error(errJson.error || errJson.message || `Audit ledger sync failed: HTTP ${logsRes.status}`);
       }
-    } catch {
-      // Offline fallback: keep using local state
+    } catch (err: any) {
+      console.error('[BoilerBooks FATAL ERROR]', err);
+      setError(err?.message || 'Failed to sync finance data from server.');
     } finally {
       setIsSyncing(false);
     }

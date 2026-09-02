@@ -54,13 +54,11 @@ export async function verifyPin(
     return { authenticated: false, message: 'Invalid committee or authentication role.' };
   }
 
-  let isValid = false;
-  if (row.passcode_hash.startsWith('pbkdf2:')) {
-    isValid = await verifyPinHash(pin.trim(), row.passcode_hash);
-  } else {
-    // Fallback comparison for plain-text passcodes
-    isValid = pin.trim() === row.passcode_hash.trim();
+  if (!row.passcode_hash.startsWith('pbkdf2:')) {
+    throw new Error(`Security violation: Committee "${targetId}" is missing a valid PBKDF2 password hash.`);
   }
+
+  const isValid = await verifyPinHash(pin.trim(), row.passcode_hash);
 
   if (!isValid) {
     return { authenticated: false, message: 'Invalid authentication passcode. Please check your credentials.' };

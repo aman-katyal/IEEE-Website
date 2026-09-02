@@ -2,7 +2,7 @@ import { FinanceAuthModal } from '../components/finance/FinanceAuthModal';
 import { CommitteeFinanceView } from '../components/finance/CommitteeFinanceView';
 import { TreasurerFinanceView } from '../components/finance/TreasurerFinanceView';
 import { useFinanceApi } from '@/hooks/useFinanceApi';
-import { ArrowRightLeft } from 'lucide-react';
+import { ArrowRightLeft, AlertTriangle } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 
@@ -16,6 +16,8 @@ export function FinancePortalPage() {
     fundingInflows,
     auditLogs,
     bosoStatement,
+    error,
+    refreshData,
     logout,
     addPurchase,
     updatePurchaseStatus,
@@ -101,6 +103,33 @@ export function FinancePortalPage() {
             </div>
           )}
         </div>
+
+        {/* Critical System Error Banner - Fails Super Loudly */}
+        {error && (
+          <div
+            role="alert"
+            className="p-4 rounded-xl bg-red-950/90 border-2 border-red-500 text-red-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-sm font-mono shadow-2xl"
+          >
+            <div className="flex items-center gap-3">
+              <AlertTriangle className="w-6 h-6 text-red-400 shrink-0" />
+              <div>
+                <span className="font-bold text-red-200 uppercase tracking-wider block text-xs">
+                  Critical Finance Error
+                </span>
+                <span>{error}</span>
+              </div>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => refreshData()}
+              className="bg-red-900/50 border-red-400/50 text-xs text-white hover:bg-red-800 shrink-0"
+            >
+              Retry Connection
+            </Button>
+          </div>
+        )}
 
         {/* Main Portal View Routing */}
         {!session ? (
