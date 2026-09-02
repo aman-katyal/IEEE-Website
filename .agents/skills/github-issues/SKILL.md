@@ -374,3 +374,13 @@ gh label create "area:cms"        --color "f59e0b" --description "Sanity Studio 
 gh label create "area:styles"     --color "ec4899" --description "CSS variables, Tailwind tokens, theme" --force
 gh label create "area:infra"      --color "0d1117" --description "Cloudflare, Wrangler, build config, Vite" --force
 ```
+
+---
+
+## 🔄 Continuous Self-Improvement Loop (Rule 22)
+
+Per `GEMINI.md` Rule 22, whenever you encounter friction or limitations in GitHub issues tooling or workflows:
+1. **Identify Tooling Bottlenecks**: Missing command flags, output buffering in background tasks, false positives in linting, or gaps in duplicate detection.
+2. **Proactively Enhance**: Upgrade `.agents/tools/gh_tool/` directly (e.g. classifier heuristics, validation rules, unbuffered line streaming, or batch concurrency).
+3. **Verify & Document**: Run unit tests or dry runs (`python -m gh_tool issue lint`, `python -m gh_tool issue suggest-labels`), update this `SKILL.md`, and commit changes atomically.
+

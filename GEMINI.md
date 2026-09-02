@@ -114,6 +114,10 @@ To deploy to Cloudflare Pages:
 21. **Cloudflare Pages Functions Build Verification (MANDATORY):**
     - Whenever modifications are made to `functions/` (Cloudflare Pages API gateway) or backend services in `src/server/`, the agent MUST execute `npx wrangler pages functions build` alongside `npx tsc --noEmit && npm test && npm run build` to verify Cloudflare Worker bundling succeeds before committing.
     - Redundant `_redirects` SPA rewrite rules must never be committed alongside `wrangler.jsonc` `"not_found_handling": "single-page-application"` to prevent Cloudflare redirect loops.
+22. **Continuous Self-Improvement of Repository Tooling & Skills (MANDATORY):**
+    - When encountering limitations, friction, papercuts, or missing capabilities in repository tooling (`.agents/tools/`, `scripts/`) or skills (`.agents/skills/`), the agent MUST proactively diagnose and enhance the tooling or skill directly rather than relying on brittle manual workarounds.
+    - Examples include: fixing output buffering in CLI tools, expanding classification heuristics in `gh_tool`, refining error messages, or documenting newly discovered edge cases in relevant `SKILL.md` runbooks.
+    - Any tooling or skill modification must be accompanied by clean verification (`tsc`, unit tests, or test dry-runs) and an atomic git commit.
 
 ## 🏛️ Three Tiers of Customization
 
