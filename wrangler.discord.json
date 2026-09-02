@@ -1,0 +1,19 @@
+{
+  "name": "discord-email-verify",
+  "main": "src/discord-worker.js",
+  "compatibility_date": "2026-04-28",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "VERIFY_KV",
+      "id": "46e88a73a44e4b2db9199d79c973ab24"
+    }
+  ],
+  "vars": {
+    "GUILD_ID": "1358686585725391018",
+    "ROLE_ID": "1388638368669110343",
+    "DOMAIN_FILTER": "@purdue.edu"
+  }
+}

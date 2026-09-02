@@ -49,8 +49,10 @@ commit_message.txt
 
 # Antigravity agent configurations & design system files
 .agents/
+.superpowers/
 design-system/
 graphify-out/
 **/graphify-out/
 .htpasswd
 coverage/
+_worker.bundle
