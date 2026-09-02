@@ -199,6 +199,9 @@ export function FinanceAuthModal({
                 <Label htmlFor="pin-input" className="text-xs font-medium text-slate-300">
                   {role === 'TREASURER' ? 'Treasurer Master Passcode' : 'Committee Access Passcode'}
                 </Label>
+                <span className="text-[10px] text-slate-500 font-normal">
+                  {role === 'TREASURER' ? 'Executive PIN required' : 'Committee PIN required'}
+                </span>
               </div>
 
               <div className="relative">
@@ -207,9 +210,12 @@ export function FinanceAuthModal({
                   data-testid="pin-input"
                   type={showPin ? 'text' : 'password'}
                   value={pin}
-                  onChange={(e) => setPin(e.target.value)}
+                  onChange={(e) => {
+                    setPin(e.target.value);
+                    if (errorMessage) setErrorMessage(null);
+                  }}
                   placeholder={role === 'TREASURER' ? 'Enter master passcode...' : 'Enter committee passcode...'}
-                  className="bg-slate-900 border-slate-700 text-slate-100 pr-10 h-10 tracking-widest font-mono focus:border-sky-500"
+                  className="bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-500 placeholder:font-sans placeholder:tracking-normal placeholder:opacity-50 pr-10 h-10 tracking-widest font-mono focus:border-sky-500"
                   autoComplete="current-password"
                 />
                 <button
