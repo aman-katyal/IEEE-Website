@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
+import { useIdleTimer } from './useIdleTimer';
 import {
   REAL_COMMITTEES,
   type AuthSessionData,
@@ -23,7 +24,9 @@ const API_BASE = '/api/finance';
 /** Returns Authorization headers if a session token is available */
 function getAuthHeaders(): Record<string, string> {
   try {
-    const token = localStorage.getItem('boilerbooks_token');
+    const token =
+      sessionStorage.getItem('boilerbooks_token') ||
+      localStorage.getItem('boilerbooks_token');
     if (token) {
       return { Authorization: `Bearer ${token}` };
     }
@@ -47,7 +50,9 @@ export interface UseFinanceApiState {
 export function useFinanceApi() {
   const [session, setSession] = useState<AuthSessionData | null>(() => {
     try {
-      const stored = localStorage.getItem('boilerbooks_session');
+      const stored =
+        sessionStorage.getItem('boilerbooks_session') ||
+        localStorage.getItem('boilerbooks_session');
       return stored ? JSON.parse(stored) : null;
     } catch {
       return null;
@@ -65,13 +70,39 @@ export function useFinanceApi() {
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Sync session authentication to localStorage
+  const logout = useCallback((reason?: string) => {
+    setSession(null);
+    try {
+      localStorage.removeItem('boilerbooks_session');
+      localStorage.removeItem('boilerbooks_token');
+      sessionStorage.removeItem('boilerbooks_session');
+      sessionStorage.removeItem('boilerbooks_token');
+    } catch {}
+    if (reason) {
+      setError(reason);
+    }
+  }, []);
+
+  // Automatically sign out after 15 minutes of inactivity
+  useIdleTimer(
+    () => {
+      logout('You were automatically signed out due to 15 minutes of inactivity.');
+    },
+    15 * 60 * 1000,
+    Boolean(session)
+  );
+
+  // Sync session authentication to storage
   useEffect(() => {
     try {
       if (session) {
+        sessionStorage.setItem('boilerbooks_session', JSON.stringify(session));
         localStorage.setItem('boilerbooks_session', JSON.stringify(session));
       } else {
+        sessionStorage.removeItem('boilerbooks_session');
         localStorage.removeItem('boilerbooks_session');
+        sessionStorage.removeItem('boilerbooks_token');
+        localStorage.removeItem('boilerbooks_token');
       }
     } catch {}
   }, [session]);
@@ -237,7 +268,10 @@ export function useFinanceApi() {
         setSession(newSession);
         // Store JWT token for authenticated API requests
         if (data.session.token) {
-          try { localStorage.setItem('boilerbooks_token', data.session.token); } catch {}
+          try {
+            sessionStorage.setItem('boilerbooks_token', data.session.token);
+            localStorage.setItem('boilerbooks_token', data.session.token);
+          } catch {}
         }
         return { success: true, session: newSession };
       }
@@ -251,11 +285,6 @@ export function useFinanceApi() {
       setError(msg);
       return { success: false, message: msg };
     }
-  };
-
-  const logout = () => {
-    setSession(null);
-    try { localStorage.removeItem('boilerbooks_token'); } catch {}
   };
 
   // Add Purchase with rollback on server failure
@@ -685,6 +714,9 @@ export function useFinanceApi() {
       localStorage.removeItem('boilerbooks_audit_logs');
       localStorage.removeItem('boilerbooks_committees');
     } catch {}
+
+    // Automatically sign out user on data wipe
+    logout('All financial data and audit logs successfully cleared. You have been automatically signed out.');
 
     setIsLoading(false);
     return { success: true, message: 'All financial data and audit logs successfully cleared.' };

@@ -10,6 +10,7 @@ describe('useFinanceApi Hook Suite', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.clear();
+    sessionStorage.clear();
     mockFetch.mockResolvedValue({
       ok: true,
       json: async () => ({ success: true }),

@@ -57,4 +57,12 @@ describe('useIdleTimer', () => {
     // Should have removed listeners for: mousemove, keydown, touchstart, scroll, click
     expect(removeSpy).toHaveBeenCalledTimes(5);
   });
+
+  it('does not call onIdle when enabled is false', () => {
+    const onIdle = vi.fn();
+    renderHook(() => useIdleTimer(onIdle, 5000, false));
+    vi.advanceTimersByTime(10000);
+    expect(onIdle).not.toHaveBeenCalled();
+  });
 });
+

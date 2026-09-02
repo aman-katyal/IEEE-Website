@@ -1,6 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "purdue-ieee-website",
+  "account_id": "ed46f4df42265ae0ba609d84361ae02d",
   "main": "src/worker.ts",
   "compatibility_date": "2026-04-28",
   "routes": [

@@ -18,6 +18,7 @@ describe('FinancePortalPage Integration Suite', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.clear();
+    sessionStorage.clear();
     global.fetch = vi.fn().mockImplementation(async (url: string, init?: RequestInit) => {
       const urlStr = typeof url === 'string' ? url : '';
       if (urlStr.includes('/auth/verify-pin') && init?.body) {

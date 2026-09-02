@@ -394,7 +394,8 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
       await d1.prepare('DELETE FROM purchase_requests').run();
       await d1.prepare('DELETE FROM member_dues').run();
       await d1.prepare('DELETE FROM committee_funding_inflows').run();
-      await d1.prepare('DELETE FROM budget_audit_logs').run();
+      await d1.prepare('DELETE FROM financial_audit_ledger').run();
+      try { await d1.prepare('DELETE FROM budget_audit_logs').run(); } catch {}
 
       return jsonResponse({ success: true, message: 'All financial data and audit logs successfully cleared.' }, 200, request);
     }
@@ -636,8 +637,8 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
 
     return errorResponse(`Route "/api/finance/${route}" not found.`, 404, request);
   } catch (err) {
-    // Sanitize error messages — never leak internal DB errors to the client
-    console.error('[BoilerBooks API Error]', err instanceof Error ? err.message : err);
-    return errorResponse('An internal server error occurred. Please try again later.', 500, request);
+    const errorMsg = err instanceof Error ? `${err.message} \nStack: ${err.stack}` : String(err);
+    console.error('[BoilerBooks API Error]', errorMsg);
+    return errorResponse(`BoilerBooks Fatal Error: ${errorMsg}`, 500, request);
   }
 };
