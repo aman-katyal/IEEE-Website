@@ -126,6 +126,7 @@ export interface TreasurerFinanceViewProps {
   onDeleteCommittee?: (committeeId: string) => Promise<{ success: boolean; error?: string }> | void;
   onAddFundingInflow: (newInflow: CommitteeFundingInflow) => void;
   onDeleteFundingInflow?: (id: string) => void;
+  onClearAllData?: () => Promise<{ success: boolean; message?: string }> | void;
   onLogout?: () => void;
 }
 
@@ -144,6 +145,7 @@ export function TreasurerFinanceView({
   onDeleteCommittee,
   onAddFundingInflow,
   onDeleteFundingInflow,
+  onClearAllData,
   onLogout,
 }: TreasurerFinanceViewProps) {
   const activeCommittees = useMemo(() => {
@@ -925,6 +927,23 @@ export function TreasurerFinanceView({
             <UploadCloud className="w-4 h-4 text-sky-400" />
             <span>Import TooCOOL Dues</span>
           </Button>
+
+          {onClearAllData && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={async () => {
+                if (window.confirm('Are you sure you want to clear all data? This will purge all purchase requisitions, member dues, and banking audit ledger entries.')) {
+                  await onClearAllData();
+                }
+              }}
+              className="bg-rose-500/10 border-rose-500/30 text-rose-300 hover:bg-rose-500/20 hover:text-white flex items-center gap-2"
+              title="Clear all transaction data, dues, and audit ledger entries"
+            >
+              <Trash2 className="w-4 h-4 text-rose-400" />
+              <span>Clear All Data</span>
+            </Button>
+          )}
 
           {onLogout && (
             <Button
@@ -1823,6 +1842,7 @@ export function TreasurerFinanceView({
             entries={auditLogs}
             committees={activeCommittees}
             isTreasurer={true}
+            onClearAllData={onClearAllData}
           />
         </TabsContent>
       </Tabs>

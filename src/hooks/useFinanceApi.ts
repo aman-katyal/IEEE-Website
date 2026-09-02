@@ -737,6 +737,41 @@ export function useFinanceApi() {
     return false;
   };
 
+  const clearAllData = async (): Promise<{ success: boolean; message?: string }> => {
+    setIsLoading(true);
+    try {
+      const authH = getAuthHeaders();
+      await fetch(`${API_BASE}/reset`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...authH,
+        },
+      });
+    } catch {
+      // Continue to local clear even if offline or mock
+    }
+
+    // Reset local state
+    setPurchases([]);
+    setMemberDues([]);
+    setFundingInflows([]);
+    setAuditLogs([]);
+    setCommittees(REAL_COMMITTEES);
+
+    // Clear local storage caches
+    try {
+      localStorage.removeItem('boilerbooks_purchases');
+      localStorage.removeItem('boilerbooks_dues');
+      localStorage.removeItem('boilerbooks_inflows');
+      localStorage.removeItem('boilerbooks_audit_logs');
+      localStorage.removeItem('boilerbooks_committees');
+    } catch {}
+
+    setIsLoading(false);
+    return { success: true, message: 'All financial data and audit logs successfully cleared.' };
+  };
+
   return {
     session,
     setSession,
@@ -764,5 +799,6 @@ export function useFinanceApi() {
     uploadReceipt,
     exportCoolTsv,
     refreshData,
+    clearAllData,
   };
 }

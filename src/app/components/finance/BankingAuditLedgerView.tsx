@@ -16,6 +16,7 @@ import {
   History,
   Search,
   Download,
+  Trash2,
   ArrowUpRight,
   ArrowDownRight,
   ShieldCheck,
@@ -28,6 +29,7 @@ export interface BankingAuditLedgerViewProps {
   committees?: CommitteeInfo[];
   currentCommitteeId?: string; // If set, scopes view for committee lead
   isTreasurer?: boolean;
+  onClearAllData?: () => Promise<any> | void;
 }
 
 export function BankingAuditLedgerView({
@@ -35,6 +37,7 @@ export function BankingAuditLedgerView({
   committees = [],
   currentCommitteeId,
   isTreasurer: _isTreasurer = false,
+  onClearAllData,
 }: BankingAuditLedgerViewProps) {
   const [search, setSearch] = useState('');
   const [filterCommittee, setFilterCommittee] = useState<string>(currentCommitteeId || 'ALL');
@@ -270,6 +273,23 @@ export function BankingAuditLedgerView({
             <Download className="w-3.5 h-3.5" />
             <span>Export CSV</span>
           </Button>
+
+          {_isTreasurer && onClearAllData && (
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={async () => {
+                if (window.confirm('Are you sure you want to clear all data? This will purge all purchase requisitions, dues records, funding inflows, and audit ledger entries.')) {
+                  await onClearAllData();
+                }
+              }}
+              className="h-8 bg-rose-500/10 border-rose-500/30 text-xs text-rose-300 hover:bg-rose-500/20 hover:text-white flex items-center gap-1.5"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              <span>Clear All Data</span>
+            </Button>
+          )}
         </div>
       </CardHeader>
 

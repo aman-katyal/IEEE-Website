@@ -26,6 +26,7 @@ export function FinancePortalPage() {
     deleteCommittee,
     addFundingInflow,
     deleteFundingInflow,
+    clearAllData,
   } = useFinanceApi();
 
   const handleLogin = (newSession: any) => {
@@ -135,6 +136,7 @@ export function FinancePortalPage() {
             onDeleteCommittee={deleteCommittee}
             onAddFundingInflow={addFundingInflow}
             onDeleteFundingInflow={deleteFundingInflow}
+            onClearAllData={clearAllData}
             onLogout={handleLogout}
           />
         )}

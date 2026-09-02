@@ -384,6 +384,22 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
     }
 
     // -------------------------------------------------------------
+    // Reset / Purge All Data: POST /api/finance/reset (TREASURER only)
+    // -------------------------------------------------------------
+    if (route === 'reset' && request.method === 'POST') {
+      const authResult = await requireAuth(request, env, ['TREASURER']);
+      if (isResponse(authResult)) return authResult;
+
+      const d1 = toD1Database(db);
+      await d1.prepare('DELETE FROM purchase_requests').run();
+      await d1.prepare('DELETE FROM member_dues').run();
+      await d1.prepare('DELETE FROM committee_funding_inflows').run();
+      await d1.prepare('DELETE FROM budget_audit_logs').run();
+
+      return jsonResponse({ success: true, message: 'All financial data and audit logs successfully cleared.' }, 200, request);
+    }
+
+    // -------------------------------------------------------------
     // 6. Member Dues Engine: /api/finance/dues
     // -------------------------------------------------------------
     if (route === 'dues') {
