@@ -25,6 +25,12 @@ export function MobileNavMenu({
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
     if (!isOpen) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -54,7 +60,10 @@ export function MobileNavMenu({
     };
 
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "";
+    };
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
