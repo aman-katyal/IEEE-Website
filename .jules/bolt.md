@@ -36,3 +36,6 @@
 ## 2024-10-24 - Cache Intl.NumberFormat
 **Learning:** Instantiating `Intl.NumberFormat` repeatedly is a huge performance bottleneck.
 **Action:** Cache the `Intl.NumberFormat` instances globally when using standard locales and options. The cache key should correspond to variable parameters (e.g., decimals).
+## 2026-10-31 - Optimize Relational Child Data Filtering
+**Learning:** Using nested `.filter()` operations inside a `.map()` callback to filter large relational child data arrays (like purchases associated with committees) introduces an O(N*M) time complexity bottleneck. This degrades rendering performance, especially when child arrays are large.
+**Action:** Always pre-group child arrays into a Map by the relational key (e.g., parent ID) before iterating over the parent array. A single Map lookup takes O(1) time, reducing the overall complexity from O(N*M) to O(N+M) and avoiding redundant array traversals.
