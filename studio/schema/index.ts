@@ -10,7 +10,7 @@ import { partner } from './partner'
 import { officeHours } from './officeHours'
 
 // Shared Objects
-import { socialLink, metric, imageStyle } from './objects/common'
+import { socialLink, metric, imageStyle, meetingSlot } from './objects/common'
 import { textSection, projectsSection, faqSection, gallerySection, historySection } from './objects/sections'
 import { aboutPageSection } from './objects/aboutPageSection'
 
@@ -31,6 +31,7 @@ export const schemaTypes = [
   socialLink,
   metric,
   imageStyle,
+  meetingSlot,
   textSection,
   projectsSection,
   faqSection,

@@ -86,11 +86,54 @@ export const committee = defineType({
       type: 'object',
       group: 'info',
       fields: [
-        defineField({ name: 'dayOfWeek', title: 'Day of Week', type: 'string', description: 'e.g. Tuesdays' }),
-        defineField({ name: 'time', title: 'Time', type: 'string', description: 'e.g. 6:30 PM - 7:30 PM' }),
-        defineField({ name: 'location', title: 'Location / Room', type: 'string', description: 'e.g. EE 129' }),
-        defineField({ name: 'frequency', title: 'Frequency', type: 'string', description: 'e.g. Weekly' }),
-        defineField({ name: 'notes', title: 'Notes', type: 'string', description: 'e.g. Open to all majors' }),
+        defineField({
+          name: 'meetings',
+          title: 'Meeting Days & Times',
+          description: 'Add meeting days with their corresponding times (select multiple days per slot, or add separate slots for different meeting times)',
+          type: 'array',
+          of: [{ type: 'meetingSlot' }],
+        }),
+        defineField({
+          name: 'location',
+          title: 'Default Location / Room',
+          type: 'string',
+          description: 'Default meeting room (e.g. EE 129, POTR 234)',
+        }),
+        defineField({
+          name: 'frequency',
+          title: 'Frequency',
+          type: 'string',
+          description: 'e.g. Weekly, Bi-weekly',
+          options: {
+            list: [
+              { title: 'Weekly', value: 'Weekly' },
+              { title: 'Bi-weekly', value: 'Bi-weekly' },
+              { title: 'Monthly', value: 'Monthly' },
+              { title: 'Announced on Discord', value: 'Announced on Discord' },
+            ],
+          },
+        }),
+        defineField({
+          name: 'notes',
+          title: 'Notes',
+          type: 'string',
+          description: 'e.g. Open to all majors, no experience needed',
+        }),
+        // Legacy single-slot fields for backwards compatibility
+        defineField({
+          name: 'dayOfWeek',
+          title: 'Day of Week (Legacy Single Day)',
+          type: 'string',
+          description: 'Fallback when Meeting Days & Times array is empty',
+          hidden: ({ parent }) => !!(parent?.meetings && parent.meetings.length > 0),
+        }),
+        defineField({
+          name: 'time',
+          title: 'Time (Legacy Single Time)',
+          type: 'string',
+          description: 'Fallback when Meeting Days & Times array is empty',
+          hidden: ({ parent }) => !!(parent?.meetings && parent.meetings.length > 0),
+        }),
       ],
     }),
 

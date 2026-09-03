@@ -2,8 +2,35 @@ import { useNavigate } from "react-router";
 import { Mail, ChevronRight, ExternalLink, AlertCircle, Clock } from "lucide-react";
 import { Skeleton } from "boneyard-js/react";
 import { getPlatformIcon } from "../icons/getPlatformIcon";
-import type { Committee } from "../../../data/committees/types";
+import type { Committee, MeetingSchedule } from "../../../data/committees/types";
 import { sanitizeExternalUrl } from "../../../lib/urlSafety";
+
+export function formatMeetingSchedule(schedule?: string | MeetingSchedule): string[] {
+  if (!schedule) return [];
+  if (typeof schedule === "string") return [schedule.trim()];
+
+  if (Array.isArray(schedule.meetings) && schedule.meetings.length > 0) {
+    return schedule.meetings
+      .map((slot) => {
+        const days = Array.isArray(slot.days) && slot.days.length > 0
+          ? slot.days.join(", ")
+          : (slot.dayOfWeek || "");
+        const time = slot.time || "";
+        const loc = slot.location || schedule.location || "";
+        const desc = slot.description ? ` (${slot.description})` : "";
+        const locStr = loc ? ` @ ${loc}` : "";
+        const line = `${days} ${time}${locStr}${desc}`.trim();
+        return line;
+      })
+      .filter(Boolean);
+  }
+
+  const days = schedule.dayOfWeek || "";
+  const time = schedule.time || "";
+  const loc = schedule.location ? ` @ ${schedule.location}` : "";
+  const fallback = `${days} ${time}${loc}`.trim();
+  return fallback ? [fallback] : [];
+}
 
 interface CommitteeQuickFactsProps {
   committee: Committee | null | undefined;
@@ -132,18 +159,23 @@ export function CommitteeQuickFacts({
                 {committee.email}
               </a>
             )}
-            {committee?.meetingSchedule && (
-              <div className="inline-flex items-center justify-center md:justify-start gap-1.5 font-[family-name:var(--font-mono)] text-[11px] text-[var(--cyber-gold)] mt-1.5 opacity-90">
-                <Clock size={11} className="shrink-0" aria-hidden="true" />
-                <span>
-                  {typeof committee.meetingSchedule === "string"
-                    ? committee.meetingSchedule
-                    : `${committee.meetingSchedule.dayOfWeek || ""} ${committee.meetingSchedule.time || ""} ${
-                        committee.meetingSchedule.location ? `@ ${committee.meetingSchedule.location}` : ""
-                      }`.trim()}
-                </span>
-              </div>
-            )}
+            {(() => {
+              const meetingLines = formatMeetingSchedule(committee?.meetingSchedule);
+              if (meetingLines.length === 0) return null;
+              return (
+                <div className="flex flex-col gap-1 mt-1.5">
+                  {meetingLines.map((line, idx) => (
+                    <div
+                      key={idx}
+                      className="inline-flex items-center justify-center md:justify-start gap-1.5 font-[family-name:var(--font-mono)] text-[11px] text-[var(--cyber-gold)] opacity-90"
+                    >
+                      <Clock size={11} className="shrink-0" aria-hidden="true" />
+                      <span>{line}</span>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
           </div>
         )}
 

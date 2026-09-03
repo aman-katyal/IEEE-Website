@@ -208,5 +208,55 @@ describe('CommitteePage Rendering', () => {
     expect(screen.getByText('Flagship Project')).toBeInTheDocument();
     expect(screen.getByText(/★ Flagship/i)).toBeInTheDocument();
   });
+
+  it('should render multiple meeting days and corresponding times', () => {
+    const mockCommitteeWithMultiMeetings = {
+      id: 'rov-multimeetings',
+      name: 'ROV Team',
+      shortName: 'ROV',
+      tagline: 'Underwater Robotics',
+      description: 'Building underwater rovs',
+      longDescription: 'Long description',
+      status: 'Active',
+      image: 'test-image.jpg',
+      tags: ['robotics'],
+      chair: 'ROV Chair',
+      email: 'rov@example.com',
+      meetingSchedule: {
+        location: 'EE 129',
+        meetings: [
+          {
+            days: ['Wednesday'],
+            time: '6:30 PM - 8:30 PM',
+            location: 'POTR 234',
+            description: 'General Meeting',
+          },
+          {
+            days: ['Saturday'],
+            time: '1:00 PM - 4:00 PM',
+            description: 'Hardware Lab',
+          },
+        ],
+      },
+      sections: [],
+    };
+
+    (useSanityData.useCommittee as any).mockReturnValue({
+      committee: mockCommitteeWithMultiMeetings,
+      loading: false,
+      error: null,
+    });
+
+    render(
+      <MemoryRouter initialEntries={['/committee/rov-multimeetings']}>
+        <Routes>
+          <Route path="/committee/:id" element={<CommitteePage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText(/Wednesday 6:30 PM - 8:30 PM @ POTR 234 \(General Meeting\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/Saturday 1:00 PM - 4:00 PM @ EE 129 \(Hardware Lab\)/i)).toBeInTheDocument();
+  });
 });
 

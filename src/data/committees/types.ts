@@ -79,7 +79,17 @@ export type CommitteeSection =
   | { type: "cta"; title: string; content: string; buttonText: string; buttonLink: string }
   | { type: "contact"; title: string; name: string; email: string; role?: string };
 
+export interface MeetingSlot {
+  _key?: string;
+  days?: string[];
+  dayOfWeek?: string;
+  time?: string;
+  location?: string;
+  description?: string;
+}
+
 export interface MeetingSchedule {
+  meetings?: MeetingSlot[];
   dayOfWeek?: string;
   time?: string;
   location?: string;

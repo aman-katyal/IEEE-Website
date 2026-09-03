@@ -59,3 +59,68 @@ export const imageStyle = defineType({
     }),
   ],
 })
+
+export const meetingSlot = defineType({
+  name: 'meetingSlot',
+  title: 'Meeting Time Slot',
+  type: 'object',
+  fields: [
+    defineField({
+      name: 'days',
+      title: 'Day(s) of the Week',
+      description: 'Select one or more days this meeting occurs',
+      type: 'array',
+      of: [{ type: 'string' }],
+      options: {
+        list: [
+          { title: 'Monday', value: 'Monday' },
+          { title: 'Tuesday', value: 'Tuesday' },
+          { title: 'Wednesday', value: 'Wednesday' },
+          { title: 'Thursday', value: 'Thursday' },
+          { title: 'Friday', value: 'Friday' },
+          { title: 'Saturday', value: 'Saturday' },
+          { title: 'Sunday', value: 'Sunday' },
+        ],
+      },
+      validation: (Rule) => Rule.required().min(1).error('Select at least one day.'),
+    }),
+    defineField({
+      name: 'time',
+      title: 'Meeting Time',
+      type: 'string',
+      description: 'e.g. 6:30 PM - 8:30 PM, or 1:00 PM - 4:00 PM',
+      validation: (Rule) => Rule.required().error('Meeting time is required.'),
+    }),
+    defineField({
+      name: 'location',
+      title: 'Location / Room (Optional)',
+      type: 'string',
+      description: 'Room or building if different from committee default (e.g. POTR 234)',
+    }),
+    defineField({
+      name: 'description',
+      title: 'Session Type / Label (Optional)',
+      type: 'string',
+      description: 'e.g. General Meeting, Work Session, Hardware Lab, Software Subteam',
+    }),
+  ],
+  preview: {
+    select: {
+      days: 'days',
+      time: 'time',
+      location: 'location',
+      description: 'description',
+    },
+    prepare({ days, time, location, description }) {
+      const daysStr = Array.isArray(days) && days.length > 0 ? days.join(', ') : 'No day selected';
+      const timeStr = time ? ` ${time}` : '';
+      const locStr = location ? ` @ ${location}` : '';
+      const descStr = description ? ` [${description}]` : '';
+      return {
+        title: `${daysStr}:${timeStr}${locStr}`,
+        subtitle: descStr.trim() || undefined,
+      };
+    },
+  },
+})
+

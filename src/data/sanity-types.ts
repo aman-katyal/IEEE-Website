@@ -132,5 +132,20 @@ export interface LegalSection {
   icon?: string;
 }
 
+export interface MeetingSlot {
+  _key?: string;
+  days?: string[];
+  dayOfWeek?: string;
+  time?: string;
+  location?: string;
+  description?: string;
+}
 
-
+export interface MeetingSchedule {
+  meetings?: MeetingSlot[];
+  dayOfWeek?: string;
+  time?: string;
+  location?: string;
+  frequency?: string;
+  notes?: string;
+}
