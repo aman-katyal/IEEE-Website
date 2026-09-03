@@ -5,7 +5,7 @@
 // file upload validation, security headers, sanitized error responses.
 
 import { verifyPin } from '../../../src/server/auth/service';
-import { authenticateRequest } from '../../../src/server/auth/middleware';
+import { authenticateRequest, createSessionCookie } from '../../../src/server/auth/middleware';
 import { pinAuthLimiter } from '../../../src/server/auth/rateLimit';
 import type { AuthSession } from '../../../src/server/auth/types';
 import {
@@ -82,7 +82,7 @@ const SECURITY_HEADERS: Record<string, string> = {
   'Cache-Control': 'no-store, no-cache, must-revalidate',
 };
 
-function jsonResponse(data: unknown, status = 200, request?: Request) {
+function jsonResponse(data: unknown, status = 200, request?: Request, extraHeaders?: Record<string, string>) {
   const corsOrigin = request ? getCorsOrigin(request) : TRUSTED_ORIGINS[0];
   return new Response(JSON.stringify(data), {
     status,
@@ -93,6 +93,7 @@ function jsonResponse(data: unknown, status = 200, request?: Request) {
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
       'Vary': 'Origin',
       ...SECURITY_HEADERS,
+      ...(extraHeaders || {}),
     },
   });
 }
@@ -200,7 +201,16 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
       }
 
       pinAuthLimiter.recordSuccess(clientIp);
-      return jsonResponse({ success: true, authenticated: true, session: auth.session }, 200, request);
+      const extraHeaders: Record<string, string> = {};
+      if (auth.session.token) {
+        extraHeaders['Set-Cookie'] = createSessionCookie(auth.session.token);
+      }
+      return jsonResponse(
+        { success: true, authenticated: true, session: auth.session },
+        200,
+        request,
+        extraHeaders
+      );
     }
 
     // ═══════════════════════════════════════════════════════════════

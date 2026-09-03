@@ -33,6 +33,12 @@ export function FinancePortalPage() {
 
   const handleLogin = (newSession: any) => {
     setSession(newSession);
+    if (newSession?.token) {
+      try {
+        sessionStorage.setItem('boilerbooks_token', newSession.token);
+        localStorage.setItem('boilerbooks_token', newSession.token);
+      } catch {}
+    }
   };
 
   const handleLogout = () => {

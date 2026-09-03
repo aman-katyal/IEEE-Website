@@ -83,6 +83,7 @@ export interface AuthSessionData {
   committeeName: string;
   name: string;
   email: string;
+  token?: string;
 }
 
 export interface FinancialAuditLedgerEntry {

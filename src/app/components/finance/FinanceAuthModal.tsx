@@ -69,12 +69,19 @@ export function FinanceAuthModal({
       setIsSubmitting(false);
 
       if (res.ok && (data.authenticated || data.success) && data.session) {
+        if (data.session.token) {
+          try {
+            sessionStorage.setItem('boilerbooks_token', data.session.token);
+            localStorage.setItem('boilerbooks_token', data.session.token);
+          } catch {}
+        }
         onLogin({
           role: data.session.role,
           committeeId: data.session.committeeId,
           committeeName: data.session.committeeName,
           name: data.session.name,
           email: data.session.email,
+          token: data.session.token,
         });
         return;
       }

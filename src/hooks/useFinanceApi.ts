@@ -22,9 +22,10 @@ import {
 const API_BASE = '/api/finance';
 
 /** Returns Authorization headers if a session token is available */
-function getAuthHeaders(): Record<string, string> {
+function getAuthHeaders(sessionToken?: string): Record<string, string> {
   try {
     const token =
+      sessionToken ||
       sessionStorage.getItem('boilerbooks_token') ||
       localStorage.getItem('boilerbooks_token');
     if (token) {
@@ -98,6 +99,10 @@ export function useFinanceApi() {
       if (session) {
         sessionStorage.setItem('boilerbooks_session', JSON.stringify(session));
         localStorage.setItem('boilerbooks_session', JSON.stringify(session));
+        if (session.token) {
+          sessionStorage.setItem('boilerbooks_token', session.token);
+          localStorage.setItem('boilerbooks_token', session.token);
+        }
       } else {
         sessionStorage.removeItem('boilerbooks_session');
         localStorage.removeItem('boilerbooks_session');
@@ -264,6 +269,7 @@ export function useFinanceApi() {
           committeeName: data.session.committeeName,
           name: data.session.name,
           email: data.session.email,
+          token: data.session.token,
         };
         setSession(newSession);
         // Store JWT token for authenticated API requests
@@ -579,7 +585,7 @@ export function useFinanceApi() {
     try {
       const res = await fetch(`${API_BASE}/inflows`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+        headers: { 'Content-Type': 'application/json', ...getAuthHeaders(session?.token) },
         body: JSON.stringify({
           id: newInflow.id,
           fiscalYearId: 'fy25-26',
@@ -595,7 +601,9 @@ export function useFinanceApi() {
 
       if (!res.ok && res.status >= 400 && res.status !== 404) {
         setFundingInflows(prevInflows);
-        const err = `Failed to record funding inflow (HTTP ${res.status})`;
+        const err = res.status === 401
+          ? 'Authentication session expired or missing token (HTTP 401). Please click "Switch" to sign in with your PIN.'
+          : `Failed to record funding inflow (HTTP ${res.status})`;
         setError(err);
         return { success: false, error: err };
       }
@@ -613,7 +621,7 @@ export function useFinanceApi() {
     try {
       const res = await fetch(`${API_BASE}/inflows/${inflowId}`, {
         method: 'DELETE',
-        headers: getAuthHeaders(),
+        headers: getAuthHeaders(session?.token),
       });
 
       if (!res.ok && res.status >= 400 && res.status !== 404) {
