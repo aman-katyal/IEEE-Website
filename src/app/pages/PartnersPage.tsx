@@ -77,7 +77,8 @@ export function PartnersPage() {
   }
 
   // Use dynamic content from settings or fall back to default values
-  const irEmail = settings?.industrialRelationsEmail || "industry@purdueieee.org";
+  const irEmail =
+    settings?.industrialRelationsEmail || "industry@purdueieee.org";
   const heroTitle =
     settings?.partnersHeroTitle ||
     "Empowering the next generation of innovators";
@@ -202,188 +203,191 @@ export function PartnersPage() {
           >
             {/* Conditional Tier Breakdown or Unified Sponsors Grid */}
             {showCorporateTiers ? (
-            <>
-              {/* Gold Tier */}
-              {goldPartners.length > 0 && (
-                <div style={{ marginBottom: "80px" }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "16px",
-                      marginBottom: "32px",
-                    }}
-                  >
-                    <Award style={{ color: "var(--cyber-gold)" }} size={24} />
-                    <h2
-                      style={{
-                        fontFamily: "var(--font-headline)",
-                        fontSize: "1.5rem",
-                        color: "var(--text-primary)",
-                        letterSpacing: "0.05em",
-                        textTransform: "uppercase",
-                      }}
-                    >
-                      Gold Partners
-                    </h2>
+              <>
+                {/* Gold Tier */}
+                {goldPartners.length > 0 && (
+                  <div style={{ marginBottom: "80px" }}>
                     <div
                       style={{
-                        flex: 1,
-                        height: "1px",
-                        background:
-                          "linear-gradient(90deg, var(--glass-border), transparent)",
-                      }}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {goldPartners.map((p) => (
-                      <PartnerCard
-                        key={p.domain || p.name}
-                        partner={p}
-                        isLight={isLight}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Silver Tier */}
-              {silverPartners.length > 0 && (
-                <div style={{ marginBottom: "80px" }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "16px",
-                      marginBottom: "32px",
-                    }}
-                  >
-                    <Shield style={{ color: "var(--text-secondary)" }} size={24} />
-                    <h2
-                      style={{
-                        fontFamily: "var(--font-headline)",
-                        fontSize: "1.25rem",
-                        color: "var(--text-primary)",
-                        letterSpacing: "0.05em",
-                        textTransform: "uppercase",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "16px",
+                        marginBottom: "32px",
                       }}
                     >
-                      Silver Partners
-                    </h2>
+                      <Award style={{ color: "var(--cyber-gold)" }} size={24} />
+                      <h2
+                        style={{
+                          fontFamily: "var(--font-headline)",
+                          fontSize: "1.5rem",
+                          color: "var(--text-primary)",
+                          letterSpacing: "0.05em",
+                          textTransform: "uppercase",
+                        }}
+                      >
+                        Gold Partners
+                      </h2>
+                      <div
+                        style={{
+                          flex: 1,
+                          height: "1px",
+                          background:
+                            "linear-gradient(90deg, var(--glass-border), transparent)",
+                        }}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                      {goldPartners.map((p) => (
+                        <PartnerCard
+                          key={p.domain || p.name}
+                          partner={p}
+                          isLight={isLight}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Silver Tier */}
+                {silverPartners.length > 0 && (
+                  <div style={{ marginBottom: "80px" }}>
                     <div
                       style={{
-                        flex: 1,
-                        height: "1px",
-                        background:
-                          "linear-gradient(90deg, var(--glass-border), transparent)",
-                      }}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
-                    {silverPartners.map((p) => (
-                      <PartnerCard
-                        key={p.domain || p.name}
-                        partner={p}
-                        isLight={isLight}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Bronze Tier */}
-              {bronzePartners.length > 0 && (
-                <div>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "16px",
-                      marginBottom: "32px",
-                    }}
-                  >
-                    <Cpu style={{ color: "#CD7F32" }} size={24} />
-                    <h2
-                      style={{
-                        fontFamily: "var(--font-headline)",
-                        fontSize: "1.1rem",
-                        color: "var(--text-primary)",
-                        letterSpacing: "0.05em",
-                        textTransform: "uppercase",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "16px",
+                        marginBottom: "32px",
                       }}
                     >
-                      Bronze Partners
-                    </h2>
+                      <Shield
+                        style={{ color: "var(--text-secondary)" }}
+                        size={24}
+                      />
+                      <h2
+                        style={{
+                          fontFamily: "var(--font-headline)",
+                          fontSize: "1.25rem",
+                          color: "var(--text-primary)",
+                          letterSpacing: "0.05em",
+                          textTransform: "uppercase",
+                        }}
+                      >
+                        Silver Partners
+                      </h2>
+                      <div
+                        style={{
+                          flex: 1,
+                          height: "1px",
+                          background:
+                            "linear-gradient(90deg, var(--glass-border), transparent)",
+                        }}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
+                      {silverPartners.map((p) => (
+                        <PartnerCard
+                          key={p.domain || p.name}
+                          partner={p}
+                          isLight={isLight}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Bronze Tier */}
+                {bronzePartners.length > 0 && (
+                  <div>
                     <div
                       style={{
-                        flex: 1,
-                        height: "1px",
-                        background:
-                          "linear-gradient(90deg, var(--glass-border), transparent)",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "16px",
+                        marginBottom: "32px",
                       }}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                    {bronzePartners.map((p) => (
-                      <PartnerCard
-                        key={p.domain || p.name}
-                        partner={p}
-                        isLight={isLight}
+                    >
+                      <Cpu style={{ color: "#CD7F32" }} size={24} />
+                      <h2
+                        style={{
+                          fontFamily: "var(--font-headline)",
+                          fontSize: "1.1rem",
+                          color: "var(--text-primary)",
+                          letterSpacing: "0.05em",
+                          textTransform: "uppercase",
+                        }}
+                      >
+                        Bronze Partners
+                      </h2>
+                      <div
+                        style={{
+                          flex: 1,
+                          height: "1px",
+                          background:
+                            "linear-gradient(90deg, var(--glass-border), transparent)",
+                        }}
                       />
-                    ))}
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                      {bronzePartners.map((p) => (
+                        <PartnerCard
+                          key={p.domain || p.name}
+                          partner={p}
+                          isLight={isLight}
+                        />
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
-            </>
-          ) : (
-            /* Unified Sponsors Directory Grid */
-            <div>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "16px",
-                  marginBottom: "32px",
-                }}
-              >
-                <Award style={{ color: "var(--cyber-gold)" }} size={24} />
-                <h2
-                  style={{
-                    fontFamily: "var(--font-headline)",
-                    fontSize: "1.5rem",
-                    color: "var(--text-primary)",
-                    letterSpacing: "0.05em",
-                    textTransform: "uppercase",
-                  }}
-                >
-                  Our Corporate Partners & Sponsors
-                </h2>
+                )}
+              </>
+            ) : (
+              /* Unified Sponsors Directory Grid */
+              <div>
                 <div
                   style={{
-                    flex: 1,
-                    height: "1px",
-                    background:
-                      "linear-gradient(90deg, var(--glass-border), transparent)",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "16px",
+                    marginBottom: "32px",
                   }}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
-                {partners.map((p) => (
-                  <PartnerCard
-                    key={p.domain || p.name}
-                    partner={p}
-                    isLight={isLight}
+                >
+                  <Award style={{ color: "var(--cyber-gold)" }} size={24} />
+                  <h2
+                    style={{
+                      fontFamily: "var(--font-headline)",
+                      fontSize: "1.5rem",
+                      color: "var(--text-primary)",
+                      letterSpacing: "0.05em",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    Our Corporate Partners & Sponsors
+                  </h2>
+                  <div
+                    style={{
+                      flex: 1,
+                      height: "1px",
+                      background:
+                        "linear-gradient(90deg, var(--glass-border), transparent)",
+                    }}
                   />
-                ))}
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
+                  {partners.map((p) => (
+                    <PartnerCard
+                      key={p.domain || p.name}
+                      partner={p}
+                      isLight={isLight}
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
-        </div>
-      </section>
+            )}
+          </div>
+        </section>
       )}
 
       {/* CTA Section */}
@@ -462,7 +466,9 @@ function PartnerCard({
   };
 
   const showLogo = logoSrc && !logoError;
-  const destinationUrl = partner.websiteUrl || (partner.domain ? `https://${partner.domain}` : undefined);
+  const destinationUrl =
+    partner.websiteUrl ||
+    (partner.domain ? `https://${partner.domain}` : undefined);
 
   const cardContent = (
     <motion.div
@@ -500,6 +506,12 @@ function PartnerCard({
                 ? "none"
                 : "brightness(0) invert(1) brightness(1.5) opacity(0.9)",
             objectFit: "contain",
+            background:
+              !isLight && partner.logoUrl
+                ? "rgba(255, 255, 255, 0.8)"
+                : "transparent",
+            padding: !isLight && partner.logoUrl ? "4px" : "0",
+            borderRadius: "4px",
           }}
         />
       ) : (
