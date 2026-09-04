@@ -118,13 +118,16 @@ export function CommitteeQuickFacts({
   const hasSocials = committee?.socialLinks && committee.socialLinks.length > 0;
   const hasChair = !!committee?.chair;
 
+  const columnsCount = 1 + (hasMetrics ? 1 : 0) + (hasChair ? 1 : 0);
+  const gridColsClass = columnsCount === 3 ? "md:grid-cols-3" : columnsCount === 2 ? "md:grid-cols-2" : "md:grid-cols-1";
+
   return (
     <Skeleton
       name="committee-quick-facts"
       loading={loading}
       color={isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}
     >
-      <div className="glass-card p-6 sm:p-8 grid grid-cols-1 md:grid-cols-3 gap-6 items-center mb-12 bg-[rgba(10,15,25,0.65)] border-[rgba(0,98,155,0.2)]">
+      <div className={`glass-card p-6 sm:p-8 grid grid-cols-1 ${gridColsClass} gap-6 items-center mb-12 bg-[rgba(10,15,25,0.65)] border-[rgba(0,98,155,0.2)]`}>
         {/* Metrics Column */}
         {hasMetrics && (
           <div className="flex items-center justify-around gap-4 pr-0 md:pr-4 md:border-r border-[var(--glass-border)]">
