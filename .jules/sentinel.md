@@ -21,3 +21,8 @@
 **Vulnerability:** XSS vulnerability in Breadcrumbs component due to unsanitized JSON string injection via `dangerouslySetInnerHTML`.
 **Learning:** When injecting serialized JSON into a `<script>` tag, HTML-sensitive characters must be escaped.
 **Prevention:** Always sanitize JSON injected into HTML contexts by replacing `<`, `>`, and `&` with their unicode escapes.
+
+## 2025-01-01 - Insecure OTP Generation
+**Vulnerability:** Predictable OTP generation using `Math.random()` in `src/discord-worker.js`.
+**Learning:** `Math.random()` is not cryptographically secure and can be predicted by attackers, leading to potential authentication bypass.
+**Prevention:** Always use a cryptographically secure random number generator like `crypto.getRandomValues()` for generating security tokens, OTPs, or any cryptographic keys.
