@@ -18,8 +18,6 @@ export interface VerifyPinResult {
   };
 }
 
-const DEFAULT_DEV_JWT_SECRET = 'purdue-ieee-boilerbooks-secure-jwt-secret-session-key-2026';
-
 /**
  * Verifies a candidate PIN passcode against the D1 finance_committees roster.
  */
@@ -30,7 +28,10 @@ export async function verifyPin(
   committeeId?: string,
   jwtSecret?: string
 ): Promise<VerifyPinResult> {
-  const effectiveSecret = jwtSecret || DEFAULT_DEV_JWT_SECRET;
+  if (!jwtSecret) {
+    throw new Error('Internal Server Error: Missing JWT Secret Configuration');
+  }
+  const effectiveSecret = jwtSecret;
 
   if (!pin || typeof pin !== 'string') {
     return { authenticated: false, message: 'PIN passcode is required.' };
