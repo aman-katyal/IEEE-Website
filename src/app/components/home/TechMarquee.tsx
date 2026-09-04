@@ -34,13 +34,20 @@ const MarqueeItem = memo(function MarqueeItem({
 
   const showLogo = logoSrc && !logoError;
 
+  const linkHref = partner.domain ? `https://${partner.domain}` : "/partners";
+
   return (
-    <div
+    <a
+      href={linkHref}
+      target={partner.domain ? "_blank" : undefined}
+      rel={partner.domain ? "noopener noreferrer" : undefined}
+      aria-label={`Visit ${partner.name}`}
       style={{
         position: "relative",
         height: "32px",
         display: "flex",
         alignItems: "center",
+        textDecoration: "none",
       }}
     >
       {showLogo ? (
@@ -88,7 +95,7 @@ const MarqueeItem = memo(function MarqueeItem({
           {partner.name}
         </span>
       )}
-    </div>
+    </a>
   );
 });
 
