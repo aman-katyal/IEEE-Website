@@ -695,7 +695,7 @@ export function useFinanceApi() {
   const clearAllData = async (): Promise<{ success: boolean; message?: string }> => {
     setIsLoading(true);
     try {
-      const authH = getAuthHeaders();
+      const authH = getAuthHeaders(session?.token);
       await fetch(`${API_BASE}/reset`, {
         method: 'POST',
         headers: {
@@ -722,9 +722,6 @@ export function useFinanceApi() {
       localStorage.removeItem('boilerbooks_audit_logs');
       localStorage.removeItem('boilerbooks_committees');
     } catch {}
-
-    // Automatically sign out user on data wipe
-    logout('All financial data and audit logs successfully cleared. You have been automatically signed out.');
 
     setIsLoading(false);
     return { success: true, message: 'All financial data and audit logs successfully cleared.' };

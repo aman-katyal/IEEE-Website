@@ -237,5 +237,36 @@ describe('useFinanceApi Hook Suite', () => {
     expect(result.current.purchases.length).toBe(initialCount);
     expect(result.current.error).toContain('500');
   });
+
+  it('clears all financial data while preserving user session', async () => {
+    const { result } = renderHook(() => useFinanceApi());
+
+    act(() => {
+      result.current.setSession({
+        role: 'TREASURER',
+        committeeId: 'treasurer',
+        committeeName: 'Executive Treasurer',
+        name: 'Purdue IEEE Treasurer',
+        email: 'treasurer@purdueieee.org',
+        token: 'test-token',
+      });
+    });
+
+    expect(result.current.session).not.toBeNull();
+
+    await act(async () => {
+      const outcome = await result.current.clearAllData();
+      expect(outcome.success).toBe(true);
+    });
+
+    // Verify session remains intact
+    expect(result.current.session).not.toBeNull();
+    expect(result.current.session?.role).toBe('TREASURER');
+    // Verify data arrays are cleared
+    expect(result.current.purchases).toEqual([]);
+    expect(result.current.memberDues).toEqual([]);
+    expect(result.current.fundingInflows).toEqual([]);
+    expect(result.current.auditLogs).toEqual([]);
+  });
 });
 
