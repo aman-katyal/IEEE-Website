@@ -36,3 +36,7 @@
 ## 2024-10-24 - Cache Intl.NumberFormat
 **Learning:** Instantiating `Intl.NumberFormat` repeatedly is a huge performance bottleneck.
 **Action:** Cache the `Intl.NumberFormat` instances globally when using standard locales and options. The cache key should correspond to variable parameters (e.g., decimals).
+
+## 2024-05-18 - Fix N+1 Query in D1 Budget Categories Insert
+**Learning:** Sequential await `run()` inserts in a loop can cause severe network latency in serverless edge environments (like Cloudflare D1) due to N+1 HTTP overhead for every query execution.
+**Action:** Use `d1.batch(statements)` to execute multiple prepared statements in a single roundtrip, providing conditional wrappers for local mocked testing environments where necessary.

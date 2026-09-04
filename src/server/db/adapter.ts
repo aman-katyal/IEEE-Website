@@ -16,6 +16,7 @@ export interface D1PreparedStatementLike {
  */
 export interface D1DatabaseLike {
   prepare(query: string): D1PreparedStatementLike;
+  batch?<T = unknown>(statements: D1PreparedStatementLike[]): Promise<{ results: T[]; success: boolean; meta?: unknown }[]>;
   exec?(query: string): Promise<unknown>;
 }
 
@@ -24,6 +25,13 @@ export interface D1DatabaseLike {
  */
 export function wrapSqliteDatabase(sqliteDb: DatabaseSync): D1DatabaseLike {
   return {
+    async batch<T = unknown>(statements: D1PreparedStatementLike[]): Promise<{ results: T[]; success: boolean; meta?: unknown }[]> {
+      const results = [];
+      for (const stmt of statements) {
+        results.push(await stmt.run());
+      }
+      return results as any;
+    },
     prepare(query: string): D1PreparedStatementLike {
       let boundParams: unknown[] = [];
       const stmt = sqliteDb.prepare(query);

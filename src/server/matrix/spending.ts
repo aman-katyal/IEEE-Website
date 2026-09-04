@@ -592,13 +592,24 @@ export async function createCommittee(
     .run();
 
   // 3. Insert categories
+  const statements = [];
   for (const cat of categories) {
     if (cat.trim().length > 0) {
       const catId = `cat-${committeeId}-${cat.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
-      await d1
-        .prepare('INSERT INTO budget_categories (id, committee_id, name) VALUES (?, ?, ?)')
-        .bind(catId, committeeId, cat.trim())
-        .run();
+      statements.push(
+        d1.prepare('INSERT INTO budget_categories (id, committee_id, name) VALUES (?, ?, ?)')
+          .bind(catId, committeeId, cat.trim())
+      );
+    }
+  }
+
+  if (statements.length > 0) {
+    if (typeof d1.batch === 'function') {
+      await d1.batch(statements);
+    } else {
+      for (const stmt of statements) {
+        await stmt.run();
+      }
     }
   }
 
