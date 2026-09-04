@@ -9,3 +9,6 @@
 ## 2026-08-13 - ARIA Group Role on Committee Toggle Buttons
 **Learning:** Filter button groups in React lack accessibility roles and labels for context.
 **Action:** Always wrap the container in `role="group"` with a descriptive `aria-label`, and use `aria-pressed` on the individual toggle buttons. Standalone text like 'All' must be contextualized using `aria-label`.
+## 2026-09-04 - Dynamic Grid Column Adaptation
+**Learning:** Tailwind CSS classes generated dynamically (e.g., `md:grid-cols-${count}`) are often purged by PurgeCSS in production builds if they are not statically identifiable. This can cause UI layouts to break unexpectedly even if they work in development.
+**Action:** When calculating grid or layout classes dynamically based on prop lengths or conditions, explicitly map the calculated numbers to the full string literal Tailwind classes (e.g., `const cols = count === 3 ? 'md:grid-cols-3' : ...`) before applying them to the `className` attribute.
