@@ -36,3 +36,11 @@
 ## 2024-10-24 - Cache Intl.NumberFormat
 **Learning:** Instantiating `Intl.NumberFormat` repeatedly is a huge performance bottleneck.
 **Action:** Cache the `Intl.NumberFormat` instances globally when using standard locales and options. The cache key should correspond to variable parameters (e.g., decimals).
+
+## 2026-08-30 - Optimize React Redundant Calculations
+**Learning:** Passing  nested inside  arrays causes O(N*M) complex bottlenecks. In interactive matrices like the Treasurer Finance View, recalculating elements via JSX triggers multiple O(N) evaluations per cell, degrading scroll and input performance.
+**Action:** Use pre-computed `Map` collections populated by a single O(N) traversal block inside `useMemo` and extract inline JSX computation like `calculateSpendingVelocity` so elements read cached values directly, shifting complexity to O(N+M) mapping bounds.
+
+## 2026-08-30 - Optimize React Redundant Calculations
+**Learning:** Passing `.filter()` nested inside `.map()` arrays causes O(N*M) complex bottlenecks. In interactive matrices like the Treasurer Finance View, recalculating elements via JSX triggers multiple O(N) evaluations per cell, degrading scroll and input performance.
+**Action:** Use pre-computed `Map` collections populated by a single O(N) traversal block inside `useMemo` and extract inline JSX computation like `calculateSpendingVelocity` so elements read cached values directly, shifting complexity to O(N+M) mapping bounds.
