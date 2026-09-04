@@ -494,13 +494,25 @@ export async function updateCommitteeParameters(
       .run();
 
     // Insert new category set
+    const stmts: any[] = [];
     for (const cat of payload.categories) {
       if (cat.trim().length > 0) {
         const catId = `cat-${committeeId}-${cat.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
-        await d1
-          .prepare('INSERT INTO budget_categories (id, committee_id, name) VALUES (?, ?, ?)')
-          .bind(catId, committeeId, cat.trim())
-          .run();
+        stmts.push(
+          d1
+            .prepare('INSERT INTO budget_categories (id, committee_id, name) VALUES (?, ?, ?)')
+            .bind(catId, committeeId, cat.trim())
+        );
+      }
+    }
+
+    if (stmts.length > 0) {
+      if (typeof (d1 as any).batch === 'function') {
+        await (d1 as any).batch(stmts);
+      } else {
+        for (const stmt of stmts) {
+          await stmt.run();
+        }
       }
     }
   }
@@ -592,13 +604,25 @@ export async function createCommittee(
     .run();
 
   // 3. Insert categories
+  const catStmts: any[] = [];
   for (const cat of categories) {
     if (cat.trim().length > 0) {
       const catId = `cat-${committeeId}-${cat.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
-      await d1
-        .prepare('INSERT INTO budget_categories (id, committee_id, name) VALUES (?, ?, ?)')
-        .bind(catId, committeeId, cat.trim())
-        .run();
+      catStmts.push(
+        d1
+          .prepare('INSERT INTO budget_categories (id, committee_id, name) VALUES (?, ?, ?)')
+          .bind(catId, committeeId, cat.trim())
+      );
+    }
+  }
+
+  if (catStmts.length > 0) {
+    if (typeof (d1 as any).batch === 'function') {
+      await (d1 as any).batch(catStmts);
+    } else {
+      for (const stmt of catStmts) {
+        await stmt.run();
+      }
     }
   }
 
