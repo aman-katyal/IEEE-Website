@@ -3,8 +3,8 @@
  * Interfaces with Cloudflare Pages API gateway (/api/finance/*) with optimistic local fallback.
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { useIdleTimer } from './useIdleTimer';
+import { useState, useEffect, useCallback } from "react";
+import { useIdleTimer } from "./useIdleTimer";
 import {
   REAL_COMMITTEES,
   type AuthSessionData,
@@ -17,17 +17,17 @@ import {
   type BosoAccountStatement,
   type FinancialAuditLedgerEntry,
   OFFICIAL_BOSO_STATEMENT_SFAB_2026,
-} from '../app/components/finance/financeData';
+} from "../app/components/finance/financeData";
 
-const API_BASE = '/api/finance';
+const API_BASE = "/api/finance";
 
 /** Returns Authorization headers if a session token is available */
 function getAuthHeaders(sessionToken?: string): Record<string, string> {
   try {
     const token =
       sessionToken ||
-      sessionStorage.getItem('boilerbooks_token') ||
-      localStorage.getItem('boilerbooks_token');
+      sessionStorage.getItem("boilerbooks_token") ||
+      localStorage.getItem("boilerbooks_token");
     if (token) {
       return { Authorization: `Bearer ${token}` };
     }
@@ -52,8 +52,8 @@ export function useFinanceApi() {
   const [session, setSession] = useState<AuthSessionData | null>(() => {
     try {
       const stored =
-        sessionStorage.getItem('boilerbooks_session') ||
-        localStorage.getItem('boilerbooks_session');
+        sessionStorage.getItem("boilerbooks_session") ||
+        localStorage.getItem("boilerbooks_session");
       return stored ? JSON.parse(stored) : null;
     } catch {
       return null;
@@ -63,9 +63,14 @@ export function useFinanceApi() {
   const [auditLogs, setAuditLogs] = useState<FinancialAuditLedgerEntry[]>([]);
   const [purchases, setPurchases] = useState<PurchaseItem[]>([]);
   const [memberDues, setMemberDues] = useState<MemberDuesRecord[]>([]);
-  const [committees, setCommittees] = useState<CommitteeInfo[]>(REAL_COMMITTEES);
-  const [fundingInflows, setFundingInflows] = useState<CommitteeFundingInflow[]>([]);
-  const [bosoStatement, setBosoStatement] = useState<BosoAccountStatement>(OFFICIAL_BOSO_STATEMENT_SFAB_2026);
+  const [committees, setCommittees] =
+    useState<CommitteeInfo[]>(REAL_COMMITTEES);
+  const [fundingInflows, setFundingInflows] = useState<
+    CommitteeFundingInflow[]
+  >([]);
+  const [bosoStatement, setBosoStatement] = useState<BosoAccountStatement>(
+    OFFICIAL_BOSO_STATEMENT_SFAB_2026,
+  );
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
@@ -74,10 +79,10 @@ export function useFinanceApi() {
   const logout = useCallback((reason?: string) => {
     setSession(null);
     try {
-      localStorage.removeItem('boilerbooks_session');
-      localStorage.removeItem('boilerbooks_token');
-      sessionStorage.removeItem('boilerbooks_session');
-      sessionStorage.removeItem('boilerbooks_token');
+      localStorage.removeItem("boilerbooks_session");
+      localStorage.removeItem("boilerbooks_token");
+      sessionStorage.removeItem("boilerbooks_session");
+      sessionStorage.removeItem("boilerbooks_token");
     } catch {}
     if (reason) {
       setError(reason);
@@ -87,44 +92,51 @@ export function useFinanceApi() {
   // Automatically sign out after 15 minutes of inactivity
   useIdleTimer(
     () => {
-      logout('You were automatically signed out due to 15 minutes of inactivity.');
+      logout(
+        "You were automatically signed out due to 15 minutes of inactivity.",
+      );
     },
     15 * 60 * 1000,
-    Boolean(session)
+    Boolean(session),
   );
 
   // Sync session authentication to storage
   useEffect(() => {
     try {
       if (session) {
-        sessionStorage.setItem('boilerbooks_session', JSON.stringify(session));
-        localStorage.setItem('boilerbooks_session', JSON.stringify(session));
+        sessionStorage.setItem("boilerbooks_session", JSON.stringify(session));
+        localStorage.setItem("boilerbooks_session", JSON.stringify(session));
         if (session.token) {
-          sessionStorage.setItem('boilerbooks_token', session.token);
-          localStorage.setItem('boilerbooks_token', session.token);
+          sessionStorage.setItem("boilerbooks_token", session.token);
+          localStorage.setItem("boilerbooks_token", session.token);
         }
       } else {
-        sessionStorage.removeItem('boilerbooks_session');
-        localStorage.removeItem('boilerbooks_session');
-        sessionStorage.removeItem('boilerbooks_token');
-        localStorage.removeItem('boilerbooks_token');
+        sessionStorage.removeItem("boilerbooks_session");
+        localStorage.removeItem("boilerbooks_session");
+        sessionStorage.removeItem("boilerbooks_token");
+        localStorage.removeItem("boilerbooks_token");
       }
     } catch {}
   }, [session]);
 
   // Fetch initial data from Cloudflare API if available
-  const refreshData = useCallback(async (fiscalYearId = 'fy25-26') => {
+  const refreshData = useCallback(async (fiscalYearId = "fy25-26") => {
     setIsSyncing(true);
     const authH = getAuthHeaders();
     try {
       // 1. Fetch Spending Matrix
-      const matrixRes = await fetch(`${API_BASE}/matrix?fiscalYearId=${fiscalYearId}`, { headers: authH });
+      const matrixRes = await fetch(
+        `${API_BASE}/matrix?fiscalYearId=${fiscalYearId}`,
+        { headers: authH },
+      );
       if (matrixRes.ok) {
         const matrixData = await matrixRes.json();
         if (matrixData.matrix && Array.isArray(matrixData.matrix)) {
           setCommittees((prev) =>
             prev.map((c) => {
-              const remoteRow = matrixData.matrix.find((r: any) => r.committeeId === c.id);
+              const remoteRow = matrixData.matrix.find(
+                (r: any) => r.committeeId === c.id,
+              );
               if (remoteRow) {
                 return {
                   ...c,
@@ -132,85 +144,118 @@ export function useFinanceApi() {
                 };
               }
               return c;
-            })
+            }),
           );
         }
       }
 
       // 2. Fetch Purchases
-      const purchasesRes = await fetch(`${API_BASE}/purchases?fiscalYearId=${fiscalYearId}`, { headers: authH });
+      const purchasesRes = await fetch(
+        `${API_BASE}/purchases?fiscalYearId=${fiscalYearId}`,
+        { headers: authH },
+      );
       if (purchasesRes.ok) {
         const purchasesData = await purchasesRes.json();
         if (purchasesData.requests && Array.isArray(purchasesData.requests)) {
-          const mapped: PurchaseItem[] = purchasesData.requests.map((r: any) => ({
-            id: r.id,
-            committeeId: r.committee_id || r.committeeId,
-            committeeName: r.committee_name || r.committeeName || r.committee_id,
-            requesterName: r.requester_name || r.requesterName,
-            requesterEmail: r.requester_email || r.requesterEmail,
-            purdueUsername: r.purdue_username || r.purdueUsername || '',
-            streetAddress: r.street_address || r.streetAddress || '',
-            phoneNumber: r.phone_number || r.phoneNumber || '',
-            disbursementMethod: r.disbursement_method || r.disbursementMethod || 'BOSO_PICKUP',
-            vendorName: r.vendor_name || r.vendorName,
-            totalAmount: Number(r.total_amount || r.totalAmount || 0),
-            description: r.description,
-            categoryName: r.category_name || r.categoryName || 'General',
-            fundingSource: (r.funding_source || r.fundingSource || 'GENERAL') as 'GENERAL' | 'SFAB',
-            sfabLineItem: r.sfab_line_item || r.sfabLineItem,
-            status: r.status as PurchaseStatus,
-            receiptUrl: r.receipt_r2_key ? `/api/finance/receipts/${r.receipt_r2_key}` : undefined,
-            submittedAt: r.submitted_at || r.submittedAt || new Date().toISOString(),
-            approvedAt: r.approved_at || r.approvedAt,
-            reimbursedAt: r.reimbursed_at || r.reimbursedAt,
-            treasurerNotes: r.treasurer_notes || r.treasurerNotes,
-          }));
+          const mapped: PurchaseItem[] = purchasesData.requests.map(
+            (r: any) => ({
+              id: r.id,
+              committeeId: r.committee_id || r.committeeId,
+              committeeName:
+                r.committee_name || r.committeeName || r.committee_id,
+              requesterName: r.requester_name || r.requesterName,
+              requesterEmail: r.requester_email || r.requesterEmail,
+              purdueUsername: r.purdue_username || r.purdueUsername || "",
+              streetAddress: r.street_address || r.streetAddress || "",
+              phoneNumber: r.phone_number || r.phoneNumber || "",
+              disbursementMethod:
+                r.disbursement_method || r.disbursementMethod || "BOSO_PICKUP",
+              vendorName: r.vendor_name || r.vendorName,
+              totalAmount: Number(r.total_amount || r.totalAmount || 0),
+              description: r.description,
+              categoryName: r.category_name || r.categoryName || "General",
+              fundingSource: (r.funding_source ||
+                r.fundingSource ||
+                "GENERAL") as "GENERAL" | "SFAB",
+              sfabLineItem: r.sfab_line_item || r.sfabLineItem,
+              status: r.status as PurchaseStatus,
+              receiptUrl: r.receipt_r2_key
+                ? `/api/finance/receipts/${r.receipt_r2_key}`
+                : undefined,
+              submittedAt:
+                r.submitted_at || r.submittedAt || new Date().toISOString(),
+              approvedAt: r.approved_at || r.approvedAt,
+              reimbursedAt: r.reimbursed_at || r.reimbursedAt,
+              treasurerNotes: r.treasurer_notes || r.treasurerNotes,
+            }),
+          );
           setPurchases(mapped);
         }
       }
 
       // 3. Fetch Funding Inflows
-      const inflowsRes = await fetch(`${API_BASE}/inflows?fiscalYearId=${fiscalYearId}`, { headers: authH });
+      const inflowsRes = await fetch(
+        `${API_BASE}/inflows?fiscalYearId=${fiscalYearId}`,
+        { headers: authH },
+      );
       if (inflowsRes.ok) {
         const inflowsData = await inflowsRes.json();
         if (inflowsData.inflows && Array.isArray(inflowsData.inflows)) {
-          const mappedInflows: CommitteeFundingInflow[] = inflowsData.inflows.map((i: any) => ({
-            id: i.id,
-            committeeId: i.committee_id || i.committeeId,
-            committeeName: i.committee_name || i.committeeName,
-            sourceType: (i.source_type || 'Other') as InflowSourceType,
-            title: i.title,
-            amount: Number(i.amount || 0),
-            referenceNumber: i.reference_number || i.referenceNumber,
-            receivedDate: i.received_date || i.receivedDate || new Date().toISOString().split('T')[0],
-            notes: i.notes,
-            createdAt: i.created_at,
-          }));
+          const mappedInflows: CommitteeFundingInflow[] =
+            inflowsData.inflows.map((i: any) => ({
+              id: i.id,
+              committeeId: i.committee_id || i.committeeId,
+              committeeName: i.committee_name || i.committeeName,
+              sourceType: (i.source_type || "Other") as InflowSourceType,
+              title: i.title,
+              amount: Number(i.amount || 0),
+              referenceNumber: i.reference_number || i.referenceNumber,
+              receivedDate:
+                i.received_date ||
+                i.receivedDate ||
+                new Date().toISOString().split("T")[0],
+              notes: i.notes,
+              createdAt: i.created_at,
+            }));
           setFundingInflows(mappedInflows);
         }
       }
 
       // 4. Fetch Dues
-      const duesRes = await fetch(`${API_BASE}/dues?fiscalYearId=${fiscalYearId}`, { headers: authH });
+      const duesRes = await fetch(
+        `${API_BASE}/dues?fiscalYearId=${fiscalYearId}`,
+        { headers: authH },
+      );
       if (duesRes.ok) {
         const duesData = await duesRes.json();
         if (duesData.dues && Array.isArray(duesData.dues)) {
-          const mappedDues: MemberDuesRecord[] = duesData.dues.map((d: any) => ({
-            id: d.id,
-            studentName: d.student_name || d.studentName,
-            purdueEmail: d.purdue_email || d.purdueEmail,
-            amountPaid: Number(d.amount || d.amountPaid || 0),
-            semester: d.semester || 'Spring 2026',
-            status: (d.status === 'Inactive' ? 'Inactive' : 'Active') as 'Active' | 'Inactive',
-            paymentMethod: (d.payment_method || d.paymentMethod || 'TooCOOL') as 'TooCOOL' | 'Cash' | 'Card',
-            paymentDate: d.payment_date || d.paymentDate || new Date().toISOString().split('T')[0],
-          }));
+          const mappedDues: MemberDuesRecord[] = duesData.dues.map(
+            (d: any) => ({
+              id: d.id,
+              studentName: d.student_name || d.studentName,
+              purdueEmail: d.purdue_email || d.purdueEmail,
+              amountPaid: Number(d.amount || d.amountPaid || 0),
+              semester: d.semester || "Spring 2026",
+              status: (d.status === "Inactive" ? "Inactive" : "Active") as
+                | "Active"
+                | "Inactive",
+              paymentMethod: (d.payment_method ||
+                d.paymentMethod ||
+                "TooCOOL") as "TooCOOL" | "Cash" | "Card",
+              paymentDate:
+                d.payment_date ||
+                d.paymentDate ||
+                new Date().toISOString().split("T")[0],
+            }),
+          );
           setMemberDues(mappedDues);
         }
       }
 
       // 5. Fetch BOSO Statement
-      const statementRes = await fetch(`${API_BASE}/statements/04612`, { headers: authH });
+      const statementRes = await fetch(`${API_BASE}/statements/04612`, {
+        headers: authH,
+      });
       if (statementRes.ok) {
         const statementData = await statementRes.json();
         if (statementData.statement) {
@@ -219,7 +264,10 @@ export function useFinanceApi() {
       }
 
       // 6. Fetch Banking Audit Ledger
-      const logsRes = await fetch(`${API_BASE}/audit-logs?fiscalYearId=${fiscalYearId}`, { headers: authH });
+      const logsRes = await fetch(
+        `${API_BASE}/audit-logs?fiscalYearId=${fiscalYearId}`,
+        { headers: authH },
+      );
       if (logsRes.ok) {
         const logsData = await logsRes.json();
         if (logsData.entries && Array.isArray(logsData.entries)) {
@@ -227,11 +275,15 @@ export function useFinanceApi() {
         }
       } else if (logsRes.status !== 401) {
         const errJson = await logsRes.json().catch(() => ({}));
-        throw new Error(errJson.error || errJson.message || `Audit ledger sync failed: HTTP ${logsRes.status}`);
+        throw new Error(
+          errJson.error ||
+            errJson.message ||
+            `Audit ledger sync failed: HTTP ${logsRes.status}`,
+        );
       }
     } catch (err: any) {
-      console.error('[BoilerBooks FATAL ERROR]', err);
-      setError(err?.message || 'Failed to sync finance data from server.');
+      console.error("[BoilerBooks FATAL ERROR]", err);
+      setError(err?.message || "Failed to sync finance data from server.");
     } finally {
       setIsSyncing(false);
     }
@@ -243,18 +295,22 @@ export function useFinanceApi() {
 
   const loginWithPin = async (
     pin: string,
-    role: 'COMMITTEE_LEAD' | 'TREASURER',
-    committeeId?: string
-  ): Promise<{ success: boolean; session?: AuthSessionData; message?: string }> => {
+    role: "COMMITTEE_LEAD" | "TREASURER",
+    committeeId?: string,
+  ): Promise<{
+    success: boolean;
+    session?: AuthSessionData;
+    message?: string;
+  }> => {
     setIsLoading(true);
     setError(null);
     try {
       const res = await fetch(`${API_BASE}/auth/verify-pin`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           pin: pin.trim(),
-          role: role === 'TREASURER' ? 'treasurer' : 'committee',
+          role: role === "TREASURER" ? "treasurer" : "committee",
           committeeId,
         }),
       });
@@ -275,39 +331,44 @@ export function useFinanceApi() {
         // Store JWT token for authenticated API requests
         if (data.session.token) {
           try {
-            sessionStorage.setItem('boilerbooks_token', data.session.token);
-            localStorage.setItem('boilerbooks_token', data.session.token);
+            sessionStorage.setItem("boilerbooks_token", data.session.token);
+            localStorage.setItem("boilerbooks_token", data.session.token);
           } catch {}
         }
         return { success: true, session: newSession };
       }
 
-      const msg = data.message || 'Invalid authentication PIN. Please verify your passcode.';
+      const msg =
+        data.message ||
+        "Invalid authentication PIN. Please verify your passcode.";
       setError(msg);
       return { success: false, message: msg };
     } catch {
       setIsLoading(false);
-      const msg = 'Unable to connect to database server. Please check your network connection.';
+      const msg =
+        "Unable to connect to database server. Please check your network connection.";
       setError(msg);
       return { success: false, message: msg };
     }
   };
 
   // Add Purchase with rollback on server failure
-  const addPurchase = async (newPurchase: PurchaseItem): Promise<{ success: boolean; error?: string }> => {
+  const addPurchase = async (
+    newPurchase: PurchaseItem,
+  ): Promise<{ success: boolean; error?: string }> => {
     const prevPurchases = purchases;
     setPurchases((prev) => [newPurchase, ...prev]);
 
     try {
       const res = await fetch(`${API_BASE}/purchases`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
         body: JSON.stringify({
           id: newPurchase.id,
-          fiscalYearId: 'fy25-26',
+          fiscalYearId: "fy25-26",
           committeeId: newPurchase.committeeId,
-          fundingSource: newPurchase.fundingSource || 'GENERAL',
-          accountType: newPurchase.fundingSource || 'GENERAL',
+          fundingSource: newPurchase.fundingSource || "GENERAL",
+          accountType: newPurchase.fundingSource || "GENERAL",
           sfabLineItem: newPurchase.sfabLineItem,
           requesterName: newPurchase.requesterName,
           payeeName: newPurchase.requesterName,
@@ -317,15 +378,18 @@ export function useFinanceApi() {
           payeeAddress: newPurchase.streetAddress,
           phoneNumber: newPurchase.phoneNumber,
           payeePhone: newPurchase.phoneNumber,
-          disbursementMethod: newPurchase.disbursementMethod || 'BOSO_PICKUP',
-          paymentPreference: newPurchase.disbursementMethod === 'MAIL_ADDRESS' ? 'CHECK' : 'DIRECT_DEPOSIT',
+          disbursementMethod: newPurchase.disbursementMethod || "BOSO_PICKUP",
+          paymentPreference:
+            newPurchase.disbursementMethod === "MAIL_ADDRESS"
+              ? "CHECK"
+              : "DIRECT_DEPOSIT",
           category: newPurchase.category,
           totalAmount: newPurchase.totalAmount,
           description: newPurchase.description,
           itemDescription: newPurchase.description,
           businessPurpose: newPurchase.description,
           vendorName: newPurchase.vendorName,
-          receiptFilename: newPurchase.receiptFilename || 'receipt.pdf',
+          receiptFilename: newPurchase.receiptFilename || "receipt.pdf",
           receiptUrl: newPurchase.receiptUrl,
           receiptUrls: newPurchase.receiptUrl ? [newPurchase.receiptUrl] : [],
         }),
@@ -352,7 +416,7 @@ export function useFinanceApi() {
     id: string,
     status: PurchaseStatus,
     notes?: string,
-    coolAccountNumber?: string
+    coolAccountNumber?: string,
   ): Promise<{ success: boolean; error?: string }> => {
     const prevPurchases = purchases;
     setPurchases((prev) =>
@@ -362,17 +426,24 @@ export function useFinanceApi() {
           ...item,
           status,
           treasurerNotes: notes !== undefined ? notes : item.treasurerNotes,
-          coolAccountNumber: coolAccountNumber !== undefined ? coolAccountNumber : item.coolAccountNumber,
-          approvedAt: status === 'APPROVED' ? new Date().toISOString() : item.approvedAt,
-          reimbursedAt: status === 'REIMBURSED' ? new Date().toISOString() : item.reimbursedAt,
+          coolAccountNumber:
+            coolAccountNumber !== undefined
+              ? coolAccountNumber
+              : item.coolAccountNumber,
+          approvedAt:
+            status === "APPROVED" ? new Date().toISOString() : item.approvedAt,
+          reimbursedAt:
+            status === "REIMBURSED"
+              ? new Date().toISOString()
+              : item.reimbursedAt,
         };
-      })
+      }),
     );
 
     try {
       const res = await fetch(`${API_BASE}/purchases/${id}/status`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
         body: JSON.stringify({
           status,
           treasurerNotes: notes,
@@ -400,35 +471,42 @@ export function useFinanceApi() {
     semester?: string;
     committeeId?: string;
     paymentDate?: string;
-  }): Promise<{ success: boolean; error?: string; dues?: MemberDuesRecord }> => {
-    const semester = record.semester || 'Spring 2026';
+  }): Promise<{
+    success: boolean;
+    error?: string;
+    dues?: MemberDuesRecord;
+  }> => {
+    const semester = record.semester || "Spring 2026";
     const newRecord: MemberDuesRecord = {
-      id: `dues-cash-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      id: `dues-cash-${crypto.randomUUID()}`,
       studentName: record.studentName.trim(),
       purdueEmail: record.purdueEmail.trim().toLowerCase(),
       amountPaid: record.amountPaid,
-      paymentMethod: 'Cash',
-      paymentDate: record.paymentDate || new Date().toISOString().split('T')[0],
+      paymentMethod: "Cash",
+      paymentDate: record.paymentDate || new Date().toISOString().split("T")[0],
       semester,
-      fiscalYear: '2025-2026',
-      status: 'Active',
+      fiscalYear: "2025-2026",
+      status: "Active",
     };
 
     setMemberDues((prev) => [newRecord, ...prev]);
 
     try {
       const res = await fetch(`${API_BASE}/dues/cash`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
         body: JSON.stringify({
           ...record,
-          fiscalYearId: 'fy25-26',
+          fiscalYearId: "fy25-26",
           semester,
         }),
       });
 
       if (!res.ok && res.status >= 400 && res.status !== 404) {
-        return { success: false, error: `Failed to record cash payment (HTTP ${res.status})` };
+        return {
+          success: false,
+          error: `Failed to record cash payment (HTTP ${res.status})`,
+        };
       }
       const data = await res.json();
       return { success: true, dues: data.dues || newRecord };
@@ -438,22 +516,33 @@ export function useFinanceApi() {
   };
 
   // Import Member Dues with automatic duplicate disregard
-  const importMemberDues = async (records: MemberDuesRecord[], fileRaw?: string, semester = 'Spring 2026') => {
+  const importMemberDues = async (
+    records: MemberDuesRecord[],
+    fileRaw?: string,
+    semester = "Spring 2026",
+  ) => {
     setMemberDues((prev) => {
-      const existingKeys = new Set(prev.map((d) => `${d.purdueEmail.toLowerCase()}::${d.semester}`));
-      const newUnique = records.filter((r) => !existingKeys.has(`${r.purdueEmail.toLowerCase()}::${r.semester || semester}`));
+      const existingKeys = new Set(
+        prev.map((d) => `${d.purdueEmail.toLowerCase()}::${d.semester}`),
+      );
+      const newUnique = records.filter(
+        (r) =>
+          !existingKeys.has(
+            `${r.purdueEmail.toLowerCase()}::${r.semester || semester}`,
+          ),
+      );
       return [...newUnique, ...prev];
     });
 
     if (fileRaw) {
       try {
         await fetch(`${API_BASE}/dues`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...getAuthHeaders() },
           body: JSON.stringify({
             csvData: fileRaw,
             semester,
-            fiscalYearId: 'fy25-26',
+            fiscalYearId: "fy25-26",
           }),
         });
       } catch {}
@@ -461,26 +550,32 @@ export function useFinanceApi() {
   };
 
   // Update Committee Parameters with rollback
-  const updateCommittee = async (committeeId: string, updated: Partial<CommitteeInfo>): Promise<{ success: boolean; error?: string }> => {
+  const updateCommittee = async (
+    committeeId: string,
+    updated: Partial<CommitteeInfo>,
+  ): Promise<{ success: boolean; error?: string }> => {
     const prevCommittees = committees;
     setCommittees((prev) =>
-      prev.map((c) => (c.id === committeeId ? { ...c, ...updated } : c))
+      prev.map((c) => (c.id === committeeId ? { ...c, ...updated } : c)),
     );
 
     try {
-      const res = await fetch(`${API_BASE}/committees/${committeeId}/parameters`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
-        body: JSON.stringify({
-          name: updated.name,
-          allocatedAmount: updated.allocated,
-          bankStatus: updated.bankStatus,
-          duesStatus: updated.duesStatus,
-          contactEmail: updated.contactEmail,
-          notes: updated.notes,
-          categories: updated.categories,
-        }),
-      });
+      const res = await fetch(
+        `${API_BASE}/committees/${committeeId}/parameters`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+          body: JSON.stringify({
+            name: updated.name,
+            allocatedAmount: updated.allocated,
+            bankStatus: updated.bankStatus,
+            duesStatus: updated.duesStatus,
+            contactEmail: updated.contactEmail,
+            notes: updated.notes,
+            categories: updated.categories,
+          }),
+        },
+      );
 
       if (!res.ok && res.status >= 400 && res.status !== 404) {
         setCommittees(prevCommittees);
@@ -500,24 +595,39 @@ export function useFinanceApi() {
     name: string;
     shortName?: string;
     allocated?: number;
-    bankStatus?: 'Active' | 'Inactive' | 'Read-Only';
-    duesStatus?: 'Active' | 'Inactive';
+    bankStatus?: "Active" | "Inactive" | "Read-Only";
+    duesStatus?: "Active" | "Inactive";
     contactEmail?: string;
     categories?: string[];
     notes?: string;
     passcode?: string;
-  }): Promise<{ success: boolean; committee?: CommitteeInfo; error?: string }> => {
-    const slug = (newCommittee.id && newCommittee.id.trim()) || newCommittee.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') || `comm-${Date.now()}`;
+  }): Promise<{
+    success: boolean;
+    committee?: CommitteeInfo;
+    error?: string;
+  }> => {
+    const slug =
+      (newCommittee.id && newCommittee.id.trim()) ||
+      newCommittee.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-|-$/g, "") ||
+      `comm-${Date.now()}`;
     const committeeObj: CommitteeInfo = {
       id: slug,
       name: newCommittee.name.trim(),
       shortName: newCommittee.shortName?.trim() || newCommittee.name.trim(),
       allocated: newCommittee.allocated ?? 0,
-      bankStatus: newCommittee.bankStatus ?? 'Active',
-      duesStatus: newCommittee.duesStatus ?? 'Active',
-      contactEmail: newCommittee.contactEmail?.trim() || `${slug}@purdueieee.org`,
-      categories: newCommittee.categories && newCommittee.categories.length > 0 ? newCommittee.categories : ['General', 'Hardware'],
-      notes: newCommittee.notes || '',
+      bankStatus: newCommittee.bankStatus ?? "Active",
+      duesStatus: newCommittee.duesStatus ?? "Active",
+      contactEmail:
+        newCommittee.contactEmail?.trim() || `${slug}@purdueieee.org`,
+      categories:
+        newCommittee.categories && newCommittee.categories.length > 0
+          ? newCommittee.categories
+          : ["General", "Hardware"],
+      notes: newCommittee.notes || "",
     };
 
     const prevCommittees = committees;
@@ -525,8 +635,8 @@ export function useFinanceApi() {
 
     try {
       const res = await fetch(`${API_BASE}/committees`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
         body: JSON.stringify({
           id: committeeObj.id,
           name: committeeObj.name,
@@ -543,7 +653,8 @@ export function useFinanceApi() {
       if (!res.ok && res.status >= 400 && res.status !== 404) {
         setCommittees(prevCommittees);
         const errorData = await res.json().catch(() => ({}));
-        const err = errorData.error || `Failed to create committee (HTTP ${res.status})`;
+        const err =
+          errorData.error || `Failed to create committee (HTTP ${res.status})`;
         setError(err);
         return { success: false, error: err };
       }
@@ -554,20 +665,23 @@ export function useFinanceApi() {
   };
 
   // Delete Committee with rollback
-  const deleteCommittee = async (committeeId: string): Promise<{ success: boolean; error?: string }> => {
+  const deleteCommittee = async (
+    committeeId: string,
+  ): Promise<{ success: boolean; error?: string }> => {
     const prevCommittees = committees;
     setCommittees((prev) => prev.filter((c) => c.id !== committeeId));
 
     try {
       const res = await fetch(`${API_BASE}/committees/${committeeId}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: getAuthHeaders(),
       });
 
       if (!res.ok && res.status >= 400 && res.status !== 404) {
         setCommittees(prevCommittees);
         const errorData = await res.json().catch(() => ({}));
-        const err = errorData.error || `Failed to delete committee (HTTP ${res.status})`;
+        const err =
+          errorData.error || `Failed to delete committee (HTTP ${res.status})`;
         setError(err);
         return { success: false, error: err };
       }
@@ -578,17 +692,22 @@ export function useFinanceApi() {
   };
 
   // Add Funding Inflow with rollback
-  const addFundingInflow = async (newInflow: CommitteeFundingInflow): Promise<{ success: boolean; error?: string }> => {
+  const addFundingInflow = async (
+    newInflow: CommitteeFundingInflow,
+  ): Promise<{ success: boolean; error?: string }> => {
     const prevInflows = fundingInflows;
     setFundingInflows((prev) => [newInflow, ...prev]);
 
     try {
       const res = await fetch(`${API_BASE}/inflows`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...getAuthHeaders(session?.token) },
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthHeaders(session?.token),
+        },
         body: JSON.stringify({
           id: newInflow.id,
-          fiscalYearId: 'fy25-26',
+          fiscalYearId: "fy25-26",
           committeeId: newInflow.committeeId,
           sourceType: newInflow.sourceType,
           title: newInflow.title,
@@ -601,9 +720,10 @@ export function useFinanceApi() {
 
       if (!res.ok && res.status >= 400 && res.status !== 404) {
         setFundingInflows(prevInflows);
-        const err = res.status === 401
-          ? 'Authentication session expired or missing token (HTTP 401). Please click "Switch" to sign in with your PIN.'
-          : `Failed to record funding inflow (HTTP ${res.status})`;
+        const err =
+          res.status === 401
+            ? 'Authentication session expired or missing token (HTTP 401). Please click "Switch" to sign in with your PIN.'
+            : `Failed to record funding inflow (HTTP ${res.status})`;
         setError(err);
         return { success: false, error: err };
       }
@@ -614,13 +734,15 @@ export function useFinanceApi() {
   };
 
   // Delete Funding Inflow with rollback
-  const deleteFundingInflow = async (inflowId: string): Promise<{ success: boolean; error?: string }> => {
+  const deleteFundingInflow = async (
+    inflowId: string,
+  ): Promise<{ success: boolean; error?: string }> => {
     const prevInflows = fundingInflows;
     setFundingInflows((prev) => prev.filter((item) => item.id !== inflowId));
 
     try {
       const res = await fetch(`${API_BASE}/inflows/${inflowId}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: getAuthHeaders(session?.token),
       });
 
@@ -640,16 +762,16 @@ export function useFinanceApi() {
   const uploadReceipt = async (
     file: File,
     committeeId: string,
-    fiscalYearId = 'fy25-26'
+    fiscalYearId = "fy25-26",
   ): Promise<{ success: boolean; url: string; key?: string; name: string }> => {
     try {
       const formData = new FormData();
-      formData.append('file', file);
-      formData.append('committeeId', committeeId);
-      formData.append('fiscalYearId', fiscalYearId);
+      formData.append("file", file);
+      formData.append("committeeId", committeeId);
+      formData.append("fiscalYearId", fiscalYearId);
 
       const res = await fetch(`${API_BASE}/receipts/upload`, {
-        method: 'POST',
+        method: "POST",
         headers: getAuthHeaders(),
         body: formData,
       });
@@ -674,13 +796,16 @@ export function useFinanceApi() {
   };
 
   // Export COOL TSV
-  const exportCoolTsv = async (fiscalYearId = 'fy25-26') => {
+  const exportCoolTsv = async (fiscalYearId = "fy25-26") => {
     try {
-      const res = await fetch(`${API_BASE}/export/cool?fiscalYearId=${fiscalYearId}`, { headers: getAuthHeaders() });
+      const res = await fetch(
+        `${API_BASE}/export/cool?fiscalYearId=${fiscalYearId}`,
+        { headers: getAuthHeaders() },
+      );
       if (res.ok) {
         const blob = await res.blob();
         const downloadUrl = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
+        const a = document.createElement("a");
         a.href = downloadUrl;
         a.download = `COOL_EXPORT_${fiscalYearId}_${Date.now()}.tsv`;
         document.body.appendChild(a);
@@ -692,14 +817,17 @@ export function useFinanceApi() {
     return false;
   };
 
-  const clearAllData = async (): Promise<{ success: boolean; message?: string }> => {
+  const clearAllData = async (): Promise<{
+    success: boolean;
+    message?: string;
+  }> => {
     setIsLoading(true);
     try {
       const authH = getAuthHeaders(session?.token);
       await fetch(`${API_BASE}/reset`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           ...authH,
         },
       });
@@ -716,15 +844,18 @@ export function useFinanceApi() {
 
     // Clear local storage caches
     try {
-      localStorage.removeItem('boilerbooks_purchases');
-      localStorage.removeItem('boilerbooks_dues');
-      localStorage.removeItem('boilerbooks_inflows');
-      localStorage.removeItem('boilerbooks_audit_logs');
-      localStorage.removeItem('boilerbooks_committees');
+      localStorage.removeItem("boilerbooks_purchases");
+      localStorage.removeItem("boilerbooks_dues");
+      localStorage.removeItem("boilerbooks_inflows");
+      localStorage.removeItem("boilerbooks_audit_logs");
+      localStorage.removeItem("boilerbooks_committees");
     } catch {}
 
     setIsLoading(false);
-    return { success: true, message: 'All financial data and audit logs successfully cleared.' };
+    return {
+      success: true,
+      message: "All financial data and audit logs successfully cleared.",
+    };
   };
 
   return {
