@@ -36,3 +36,7 @@
 ## 2024-10-24 - Cache Intl.NumberFormat
 **Learning:** Instantiating `Intl.NumberFormat` repeatedly is a huge performance bottleneck.
 **Action:** Cache the `Intl.NumberFormat` instances globally when using standard locales and options. The cache key should correspond to variable parameters (e.g., decimals).
+
+## 2026-09-04 - Optimize Committee Purchases Array Access
+**Learning:** Filtering large arrays inside a nested iteration (like inside `map`) causes O(N*M) complexity, slowing down rendering when processing complex financial dashboard metrics.
+**Action:** Pre-group array data into a `Map` in a separate `useMemo` block prior to the main `map` iteration to reduce complexity to O(N + M) and achieve O(1) lookups.

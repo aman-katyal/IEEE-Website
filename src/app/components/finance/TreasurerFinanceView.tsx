@@ -122,8 +122,14 @@ export interface TreasurerFinanceViewProps {
     categories?: string[];
     notes?: string;
     passcode?: string;
-  }) => Promise<{ success: boolean; committee?: CommitteeInfo; error?: string }> | void;
-  onDeleteCommittee?: (committeeId: string) => Promise<{ success: boolean; error?: string }> | void;
+  }) => Promise<{
+    success: boolean;
+    committee?: CommitteeInfo;
+    error?: string;
+  }> | void;
+  onDeleteCommittee?: (
+    committeeId: string,
+  ) => Promise<{ success: boolean; error?: string }> | void;
   onAddFundingInflow: (newInflow: CommitteeFundingInflow) => void;
   onDeleteFundingInflow?: (id: string) => void;
   onClearAllData?: () => Promise<{ success: boolean; message?: string }> | void;
@@ -152,13 +158,32 @@ export function TreasurerFinanceView({
     return committees && committees.length > 0 ? committees : REAL_COMMITTEES;
   }, [committees]);
 
+  const purchasesByCommittee = useMemo(() => {
+    const map = new Map<string, PurchaseItem[]>();
+    for (const p of purchases) {
+      const arr = map.get(p.committeeId) ?? [];
+      arr.push(p);
+      map.set(p.committeeId, arr);
+    }
+    return map;
+  }, [purchases]);
+
+  const inflowsByCommittee = useMemo(() => {
+    const map = new Map<string, CommitteeFundingInflow[]>();
+    for (const inf of fundingInflows || []) {
+      const arr = map.get(inf.committeeId) ?? [];
+      arr.push(inf);
+      map.set(inf.committeeId, arr);
+    }
+    return map;
+  }, [fundingInflows]);
+
   // Master Spending Matrix Data Calculation (Base Allocated + Inflow Grants)
   const matrixData = useMemo(() => {
     return activeCommittees.map((comm) => {
-      const commPurchases = purchases.filter((p) => p.committeeId === comm.id);
-      const commInflows = (fundingInflows || []).filter(
-        (inf) => inf.committeeId === comm.id,
-      );
+      const commPurchases = purchasesByCommittee.get(comm.id) ?? [];
+      const commInflows = inflowsByCommittee.get(comm.id) ?? [];
+
       const totalInflows = commInflows.reduce(
         (sum, inf) => sum + inf.amount,
         0,
@@ -205,7 +230,7 @@ export function TreasurerFinanceView({
         totalRequests: commPurchases.length,
       };
     });
-  }, [activeCommittees, purchases, fundingInflows]);
+  }, [activeCommittees, purchasesByCommittee, inflowsByCommittee]);
 
   // Branch-Wide Totals
   const branchTotals = useMemo(() => {
@@ -372,13 +397,13 @@ export function TreasurerFinanceView({
     if (!addName.trim()) return;
     const parsedAllocated = parseFloat(addAllocated) || 0;
     const derivedId =
-      (addId.trim() ||
-        addName
-          .trim()
-          .toLowerCase()
-          .replace(/[^a-z0-9]/g, "-")
-          .replace(/-+/g, "-")
-          .replace(/^-|-$/g, "")) ||
+      addId.trim() ||
+      addName
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-|-$/g, "") ||
       `comm-${Date.now()}`;
 
     setIsSubmittingAddCommittee(true);
@@ -390,8 +415,7 @@ export function TreasurerFinanceView({
           allocated: parsedAllocated,
           bankStatus: addBankStatus,
           duesStatus: addDuesStatus,
-          contactEmail:
-            addContactEmail.trim() || `${derivedId}@purdueieee.org`,
+          contactEmail: addContactEmail.trim() || `${derivedId}@purdueieee.org`,
           categories: addCategories,
           notes: addNotes.trim(),
           passcode: addPasscode.trim() || undefined,
@@ -933,7 +957,11 @@ export function TreasurerFinanceView({
               type="button"
               variant="outline"
               onClick={async () => {
-                if (window.confirm('Are you sure you want to clear all data? This will purge all purchase requisitions, member dues, and banking audit ledger entries.')) {
+                if (
+                  window.confirm(
+                    "Are you sure you want to clear all data? This will purge all purchase requisitions, member dues, and banking audit ledger entries.",
+                  )
+                ) {
                   await onClearAllData();
                 }
               }}
@@ -2176,8 +2204,8 @@ export function TreasurerFinanceView({
                 <span>Edit Parameters · {editingCommittee.name}</span>
               </DialogTitle>
               <DialogDescription className="text-xs text-slate-400">
-                Update committee name, allocated budget capital, operational bank status, member
-                dues policy, and spending categories.
+                Update committee name, allocated budget capital, operational
+                bank status, member dues policy, and spending categories.
               </DialogDescription>
             </DialogHeader>
 
@@ -2419,7 +2447,15 @@ export function TreasurerFinanceView({
                 <span>Delete Committee: {deletingCommittee.name}?</span>
               </DialogTitle>
               <DialogDescription className="text-xs text-slate-300 pt-2 leading-relaxed">
-                Are you sure you want to delete <strong className="text-white">{deletingCommittee.name}</strong> (<span className="font-mono text-sky-400">{deletingCommittee.id}</span>)? This will permanently remove its budget allocations, subcategories, and associated financial records from the database.
+                Are you sure you want to delete{" "}
+                <strong className="text-white">{deletingCommittee.name}</strong>{" "}
+                (
+                <span className="font-mono text-sky-400">
+                  {deletingCommittee.id}
+                </span>
+                )? This will permanently remove its budget allocations,
+                subcategories, and associated financial records from the
+                database.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter className="pt-4 border-t border-slate-800 flex items-center justify-end gap-2">
@@ -2461,7 +2497,8 @@ export function TreasurerFinanceView({
                 <span>Create New Technical Committee</span>
               </DialogTitle>
               <DialogDescription className="text-xs text-slate-400">
-                Add a new technical committee to Purdue IEEE BoilerBooks 3.0 with initial budget allocation and credentials.
+                Add a new technical committee to Purdue IEEE BoilerBooks 3.0
+                with initial budget allocation and credentials.
               </DialogDescription>
             </DialogHeader>
 
@@ -2717,7 +2754,8 @@ export function TreasurerFinanceView({
 
               <DialogFooter className="pt-3 border-t border-slate-800 flex items-center justify-between sm:justify-between">
                 <span className="text-[11px] text-slate-500">
-                  New committee will be immediately available across BoilerBooks.
+                  New committee will be immediately available across
+                  BoilerBooks.
                 </span>
                 <div className="flex items-center gap-2">
                   <Button
