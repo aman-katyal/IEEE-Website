@@ -6,7 +6,16 @@ export default {
     const timestamp = request.headers.get("x-signature-timestamp");
     const bodyText = await request.text();
 
-    if (!signature || !timestamp || !(await verifySignature(env.DISCORD_PUBLIC_KEY, signature, timestamp, bodyText))) {
+    if (
+      !signature ||
+      !timestamp ||
+      !(await verifySignature(
+        env.DISCORD_PUBLIC_KEY,
+        signature,
+        timestamp,
+        bodyText,
+      ))
+    ) {
       return new Response("Invalid signature", { status: 401 });
     }
 
@@ -17,7 +26,9 @@ export default {
       return Response.json({ type: 1 });
     }
 
-    const userId = interaction.member ? interaction.member.user.id : interaction.user?.id;
+    const userId = interaction.member
+      ? interaction.member.user.id
+      : interaction.user?.id;
 
     // Slash Commands (Type 2)
     if (interaction.type === 2) {
@@ -28,7 +39,11 @@ export default {
         if (!hasAdminOrManageRoles(interaction)) {
           return Response.json({
             type: 4,
-            data: { content: "Error: You do not have permission to execute this administrative command.", flags: 64 }
+            data: {
+              content:
+                "Error: You do not have permission to execute this administrative command.",
+              flags: 64,
+            },
           });
         }
       }
@@ -41,8 +56,8 @@ export default {
               {
                 title: "Server Verification",
                 description: `Welcome! Click the button below to verify your membership using your \`${env.DOMAIN_FILTER || "@purdue.edu"}\` email address.`,
-                color: 0xCFB991
-              }
+                color: 0xcfb991,
+              },
             ],
             components: [
               {
@@ -52,18 +67,20 @@ export default {
                     type: 2,
                     style: 1,
                     label: "Verify with Email",
-                    custom_id: "btn_open_email_modal"
-                  }
-                ]
-              }
-            ]
-          }
+                    custom_id: "btn_open_email_modal",
+                  },
+                ],
+              },
+            ],
+          },
         });
       }
 
       if (name === "unverify") {
         const targetUserId = options.find((o) => o.name === "user").value;
-        const linkedEmail = await env.VERIFY_KV.get(`user_to_email:${targetUserId}`);
+        const linkedEmail = await env.VERIFY_KV.get(
+          `user_to_email:${targetUserId}`,
+        );
 
         if (linkedEmail) {
           await env.VERIFY_KV.delete(`email_to_user:${linkedEmail}`);
@@ -74,13 +91,16 @@ export default {
           `https://discord.com/api/v10/guilds/${env.GUILD_ID}/members/${targetUserId}/roles/${env.ROLE_ID}`,
           {
             method: "DELETE",
-            headers: { "Authorization": `Bot ${env.DISCORD_BOT_TOKEN}` }
-          }
+            headers: { Authorization: `Bot ${env.DISCORD_BOT_TOKEN}` },
+          },
         );
 
         return Response.json({
           type: 4,
-          data: { content: `Successfully unverified <@${targetUserId}> and freed the email mapping.`, flags: 64 }
+          data: {
+            content: `Successfully unverified <@${targetUserId}> and freed the email mapping.`,
+            flags: 64,
+          },
         });
       }
     }
@@ -107,12 +127,12 @@ export default {
                     min_length: 5,
                     max_length: 100,
                     placeholder: `username${env.DOMAIN_FILTER || "@purdue.edu"}`,
-                    required: true
-                  }
-                ]
-              }
-            ]
-          }
+                    required: true,
+                  },
+                ],
+              },
+            ],
+          },
         });
       }
 
@@ -134,12 +154,12 @@ export default {
                     min_length: 6,
                     max_length: 6,
                     placeholder: "123456",
-                    required: true
-                  }
-                ]
-              }
-            ]
-          }
+                    required: true,
+                  },
+                ],
+              },
+            ],
+          },
         });
       }
     }
@@ -149,44 +169,66 @@ export default {
       const customId = interaction.data.custom_id;
 
       if (customId === "modal_submit_email") {
-        const email = interaction.data.components[0].components[0].value.trim().toLowerCase();
+        const email = interaction.data.components[0].components[0].value
+          .trim()
+          .toLowerCase();
 
         if (env.DOMAIN_FILTER && !email.endsWith(env.DOMAIN_FILTER)) {
           return Response.json({
             type: 4,
-            data: { content: `Error: Email must end with \`${env.DOMAIN_FILTER}\``, flags: 64 }
+            data: {
+              content: `Error: Email must end with \`${env.DOMAIN_FILTER}\``,
+              flags: 64,
+            },
           });
         }
 
-        const existingUserId = await env.VERIFY_KV.get(`email_to_user:${email}`);
+        const existingUserId = await env.VERIFY_KV.get(
+          `email_to_user:${email}`,
+        );
         if (existingUserId && existingUserId !== userId) {
           return Response.json({
             type: 4,
-            data: { content: "Error: This email is already registered to another Discord account.", flags: 64 }
+            data: {
+              content:
+                "Error: This email is already registered to another Discord account.",
+              flags: 64,
+            },
           });
         }
 
         // Email rate limit: max 3 requests per 10 minutes
         const emailRateKey = `ratelimit:email:${userId}`;
-        const emailCount = parseInt((await env.VERIFY_KV.get(emailRateKey)) || "0", 10);
+        const emailCount = parseInt(
+          (await env.VERIFY_KV.get(emailRateKey)) || "0",
+          10,
+        );
         if (emailCount >= 3) {
           return Response.json({
             type: 4,
-            data: { content: "Rate limit exceeded: You can only request up to 3 verification emails per 10 minutes. Please check your spam folder or try again later.", flags: 64 }
+            data: {
+              content:
+                "Rate limit exceeded: You can only request up to 3 verification emails per 10 minutes. Please check your spam folder or try again later.",
+              flags: 64,
+            },
           });
         }
-        await env.VERIFY_KV.put(emailRateKey, (emailCount + 1).toString(), { expirationTtl: 600 });
+        await env.VERIFY_KV.put(emailRateKey, (emailCount + 1).toString(), {
+          expirationTtl: 600,
+        });
 
-        const array = new Uint32Array(1);
-        crypto.getRandomValues(array);
-        const otp = (100000 + (array[0] % 900000)).toString();
-        await env.VERIFY_KV.put(`otp:${userId}`, JSON.stringify({ email, otp }), { expirationTtl: 1800 });
+        const otp = generateOTP();
+        await env.VERIFY_KV.put(
+          `otp:${userId}`,
+          JSON.stringify({ email, otp }),
+          { expirationTtl: 1800 },
+        );
 
         const emailRes = await fetch("https://api.resend.com/emails", {
           method: "POST",
           headers: {
-            "Authorization": `Bearer ${env.RESEND_API_KEY}`,
-            "Content-Type": "application/json"
+            Authorization: `Bearer ${env.RESEND_API_KEY}`,
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             from: "Purdue IEEE <verify@purdueieee.org>",
@@ -194,8 +236,8 @@ export default {
             to: [email],
             subject: `Your Purdue IEEE Verification Code: ${otp}`,
             text: `Your Purdue IEEE Discord verification code is: ${otp}\n\nThis code expires in 30 minutes.\n\nIf you did not request this verification, you can safely ignore this email.\n\nPurdue University IEEE Student Branch\nElectrical Engineering Building (EE 014)\n465 Northwestern Ave, West Lafayette, IN 47907`,
-            html: generateEmailTemplate(otp)
-          })
+            html: generateEmailTemplate(otp),
+          }),
         });
 
         if (!emailRes.ok) {
@@ -203,7 +245,11 @@ export default {
           console.error("Resend API Error:", errText);
           return Response.json({
             type: 4,
-            data: { content: "Failed to dispatch verification email. Please contact an officer.", flags: 64 }
+            data: {
+              content:
+                "Failed to dispatch verification email. Please contact an officer.",
+              flags: 64,
+            },
           });
         }
 
@@ -220,28 +266,36 @@ export default {
                     type: 2,
                     style: 3,
                     label: "Enter 6-Digit Code",
-                    custom_id: "btn_open_code_modal"
-                  }
-                ]
-              }
-            ]
-          }
+                    custom_id: "btn_open_code_modal",
+                  },
+                ],
+              },
+            ],
+          },
         });
       }
 
       if (customId === "modal_submit_code") {
-        const codeInput = interaction.data.components[0].components[0].value.trim();
+        const codeInput =
+          interaction.data.components[0].components[0].value.trim();
         const storedData = await env.VERIFY_KV.get(`otp:${userId}`, "json");
 
         const attemptsKey = `otp_attempts:${userId}`;
-        const failedAttempts = parseInt((await env.VERIFY_KV.get(attemptsKey)) || "0", 10);
+        const failedAttempts = parseInt(
+          (await env.VERIFY_KV.get(attemptsKey)) || "0",
+          10,
+        );
 
         if (failedAttempts >= 3 || !storedData) {
           await env.VERIFY_KV.delete(`otp:${userId}`);
           await env.VERIFY_KV.delete(attemptsKey);
           return Response.json({
             type: 4,
-            data: { content: "Invalid or expired code. Please request a new verification code.", flags: 64 }
+            data: {
+              content:
+                "Invalid or expired code. Please request a new verification code.",
+              flags: 64,
+            },
           });
         }
 
@@ -252,13 +306,22 @@ export default {
             await env.VERIFY_KV.delete(attemptsKey);
             return Response.json({
               type: 4,
-              data: { content: "Invalid code. You have exceeded 3 attempts. Your code has been invalidated. Please request a new code.", flags: 64 }
+              data: {
+                content:
+                  "Invalid code. You have exceeded 3 attempts. Your code has been invalidated. Please request a new code.",
+                flags: 64,
+              },
             });
           }
-          await env.VERIFY_KV.put(attemptsKey, newAttempts.toString(), { expirationTtl: 1800 });
+          await env.VERIFY_KV.put(attemptsKey, newAttempts.toString(), {
+            expirationTtl: 1800,
+          });
           return Response.json({
             type: 4,
-            data: { content: `Invalid code. ${3 - newAttempts} attempt(s) remaining.`, flags: 64 }
+            data: {
+              content: `Invalid code. ${3 - newAttempts} attempt(s) remaining.`,
+              flags: 64,
+            },
           });
         }
 
@@ -269,14 +332,18 @@ export default {
           `https://discord.com/api/v10/guilds/${env.GUILD_ID}/members/${userId}/roles/${env.ROLE_ID}`,
           {
             method: "PUT",
-            headers: { "Authorization": `Bot ${env.DISCORD_BOT_TOKEN}` }
-          }
+            headers: { Authorization: `Bot ${env.DISCORD_BOT_TOKEN}` },
+          },
         );
 
         if (!roleRes.ok) {
           return Response.json({
             type: 4,
-            data: { content: "Failed to assign role. Ensure the bot's role is positioned above the verified role in server settings.", flags: 64 }
+            data: {
+              content:
+                "Failed to assign role. Ensure the bot's role is positioned above the verified role in server settings.",
+              flags: 64,
+            },
           });
         }
 
@@ -285,35 +352,50 @@ export default {
         await env.VERIFY_KV.delete(`otp:${userId}`);
 
         if (env.LOG_CHANNEL_ID) {
-          await fetch(`https://discord.com/api/v10/channels/${env.LOG_CHANNEL_ID}/messages`, {
-            method: "POST",
-            headers: {
-              "Authorization": `Bot ${env.DISCORD_BOT_TOKEN}`,
-              "Content-Type": "application/json"
+          await fetch(
+            `https://discord.com/api/v10/channels/${env.LOG_CHANNEL_ID}/messages`,
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Bot ${env.DISCORD_BOT_TOKEN}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                embeds: [
+                  {
+                    title: "Member Verified",
+                    description: `<@${userId}> verified with \`${storedData.email}\``,
+                    color: 0x57f287,
+                    timestamp: new Date().toISOString(),
+                  },
+                ],
+              }),
             },
-            body: JSON.stringify({
-              embeds: [
-                {
-                  title: "Member Verified",
-                  description: `<@${userId}> verified with \`${storedData.email}\``,
-                  color: 0x57F287,
-                  timestamp: new Date().toISOString()
-                }
-              ]
-            })
-          });
+          );
         }
 
         return Response.json({
           type: 4,
-          data: { content: "Verification successful! Your role has been granted.", flags: 64 }
+          data: {
+            content: "Verification successful! Your role has been granted.",
+            flags: 64,
+          },
         });
       }
     }
 
-    return Response.json({ type: 4, data: { content: "Unknown interaction", flags: 64 } });
-  }
+    return Response.json({
+      type: 4,
+      data: { content: "Unknown interaction", flags: 64 },
+    });
+  },
 };
+
+export function generateOTP() {
+  const array = new Uint32Array(1);
+  crypto.getRandomValues(array);
+  return (100000 + (array[0] % 900000)).toString();
+}
 
 function hasAdminOrManageRoles(interaction) {
   if (!interaction.member || !interaction.member.permissions) return false;
@@ -322,7 +404,11 @@ function hasAdminOrManageRoles(interaction) {
     const ADMINISTRATOR = 1n << 3n;
     const MANAGE_ROLES = 1n << 28n;
     const MANAGE_GUILD = 1n << 5n;
-    return (perms & ADMINISTRATOR) !== 0n || (perms & MANAGE_ROLES) !== 0n || (perms & MANAGE_GUILD) !== 0n;
+    return (
+      (perms & ADMINISTRATOR) !== 0n ||
+      (perms & MANAGE_ROLES) !== 0n ||
+      (perms & MANAGE_GUILD) !== 0n
+    );
   } catch {
     return false;
   }
@@ -334,15 +420,30 @@ async function verifySignature(publicKeyHex, signatureHex, timestamp, body) {
     const sigBytes = hexToUint8Array(signatureHex);
     const dataBytes = new TextEncoder().encode(timestamp + body);
 
-    const key = await crypto.subtle.importKey(
-      "raw",
-      pubKeyBytes,
-      { name: "NODE-ED25519", namedCurve: "NODE-ED25519" },
-      false,
-      ["verify"]
-    ).catch(() => crypto.subtle.importKey("raw", pubKeyBytes, { name: "Ed25519" }, false, ["verify"]));
+    const key = await crypto.subtle
+      .importKey(
+        "raw",
+        pubKeyBytes,
+        { name: "NODE-ED25519", namedCurve: "NODE-ED25519" },
+        false,
+        ["verify"],
+      )
+      .catch(() =>
+        crypto.subtle.importKey(
+          "raw",
+          pubKeyBytes,
+          { name: "Ed25519" },
+          false,
+          ["verify"],
+        ),
+      );
 
-    return await crypto.subtle.verify(key.algorithm.name, key, sigBytes, dataBytes);
+    return await crypto.subtle.verify(
+      key.algorithm.name,
+      key,
+      sigBytes,
+      dataBytes,
+    );
   } catch (e) {
     return false;
   }
