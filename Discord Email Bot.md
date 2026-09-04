@@ -227,7 +227,9 @@ export default {
           });
         }
 
-        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const array = new Uint32Array(1);
+        crypto.getRandomValues(array);
+        const otp = (100000 + (array[0] % 900000)).toString();
         await env.VERIFY_KV.put(`otp:${userId}`, JSON.stringify({ email, otp }), { expirationTtl: 1800 });
 
         const emailRes = await fetch("https://api.resend.com/emails", {
