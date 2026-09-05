@@ -26,3 +26,8 @@
 **Vulnerability:** Predictable OTP generation using `Math.random()` in `src/discord-worker.js`.
 **Learning:** `Math.random()` is not cryptographically secure and can be predicted by attackers, leading to potential authentication bypass.
 **Prevention:** Always use a cryptographically secure random number generator like `crypto.getRandomValues()` for generating security tokens, OTPs, or any cryptographic keys.
+
+## 2026-03-30 - Insecure Randomness for Dues Record ID Generation
+**Vulnerability:** Cash member dues record IDs were generated using `Math.random().toString(36)` in `useFinanceApi.ts`.
+**Learning:** `Math.random()` uses a non-cryptographic PRNG. When generating unique record IDs in financial or member management state, predictable IDs can lead to ID collisions, enumeration, or record spoofing.
+**Prevention:** Use standard Web Cryptography API methods such as `crypto.randomUUID()` or `crypto.getRandomValues()` for unique ID generation across client and server logic.

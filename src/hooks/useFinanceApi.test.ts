@@ -1,12 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
-import { useFinanceApi } from './useFinanceApi';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { renderHook, act } from "@testing-library/react";
+import { useFinanceApi } from "./useFinanceApi";
 
 // Mock global fetch
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
-describe('useFinanceApi Hook Suite', () => {
+describe("useFinanceApi Hook Suite", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.clear();
@@ -17,7 +17,7 @@ describe('useFinanceApi Hook Suite', () => {
     });
   });
 
-  it('initializes with default data and no active session', () => {
+  it("initializes with default data and no active session", () => {
     const { result } = renderHook(() => useFinanceApi());
 
     expect(result.current.session).toBeNull();
@@ -27,19 +27,19 @@ describe('useFinanceApi Hook Suite', () => {
     expect(result.current.fundingInflows.length).toBe(0);
   });
 
-  it('handles committee login and logout', async () => {
+  it("handles committee login and logout", async () => {
     mockFetch.mockImplementation(async (url: string) => {
-      if (typeof url === 'string' && url.includes('/auth/verify-pin')) {
+      if (typeof url === "string" && url.includes("/auth/verify-pin")) {
         return {
           ok: true,
           json: async () => ({
             authenticated: true,
             session: {
-              role: 'COMMITTEE_LEAD',
-              committeeId: 'rov',
-              committeeName: 'Remotely Operated Vehicles',
-              name: 'ROV Leadership',
-              email: 'rov@purdueieee.org',
+              role: "COMMITTEE_LEAD",
+              committeeId: "rov",
+              committeeName: "Remotely Operated Vehicles",
+              name: "ROV Leadership",
+              email: "rov@purdueieee.org",
             },
           }),
         };
@@ -50,13 +50,17 @@ describe('useFinanceApi Hook Suite', () => {
     const { result } = renderHook(() => useFinanceApi());
 
     await act(async () => {
-      const auth = await result.current.loginWithPin('ROV-6T5DB6&835-HNT', 'COMMITTEE_LEAD', 'rov');
+      const auth = await result.current.loginWithPin(
+        "ROV-6T5DB6&835-HNT",
+        "COMMITTEE_LEAD",
+        "rov",
+      );
       expect(auth.success).toBe(true);
-      expect(auth.session?.role).toBe('COMMITTEE_LEAD');
-      expect(auth.session?.committeeId).toBe('rov');
+      expect(auth.session?.role).toBe("COMMITTEE_LEAD");
+      expect(auth.session?.committeeId).toBe("rov");
     });
 
-    expect(result.current.session?.committeeId).toBe('rov');
+    expect(result.current.session?.committeeId).toBe("rov");
 
     act(() => {
       result.current.logout();
@@ -65,19 +69,19 @@ describe('useFinanceApi Hook Suite', () => {
     expect(result.current.session).toBeNull();
   });
 
-  it('handles treasurer login', async () => {
+  it("handles treasurer login", async () => {
     mockFetch.mockImplementation(async (url: string) => {
-      if (typeof url === 'string' && url.includes('/auth/verify-pin')) {
+      if (typeof url === "string" && url.includes("/auth/verify-pin")) {
         return {
           ok: true,
           json: async () => ({
             authenticated: true,
             session: {
-              role: 'TREASURER',
-              committeeId: 'treasurer',
-              committeeName: 'Executive Treasurer Admin',
-              name: 'Purdue IEEE Treasurer',
-              email: 'treasurer@purdueieee.org',
+              role: "TREASURER",
+              committeeId: "treasurer",
+              committeeName: "Executive Treasurer Admin",
+              name: "Purdue IEEE Treasurer",
+              email: "treasurer@purdueieee.org",
             },
           }),
         };
@@ -88,23 +92,26 @@ describe('useFinanceApi Hook Suite', () => {
     const { result } = renderHook(() => useFinanceApi());
 
     await act(async () => {
-      const auth = await result.current.loginWithPin('TREA-RAALQH@379-Z6B', 'TREASURER');
+      const auth = await result.current.loginWithPin(
+        "TREA-RAALQH@379-Z6B",
+        "TREASURER",
+      );
       expect(auth.success).toBe(true);
-      expect(auth.session?.role).toBe('TREASURER');
+      expect(auth.session?.role).toBe("TREASURER");
     });
 
-    expect(result.current.session?.role).toBe('TREASURER');
+    expect(result.current.session?.role).toBe("TREASURER");
   });
 
-  it('rejects invalid PIN', async () => {
+  it("rejects invalid PIN", async () => {
     mockFetch.mockImplementation(async (url: string) => {
-      if (typeof url === 'string' && url.includes('/auth/verify-pin')) {
+      if (typeof url === "string" && url.includes("/auth/verify-pin")) {
         return {
           ok: false,
           status: 401,
           json: async () => ({
             authenticated: false,
-            message: 'Invalid authentication passcode.',
+            message: "Invalid authentication passcode.",
           }),
         };
       }
@@ -114,28 +121,32 @@ describe('useFinanceApi Hook Suite', () => {
     const { result } = renderHook(() => useFinanceApi());
 
     await act(async () => {
-      const auth = await result.current.loginWithPin('0000', 'COMMITTEE_LEAD', 'rov');
+      const auth = await result.current.loginWithPin(
+        "0000",
+        "COMMITTEE_LEAD",
+        "rov",
+      );
       expect(auth.success).toBe(false);
     });
 
     expect(result.current.session).toBeNull();
   });
 
-  it('adds a purchase request optimistically', async () => {
+  it("adds a purchase request optimistically", async () => {
     const { result } = renderHook(() => useFinanceApi());
     const initialCount = result.current.purchases.length;
 
     const newPurchase = {
-      id: 'PR-TEST-001',
-      committeeId: 'rov',
-      committeeName: 'ROV',
-      requesterName: 'Test Requester',
-      requesterEmail: 'test@purdue.edu',
-      vendorName: 'DigiKey',
-      category: 'Electronics',
+      id: "PR-TEST-001",
+      committeeId: "rov",
+      committeeName: "ROV",
+      requesterName: "Test Requester",
+      requesterEmail: "test@purdue.edu",
+      vendorName: "DigiKey",
+      category: "Electronics",
       totalAmount: 150.0,
-      description: 'Sensor modules',
-      status: 'PENDING' as const,
+      description: "Sensor modules",
+      status: "PENDING" as const,
       submittedAt: new Date().toISOString(),
     };
 
@@ -144,23 +155,23 @@ describe('useFinanceApi Hook Suite', () => {
     });
 
     expect(result.current.purchases.length).toBe(initialCount + 1);
-    expect(result.current.purchases[0].id).toBe('PR-TEST-001');
+    expect(result.current.purchases[0].id).toBe("PR-TEST-001");
   });
 
-  it('updates purchase request status', async () => {
+  it("updates purchase request status", async () => {
     const { result } = renderHook(() => useFinanceApi());
 
     const newPurchase = {
-      id: 'PR-TARGET-001',
-      committeeId: 'rov',
-      committeeName: 'ROV',
-      requesterName: 'Test Requester',
-      requesterEmail: 'test@purdue.edu',
-      vendorName: 'DigiKey',
-      category: 'Electronics',
+      id: "PR-TARGET-001",
+      committeeId: "rov",
+      committeeName: "ROV",
+      requesterName: "Test Requester",
+      requesterEmail: "test@purdue.edu",
+      vendorName: "DigiKey",
+      category: "Electronics",
       totalAmount: 150.0,
-      description: 'Sensor modules',
-      status: 'PENDING' as const,
+      description: "Sensor modules",
+      status: "PENDING" as const,
       submittedAt: new Date().toISOString(),
     };
 
@@ -169,26 +180,33 @@ describe('useFinanceApi Hook Suite', () => {
     });
 
     await act(async () => {
-      await result.current.updatePurchaseStatus('PR-TARGET-001', 'APPROVED', 'Approved by treasurer', 'COOL-1234');
+      await result.current.updatePurchaseStatus(
+        "PR-TARGET-001",
+        "APPROVED",
+        "Approved by treasurer",
+        "COOL-1234",
+      );
     });
 
-    const updated = result.current.purchases.find((p) => p.id === 'PR-TARGET-001');
-    expect(updated?.status).toBe('APPROVED');
-    expect(updated?.treasurerNotes).toBe('Approved by treasurer');
-    expect(updated?.coolAccountNumber).toBe('COOL-1234');
+    const updated = result.current.purchases.find(
+      (p) => p.id === "PR-TARGET-001",
+    );
+    expect(updated?.status).toBe("APPROVED");
+    expect(updated?.treasurerNotes).toBe("Approved by treasurer");
+    expect(updated?.coolAccountNumber).toBe("COOL-1234");
   });
 
-  it('adds and deletes funding inflows', async () => {
+  it("adds and deletes funding inflows", async () => {
     const { result } = renderHook(() => useFinanceApi());
     const initialCount = result.current.fundingInflows.length;
 
     const newInflow = {
-      id: 'inflow-test-123',
-      committeeId: 'rov',
-      sourceType: 'SFAB Grant' as const,
-      title: 'Spring SFAB Capital Equipment Grant',
+      id: "inflow-test-123",
+      committeeId: "rov",
+      sourceType: "SFAB Grant" as const,
+      title: "Spring SFAB Capital Equipment Grant",
       amount: 4000.0,
-      receivedDate: '2026-03-01',
+      receivedDate: "2026-03-01",
     };
 
     await act(async () => {
@@ -198,33 +216,33 @@ describe('useFinanceApi Hook Suite', () => {
     expect(result.current.fundingInflows.length).toBe(initialCount + 1);
 
     await act(async () => {
-      await result.current.deleteFundingInflow('inflow-test-123');
+      await result.current.deleteFundingInflow("inflow-test-123");
     });
 
     expect(result.current.fundingInflows.length).toBe(initialCount);
   });
 
-  it('rolls back purchases state when server returns error response', async () => {
+  it("rolls back purchases state when server returns error response", async () => {
     const { result } = renderHook(() => useFinanceApi());
     const initialCount = result.current.purchases.length;
 
     mockFetch.mockResolvedValueOnce({
       ok: false,
       status: 500,
-      json: async () => ({ error: 'Internal Server Error' }),
+      json: async () => ({ error: "Internal Server Error" }),
     });
 
     const newPurchase = {
-      id: 'PR-FAIL-001',
-      committeeId: 'rov',
-      committeeName: 'ROV',
-      requesterName: 'Test Requester',
-      requesterEmail: 'test@purdue.edu',
-      vendorName: 'Fail Vendor',
-      category: 'Hardware',
+      id: "PR-FAIL-001",
+      committeeId: "rov",
+      committeeName: "ROV",
+      requesterName: "Test Requester",
+      requesterEmail: "test@purdue.edu",
+      vendorName: "Fail Vendor",
+      category: "Hardware",
       totalAmount: 99.0,
-      description: 'Will fail',
-      status: 'PENDING' as const,
+      description: "Will fail",
+      status: "PENDING" as const,
       submittedAt: new Date().toISOString(),
     };
 
@@ -235,20 +253,20 @@ describe('useFinanceApi Hook Suite', () => {
 
     expect(outcome.success).toBe(false);
     expect(result.current.purchases.length).toBe(initialCount);
-    expect(result.current.error).toContain('500');
+    expect(result.current.error).toContain("500");
   });
 
-  it('clears all financial data while preserving user session', async () => {
+  it("clears all financial data while preserving user session", async () => {
     const { result } = renderHook(() => useFinanceApi());
 
     act(() => {
       result.current.setSession({
-        role: 'TREASURER',
-        committeeId: 'treasurer',
-        committeeName: 'Executive Treasurer',
-        name: 'Purdue IEEE Treasurer',
-        email: 'treasurer@purdueieee.org',
-        token: 'test-token',
+        role: "TREASURER",
+        committeeId: "treasurer",
+        committeeName: "Executive Treasurer",
+        name: "Purdue IEEE Treasurer",
+        email: "treasurer@purdueieee.org",
+        token: "test-token",
       });
     });
 
@@ -261,12 +279,29 @@ describe('useFinanceApi Hook Suite', () => {
 
     // Verify session remains intact
     expect(result.current.session).not.toBeNull();
-    expect(result.current.session?.role).toBe('TREASURER');
+    expect(result.current.session?.role).toBe("TREASURER");
     // Verify data arrays are cleared
     expect(result.current.purchases).toEqual([]);
     expect(result.current.memberDues).toEqual([]);
     expect(result.current.fundingInflows).toEqual([]);
     expect(result.current.auditLogs).toEqual([]);
   });
-});
 
+  it("records cash dues with cryptographically secure ID", async () => {
+    const { result } = renderHook(() => useFinanceApi());
+
+    await act(async () => {
+      const outcome = await result.current.recordCashDues({
+        studentName: "John Doe",
+        purdueEmail: "jdoe@purdue.edu",
+        amountPaid: 15,
+      });
+      expect(outcome.success).toBe(true);
+    });
+
+    expect(result.current.memberDues.length).toBe(1);
+    expect(result.current.memberDues[0].id).toMatch(
+      /^dues-cash-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+    );
+  });
+});
