@@ -706,14 +706,14 @@ export function TreasurerFinanceView({
     ];
 
     const rows = matrixData.map((c) => {
+      // ⚡ Bolt: Use pre-computed Map for O(1) committee purchases lookup instead of O(N) full array filter
       const velocity = calculateSpendingVelocity(
-        purchases
+        (purchasesByCommittee.get(c.id) || [])
           .filter(
             (p) =>
-              p.committeeId === c.id &&
-              (p.status === "APPROVED" ||
-                p.status === "PURCHASED" ||
-                p.status === "REIMBURSED"),
+              p.status === "APPROVED" ||
+              p.status === "PURCHASED" ||
+              p.status === "REIMBURSED",
           )
           .map((p) => ({ date: p.submittedAt, amount: p.totalAmount })),
         c.totalBudget,
@@ -1457,14 +1457,14 @@ export function TreasurerFinanceView({
                       </TableCell>
                       <TableCell className="text-right py-3.5 font-mono text-xs">
                         {(() => {
+                          // ⚡ Bolt: Use pre-computed Map for O(1) committee purchases lookup instead of O(N) full array filter
                           const velocity = calculateSpendingVelocity(
-                            purchases
+                            (purchasesByCommittee.get(c.id) || [])
                               .filter(
                                 (p) =>
-                                  p.committeeId === c.id &&
-                                  (p.status === "APPROVED" ||
-                                    p.status === "PURCHASED" ||
-                                    p.status === "REIMBURSED"),
+                                  p.status === "APPROVED" ||
+                                  p.status === "PURCHASED" ||
+                                  p.status === "REIMBURSED",
                               )
                               .map((p) => ({
                                 date: p.submittedAt,
