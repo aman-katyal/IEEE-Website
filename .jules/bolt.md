@@ -44,3 +44,8 @@
 ## 2025-02-18 - Optimize D1 SQL Inserts with Batching
 **Learning:** Sequential `INSERT` statements executing in a loop against Cloudflare D1 can lead to severe N+1 latency issues due to network roundtrip overhead for each statement.
 **Action:** When inserting multiple related rows at once, prefer using `d1.batch(stmts)` over a `for` loop executing statements sequentially. This reduces N database roundtrips to a single roundtrip, significantly accelerating execution (up to 37% improvement measured in memory, likely much higher for real network bounds).
+\n## 2026-09-04 - Optimize Array Searches Inside Map/JSX Renders\n**Learning:** Filtering arrays inside an array  block or inside a React JSX render loop causes (N^2)$ time complexity, leading to severe performance bottlenecks.\n**Action:** Use a pre-computed map of arrays so you can lookup the array block you need in (1)$ time, thereby reducing iteration complexity from (N \times M)$ to (N + M)$.
+
+## 2026-09-04 - Optimize Array Searches Inside Map/JSX Renders
+**Learning:** Filtering arrays inside an array `.map()` block or inside a React JSX render loop causes O(N*M) time complexity, leading to severe performance bottlenecks.
+**Action:** Use a pre-computed map of arrays so you can lookup the array block you need in O(1) time, thereby reducing iteration complexity from O(N * M) to O(N + M).
