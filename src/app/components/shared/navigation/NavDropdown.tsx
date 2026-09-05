@@ -78,7 +78,7 @@ export function NavDropdown({
             position: "absolute",
             top: "100%",
             left: "0",
-            width: link.label === "Committees" ? "220px" : "180px",
+            width: link.label === "Committees" ? "320px" : "180px",
             maxHeight: "min(85vh, 560px)",
             background: "var(--boiler-black)",
             border: "1px solid var(--glass-border)",

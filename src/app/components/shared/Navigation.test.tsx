@@ -119,8 +119,8 @@ describe("Navigation", () => {
 
     expect(screen.getByTestId("nav-dropdown-committees")).toBeInTheDocument();
     expect(screen.getByText("View All Committees")).toBeInTheDocument();
-    expect(screen.getByText("ROV")).toBeInTheDocument();
-    expect(screen.getByText("EMBS")).toBeInTheDocument();
+    expect(screen.getByText("Remotely Operated Vehicles")).toBeInTheDocument();
+    expect(screen.getByText("Engineering in Medicine & Biology")).toBeInTheDocument();
     expect(screen.getByText("Computer Society")).toBeInTheDocument();
     expect(screen.getByText("Involvement")).toBeInTheDocument();
     expect(screen.getByText("Operations")).toBeInTheDocument();
@@ -180,7 +180,7 @@ describe("Navigation", () => {
     const committeesLink = screen.getByRole("link", { name: /^committees/i, hidden: true });
     fireEvent.mouseEnter(committeesLink.parentElement!);
 
-    const rovItem = screen.getByText("ROV");
+    const rovItem = screen.getByText("Remotely Operated Vehicles");
     fireEvent.mouseEnter(rovItem);
 
     expect(useSanityData.prefetchData).toHaveBeenCalledWith(
@@ -203,7 +203,7 @@ describe("Navigation", () => {
     // Click dropdown sub-item
     const committeesLink = screen.getByRole("link", { name: /^committees/i, hidden: true });
     fireEvent.mouseEnter(committeesLink.parentElement!);
-    const rovItem = screen.getByText("ROV");
+    const rovItem = screen.getByText("Remotely Operated Vehicles");
     fireEvent.click(rovItem);
     expect(mockNavigate).toHaveBeenCalledWith("/committee/rov");
   });

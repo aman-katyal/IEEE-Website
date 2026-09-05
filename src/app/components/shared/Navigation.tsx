@@ -43,7 +43,11 @@ export function Navigation() {
       label: "Committees", 
       href: "/committees",
       dropdown: [
-        ...committees.map((c) => ({ label: c.shortName, href: `/committee/${c.id}`, id: c.id })),
+        ...committees.map((c) => ({
+          label: c.name,
+          href: `/committee/${c.id}`,
+          id: c.id,
+        })),
         {
           label: "Involvement",
           href: "/committees?tab=involvement",
