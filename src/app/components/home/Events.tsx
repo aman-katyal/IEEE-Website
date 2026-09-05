@@ -104,63 +104,76 @@ export function Events() {
                 <EventSkeleton />
                 <EventSkeleton />
               </>
-            ) : events.length === 0 ? (
-              <div
-                className="glass-card"
-                style={{
-                  padding: "48px 24px",
-                  textAlign: "center",
-                }}
-              >
-                <p
-                  style={{
-                    fontFamily: "var(--font-body)",
-                    fontSize: "15px",
-                    color: "var(--text-secondary)",
-                  }}
-                >
-                  No upcoming events right now. Check back soon!
-                </p>
-              </div>
             ) : (
               <>
-                {displayEvents.map((event, i) => (
-                  <EventCard
-                    key={event.id}
-                    event={event}
-                    isFirst={i === 0}
-                    isLight={isLight}
-                  />
-                ))}
-
-                {/* View All Events Button */}
-                {events.length > 4 && (
-                  <Link
-                    to="/calendar"
-                    className="btn-ghost"
+                {events.length === 0 ? (
+                  <div
+                    className="glass-card"
                     style={{
-                      marginTop: "16px",
+                      padding: "48px 24px",
                       textAlign: "center",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: "12px",
-                      textDecoration: "none",
-                      width: "100%",
                     }}
                   >
-                    View All Events
-                    <ChevronRight size={16} />
-                  </Link>
+                    <p
+                      style={{
+                        fontFamily: "var(--font-body)",
+                        fontSize: "15px",
+                        color: "var(--text-secondary)",
+                        marginBottom: "16px",
+                      }}
+                    >
+                      No upcoming events right now. Check back soon!
+                    </p>
+                    <Link
+                      to="/calendar"
+                      className="btn-ghost"
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "8px",
+                        textDecoration: "none",
+                      }}
+                    >
+                      View full semester calendar
+                      <ChevronRight size={16} />
+                    </Link>
+                  </div>
+                ) : (
+                  displayEvents.map((event, i) => (
+                    <EventCard
+                      key={event.id}
+                      event={event}
+                      isFirst={i === 0}
+                      isLight={isLight}
+                    />
+                  ))
                 )}
+
+                {/* View All Events Button */}
+                <Link
+                  to="/calendar"
+                  className="btn-ghost"
+                  style={{
+                    marginTop: "16px",
+                    textAlign: "center",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "12px",
+                    textDecoration: "none",
+                    width: "100%",
+                  }}
+                >
+                  View All Events
+                  <ChevronRight size={16} />
+                </Link>
               </>
             )}
           </div>
 
           {/* Sidebar — Next Event Highlight */}
-          {nextEvent && !loading && (
-            <NextEventSidebar nextEvent={nextEvent} />
-          )}
+          {nextEvent && !loading && <NextEventSidebar nextEvent={nextEvent} />}
         </div>
       </div>
 

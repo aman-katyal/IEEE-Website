@@ -65,7 +65,7 @@ const mockEvents = [
     end: new Date(2026, 2, 19, 17, 0, 0),
     isAllDay: false,
     addToCalendarUrl: "http://add.5",
-  }
+  },
 ];
 
 describe("Events Component", () => {
@@ -101,8 +101,12 @@ describe("Events Component", () => {
 
     render(<Events />);
 
-    expect(screen.getByText("No upcoming events right now. Check back soon!")).toBeInTheDocument();
+    expect(
+      screen.getByText("No upcoming events right now. Check back soon!"),
+    ).toBeInTheDocument();
     expect(screen.getByText("0 upcoming events")).toBeInTheDocument();
+    expect(screen.getByText("View full semester calendar")).toBeInTheDocument();
+    expect(screen.getByText("View All Events")).toBeInTheDocument();
   });
 
   it("renders up to 4 events and highlights the next event in the sidebar", () => {
@@ -123,7 +127,7 @@ describe("Events Component", () => {
     expect(screen.getByText("Event 4")).toBeInTheDocument();
     expect(screen.queryByText("Event 5")).not.toBeInTheDocument(); // 5th event is sliced out of the main list
 
-    // Check "View All Events" button since length > 4
+    // Check "View All Events" button is always present
     expect(screen.getByText("View All Events")).toBeInTheDocument();
 
     // Check total events count
