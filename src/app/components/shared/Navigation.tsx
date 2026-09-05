@@ -42,7 +42,18 @@ export function Navigation() {
     { 
       label: "Committees", 
       href: "/committees",
-      dropdown: committees.map((c) => ({ label: c.shortName, href: `/committee/${c.id}`, id: c.id }))
+      dropdown: [
+        ...committees.map((c) => ({ label: c.shortName, href: `/committee/${c.id}`, id: c.id })),
+        {
+          label: "Involvement",
+          href: "/committees?tab=involvement",
+          dividerBefore: committees.length > 0,
+        },
+        {
+          label: "Operations",
+          href: "/committees?tab=operations",
+        },
+      ]
     },
     { label: "Events", href: "/calendar" },
     { label: "Officers", href: "/officers" },
@@ -55,7 +66,7 @@ export function Navigation() {
 
     // Prefetch committees list if hovering over Committees
     if (label === "Committees") {
-      const query = groq`*[_type == "committee"]{
+      const query = groq`*[_type == "committee"] | order(name asc){
         ...,
         "id": id.current,
         "image": coalesce(image.asset->url + "?auto=format&w=1200&q=75", image),

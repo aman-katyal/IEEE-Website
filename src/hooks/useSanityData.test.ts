@@ -46,13 +46,21 @@ describe('useSanityData hooks with React Query', () => {
     } as any);
   };
 
-  it('should return committees data on success', () => {
-    const mockData = [{ id: '1', name: 'Test Committee' }];
+  it('should return committees data sorted alphabetically by name on success', () => {
+    const mockData = [
+      { id: '2', name: 'ROV' },
+      { id: '1', name: 'Aerial Robotics' },
+      { id: '3', name: 'Computer Society' },
+    ];
     setupQueryMock(mockData);
 
     const { result } = renderHook(() => useCommittees());
 
-    expect(result.current.committees).toEqual(mockData);
+    expect(result.current.committees.map((c: any) => c.name)).toEqual([
+      'Aerial Robotics',
+      'Computer Society',
+      'ROV',
+    ]);
     expect(result.current.loading).toBe(false);
     expect(result.current.error).toBeNull();
   });
@@ -78,13 +86,19 @@ describe('useSanityData hooks with React Query', () => {
     expect(result.current.loading).toBe(false);
   });
 
-  it('should return cornerstone committees', () => {
-    const mockData = [{ id: '1', name: 'Operations' }];
+  it('should return cornerstone committees sorted alphabetically by name', () => {
+    const mockData = [
+      { id: '2', name: 'Operations' },
+      { id: '1', name: 'Member Involvement' },
+    ];
     setupQueryMock(mockData);
 
     const { result } = renderHook(() => useCornerstoneCommittees());
 
-    expect(result.current.committees).toEqual(mockData);
+    expect(result.current.committees.map((c: any) => c.name)).toEqual([
+      'Member Involvement',
+      'Operations',
+    ]);
   });
 
   it('should return leaders data', () => {

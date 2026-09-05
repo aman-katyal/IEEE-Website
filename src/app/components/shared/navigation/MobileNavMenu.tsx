@@ -124,41 +124,52 @@ export function MobileNavMenu({
                 }}
               >
                 {link.dropdown.map((subItem) => (
-                  <a
-                    key={subItem.href}
-                    href={subItem.href}
-                    aria-current={currentPath === subItem.href ? "page" : undefined}
-                    style={{
-                      display: "block",
-                      fontFamily: "var(--font-body)",
-                      fontSize: "1.1rem",
-                      color:
-                        currentPath === subItem.href
-                          ? "var(--text-primary)"
-                          : "var(--text-secondary)",
-                      textDecoration: "none",
-                      padding: "14px 16px",
-                      background:
-                        currentPath === subItem.href
-                          ? isLight
-                            ? "rgba(0, 90, 135, 0.08)"
-                            : "rgba(0, 98, 155, 0.1)"
-                          : isLight
-                          ? "rgba(0,0,0,0.03)"
-                          : "rgba(128,128,128,0.05)",
-                      borderRadius: "6px",
-                      borderLeft:
-                        currentPath === subItem.href
-                          ? "3px solid var(--electric-blue)"
-                          : "3px solid transparent",
-                    }}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      onNavigate(subItem.href);
-                    }}
-                  >
-                    {subItem.label}
-                  </a>
+                  <div key={subItem.href}>
+                    {subItem.dividerBefore && (
+                      <div
+                        role="separator"
+                        style={{
+                          height: "1px",
+                          background: "var(--glass-border)",
+                          margin: "10px 8px",
+                        }}
+                      />
+                    )}
+                    <a
+                      href={subItem.href}
+                      aria-current={currentPath === subItem.href ? "page" : undefined}
+                      style={{
+                        display: "block",
+                        fontFamily: "var(--font-body)",
+                        fontSize: "1.1rem",
+                        color:
+                          currentPath === subItem.href
+                            ? "var(--text-primary)"
+                            : "var(--text-secondary)",
+                        textDecoration: "none",
+                        padding: "14px 16px",
+                        background:
+                          currentPath === subItem.href
+                            ? isLight
+                              ? "rgba(0, 90, 135, 0.08)"
+                              : "rgba(0, 98, 155, 0.1)"
+                            : isLight
+                            ? "rgba(0,0,0,0.03)"
+                            : "rgba(128,128,128,0.05)",
+                        borderRadius: "6px",
+                        borderLeft:
+                          currentPath === subItem.href
+                            ? "3px solid var(--electric-blue)"
+                            : "3px solid transparent",
+                      }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        onNavigate(subItem.href);
+                      }}
+                    >
+                      {subItem.label}
+                    </a>
+                  </div>
                 ))}
               </div>
             </div>

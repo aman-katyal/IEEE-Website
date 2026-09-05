@@ -3,6 +3,7 @@ import { client, previewClient } from '../lib/sanity';
 import groq from 'groq';
 import type { Committee, CornerstoneCommittee } from '../data/committees/types';
 import type { Leader, OfficersConfig, HomePageData, AboutPageData, JoinPageData, DuesOption, LegalSection } from '../data/sanity-types';
+import { sortByKey } from '../lib/sortUtils';
 
 const SECTION_PROJECTION = `
   "sections": coalesce(sections[]{
@@ -82,7 +83,7 @@ function useSanityQuery<T>(query: string, params?: Record<string, any>) {
 }
 
 export function useCommittees() {
-  const query = groq`*[_type == "committee"]{
+  const query = groq`*[_type == "committee"] | order(name asc){
     ...,
     "id": id.current,
     "image": coalesce(image.asset->url + "?auto=format&w=1200&q=75", image),
@@ -91,7 +92,8 @@ export function useCommittees() {
     ${SECTION_PROJECTION}
   }`;
   const { data, loading, error } = useSanityQuery<Committee[]>(query);
-  return { committees: data || [], loading, error };
+  const committees = data ? sortByKey(data, "name", "asc") : [];
+  return { committees, loading, error };
 }
 
 export function useCommittee(id: string) {
@@ -109,7 +111,7 @@ export function useCommittee(id: string) {
 }
 
 export function useCornerstoneCommittees() {
-  const query = groq`*[_type == "cornerstone"]{
+  const query = groq`*[_type == "cornerstone"] | order(name asc){
     ...,
     "id": id.current,
     "leads": coalesce(leads[]{
@@ -119,7 +121,8 @@ export function useCornerstoneCommittees() {
     }, [])
   }`;
   const { data, loading, error } = useSanityQuery<CornerstoneCommittee[]>(query);
-  return { committees: data || [], loading, error };
+  const committees = data ? sortByKey(data, "name", "asc") : [];
+  return { committees, loading, error };
 }
 
 export function useLeaders() {

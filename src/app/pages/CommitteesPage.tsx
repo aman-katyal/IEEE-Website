@@ -1,7 +1,8 @@
 import { Committees } from "../components/committees/Committees";
 import { CornerstoneCommittees } from "../components/committees/CornerstoneCommittees";
 import { JoinCTA } from "../components/home/JoinCTA";
-import { useState, startTransition } from "react";
+import { useState, startTransition, useEffect } from "react";
+import { useSearchParams } from "react-router";
 import { useTheme } from "next-themes";
 import { motion, AnimatePresence } from "motion/react";
 import { usePageMeta } from "../../hooks/usePageMeta";
@@ -13,15 +14,55 @@ export function CommitteesPage() {
       "Explore Purdue IEEE technical committees: ROV, Racing, Aerial Robotics, Computer Society, EMBS, MTT-S, and Software Saturdays.",
   });
 
-  const [viewMode, setViewMode] = useState<"technical" | "involvement" | "operations">(
+  let searchParams: URLSearchParams | undefined;
+  let setSearchParams: any;
+  try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    [searchParams, setSearchParams] = useSearchParams();
+  } catch {
+    // Gracefully handle rendered outside Router context
+  }
+
+  const tabParam = searchParams?.get("tab");
+  const validTabs: Array<"technical" | "involvement" | "operations"> = [
     "technical",
+    "involvement",
+    "operations",
+  ];
+  const initialMode: "technical" | "involvement" | "operations" =
+    tabParam && validTabs.includes(tabParam as any)
+      ? (tabParam as "technical" | "involvement" | "operations")
+      : "technical";
+
+  const [viewMode, setViewMode] = useState<"technical" | "involvement" | "operations">(
+    initialMode,
   );
   const { theme } = useTheme();
   const isLight = theme === "light";
 
+  useEffect(() => {
+    if (tabParam && validTabs.includes(tabParam as any)) {
+      setViewMode(tabParam as "technical" | "involvement" | "operations");
+    }
+  }, [tabParam]);
+
   const handleModeChange = (mode: "technical" | "involvement" | "operations") => {
     startTransition(() => {
       setViewMode(mode);
+      if (setSearchParams) {
+        setSearchParams(
+          (prev: URLSearchParams) => {
+            const next = new URLSearchParams(prev);
+            if (mode === "technical") {
+              next.delete("tab");
+            } else {
+              next.set("tab", mode);
+            }
+            return next;
+          },
+          { replace: true }
+        );
+      }
     });
   };
 

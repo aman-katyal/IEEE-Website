@@ -79,6 +79,7 @@ export function NavDropdown({
             top: "100%",
             left: "0",
             width: link.label === "Committees" ? "220px" : "180px",
+            maxHeight: "min(85vh, 560px)",
             background: "var(--boiler-black)",
             border: "1px solid var(--glass-border)",
             borderRadius: "8px",
@@ -88,7 +89,8 @@ export function NavDropdown({
               : "0 10px 30px rgba(0,0,0,0.5)",
             backdropFilter: "blur(12px)",
             WebkitBackdropFilter: "blur(12px)",
-            overflow: "hidden",
+            overflowY: "auto",
+            overflowX: "hidden",
             zIndex: 110,
           }}
         >
@@ -148,54 +150,65 @@ export function NavDropdown({
             {link.dropdown.map((subItem) => {
               const isSubItemActive = currentPath === subItem.href;
               return (
-                <a
-                  key={subItem.href}
-                  href={subItem.href}
-                  aria-current={isSubItemActive ? "page" : undefined}
-                  style={{
-                    display: "block",
-                    padding: "8px 12px",
-                    borderRadius: "4px",
-                    color: isSubItemActive
-                      ? "var(--electric-blue)"
-                      : "var(--text-secondary)",
-                    textDecoration: "none",
-                    fontSize: "0.85rem",
-                    fontFamily: "var(--font-body)",
-                    transition: "color 0.2s ease, background 0.2s ease",
-                    background: isSubItemActive
-                      ? isLight
-                        ? "rgba(0, 90, 135, 0.08)"
-                        : "rgba(0, 98, 155, 0.1)"
-                      : "transparent",
-                  }}
-                  onMouseEnter={(e) => {
-                    onItemHover(subItem.href, subItem.id);
-                    const el = e.currentTarget;
-                    el.style.color = "var(--electric-blue)";
-                    el.style.background = isLight
-                      ? "rgba(0, 90, 135, 0.08)"
-                      : "rgba(0, 98, 155, 0.12)";
-                  }}
-                  onMouseLeave={(e) => {
-                    const el = e.currentTarget;
-                    if (currentPath !== subItem.href) {
-                      el.style.color = "var(--text-secondary)";
-                      el.style.background = "transparent";
-                    } else {
+                <div key={subItem.href}>
+                  {subItem.dividerBefore && (
+                    <div
+                      role="separator"
+                      style={{
+                        height: "1px",
+                        background: "var(--glass-border)",
+                        margin: "6px 8px",
+                      }}
+                    />
+                  )}
+                  <a
+                    href={subItem.href}
+                    aria-current={isSubItemActive ? "page" : undefined}
+                    style={{
+                      display: "block",
+                      padding: "8px 12px",
+                      borderRadius: "4px",
+                      color: isSubItemActive
+                        ? "var(--electric-blue)"
+                        : "var(--text-secondary)",
+                      textDecoration: "none",
+                      fontSize: "0.85rem",
+                      fontFamily: "var(--font-body)",
+                      transition: "color 0.2s ease, background 0.2s ease",
+                      background: isSubItemActive
+                        ? isLight
+                          ? "rgba(0, 90, 135, 0.08)"
+                          : "rgba(0, 98, 155, 0.1)"
+                        : "transparent",
+                    }}
+                    onMouseEnter={(e) => {
+                      onItemHover(subItem.href, subItem.id);
+                      const el = e.currentTarget;
                       el.style.color = "var(--electric-blue)";
                       el.style.background = isLight
                         ? "rgba(0, 90, 135, 0.08)"
-                        : "rgba(0, 98, 155, 0.1)";
-                    }
-                  }}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    onLinkClick(subItem.href);
-                  }}
-                >
-                  {subItem.label}
-                </a>
+                        : "rgba(0, 98, 155, 0.12)";
+                    }}
+                    onMouseLeave={(e) => {
+                      const el = e.currentTarget;
+                      if (currentPath !== subItem.href) {
+                        el.style.color = "var(--text-secondary)";
+                        el.style.background = "transparent";
+                      } else {
+                        el.style.color = "var(--electric-blue)";
+                        el.style.background = isLight
+                          ? "rgba(0, 90, 135, 0.08)"
+                          : "rgba(0, 98, 155, 0.1)";
+                      }
+                    }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onLinkClick(subItem.href);
+                    }}
+                  >
+                    {subItem.label}
+                  </a>
+                </div>
               );
             })}
           </div>

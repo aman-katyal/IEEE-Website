@@ -15,7 +15,7 @@ export const onRequest: PagesFunction = async (context) => {
         aboutContent,
         stats[] { value, label, subtext }
       },
-      "committees": *[_type == "committee" && !(_id in drafts)] {
+      "committees": *[_type == "committee" && !(_id in drafts)] | order(name asc) {
         name,
         tagline,
         status,

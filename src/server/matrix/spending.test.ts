@@ -319,6 +319,7 @@ describe('BoilerBooks Treasurer Master Spending Matrix', () => {
         name: 'Assistive Tech & Bionics',
         allocatedAmount: 3500.0,
         contactEmail: 'assistive-tech@purdueieee.org',
+        passcode: 'SecretPasscode123!',
         bankStatus: 'Active',
         duesStatus: 'Active',
         categories: ['Motors & Actuators', 'Sensors & MCU', 'Travel'],

@@ -122,6 +122,17 @@ describe("Navigation", () => {
     expect(screen.getByText("ROV")).toBeInTheDocument();
     expect(screen.getByText("EMBS")).toBeInTheDocument();
     expect(screen.getByText("Computer Society")).toBeInTheDocument();
+    expect(screen.getByText("Involvement")).toBeInTheDocument();
+    expect(screen.getByText("Operations")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Involvement", hidden: true })).toHaveAttribute(
+      "href",
+      "/committees?tab=involvement"
+    );
+    expect(screen.getByRole("link", { name: "Operations", hidden: true })).toHaveAttribute(
+      "href",
+      "/committees?tab=operations"
+    );
+    expect(screen.getByRole("separator", { hidden: true })).toBeInTheDocument();
 
     // Prefetches committees query
     expect(useSanityData.prefetchData).toHaveBeenCalled();

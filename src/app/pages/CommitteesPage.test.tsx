@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { MemoryRouter } from 'react-router';
 import { CommitteesPage } from './CommitteesPage';
 
 // Mock child components
@@ -69,5 +70,29 @@ describe('CommitteesPage', () => {
 
     fireEvent.keyDown(tablist, { key: 'Home' });
     expect(screen.getByRole('tab', { name: /Technical Committees/i })).toHaveAttribute('aria-selected', 'true');
+  });
+
+  it('renders Involvement tab when ?tab=involvement is in URL', () => {
+    render(
+      <MemoryRouter initialEntries={['/committees?tab=involvement']}>
+        <CommitteesPage />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByRole('tab', { name: /Involvement/i })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByText('Showing Involvement Committees')).toBeInTheDocument();
+    expect(screen.getByTestId('cornerstone-committees-mock')).toBeInTheDocument();
+  });
+
+  it('renders Operations tab when ?tab=operations is in URL', () => {
+    render(
+      <MemoryRouter initialEntries={['/committees?tab=operations']}>
+        <CommitteesPage />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByRole('tab', { name: /Operations/i })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByText('Showing Operations Committees')).toBeInTheDocument();
+    expect(screen.getByTestId('cornerstone-committees-mock')).toBeInTheDocument();
   });
 });
