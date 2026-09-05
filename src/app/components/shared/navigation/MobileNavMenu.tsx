@@ -25,13 +25,10 @@ export function MobileNavMenu({
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-
     if (!isOpen) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -42,7 +39,7 @@ export function MobileNavMenu({
 
       if (e.key === "Tab" && containerRef.current) {
         const focusable = containerRef.current.querySelectorAll<HTMLElement>(
-          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
         );
         if (focusable.length === 0) return;
 
@@ -62,7 +59,7 @@ export function MobileNavMenu({
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "";
+      document.body.style.overflow = originalOverflow;
     };
   }, [isOpen, onClose]);
 
@@ -137,7 +134,9 @@ export function MobileNavMenu({
                     )}
                     <a
                       href={subItem.href}
-                      aria-current={currentPath === subItem.href ? "page" : undefined}
+                      aria-current={
+                        currentPath === subItem.href ? "page" : undefined
+                      }
                       style={{
                         display: "block",
                         fontFamily: "var(--font-body)",
@@ -154,8 +153,8 @@ export function MobileNavMenu({
                               ? "rgba(0, 90, 135, 0.08)"
                               : "rgba(0, 98, 155, 0.1)"
                             : isLight
-                            ? "rgba(0,0,0,0.03)"
-                            : "rgba(128,128,128,0.05)",
+                              ? "rgba(0,0,0,0.03)"
+                              : "rgba(128,128,128,0.05)",
                         borderRadius: "6px",
                         borderLeft:
                           currentPath === subItem.href
@@ -196,8 +195,8 @@ export function MobileNavMenu({
                       ? "rgba(0, 90, 135, 0.08)"
                       : "rgba(0, 98, 155, 0.1)"
                     : isLight
-                    ? "rgba(0,0,0,0.03)"
-                    : "rgba(128,128,128,0.05)",
+                      ? "rgba(0,0,0,0.03)"
+                      : "rgba(128,128,128,0.05)",
                 borderRadius: "6px",
                 marginBottom: "8px",
                 textTransform: "uppercase",
