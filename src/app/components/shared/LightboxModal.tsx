@@ -75,21 +75,21 @@ export function LightboxModal({
           <div className="flex items-center gap-2">
             <button
               onClick={() => setZoomLevel((z) => Math.min(z + 0.5, 3))}
-              className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+              className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2"
               aria-label="Zoom In"
             >
               <ZoomIn className="w-4 h-4" aria-hidden="true" />
             </button>
             <button
               onClick={() => setZoomLevel((z) => Math.max(z - 0.5, 1))}
-              className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+              className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2"
               aria-label="Zoom Out"
             >
               <ZoomOut className="w-4 h-4" aria-hidden="true" />
             </button>
             <button
               onClick={onClose}
-              className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer ml-2"
+              className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer ml-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2"
               aria-label="Close Lightbox"
             >
               <X className="w-5 h-5" aria-hidden="true" />
@@ -102,7 +102,7 @@ export function LightboxModal({
           {images.length > 1 && (
             <button
               onClick={handlePrev}
-              className="absolute left-2 sm:left-4 z-10 p-3 rounded-full bg-black/60 hover:bg-black/80 text-white transition-colors cursor-pointer border border-white/10"
+              className="absolute left-2 sm:left-4 z-10 p-3 rounded-full bg-black/60 hover:bg-black/80 text-white transition-colors cursor-pointer border border-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2"
               aria-label="Previous Image"
             >
               <ChevronLeft className="w-6 h-6" aria-hidden="true" />
@@ -120,7 +120,7 @@ export function LightboxModal({
           {images.length > 1 && (
             <button
               onClick={handleNext}
-              className="absolute right-2 sm:right-4 z-10 p-3 rounded-full bg-black/60 hover:bg-black/80 text-white transition-colors cursor-pointer border border-white/10"
+              className="absolute right-2 sm:right-4 z-10 p-3 rounded-full bg-black/60 hover:bg-black/80 text-white transition-colors cursor-pointer border border-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2"
               aria-label="Next Image"
             >
               <ChevronRight className="w-6 h-6" aria-hidden="true" />
