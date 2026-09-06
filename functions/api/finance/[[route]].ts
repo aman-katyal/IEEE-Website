@@ -331,7 +331,7 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
           query += ' AND committee_id = ?';
           params.push(committeeId);
         }
-        query += ' ORDER BY transaction_date DESC';
+        query += ' ORDER BY received_date DESC, created_at DESC';
         const inflows = await queryAll(db, query, params);
         return jsonResponse({ success: true, inflows }, 200, request);
       }

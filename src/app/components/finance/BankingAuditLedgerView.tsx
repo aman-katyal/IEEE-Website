@@ -323,17 +323,17 @@ export function BankingAuditLedgerView({
       </div>
 
       <CardContent className="p-0 overflow-x-auto">
-        <Table>
+        <Table className="min-w-[950px]">
           <TableHeader className="bg-slate-900/60 border-b border-slate-800">
             <TableRow className="border-slate-800 hover:bg-transparent">
-              <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 pl-6">Timestamp</TableHead>
+              <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 pl-6 w-[170px] whitespace-nowrap">Timestamp</TableHead>
               {!currentCommitteeId && (
-                <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">Committee</TableHead>
+                <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 w-[220px]">Committee</TableHead>
               )}
-              <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">Event Type</TableHead>
-              <TableHead className="text-xs font-mono uppercase text-slate-400 py-3">Transaction Statement & Details</TableHead>
-              <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">Delta ($)</TableHead>
-              <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 pr-6 text-right">Authorized By</TableHead>
+              <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 w-[140px] whitespace-nowrap">Event Type</TableHead>
+              <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 min-w-[320px]">Transaction Statement & Details</TableHead>
+              <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 w-[120px] text-right whitespace-nowrap">Delta ($)</TableHead>
+              <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 pr-6 w-[180px] text-right whitespace-nowrap">Authorized By</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -353,15 +353,15 @@ export function BankingAuditLedgerView({
                       </span>
                     </TableCell>
                   )}
-                  <TableCell className="py-3.5">
+                  <TableCell className="py-3.5 whitespace-nowrap">
                     {getActionBadge(entry.actionType)}
                   </TableCell>
-                  <TableCell className="py-3.5 max-w-[380px]">
-                    <div className="text-xs text-slate-200 font-medium leading-relaxed">
+                  <TableCell className="py-3.5 min-w-[320px] max-w-[500px]">
+                    <div className="text-xs text-slate-200 font-medium leading-relaxed break-words">
                       {entry.description}
                     </div>
                     {entry.previousValue && entry.newValue && (
-                      <div className="text-[11px] font-mono text-slate-500 mt-0.5">
+                      <div className="text-[11px] font-mono text-slate-500 mt-0.5 break-all">
                         Transition: {entry.previousValue} → {entry.newValue}
                       </div>
                     )}

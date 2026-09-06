@@ -216,14 +216,14 @@ export function useFinanceApi() {
               if (existing) {
                 prevMap.set(r.committeeId, {
                   ...existing,
-                  allocated: r.allocatedAmount ?? existing.allocated,
+                  allocated: r.baseAllocatedAmount ?? r.allocatedAmount ?? existing.allocated,
                 });
               } else {
                 prevMap.set(r.committeeId, {
                   id: r.committeeId,
                   name: r.committeeName || r.committeeId,
                   shortName: r.committeeName || r.committeeId,
-                  allocated: r.allocatedAmount ?? 0,
+                  allocated: r.baseAllocatedAmount ?? r.allocatedAmount ?? 0,
                   bankStatus: "Active",
                   duesStatus: "Active",
                   contactEmail: `${r.committeeId}@purdueieee.org`,
