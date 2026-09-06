@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS committee_budgets (
     fiscal_year_id TEXT NOT NULL REFERENCES fiscal_years(id) ON DELETE CASCADE,
     committee_id TEXT NOT NULL REFERENCES finance_committees(id) ON DELETE CASCADE,
     allocated_amount DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    sfab_amount DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
     notes TEXT,
     UNIQUE(fiscal_year_id, committee_id)
 );

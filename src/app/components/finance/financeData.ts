@@ -10,6 +10,7 @@ export interface CommitteeInfo {
   name: string;
   shortName: string;
   allocated: number;
+  sfabAllocated?: number;
   contactEmail: string;
   bankStatus?: 'Active' | 'Inactive' | 'Read-Only';
   duesStatus?: 'Active' | 'Inactive';
@@ -94,11 +95,13 @@ export interface FinancialAuditLedgerEntry {
   actionType:
     | 'BUDGET_ALLOCATION'
     | 'FUNDING_INFLOW'
+    | 'FUNDING_INFLOW_EDITED'
     | 'FUNDING_INFLOW_DELETED'
     | 'PURCHASE_SUBMITTED'
     | 'PURCHASE_APPROVED'
     | 'PURCHASE_REIMBURSED'
     | 'PURCHASE_REJECTED'
+    | 'PURCHASE_EDITED'
     | 'CASH_DUES'
     | 'PARAMETER_CHANGE';
   actorRole: string;
@@ -117,6 +120,7 @@ export const REAL_COMMITTEES: CommitteeInfo[] = [
     name: 'General IEEE Branch',
     shortName: 'General IEEE',
     allocated: 0,
+    sfabAllocated: 0,
     contactEmail: 'treasurer@purdueieee.org',
     categories: ['Administrative & Office', 'Swag & Marketing', 'Branch Banquets', 'National Dues', 'General'],
   },
@@ -125,6 +129,7 @@ export const REAL_COMMITTEES: CommitteeInfo[] = [
     name: 'Remotely Operated underwater Vehicle (ROV)',
     shortName: 'ROV',
     allocated: 0,
+    sfabAllocated: 0,
     contactEmail: 'rov@purdueieee.org',
     categories: ['Hardware & Thrusters', 'Electronics & Sensors', 'Tools & Fabrication', 'Travel & Competition', 'General'],
   },
@@ -133,6 +138,7 @@ export const REAL_COMMITTEES: CommitteeInfo[] = [
     name: 'IEEE Racing (EV Go-Kart)',
     shortName: 'Racing',
     allocated: 0,
+    sfabAllocated: 0,
     contactEmail: 'racing@purdueieee.org',
     categories: ['Powertrain & Batteries', 'Chassis & Suspension', 'Safety Gear', 'Track Registration', 'General'],
   },
@@ -141,6 +147,7 @@ export const REAL_COMMITTEES: CommitteeInfo[] = [
     name: 'Aerial Robotics (AESS Drone Team)',
     shortName: 'AESS',
     allocated: 0,
+    sfabAllocated: 0,
     contactEmail: 'aesc@purdueieee.org',
     categories: ['Motors & ESCs', 'Carbon Fiber & Frames', 'Flight Controllers', 'Competition Travel', 'General'],
   },
@@ -149,6 +156,7 @@ export const REAL_COMMITTEES: CommitteeInfo[] = [
     name: 'Engineering in Medicine & Biology Society (EMBS)',
     shortName: 'EMBS',
     allocated: 0,
+    sfabAllocated: 0,
     contactEmail: 'embs@purdueieee.org',
     categories: ['Bio-Sensors & Electrodes', 'Prototyping Materials', 'Workshops & Outreach', 'General'],
   },
@@ -157,6 +165,7 @@ export const REAL_COMMITTEES: CommitteeInfo[] = [
     name: 'Microwave Theory & Techniques Society (MTT-S)',
     shortName: 'MTT-S',
     allocated: 0,
+    sfabAllocated: 0,
     contactEmail: 'mtts@purdueieee.org',
     categories: ['RF Components & Antennas', 'PCB Fabrication', 'Test & Measurement', 'General'],
   },
@@ -165,6 +174,7 @@ export const REAL_COMMITTEES: CommitteeInfo[] = [
     name: 'Electron Devices Society (EDS)',
     shortName: 'EDS',
     allocated: 0,
+    sfabAllocated: 0,
     contactEmail: 'eds@purdueieee.org',
     categories: ['Semiconductors & Wafers', 'Cleanroom & Fabrication', 'Test & Characterization', 'Workshops', 'General'],
   },
@@ -173,6 +183,7 @@ export const REAL_COMMITTEES: CommitteeInfo[] = [
     name: 'Computer Society',
     shortName: 'Computer Society',
     allocated: 0,
+    sfabAllocated: 0,
     contactEmail: 'cs@purdueieee.org',
     categories: ['Server & Cloud Hosting', 'Hackathons & Contests', 'Hardware Dev Kits', 'Workshops', 'General'],
   },
@@ -181,6 +192,7 @@ export const REAL_COMMITTEES: CommitteeInfo[] = [
     name: 'Systems, Man, and Cybernetics (SMC)',
     shortName: 'SMC',
     allocated: 0,
+    sfabAllocated: 0,
     contactEmail: 'smc@purdueieee.org',
     categories: ['Control Systems', 'Sensors & Actuators', 'Workshops & Competitions', 'General'],
   },
@@ -189,6 +201,7 @@ export const REAL_COMMITTEES: CommitteeInfo[] = [
     name: 'Learning & Code Cafe',
     shortName: 'Learning',
     allocated: 0,
+    sfabAllocated: 0,
     contactEmail: 'learning@purdueieee.org',
     categories: ['Microcontroller Kits', 'Soldering Supplies', 'Workshop Refreshments', 'General'],
   },
@@ -197,6 +210,7 @@ export const REAL_COMMITTEES: CommitteeInfo[] = [
     name: 'Infrastructure & Web Dev',
     shortName: 'Infrastructure',
     allocated: 0,
+    sfabAllocated: 0,
     contactEmail: 'infra@purdueieee.org',
     categories: ['Cloud Services', 'Lab Equipment', 'Network Hardware', 'General'],
   },
@@ -205,6 +219,7 @@ export const REAL_COMMITTEES: CommitteeInfo[] = [
     name: 'Branch Events & Growth',
     shortName: 'Events',
     allocated: 0,
+    sfabAllocated: 0,
     contactEmail: 'events@purdueieee.org',
     categories: ['Social Events', 'Banquet & Awards', 'Callouts & Swag', 'General'],
   },
@@ -213,6 +228,7 @@ export const REAL_COMMITTEES: CommitteeInfo[] = [
     name: 'Industrial Relations & Corporate Partnerships',
     shortName: 'Industrial Relations',
     allocated: 0,
+    sfabAllocated: 0,
     contactEmail: 'ir@purdueieee.org',
     categories: ['Company Info Sessions', 'Resume Book Hosting', 'Sponsorship Events', 'General'],
   },
@@ -221,6 +237,7 @@ export const REAL_COMMITTEES: CommitteeInfo[] = [
     name: 'Member Involvement',
     shortName: 'Member Involvement',
     allocated: 0,
+    sfabAllocated: 0,
     contactEmail: 'involvement@purdueieee.org',
     categories: ['Callouts & Socials', 'Mentorship & Workshops', 'Member Retention', 'Swag & Apparel', 'General'],
   },
@@ -229,6 +246,7 @@ export const REAL_COMMITTEES: CommitteeInfo[] = [
     name: 'Operations',
     shortName: 'Operations',
     allocated: 0,
+    sfabAllocated: 0,
     contactEmail: 'operations@purdueieee.org',
     categories: ['Lab Management & Supplies', 'Inventory & Storage', 'Equipment Maintenance', 'Safety & PPE', 'General'],
   },

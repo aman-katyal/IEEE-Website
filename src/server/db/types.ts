@@ -51,6 +51,7 @@ export interface CommitteeBudgetRow {
   fiscal_year_id: string;
   committee_id: string;
   allocated_amount: number;
+  sfab_amount?: number;
   notes: string | null;
 }
 
@@ -174,6 +175,7 @@ export interface CommitteeBudget {
   fiscalYearId: string;
   committeeId: string;
   allocatedAmount: number;
+  sfabAmount?: number;
   notes: string | null;
   committeeName?: string;
   fiscalYearName?: string;
@@ -440,11 +442,13 @@ export const DEFAULT_SEED_COMMITTEES: readonly SeedCommittee[] = [
 export type AuditActionType =
   | 'BUDGET_ALLOCATION'
   | 'FUNDING_INFLOW'
+  | 'FUNDING_INFLOW_EDITED'
   | 'FUNDING_INFLOW_DELETED'
   | 'PURCHASE_SUBMITTED'
   | 'PURCHASE_APPROVED'
   | 'PURCHASE_REIMBURSED'
   | 'PURCHASE_REJECTED'
+  | 'PURCHASE_EDITED'
   | 'CASH_DUES'
   | 'PARAMETER_CHANGE';
 

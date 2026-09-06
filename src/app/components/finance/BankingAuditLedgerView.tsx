@@ -125,6 +125,12 @@ export function BankingAuditLedgerView({
             Funding Inflow
           </Badge>
         );
+      case 'FUNDING_INFLOW_EDITED':
+        return (
+          <Badge className="bg-sky-500/15 text-sky-300 border-sky-500/30 text-[10px] whitespace-nowrap">
+            Inflow Modified
+          </Badge>
+        );
       case 'FUNDING_INFLOW_DELETED':
         return (
           <Badge className="bg-rose-500/15 text-rose-300 border-rose-500/30 text-[10px] whitespace-nowrap">
@@ -135,6 +141,12 @@ export function BankingAuditLedgerView({
         return (
           <Badge className="bg-slate-500/15 text-slate-300 border-slate-500/30 text-[10px] whitespace-nowrap">
             Requisition Filed
+          </Badge>
+        );
+      case 'PURCHASE_EDITED':
+        return (
+          <Badge className="bg-sky-500/15 text-sky-300 border-sky-500/30 text-[10px] whitespace-nowrap">
+            Requisition Modified
           </Badge>
         );
       case 'PURCHASE_APPROVED':

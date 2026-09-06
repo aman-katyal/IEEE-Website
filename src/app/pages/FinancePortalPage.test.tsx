@@ -166,10 +166,10 @@ describe('FinancePortalPage Integration Suite', () => {
       await user.click(submitButton);
 
       expect(screen.getByText(/Remotely Operated underwater Vehicle/i)).toBeInTheDocument();
-      expect(screen.getByText('Total Committee Budget')).toBeInTheDocument();
-      expect(screen.getByText('Total Spent')).toBeInTheDocument();
-      expect(screen.getByText('Pending Queue')).toBeInTheDocument();
-      expect(screen.getByText('Remaining Balance')).toBeInTheDocument();
+      expect(screen.getByText('General Operating Budget')).toBeInTheDocument();
+      expect(screen.getByText('SFAB Grant Budget')).toBeInTheDocument();
+      expect(screen.getAllByText('Disbursed / Spent').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('Remaining Balance').length).toBeGreaterThan(0);
       expect(screen.getByText(/Quick Member Dues Verification/i)).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /New Purchase Request/i })).toBeInTheDocument();
     });
@@ -388,10 +388,10 @@ describe('FinancePortalPage Integration Suite', () => {
       await user.click(editButtons[0]);
 
       expect(screen.getByText(/Edit Parameters/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/Allocated Budget Capital/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/General Operating Budget/i)).toBeInTheDocument();
 
       // Update allocated budget
-      fireEvent.change(screen.getByLabelText(/Allocated Budget Capital/i), {
+      fireEvent.change(screen.getByLabelText(/General Operating Budget/i), {
         target: { value: '18500' },
       });
 

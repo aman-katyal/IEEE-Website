@@ -20,6 +20,7 @@ export function FinancePortalPage() {
     refreshData,
     logout,
     addPurchase,
+    updatePurchase,
     updatePurchaseStatus,
     recordCashDues,
     importMemberDues,
@@ -27,6 +28,7 @@ export function FinancePortalPage() {
     createCommittee,
     deleteCommittee,
     addFundingInflow,
+    updateFundingInflow,
     deleteFundingInflow,
     clearAllData,
   } = useFinanceApi();
@@ -151,6 +153,7 @@ export function FinancePortalPage() {
             fundingInflows={fundingInflows}
             auditLogs={auditLogs}
             onAddPurchase={addPurchase}
+            onUpdatePurchase={updatePurchase}
             onRecordCashDues={recordCashDues}
             onLogout={handleLogout}
           />
@@ -164,12 +167,14 @@ export function FinancePortalPage() {
             auditLogs={auditLogs}
             bosoStatement={bosoStatement}
             onUpdatePurchaseStatus={updatePurchaseStatus}
+            onUpdatePurchase={updatePurchase}
             onRecordCashDues={recordCashDues}
             onImportMemberDues={importMemberDues}
             onUpdateCommittee={updateCommittee}
             onCreateCommittee={createCommittee}
             onDeleteCommittee={deleteCommittee}
             onAddFundingInflow={addFundingInflow}
+            onUpdateFundingInflow={updateFundingInflow}
             onDeleteFundingInflow={deleteFundingInflow}
             onClearAllData={clearAllData}
             onLogout={handleLogout}

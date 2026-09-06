@@ -440,4 +440,96 @@ describe('BoilerBooks Treasurer Master Spending Matrix', () => {
       expect(auditLog.description).toContain('released base budget allocation');
     });
   });
+
+  describe('Separate SFAB and General Budget Management', () => {
+    it('accurately segregates General and SFAB funding, spending, pending, and remaining balances', async () => {
+      // Setup SFAB allocated budget on ROV
+      db.exec(`
+        UPDATE committee_budgets
+        SET sfab_amount = 3000.00
+        WHERE committee_id = 'rov' AND fiscal_year_id = 'fy25-26';
+      `);
+
+      // Add SFAB Inflow and General Inflow
+      db.exec(`
+        INSERT INTO committee_funding_inflows (
+          id, fiscal_year_id, committee_id, source_type, title, amount, received_date
+        ) VALUES
+          ('inf-sfab-1', 'fy25-26', 'rov', 'SFAB Grant', 'Fall SFAB Allocation', 1500.00, '2025-09-01'),
+          ('inf-gen-1', 'fy25-26', 'rov', 'Corporate Sponsorship', 'Boeing Grant', 500.00, '2025-09-10');
+      `);
+
+      // Add SFAB purchase request and General purchase request
+      db.exec(`
+        INSERT INTO purchase_requests (
+          id, fiscal_year_id, committee_id, requester_name, requester_email,
+          vendor_name, total_amount, description, status, funding_source
+        ) VALUES
+          ('pr-sfab-1', 'fy25-26', 'rov', 'Alex Boiler', 'aboiler@purdue.edu', 'Blue Robotics', 800.00, 'Thrusters', 'APPROVED', 'SFAB'),
+          ('pr-sfab-2', 'fy25-26', 'rov', 'Sam Sub', 'ssub@purdue.edu', 'Subsea Tech', 200.00, 'Tether', 'PENDING', 'SFAB'),
+          ('pr-gen-1', 'fy25-26', 'rov', 'Alex Boiler', 'aboiler@purdue.edu', 'Home Depot', 300.00, 'PVC Pipes', 'APPROVED', 'GENERAL');
+      `);
+
+      const summary = await calculateCommitteeSpending(db, 'fy25-26');
+      const rov = summary.committees.find((c) => c.committeeId === 'rov');
+      expect(rov).toBeDefined();
+
+      // General Account:
+      // Base: 5000.00, Inflows: 500.00 -> Total: 5500.00
+      // Spent: pr-rov-1 (600) + pr-rov-2 (400) + pr-rov-4 (150) + pr-gen-1 (300) = 1450.00
+      // Pending: pr-rov-3 (500)
+      // Remaining: 5500 - 1450 = 4050.00
+      expect(rov?.general?.baseAllocated).toBe(5000.00);
+      expect(rov?.general?.inflows).toBe(500.00);
+      expect(rov?.general?.totalBudget).toBe(5500.00);
+      expect(rov?.general?.spent).toBe(1450.00);
+      expect(rov?.general?.pending).toBe(500.00);
+      expect(rov?.general?.remaining).toBe(4050.00);
+
+      // SFAB Account:
+      // Base: 3000.00, Inflows: 1500.00 -> Total: 4500.00
+      // Spent: pr-sfab-1 (800)
+      // Pending: pr-sfab-2 (200)
+      // Remaining: 4500 - 800 = 3700.00
+      expect(rov?.sfab?.baseAllocated).toBe(3000.00);
+      expect(rov?.sfab?.inflows).toBe(1500.00);
+      expect(rov?.sfab?.totalBudget).toBe(4500.00);
+      expect(rov?.sfab?.spent).toBe(800.00);
+      expect(rov?.sfab?.pending).toBe(200.00);
+      expect(rov?.sfab?.remaining).toBe(3700.00);
+
+      // Combined Totals:
+      expect(rov?.allocatedAmount).toBe(10000.00); // 5500 + 4500
+      expect(rov?.spentAmount).toBe(2250.00); // 1450 + 800
+      expect(rov?.pendingAmount).toBe(700.00); // 500 + 200
+      expect(rov?.remainingAmount).toBe(7750.00); // 10000 - 2250
+    });
+
+    it('updates SFAB budget independently of General budget and records distinct audit log', async () => {
+      const updateResult = await updateCommitteeParameters(db, 'fy25-26', 'rov', {
+        allocatedAmount: 6000.00,
+        sfabAmount: 2500.00,
+      });
+
+      expect(updateResult.success).toBe(true);
+
+      const budget = db
+        .prepare('SELECT allocated_amount, sfab_amount FROM committee_budgets WHERE committee_id = ? AND fiscal_year_id = ?')
+        .get('rov', 'fy25-26') as any;
+      expect(budget.allocated_amount).toBe(6000.00);
+      expect(budget.sfab_amount).toBe(2500.00);
+
+      const logs = db
+        .prepare("SELECT * FROM financial_audit_ledger WHERE committee_id = 'rov' AND action_type = 'BUDGET_ALLOCATION' ORDER BY rowid DESC LIMIT 2")
+        .all() as any[];
+
+      const sfabLog = logs.find((l) => l.description.includes('SFAB allocated budget'));
+      expect(sfabLog).toBeDefined();
+      expect(sfabLog.amount_delta).toBe(2500.00);
+
+      const generalLog = logs.find((l) => l.description.includes('Base allocated budget'));
+      expect(generalLog).toBeDefined();
+      expect(generalLog.amount_delta).toBe(1000.00); // 5000 -> 6000
+    });
+  });
 });

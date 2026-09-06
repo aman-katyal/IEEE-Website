@@ -645,6 +645,187 @@ export async function updatePurchaseStatus(
   return mapRowToPurchaseRequest(updatedRow);
 }
 
+export interface UpdatePurchaseRequestPayload {
+  id: string;
+  vendorName?: string;
+  totalAmount?: number;
+  description?: string;
+  categoryId?: string | null;
+  fundingSource?: 'SFAB' | 'GENERAL';
+  sfabLineItem?: string | null;
+  disbursementMethod?: 'BOSO_PICKUP' | 'MAIL_ADDRESS' | 'EPAYMENT';
+  streetAddress?: string | null;
+  phoneNumber?: string | null;
+  purdueUsername?: string | null;
+  requesterName?: string;
+  requesterEmail?: string;
+  coolAccountNumber?: string | null;
+  status?: PurchaseRequestStatus;
+  treasurerNotes?: string | null;
+}
+
+/**
+ * Updates any/all fields of an existing purchase requisition and records an immutable audit ledger entry.
+ */
+export async function updatePurchaseRequest(
+  dbLike: D1DatabaseLike | DatabaseSync,
+  payload: UpdatePurchaseRequestPayload,
+  session: AuthSession | null
+): Promise<PurchaseRequest> {
+  const db = adaptDatabase(dbLike);
+
+  const current = await db
+    .prepare(
+      `SELECT pr.*, bc.name as category_name 
+       FROM purchase_requests pr 
+       LEFT JOIN budget_categories bc ON pr.category_id = bc.id 
+       WHERE pr.id = ?`
+    )
+    .bind(payload.id)
+    .first<PurchaseRequestRow & { category_name?: string | null }>();
+
+  if (!current) {
+    throw new Error(`Purchase request with ID "${payload.id}" not found.`);
+  }
+
+  // Permission check: TREASURER can edit any request; COMMITTEE_LEAD can edit their own committee's request
+  if (session && session.role !== 'TREASURER' && session.committeeId !== current.committee_id) {
+    throw new Error('Access denied: Unauthorized to edit this purchase requisition.');
+  }
+
+  const prevAmount = Number(current.total_amount) || 0;
+  const newAmount = payload.totalAmount !== undefined ? Math.round(payload.totalAmount * 100) / 100 : prevAmount;
+  if (newAmount <= 0) {
+    throw new Error('Purchase requisition total amount must be greater than $0.00.');
+  }
+
+  const newVendor = payload.vendorName !== undefined ? payload.vendorName.trim() : current.vendor_name;
+  const newDescription = payload.description !== undefined ? payload.description.trim() : current.description;
+  const newCategoryId = payload.categoryId !== undefined ? payload.categoryId : current.category_id;
+  const newFundingSource = payload.fundingSource || current.funding_source || 'GENERAL';
+  const newSfabLineItem = payload.sfabLineItem !== undefined ? payload.sfabLineItem : current.sfab_line_item;
+  const newDisbursement = payload.disbursementMethod || current.disbursement_method || 'BOSO_PICKUP';
+  const newStreetAddress = payload.streetAddress !== undefined ? payload.streetAddress : current.street_address;
+  const newPhone = payload.phoneNumber !== undefined ? payload.phoneNumber : current.phone_number;
+  const newUsername = payload.purdueUsername !== undefined ? payload.purdueUsername : current.purdue_username;
+  const newRequesterName = payload.requesterName !== undefined ? payload.requesterName.trim() : current.requester_name;
+  const newRequesterEmail = payload.requesterEmail !== undefined ? payload.requesterEmail.trim() : current.requester_email;
+  const newCoolAccount = payload.coolAccountNumber !== undefined ? payload.coolAccountNumber : current.cool_account_number;
+  const newStatus = payload.status || current.status;
+  const newNotes = payload.treasurerNotes !== undefined ? payload.treasurerNotes : current.treasurer_notes;
+
+  const now = new Date().toISOString();
+  let approvedAt = current.approved_at;
+  let reimbursedAt = current.reimbursed_at;
+  if (newStatus === 'APPROVED' && !approvedAt) {
+    approvedAt = now;
+  } else if (newStatus === 'REIMBURSED') {
+    if (!approvedAt) approvedAt = now;
+    reimbursedAt = now;
+  }
+
+  await db
+    .prepare(
+      `UPDATE purchase_requests 
+       SET vendor_name = ?,
+           total_amount = ?,
+           description = ?,
+           category_id = ?,
+           funding_source = ?,
+           sfab_line_item = ?,
+           disbursement_method = ?,
+           street_address = ?,
+           phone_number = ?,
+           purdue_username = ?,
+           requester_name = ?,
+           requester_email = ?,
+           cool_account_number = ?,
+           status = ?,
+           treasurer_notes = ?,
+           approved_at = ?,
+           reimbursed_at = ?
+       WHERE id = ?`
+    )
+    .bind(
+      newVendor,
+      newAmount,
+      newDescription,
+      newCategoryId,
+      newFundingSource,
+      newSfabLineItem,
+      newDisbursement,
+      newStreetAddress,
+      newPhone,
+      newUsername,
+      newRequesterName,
+      newRequesterEmail,
+      newCoolAccount,
+      newStatus,
+      newNotes,
+      approvedAt,
+      reimbursedAt,
+      payload.id
+    )
+    .run();
+
+  const updatedRow = await db
+    .prepare(
+      `SELECT pr.*, bc.name as category_name 
+       FROM purchase_requests pr 
+       LEFT JOIN budget_categories bc ON pr.category_id = bc.id 
+       WHERE pr.id = ?`
+    )
+    .bind(payload.id)
+    .first<PurchaseRequestRow & { category_name?: string | null }>();
+
+  if (!updatedRow) {
+    throw new Error(`Failed to retrieve updated purchase request record for "${payload.id}"`);
+  }
+
+  // Track changes for ledger description
+  const changes: string[] = [];
+  if (newAmount !== prevAmount) changes.push(`amount: $${prevAmount.toFixed(2)} -> $${newAmount.toFixed(2)}`);
+  if (newVendor !== current.vendor_name) changes.push(`vendor: "${current.vendor_name}" -> "${newVendor}"`);
+  if (newFundingSource !== current.funding_source) changes.push(`account: ${current.funding_source} -> ${newFundingSource}`);
+  if (newStatus !== current.status) changes.push(`status: ${current.status} -> ${newStatus}`);
+
+  // Calculate amount delta for ledger:
+  let amountDelta = 0;
+  if (newStatus === 'APPROVED' || newStatus === 'REIMBURSED' || newStatus === 'PURCHASED') {
+    if (current.status === 'APPROVED' || current.status === 'REIMBURSED' || current.status === 'PURCHASED') {
+      amountDelta = -(newAmount - prevAmount);
+    } else {
+      amountDelta = -newAmount;
+    }
+  } else if (current.status === 'APPROVED' || current.status === 'REIMBURSED' || current.status === 'PURCHASED') {
+    amountDelta = prevAmount;
+  }
+
+  try {
+    await recordAuditEntry(db, {
+      fiscalYearId: updatedRow.fiscal_year_id,
+      committeeId: updatedRow.committee_id,
+      actionType:
+        newStatus !== current.status && (newStatus === 'APPROVED' || newStatus === 'REIMBURSED' || newStatus === 'REJECTED')
+          ? (newStatus === 'APPROVED'
+              ? 'PURCHASE_APPROVED'
+              : newStatus === 'REIMBURSED'
+              ? 'PURCHASE_REIMBURSED'
+              : 'PURCHASE_REJECTED')
+          : 'PURCHASE_EDITED',
+      actorRole: session?.role || 'TREASURER',
+      actorName: session?.name || 'Authorized User',
+      actorEmail: session?.committeeId === 'treasurer' ? 'treasurer@purdueieee.org' : undefined,
+      description: `Edited purchase requisition ${payload.id} (${newVendor}): ${changes.join(', ') || 'details updated'}${newNotes ? ` - Notes: "${newNotes}"` : ''}`,
+      previousValue: `$${prevAmount.toFixed(2)} [${current.funding_source || 'GENERAL'}] (${current.status})`,
+      newValue: `$${newAmount.toFixed(2)} [${newFundingSource}] (${newStatus})`,
+      amountDelta,
+    });
+  } catch {}
+
+  return mapRowToPurchaseRequest(updatedRow);
+}
+
 export interface PurchaseRequestLineItem {
   id: string;
   description: string;

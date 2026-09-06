@@ -62,6 +62,7 @@ import {
   ChevronUp,
   X,
   Key,
+  Pencil,
 } from "lucide-react";
 import {
   type PurchaseItem,
@@ -119,6 +120,7 @@ export interface TreasurerFinanceViewProps {
     id?: string;
     name: string;
     allocated?: number;
+    sfabAllocated?: number;
     bankStatus?: "Active" | "Inactive" | "Read-Only";
     duesStatus?: "Active" | "Inactive";
     contactEmail?: string;
@@ -128,13 +130,22 @@ export interface TreasurerFinanceViewProps {
   }) => Promise<{
     success: boolean;
     committee?: CommitteeInfo;
+    passcode?: string;
     error?: string;
   }> | void;
   onDeleteCommittee?: (
     committeeId: string,
   ) => Promise<{ success: boolean; error?: string }> | void;
   onAddFundingInflow: (newInflow: CommitteeFundingInflow) => void;
+  onUpdateFundingInflow?: (
+    id: string,
+    updated: Partial<CommitteeFundingInflow>,
+  ) => Promise<{ success: boolean; error?: string }> | void;
   onDeleteFundingInflow?: (id: string) => void;
+  onUpdatePurchase?: (
+    id: string,
+    updated: Partial<PurchaseItem>,
+  ) => Promise<{ success: boolean; error?: string }> | void;
   onClearAllData?: () => Promise<{ success: boolean; message?: string }> | void;
   onLogout?: () => void;
 }
@@ -148,11 +159,13 @@ export function TreasurerFinanceView({
   auditLogs = [],
   bosoStatement = OFFICIAL_BOSO_STATEMENT_SFAB_2026,
   onUpdatePurchaseStatus,
+  onUpdatePurchase,
   onImportMemberDues,
   onUpdateCommittee,
   onCreateCommittee,
   onDeleteCommittee,
   onAddFundingInflow,
+  onUpdateFundingInflow,
   onDeleteFundingInflow,
   onClearAllData,
   onLogout,
@@ -181,39 +194,70 @@ export function TreasurerFinanceView({
     return map;
   }, [fundingInflows]);
 
-  // Master Spending Matrix Data Calculation (Base Allocated + Inflow Grants)
+  // Master Spending Matrix Data Calculation (General Operating + SFAB Grants)
   const matrixData = useMemo(() => {
     return activeCommittees.map((comm) => {
       const commPurchases = purchasesByCommittee.get(comm.id) ?? [];
       const commInflows = inflowsByCommittee.get(comm.id) ?? [];
 
-      const totalInflows = commInflows.reduce(
-        (sum, inf) => sum + inf.amount,
-        0,
-      );
-      const baseAllocated = comm.allocated;
-      const totalBudget = baseAllocated + totalInflows;
+      const generalInflows = commInflows
+        .filter((inf) => inf.sourceType !== "SFAB Grant")
+        .reduce((sum, inf) => sum + inf.amount, 0);
+      const sfabInflows = commInflows
+        .filter((inf) => inf.sourceType === "SFAB Grant")
+        .reduce((sum, inf) => sum + inf.amount, 0);
+      const totalInflows = generalInflows + sfabInflows;
 
-      // ⚡ Bolt: Replace 3 passes with a single pass for O(N) instead of O(3N)
-      let approved = 0;
-      let pending = 0;
-      let reimbursed = 0;
+      const baseAllocated = comm.allocated;
+      const sfabAllocated = comm.sfabAllocated ?? 0;
+
+      const generalBudget = baseAllocated + generalInflows;
+      const sfabBudget = sfabAllocated + sfabInflows;
+      const totalBudget = generalBudget + sfabBudget;
+
+      let generalApproved = 0;
+      let generalPending = 0;
+      let generalReimbursed = 0;
+      let sfabApproved = 0;
+      let sfabPending = 0;
+      let sfabReimbursed = 0;
+
       for (const p of commPurchases) {
-        if (
+        const isSfab = p.fundingSource === "SFAB";
+        const isApproved =
           p.status === "APPROVED" ||
           p.status === "PURCHASED" ||
-          p.status === "REIMBURSED"
-        ) {
-          approved += p.totalAmount;
-        }
-        if (p.status === "PENDING") {
-          pending += p.totalAmount;
-        }
-        if (p.status === "REIMBURSED") {
-          reimbursed += p.totalAmount;
+          p.status === "REIMBURSED";
+        const isPending = p.status === "PENDING";
+        const isReimbursed = p.status === "REIMBURSED";
+
+        if (isSfab) {
+          if (isApproved) sfabApproved += p.totalAmount;
+          if (isPending) sfabPending += p.totalAmount;
+          if (isReimbursed) sfabReimbursed += p.totalAmount;
+        } else {
+          if (isApproved) generalApproved += p.totalAmount;
+          if (isPending) generalPending += p.totalAmount;
+          if (isReimbursed) generalReimbursed += p.totalAmount;
         }
       }
+
+      const approved = generalApproved + sfabApproved;
+      const pending = generalPending + sfabPending;
+      const reimbursed = generalReimbursed + sfabReimbursed;
+
+      const generalRemaining = Math.max(generalBudget - generalApproved, 0);
+      const sfabRemaining = Math.max(sfabBudget - sfabApproved, 0);
       const remaining = Math.max(totalBudget - approved, 0);
+
+      const generalPercentSpent =
+        generalBudget > 0
+          ? Math.min(Math.round((generalApproved / generalBudget) * 100), 100)
+          : 0;
+      const sfabPercentSpent =
+        sfabBudget > 0
+          ? Math.min(Math.round((sfabApproved / sfabBudget) * 100), 100)
+          : 0;
       const percentSpent =
         totalBudget > 0
           ? Math.min(Math.round((approved / totalBudget) * 100), 100)
@@ -222,37 +266,74 @@ export function TreasurerFinanceView({
       return {
         ...comm,
         baseAllocated,
+        sfabAllocated,
+        generalInflows,
+        sfabInflows,
         totalInflows,
         inflowsCount: commInflows.length,
+        generalBudget,
+        sfabBudget,
         totalBudget,
+        generalApproved,
+        sfabApproved,
         approved,
+        generalPending,
+        sfabPending,
         pending,
+        generalReimbursed,
+        sfabReimbursed,
         reimbursed,
+        generalRemaining,
+        sfabRemaining,
         remaining,
+        generalPercentSpent,
+        sfabPercentSpent,
         percentSpent,
         totalRequests: commPurchases.length,
       };
     });
   }, [activeCommittees, purchasesByCommittee, inflowsByCommittee]);
 
-  // Branch-Wide Totals
+  // Branch-Wide Totals (General Operating + SFAB Grants)
   const branchTotals = useMemo(() => {
     let totalAllocated = 0;
+    let totalSfabAllocated = 0;
     let totalSpent = 0;
+    let totalGeneralSpent = 0;
+    let totalSfabSpent = 0;
     let totalPending = 0;
+    let totalGeneralPending = 0;
+    let totalSfabPending = 0;
     let totalRemaining = 0;
+    let totalGeneralRemaining = 0;
+    let totalSfabRemaining = 0;
+
     for (const c of matrixData) {
       totalAllocated += c.baseAllocated;
+      totalSfabAllocated += c.sfabAllocated;
       totalSpent += c.approved;
+      totalGeneralSpent += c.generalApproved;
+      totalSfabSpent += c.sfabApproved;
       totalPending += c.pending;
+      totalGeneralPending += c.generalPending;
+      totalSfabPending += c.sfabPending;
       totalRemaining += c.remaining;
+      totalGeneralRemaining += c.generalRemaining;
+      totalSfabRemaining += c.sfabRemaining;
     }
 
-    const totalInflows = (fundingInflows || []).reduce(
-      (sum, inf) => sum + inf.amount,
-      0,
-    );
-    const totalBranchBudget = totalAllocated + totalInflows;
+    const totalGeneralInflows = (fundingInflows || [])
+      .filter((inf) => inf.sourceType !== "SFAB Grant")
+      .reduce((sum, inf) => sum + inf.amount, 0);
+    const totalSfabInflows = (fundingInflows || [])
+      .filter((inf) => inf.sourceType === "SFAB Grant")
+      .reduce((sum, inf) => sum + inf.amount, 0);
+    const totalInflows = totalGeneralInflows + totalSfabInflows;
+
+    const totalGeneralBudget = totalAllocated + totalGeneralInflows;
+    const totalSfabBudget = totalSfabAllocated + totalSfabInflows;
+    const totalBranchBudget = totalGeneralBudget + totalSfabBudget;
+
     const totalRequests = purchases.length;
     const branchPercentSpent =
       totalBranchBudget > 0
@@ -261,11 +342,22 @@ export function TreasurerFinanceView({
 
     return {
       totalAllocated,
+      totalSfabAllocated,
+      totalGeneralInflows,
+      totalSfabInflows,
       totalInflows,
+      totalGeneralBudget,
+      totalSfabBudget,
       totalBranchBudget,
       totalSpent,
+      totalGeneralSpent,
+      totalSfabSpent,
       totalPending,
+      totalGeneralPending,
+      totalSfabPending,
       totalRemaining,
+      totalGeneralRemaining,
+      totalSfabRemaining,
       totalRequests,
       branchPercentSpent,
     };
@@ -313,11 +405,17 @@ export function TreasurerFinanceView({
   const [notesInput, setNotesInput] = useState<string>("");
   const [accountNumberInput, setAccountNumberInput] = useState<string>("");
 
+  // Master Spending Matrix Account Filter
+  const [matrixAccountFilter, setMatrixAccountFilter] = useState<
+    "ALL" | "GENERAL" | "SFAB"
+  >("ALL");
+
   // Committee Parameters Editing Modal State
   const [editingCommittee, setEditingCommittee] =
     useState<CommitteeInfo | null>(null);
   const [editName, setEditName] = useState<string>("");
   const [editAllocated, setEditAllocated] = useState<string>("");
+  const [editSfabAllocated, setEditSfabAllocated] = useState<string>("0.00");
   const [editBankStatus, setEditBankStatus] = useState<
     "Active" | "Inactive" | "Read-Only"
   >("Active");
@@ -340,6 +438,7 @@ export function TreasurerFinanceView({
   const [addName, setAddName] = useState<string>("");
   const [addId, setAddId] = useState<string>("");
   const [addAllocated, setAddAllocated] = useState<string>("1000");
+  const [addSfabAllocated, setAddSfabAllocated] = useState<string>("0.00");
   const [addBankStatus, setAddBankStatus] = useState<
     "Active" | "Inactive" | "Read-Only"
   >("Active");
@@ -366,6 +465,7 @@ export function TreasurerFinanceView({
     setEditingCommittee(c);
     setEditName(c.name || "");
     setEditAllocated(String(c.allocated));
+    setEditSfabAllocated(String(c.sfabAllocated ?? 0));
     setEditBankStatus(c.bankStatus || "Active");
     setEditDuesStatus(c.duesStatus || "Active");
     setEditContactEmail(c.contactEmail || "");
@@ -391,11 +491,17 @@ export function TreasurerFinanceView({
     if (!editingCommittee) return;
     const parsedAllocated = parseFloat(editAllocated);
     if (isNaN(parsedAllocated) || parsedAllocated < 0) return;
+    const parsedSfabAllocated = parseFloat(editSfabAllocated);
+    const finalSfabAllocated =
+      isNaN(parsedSfabAllocated) || parsedSfabAllocated < 0
+        ? 0
+        : parsedSfabAllocated;
 
     if (onUpdateCommittee) {
       onUpdateCommittee(editingCommittee.id, {
         name: editName.trim() || editingCommittee.name,
         allocated: parsedAllocated,
+        sfabAllocated: finalSfabAllocated,
         bankStatus: editBankStatus,
         duesStatus: editDuesStatus,
         contactEmail: editContactEmail.trim(),
@@ -426,6 +532,7 @@ export function TreasurerFinanceView({
     e.preventDefault();
     if (!addName.trim()) return;
     const parsedAllocated = parseFloat(addAllocated) || 0;
+    const parsedSfabAllocated = parseFloat(addSfabAllocated) || 0;
     const derivedId =
       addId.trim() ||
       addName
@@ -444,6 +551,7 @@ export function TreasurerFinanceView({
           id: derivedId,
           name: addName.trim(),
           allocated: parsedAllocated,
+          sfabAllocated: parsedSfabAllocated,
           bankStatus: addBankStatus,
           duesStatus: addDuesStatus,
           contactEmail: addContactEmail.trim() || `${derivedId}@purdueieee.org`,
@@ -462,6 +570,7 @@ export function TreasurerFinanceView({
       setAddName("");
       setAddId("");
       setAddAllocated("1000");
+      setAddSfabAllocated("0.00");
       setAddBankStatus("Active");
       setAddDuesStatus("Active");
       setAddContactEmail("");
@@ -553,6 +662,143 @@ export function TreasurerFinanceView({
     }
 
     setIsInflowModalOpen(false);
+  };
+
+  // Edit Inflow State & Handlers
+  const [editingInflow, setEditingInflow] = useState<CommitteeFundingInflow | null>(null);
+  const [editInflowSourceType, setEditInflowSourceType] = useState<InflowSourceType>("SFAB Grant");
+  const [editInflowTitle, setEditInflowTitle] = useState<string>("");
+  const [editInflowAmount, setEditInflowAmount] = useState<string>("");
+  const [editInflowRefNumber, setEditInflowRefNumber] = useState<string>("");
+  const [editInflowDate, setEditInflowDate] = useState<string>("");
+  const [editInflowNotes, setEditInflowNotes] = useState<string>("");
+  const [isSubmittingInflowEdit, setIsSubmittingInflowEdit] = useState(false);
+  const [editInflowError, setEditInflowError] = useState("");
+
+  const handleOpenEditInflow = (inf: CommitteeFundingInflow) => {
+    setEditingInflow(inf);
+    setEditInflowSourceType(inf.sourceType);
+    setEditInflowTitle(inf.title);
+    setEditInflowAmount(String(inf.amount));
+    setEditInflowRefNumber(inf.referenceNumber || "");
+    setEditInflowDate(inf.receivedDate || "");
+    setEditInflowNotes(inf.notes || "");
+    setEditInflowError("");
+  };
+
+  const handleSaveEditInflow = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingInflow || !onUpdateFundingInflow) return;
+    const parsedAmount = parseFloat(editInflowAmount);
+    if (!editInflowTitle.trim() || isNaN(parsedAmount) || parsedAmount <= 0) {
+      setEditInflowError("Please enter a valid title and positive dollar amount");
+      return;
+    }
+    setIsSubmittingInflowEdit(true);
+    try {
+      const res = await onUpdateFundingInflow(editingInflow.id, {
+        sourceType: editInflowSourceType,
+        title: editInflowTitle.trim(),
+        amount: Math.round(parsedAmount * 100) / 100,
+        referenceNumber: editInflowRefNumber.trim() || undefined,
+        receivedDate: editInflowDate || undefined,
+        notes: editInflowNotes.trim() || undefined,
+      });
+      if (res && !res.success) {
+        setEditInflowError(res.error || "Failed to update funding inflow");
+        setIsSubmittingInflowEdit(false);
+        return;
+      }
+      setEditingInflow(null);
+    } catch (err: any) {
+      setEditInflowError(err.message || "Failed to update funding inflow");
+    } finally {
+      setIsSubmittingInflowEdit(false);
+    }
+  };
+
+  // Edit Purchase Requisition State & Handlers
+  const [editingPurchase, setEditingPurchase] = useState<PurchaseItem | null>(null);
+  const [editPurchaseVendor, setEditPurchaseVendor] = useState("");
+  const [editPurchaseAmount, setEditPurchaseAmount] = useState("");
+  const [editPurchaseDesc, setEditPurchaseDesc] = useState("");
+  const [editPurchaseCategory, setEditPurchaseCategory] = useState("");
+  const [editPurchaseFundingSource, setEditPurchaseFundingSource] = useState<"GENERAL" | "SFAB">("GENERAL");
+  const [editPurchaseSfabLine, setEditPurchaseSfabLine] = useState("");
+  const [editPurchaseDisbursement, setEditPurchaseDisbursement] = useState<string>("Zelle");
+  const [editPurchaseReqName, setEditPurchaseReqName] = useState("");
+  const [editPurchaseReqEmail, setEditPurchaseReqEmail] = useState("");
+  const [editPurchasePurdueUser, setEditPurchasePurdueUser] = useState("");
+  const [editPurchaseStreet, setEditPurchaseStreet] = useState("");
+  const [editPurchasePhone, setEditPurchasePhone] = useState("");
+  const [editPurchaseStatus, setEditPurchaseStatus] = useState<PurchaseStatus>("PENDING");
+  const [editPurchaseCoolNumber, setEditPurchaseCoolNumber] = useState("");
+  const [editPurchaseTreasurerNotes, setEditPurchaseTreasurerNotes] = useState("");
+  const [isSubmittingPurchaseEdit, setIsSubmittingPurchaseEdit] = useState(false);
+  const [editPurchaseError, setEditPurchaseError] = useState("");
+
+  const handleOpenEditPurchase = (item: PurchaseItem) => {
+    setEditingPurchase(item);
+    setEditPurchaseVendor(item.vendorName || "");
+    setEditPurchaseAmount(String(item.totalAmount));
+    setEditPurchaseDesc(item.description || "");
+    setEditPurchaseCategory(item.category || "Parts & Materials");
+    setEditPurchaseFundingSource(item.fundingSource === "SFAB" ? "SFAB" : "GENERAL");
+    setEditPurchaseSfabLine(item.sfabLineItem || "");
+    setEditPurchaseDisbursement(item.disbursementMethod || "Zelle");
+    setEditPurchaseReqName(item.requesterName || "");
+    setEditPurchaseReqEmail(item.requesterEmail || "");
+    setEditPurchasePurdueUser(item.purdueUsername || "");
+    setEditPurchaseStreet(item.streetAddress || "");
+    setEditPurchasePhone(item.phoneNumber || "");
+    setEditPurchaseStatus(item.status);
+    setEditPurchaseCoolNumber(item.coolAccountNumber || "");
+    setEditPurchaseTreasurerNotes(item.treasurerNotes || "");
+    setEditPurchaseError("");
+  };
+
+  const handleSaveEditPurchase = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingPurchase || !onUpdatePurchase) return;
+    const parsedAmount = parseFloat(editPurchaseAmount);
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      setEditPurchaseError("Please enter a valid dollar amount greater than $0.00");
+      return;
+    }
+    if (!editPurchaseVendor.trim()) {
+      setEditPurchaseError("Vendor / Merchant name is required");
+      return;
+    }
+    setIsSubmittingPurchaseEdit(true);
+    try {
+      const res = await onUpdatePurchase(editingPurchase.id, {
+        vendorName: editPurchaseVendor.trim(),
+        totalAmount: Math.round(parsedAmount * 100) / 100,
+        description: editPurchaseDesc.trim(),
+        category: editPurchaseCategory,
+        fundingSource: editPurchaseFundingSource,
+        sfabLineItem: editPurchaseFundingSource === "SFAB" ? editPurchaseSfabLine.trim() : undefined,
+        disbursementMethod: editPurchaseDisbursement as any,
+        requesterName: editPurchaseReqName.trim(),
+        requesterEmail: editPurchaseReqEmail.trim(),
+        purdueUsername: editPurchasePurdueUser.trim(),
+        streetAddress: editPurchaseStreet.trim(),
+        phoneNumber: editPurchasePhone.trim(),
+        status: editPurchaseStatus,
+        coolAccountNumber: editPurchaseCoolNumber.trim() || undefined,
+        treasurerNotes: editPurchaseTreasurerNotes.trim() || undefined,
+      });
+      if (res && !res.success) {
+        setEditPurchaseError(res.error || "Failed to update purchase requisition");
+        setIsSubmittingPurchaseEdit(false);
+        return;
+      }
+      setEditingPurchase(null);
+    } catch (err: any) {
+      setEditPurchaseError(err.message || "Failed to update purchase requisition");
+    } finally {
+      setIsSubmittingPurchaseEdit(false);
+    }
   };
 
   // Handle Approvals
@@ -703,12 +949,23 @@ export function TreasurerFinanceView({
     const headers = [
       "Committee ID",
       "Committee Name",
-      "Base Allocated",
-      "Grants and Inflows",
+      "General Base Allocated",
+      "SFAB Allocated",
+      "General Inflows",
+      "SFAB Inflows",
+      "Total Inflows",
+      "General Budget",
+      "SFAB Budget",
       "Total Budget",
-      "Spent and Disbursed",
-      "Pending Amount",
-      "Remaining Balance",
+      "General Spent",
+      "SFAB Spent",
+      "Total Spent",
+      "General Pending",
+      "SFAB Pending",
+      "Total Pending",
+      "General Remaining",
+      "SFAB Remaining",
+      "Total Remaining",
       "Percent Spent",
       "Total Requests",
       "Runway Weeks",
@@ -732,10 +989,21 @@ export function TreasurerFinanceView({
         c.id,
         c.name,
         c.baseAllocated,
+        c.sfabAllocated,
+        c.generalInflows,
+        c.sfabInflows,
         c.totalInflows,
+        c.generalBudget,
+        c.sfabBudget,
         c.totalBudget,
+        c.generalApproved,
+        c.sfabApproved,
         c.approved,
+        c.generalPending,
+        c.sfabPending,
         c.pending,
+        c.generalRemaining,
+        c.sfabRemaining,
         c.remaining,
         c.percentSpent,
         c.totalRequests,
@@ -764,12 +1032,23 @@ export function TreasurerFinanceView({
     const headers = [
       "Committee ID",
       "Committee Name",
-      "Base Allocated",
-      "Grants and Inflows",
+      "General Base Allocated",
+      "SFAB Allocated",
+      "General Inflows",
+      "SFAB Inflows",
+      "Total Inflows",
+      "General Budget",
+      "SFAB Budget",
       "Total Budget",
-      "Spent and Disbursed",
-      "Pending Amount",
-      "Remaining Balance",
+      "General Spent",
+      "SFAB Spent",
+      "Total Spent",
+      "General Pending",
+      "SFAB Pending",
+      "Total Pending",
+      "General Remaining",
+      "SFAB Remaining",
+      "Total Remaining",
       "Percent Spent",
       "Total Requests",
     ];
@@ -780,10 +1059,21 @@ export function TreasurerFinanceView({
       escapeCsv(c.id),
       escapeCsv(c.name),
       c.baseAllocated.toFixed(2),
+      c.sfabAllocated.toFixed(2),
+      c.generalInflows.toFixed(2),
+      c.sfabInflows.toFixed(2),
       c.totalInflows.toFixed(2),
+      c.generalBudget.toFixed(2),
+      c.sfabBudget.toFixed(2),
       c.totalBudget.toFixed(2),
+      c.generalApproved.toFixed(2),
+      c.sfabApproved.toFixed(2),
       c.approved.toFixed(2),
+      c.generalPending.toFixed(2),
+      c.sfabPending.toFixed(2),
       c.pending.toFixed(2),
+      c.generalRemaining.toFixed(2),
+      c.sfabRemaining.toFixed(2),
       c.remaining.toFixed(2),
       `${c.percentSpent.toFixed(1)}%`,
       c.totalRequests.toString(),
@@ -1012,15 +1302,15 @@ export function TreasurerFinanceView({
               minimumFractionDigits: 2,
             })}
           </div>
-          <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
-            <span>
-              ${branchTotals.totalAllocated.toLocaleString("en-US")} base
-            </span>
-            <span className="text-slate-600">+</span>
-            <span className="text-emerald-400 font-medium">
-              +${branchTotals.totalInflows.toLocaleString("en-US")} grants
-            </span>
-          </p>
+          <div className="text-[11px] text-slate-400 mt-1 space-y-0.5">
+            <div className="flex items-center justify-between font-mono text-[10px]">
+              <span className="text-sky-400">Gen: ${branchTotals.totalGeneralBudget.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+              <span className="text-amber-400">SFAB: ${branchTotals.totalSfabBudget.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+            </div>
+            <p className="text-[10px] text-slate-500 font-mono">
+              ${(branchTotals.totalAllocated + branchTotals.totalSfabAllocated).toLocaleString("en-US")} base + ${branchTotals.totalInflows.toLocaleString("en-US")} grants
+            </p>
+          </div>
         </Card>
 
         {/* Total Spent */}
@@ -1037,7 +1327,11 @@ export function TreasurerFinanceView({
               minimumFractionDigits: 2,
             })}
           </div>
-          <div className="flex items-center gap-2 mt-2">
+          <div className="text-[11px] text-slate-400 mt-1 flex items-center justify-between font-mono text-[10px]">
+            <span className="text-sky-300">Gen: ${branchTotals.totalGeneralSpent.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+            <span className="text-amber-300">SFAB: ${branchTotals.totalSfabSpent.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+          </div>
+          <div className="flex items-center gap-2 mt-1.5">
             <Progress
               value={branchTotals.branchPercentSpent}
               className="h-1.5 bg-slate-800 flex-1"
@@ -1062,7 +1356,11 @@ export function TreasurerFinanceView({
               minimumFractionDigits: 2,
             })}
           </div>
-          <p className="text-[11px] text-amber-400/80 mt-1">
+          <div className="text-[11px] text-slate-400 mt-1 flex items-center justify-between font-mono text-[10px]">
+            <span className="text-sky-300">Gen: ${branchTotals.totalGeneralPending.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+            <span className="text-amber-300">SFAB: ${branchTotals.totalSfabPending.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+          </div>
+          <p className="text-[10px] text-amber-400/80 mt-1">
             {pendingRequests.length} requests awaiting your review
           </p>
         </Card>
@@ -1081,7 +1379,11 @@ export function TreasurerFinanceView({
               minimumFractionDigits: 2,
             })}
           </div>
-          <p className="text-[11px] text-slate-500 mt-1">
+          <div className="text-[11px] text-slate-400 mt-1 flex items-center justify-between font-mono text-[10px]">
+            <span className="text-sky-300">Gen: ${branchTotals.totalGeneralRemaining.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+            <span className="text-amber-300">SFAB: ${branchTotals.totalSfabRemaining.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+          </div>
+          <p className="text-[10px] text-slate-500 mt-1">
             Available branch-wide surplus
           </p>
         </Card>
@@ -1176,8 +1478,20 @@ export function TreasurerFinanceView({
                           <span className="font-semibold text-xs text-slate-200">
                             {item.committeeName}
                           </span>
-                          <div className="text-[11px] text-slate-500">
-                            {item.category}
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <span className="text-[11px] text-slate-500">
+                              {item.category}
+                            </span>
+                            <span className="text-slate-600">·</span>
+                            <span
+                              className={`text-[10px] font-mono px-1 rounded border ${
+                                item.fundingSource === "SFAB"
+                                  ? "bg-amber-500/10 text-amber-300 border-amber-500/20"
+                                  : "bg-sky-500/10 text-sky-300 border-sky-500/20"
+                              }`}
+                            >
+                              {item.fundingSource === "SFAB" ? "SFAB" : "General"}
+                            </span>
                           </div>
                         </TableCell>
                         <TableCell className="py-3.5">
@@ -1217,6 +1531,18 @@ export function TreasurerFinanceView({
                         </TableCell>
                         <TableCell className="text-right py-3.5 pr-6">
                           <div className="flex items-center justify-end gap-1.5">
+                            {onUpdatePurchase && (
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => handleOpenEditPurchase(item)}
+                                className="h-8 px-2 text-slate-400 hover:text-sky-400 hover:bg-slate-800"
+                                title="Edit Requisition Details"
+                              >
+                                <Pencil className="w-3.5 h-3.5" />
+                              </Button>
+                            )}
                             <Button
                               type="button"
                               size="sm"
@@ -1288,6 +1614,43 @@ export function TreasurerFinanceView({
               </div>
 
               <div className="flex items-center gap-2 flex-wrap self-start sm:self-auto">
+                {/* Account Toggle Filter */}
+                <div className="inline-flex p-0.5 bg-slate-950 border border-slate-800 rounded-lg">
+                  <button
+                    type="button"
+                    onClick={() => setMatrixAccountFilter("ALL")}
+                    className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors ${
+                      matrixAccountFilter === "ALL"
+                        ? "bg-slate-800 text-white shadow-sm"
+                        : "text-slate-400 hover:text-slate-200"
+                    }`}
+                  >
+                    Combined
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMatrixAccountFilter("GENERAL")}
+                    className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors ${
+                      matrixAccountFilter === "GENERAL"
+                        ? "bg-sky-950 text-sky-300 border border-sky-800/60 shadow-sm"
+                        : "text-slate-400 hover:text-slate-200"
+                    }`}
+                  >
+                    General
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMatrixAccountFilter("SFAB")}
+                    className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors ${
+                      matrixAccountFilter === "SFAB"
+                        ? "bg-amber-950 text-amber-300 border border-amber-800/60 shadow-sm"
+                        : "text-slate-400 hover:text-slate-200"
+                    }`}
+                  >
+                    SFAB
+                  </button>
+                </div>
+
                 <Button
                   type="button"
                   variant="outline"
@@ -1296,7 +1659,7 @@ export function TreasurerFinanceView({
                   className="border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs flex items-center gap-1.5"
                 >
                   <Download className="w-3.5 h-3.5 text-sky-400" />
-                  <span>Export Matrix CSV</span>
+                  <span>CSV</span>
                 </Button>
 
                 <Button
@@ -1307,7 +1670,7 @@ export function TreasurerFinanceView({
                   className="border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs flex items-center gap-1.5"
                 >
                   <Download className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Export Excel (.xls)</span>
+                  <span>Excel</span>
                 </Button>
 
                 <Button
@@ -1327,7 +1690,7 @@ export function TreasurerFinanceView({
                   className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs flex items-center gap-1.5"
                 >
                   <PlusCircle className="w-3.5 h-3.5" />
-                  <span>Record Inflow / Grant</span>
+                  <span>Record Inflow</span>
                 </Button>
               </div>
             </CardHeader>
@@ -1340,19 +1703,39 @@ export function TreasurerFinanceView({
                       Committee
                     </TableHead>
                     <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">
-                      Base Allocated
+                      {matrixAccountFilter === "GENERAL"
+                        ? "General Base"
+                        : matrixAccountFilter === "SFAB"
+                          ? "SFAB Base"
+                          : "Base Allocated"}
                     </TableHead>
                     <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">
-                      Grants / Inflows
+                      {matrixAccountFilter === "GENERAL"
+                        ? "General Inflows"
+                        : matrixAccountFilter === "SFAB"
+                          ? "SFAB Grants"
+                          : "Grants / Inflows"}
                     </TableHead>
                     <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">
-                      Total Budget
+                      {matrixAccountFilter === "GENERAL"
+                        ? "General Budget"
+                        : matrixAccountFilter === "SFAB"
+                          ? "SFAB Budget"
+                          : "Total Budget"}
                     </TableHead>
                     <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">
-                      Spent / Disbursed
+                      {matrixAccountFilter === "GENERAL"
+                        ? "General Spent"
+                        : matrixAccountFilter === "SFAB"
+                          ? "SFAB Spent"
+                          : "Spent / Disbursed"}
                     </TableHead>
                     <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">
-                      Pending
+                      {matrixAccountFilter === "GENERAL"
+                        ? "General Pending"
+                        : matrixAccountFilter === "SFAB"
+                          ? "SFAB Pending"
+                          : "Pending"}
                     </TableHead>
                     <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right">
                       Remaining
@@ -1372,99 +1755,197 @@ export function TreasurerFinanceView({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {matrixData.map((c) => (
-                    <React.Fragment key={c.id}>
-                      <TableRow
-                        className="border-b border-slate-800/60 hover:bg-slate-800/30 transition-colors"
-                      >
-                      <TableCell className="pl-6 py-3.5">
-                        <div className="font-semibold text-xs text-white">
-                          {c.name}
-                        </div>
-                        <div className="text-[11px] text-slate-500 font-mono flex items-center gap-1.5 mt-0.5">
-                          <span>{c.contactEmail}</span>
-                          <span className="text-slate-600">·</span>
-                          <span
-                            className={`text-[10px] ${c.bankStatus === "Inactive" ? "text-red-400" : c.bankStatus === "Read-Only" ? "text-amber-400" : "text-emerald-400"}`}
-                          >
-                            {c.bankStatus || "Active"}
-                          </span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right py-3.5 font-mono text-xs font-medium text-slate-300">
-                        $
-                        {c.baseAllocated.toLocaleString("en-US", {
-                          minimumFractionDigits: 2,
-                        })}
-                      </TableCell>
-                      <TableCell className="text-right py-3.5 font-mono text-xs">
-                        {c.totalInflows > 0 ? (
-                          <button
-                            type="button"
-                            onClick={() => toggleExpandCommittee(c.id)}
-                            className="inline-flex items-center gap-1 text-emerald-400 font-bold bg-emerald-500/10 hover:bg-emerald-500/20 px-2 py-0.5 rounded border border-emerald-500/20 transition-colors"
-                            title="Click to toggle committee grants & inflows"
-                          >
-                            <span>
-                              +$
-                              {c.totalInflows.toLocaleString("en-US", {
-                                minimumFractionDigits: 2,
-                              })}
+                  {matrixData.map((c) => {
+                    const rowBaseAllocated =
+                      matrixAccountFilter === "GENERAL"
+                        ? c.baseAllocated
+                        : matrixAccountFilter === "SFAB"
+                          ? c.sfabAllocated
+                          : c.baseAllocated + c.sfabAllocated;
+                    const rowInflows =
+                      matrixAccountFilter === "GENERAL"
+                        ? c.generalInflows
+                        : matrixAccountFilter === "SFAB"
+                          ? c.sfabInflows
+                          : c.totalInflows;
+                    const rowBudget =
+                      matrixAccountFilter === "GENERAL"
+                        ? c.generalBudget
+                        : matrixAccountFilter === "SFAB"
+                          ? c.sfabBudget
+                          : c.totalBudget;
+                    const rowSpent =
+                      matrixAccountFilter === "GENERAL"
+                        ? c.generalApproved
+                        : matrixAccountFilter === "SFAB"
+                          ? c.sfabApproved
+                          : c.approved;
+                    const rowPending =
+                      matrixAccountFilter === "GENERAL"
+                        ? c.generalPending
+                        : matrixAccountFilter === "SFAB"
+                          ? c.sfabPending
+                          : c.pending;
+                    const rowRemaining =
+                      matrixAccountFilter === "GENERAL"
+                        ? c.generalRemaining
+                        : matrixAccountFilter === "SFAB"
+                          ? c.sfabRemaining
+                          : c.remaining;
+                    const rowPercentSpent =
+                      matrixAccountFilter === "GENERAL"
+                        ? c.generalPercentSpent
+                        : matrixAccountFilter === "SFAB"
+                          ? c.sfabPercentSpent
+                          : c.percentSpent;
+
+                    return (
+                      <React.Fragment key={c.id}>
+                        <TableRow
+                          className="border-b border-slate-800/60 hover:bg-slate-800/30 transition-colors"
+                        >
+                        <TableCell className="pl-6 py-3.5">
+                          <div className="font-semibold text-xs text-white">
+                            {c.name}
+                          </div>
+                          <div className="text-[11px] text-slate-500 font-mono flex items-center gap-1.5 mt-0.5">
+                            <span>{c.contactEmail}</span>
+                            <span className="text-slate-600">·</span>
+                            <span
+                              className={`text-[10px] ${c.bankStatus === "Inactive" ? "text-red-400" : c.bankStatus === "Read-Only" ? "text-amber-400" : "text-emerald-400"}`}
+                            >
+                              {c.bankStatus || "Active"}
                             </span>
-                            {expandedCommittees.has(c.id) ? (
-                              <ChevronUp className="w-3 h-3" />
-                            ) : (
-                              <ChevronDown className="w-3 h-3" />
-                            )}
-                          </button>
-                        ) : (
-                          <span className="text-slate-600">$0.00</span>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-right py-3.5 font-mono text-xs font-bold text-white">
-                        $
-                        {c.totalBudget.toLocaleString("en-US", {
-                          minimumFractionDigits: 2,
-                        })}
-                      </TableCell>
-                      <TableCell className="text-right py-3.5 font-mono text-xs font-bold text-sky-400">
-                        $
-                        {c.approved.toLocaleString("en-US", {
-                          minimumFractionDigits: 2,
-                        })}
-                      </TableCell>
-                      <TableCell className="text-right py-3.5 font-mono text-xs text-amber-400">
-                        $
-                        {c.pending.toLocaleString("en-US", {
-                          minimumFractionDigits: 2,
-                        })}
-                      </TableCell>
-                      <TableCell className="text-right py-3.5 font-mono text-xs font-bold text-emerald-400">
-                        $
-                        {c.remaining.toLocaleString("en-US", {
-                          minimumFractionDigits: 2,
-                        })}
-                      </TableCell>
-                      <TableCell className="text-center py-3.5">
-                        <div className="flex items-center gap-2 px-2">
-                          <Progress
-                            value={c.percentSpent}
-                            className={`h-2 flex-1 ${
-                              c.percentSpent > 90
-                                ? "bg-red-950 text-red-500"
-                                : c.percentSpent > 70
-                                  ? "bg-amber-950 text-amber-500"
-                                  : "bg-slate-800"
-                            }`}
-                          />
-                          <span className="text-[11px] font-mono text-slate-300 w-10 text-right">
-                            {c.percentSpent}%
-                          </span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-center py-3.5 font-mono text-xs text-slate-400">
-                        {c.totalRequests}
-                      </TableCell>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right py-3.5 font-mono text-xs">
+                          <div className="font-medium text-slate-200">
+                            $
+                            {rowBaseAllocated.toLocaleString("en-US", {
+                              minimumFractionDigits: 2,
+                            })}
+                          </div>
+                          {matrixAccountFilter === "ALL" && (
+                            <div className="text-[10px] text-slate-500 flex items-center justify-end gap-1 mt-0.5">
+                              <span className="text-sky-400/90">G: ${c.baseAllocated.toLocaleString("en-US")}</span>
+                              <span>·</span>
+                              <span className="text-amber-400/90">S: ${c.sfabAllocated.toLocaleString("en-US")}</span>
+                            </div>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-right py-3.5 font-mono text-xs">
+                          {rowInflows > 0 ? (
+                            <div>
+                              <button
+                                type="button"
+                                onClick={() => toggleExpandCommittee(c.id)}
+                                className="inline-flex items-center gap-1 text-emerald-400 font-bold bg-emerald-500/10 hover:bg-emerald-500/20 px-2 py-0.5 rounded border border-emerald-500/20 transition-colors"
+                                title="Click to toggle committee grants & inflows"
+                              >
+                                <span>
+                                  +$
+                                  {rowInflows.toLocaleString("en-US", {
+                                    minimumFractionDigits: 2,
+                                  })}
+                                </span>
+                                {expandedCommittees.has(c.id) ? (
+                                  <ChevronUp className="w-3 h-3" />
+                                ) : (
+                                  <ChevronDown className="w-3 h-3" />
+                                )}
+                              </button>
+                              {matrixAccountFilter === "ALL" && (
+                                <div className="text-[10px] text-slate-500 flex items-center justify-end gap-1 mt-0.5">
+                                  <span className="text-sky-400/80">G: ${c.generalInflows.toLocaleString("en-US")}</span>
+                                  <span>·</span>
+                                  <span className="text-amber-400/80">S: ${c.sfabInflows.toLocaleString("en-US")}</span>
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <span className="text-slate-600">$0.00</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-right py-3.5 font-mono text-xs font-bold text-white">
+                          <div>
+                            $
+                            {rowBudget.toLocaleString("en-US", {
+                              minimumFractionDigits: 2,
+                            })}
+                          </div>
+                          {matrixAccountFilter === "ALL" && (
+                            <div className="text-[10px] font-normal text-slate-500 flex items-center justify-end gap-1 mt-0.5">
+                              <span className="text-sky-400/80">G: ${c.generalBudget.toLocaleString("en-US")}</span>
+                              <span>·</span>
+                              <span className="text-amber-400/80">S: ${c.sfabBudget.toLocaleString("en-US")}</span>
+                            </div>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-right py-3.5 font-mono text-xs font-bold text-sky-400">
+                          <div>
+                            $
+                            {rowSpent.toLocaleString("en-US", {
+                              minimumFractionDigits: 2,
+                            })}
+                          </div>
+                          {matrixAccountFilter === "ALL" && (
+                            <div className="text-[10px] font-normal text-slate-500 flex items-center justify-end gap-1 mt-0.5">
+                              <span className="text-sky-300">G: ${c.generalApproved.toLocaleString("en-US")}</span>
+                              <span>·</span>
+                              <span className="text-amber-300">S: ${c.sfabApproved.toLocaleString("en-US")}</span>
+                            </div>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-right py-3.5 font-mono text-xs text-amber-400">
+                          <div>
+                            $
+                            {rowPending.toLocaleString("en-US", {
+                              minimumFractionDigits: 2,
+                            })}
+                          </div>
+                          {matrixAccountFilter === "ALL" && (
+                            <div className="text-[10px] font-normal text-slate-500 flex items-center justify-end gap-1 mt-0.5">
+                              <span className="text-sky-300/80">G: ${c.generalPending.toLocaleString("en-US")}</span>
+                              <span>·</span>
+                              <span className="text-amber-300/80">S: ${c.sfabPending.toLocaleString("en-US")}</span>
+                            </div>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-right py-3.5 font-mono text-xs font-bold text-emerald-400">
+                          <div>
+                            $
+                            {rowRemaining.toLocaleString("en-US", {
+                              minimumFractionDigits: 2,
+                            })}
+                          </div>
+                          {matrixAccountFilter === "ALL" && (
+                            <div className="text-[10px] font-normal text-slate-500 flex items-center justify-end gap-1 mt-0.5">
+                              <span className="text-emerald-300/80">G: ${c.generalRemaining.toLocaleString("en-US")}</span>
+                              <span>·</span>
+                              <span className="text-amber-300/80">S: ${c.sfabRemaining.toLocaleString("en-US")}</span>
+                            </div>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-center py-3.5">
+                          <div className="flex items-center gap-2 px-2">
+                            <Progress
+                              value={rowPercentSpent}
+                              className={`h-2 flex-1 ${
+                                rowPercentSpent > 90
+                                  ? "bg-red-950 text-red-500"
+                                  : rowPercentSpent > 70
+                                    ? "bg-amber-950 text-amber-500"
+                                    : "bg-slate-800"
+                              }`}
+                            />
+                            <span className="text-[11px] font-mono text-slate-300 w-10 text-right">
+                              {rowPercentSpent}%
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-center py-3.5 font-mono text-xs text-slate-400">
+                          {c.totalRequests}
+                        </TableCell>
                       <TableCell className="text-right py-3.5 font-mono text-xs">
                         {(() => {
                           // Pre-computed Map for O(1) committee purchases lookup
@@ -1617,24 +2098,38 @@ export function TreasurerFinanceView({
                                           {inf.referenceNumber || "N/A"}
                                         </TableCell>
                                         <TableCell className="font-mono text-slate-400 py-2 text-[11px]">
-                                          {inf.receivedDate}
+                          {inf.receivedDate}
                                         </TableCell>
                                         <TableCell className="font-mono font-bold text-emerald-400 text-right py-2">
                                           +${inf.amount.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                                         </TableCell>
                                         <TableCell className="text-right py-2 pr-3">
-                                          {onDeleteFundingInflow && (
-                                            <Button
-                                              type="button"
-                                              variant="ghost"
-                                              size="sm"
-                                              onClick={() => onDeleteFundingInflow(inf.id)}
-                                              className="h-6 w-6 p-0 text-slate-400 hover:text-red-400 hover:bg-red-950/40"
-                                              title={`Delete ${inf.title}`}
-                                            >
-                                              <Trash2 className="w-3.5 h-3.5" />
-                                            </Button>
-                                          )}
+                                          <div className="flex items-center justify-end gap-1">
+                                            {onUpdateFundingInflow && (
+                                              <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => handleOpenEditInflow(inf)}
+                                                className="h-6 w-6 p-0 text-slate-400 hover:text-sky-400 hover:bg-sky-950/40"
+                                                title={`Edit ${inf.title}`}
+                                              >
+                                                <Pencil className="w-3.5 h-3.5" />
+                                              </Button>
+                                            )}
+                                            {onDeleteFundingInflow && (
+                                              <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => onDeleteFundingInflow(inf.id)}
+                                                className="h-6 w-6 p-0 text-slate-400 hover:text-red-400 hover:bg-red-950/40"
+                                                title={`Delete ${inf.title}`}
+                                              >
+                                                <Trash2 className="w-3.5 h-3.5" />
+                                              </Button>
+                                            )}
+                                          </div>
                                         </TableCell>
                                       </TableRow>
                                     ))}
@@ -1646,12 +2141,119 @@ export function TreasurerFinanceView({
                                 No funding inflows or grants currently recorded for {c.name}.
                               </div>
                             )}
+
+                            {/* Requisitions for this committee */}
+                            <div className="pt-2 border-t border-slate-800/80 space-y-3">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <FileText className="w-4 h-4 text-sky-400" />
+                                  <span className="text-xs font-bold text-white uppercase tracking-wider font-mono">
+                                    {c.shortName} Purchase Requisitions Ledger
+                                  </span>
+                                  <Badge className="text-[10px] bg-sky-500/10 text-sky-300 border-sky-500/20 font-mono">
+                                    {(purchasesByCommittee.get(c.id) || []).length} Requisitions
+                                  </Badge>
+                                </div>
+                              </div>
+
+                              {(purchasesByCommittee.get(c.id) || []).length > 0 ? (
+                                <div className="overflow-x-auto rounded border border-slate-800">
+                                  <Table>
+                                    <TableHeader className="bg-slate-950/80 text-[11px] font-mono">
+                                      <TableRow className="border-slate-800">
+                                        <TableHead className="py-2 pl-3">Req ID</TableHead>
+                                        <TableHead className="py-2">Requester</TableHead>
+                                        <TableHead className="py-2">Vendor / Purpose</TableHead>
+                                        <TableHead className="py-2">Account</TableHead>
+                                        <TableHead className="py-2 text-right">Amount</TableHead>
+                                        <TableHead className="py-2 text-center">Status</TableHead>
+                                        <TableHead className="py-2 text-center">Receipt</TableHead>
+                                        <TableHead className="py-2 text-right pr-3">Action</TableHead>
+                                      </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                      {(purchasesByCommittee.get(c.id) || []).map((req) => (
+                                        <TableRow key={req.id} className="border-slate-800/60 text-xs">
+                                          <TableCell className="font-mono text-sky-400 py-2 pl-3">
+                                            {req.id}
+                                          </TableCell>
+                                          <TableCell className="py-2">
+                                            <div className="font-medium text-slate-200">{req.requesterName}</div>
+                                            <div className="text-[10px] text-slate-500 font-mono">{req.requesterEmail}</div>
+                                          </TableCell>
+                                          <TableCell className="py-2 max-w-[200px]">
+                                            <div className="font-medium text-slate-200">{req.vendorName}</div>
+                                            <div className="text-[10px] text-slate-400 truncate">{req.description}</div>
+                                          </TableCell>
+                                          <TableCell className="py-2">
+                                            <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono border ${
+                                              req.fundingSource === "SFAB"
+                                                ? "bg-amber-500/10 text-amber-300 border-amber-500/30"
+                                                : "bg-sky-500/10 text-sky-300 border-sky-500/30"
+                                            }`}>
+                                              {req.fundingSource === "SFAB" ? "SFAB" : "General"}
+                                            </span>
+                                          </TableCell>
+                                          <TableCell className="font-mono font-bold text-slate-100 text-right py-2">
+                                            ${req.totalAmount.toFixed(2)}
+                                          </TableCell>
+                                          <TableCell className="text-center py-2">
+                                            <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold border ${
+                                              req.status === "APPROVED" || req.status === "REIMBURSED"
+                                                ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
+                                                : req.status === "REJECTED"
+                                                ? "bg-red-500/15 text-red-300 border-red-500/30"
+                                                : "bg-amber-500/15 text-amber-300 border-amber-500/30"
+                                            }`}>
+                                              {req.status}
+                                            </span>
+                                          </TableCell>
+                                          <TableCell className="text-center py-2">
+                                            {req.receiptUrl ? (
+                                              <button
+                                                type="button"
+                                                onClick={() => setPreviewItem(req)}
+                                                className="inline-flex items-center gap-0.5 text-xs text-sky-400 hover:text-sky-300 hover:underline"
+                                              >
+                                                <FileText className="w-3 h-3" />
+                                                <span>View</span>
+                                              </button>
+                                            ) : (
+                                              <span className="text-[10px] text-slate-600">None</span>
+                                            )}
+                                          </TableCell>
+                                          <TableCell className="text-right py-2 pr-3">
+                                            {onUpdatePurchase && (
+                                              <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => handleOpenEditPurchase(req)}
+                                                className="h-6 w-6 p-0 text-slate-400 hover:text-sky-400 hover:bg-sky-950/40"
+                                                title={`Edit Requisition ${req.id}`}
+                                              >
+                                                <Pencil className="w-3.5 h-3.5" />
+                                              </Button>
+                                            )}
+                                          </TableCell>
+                                        </TableRow>
+                                      ))}
+                                    </TableBody>
+                                  </Table>
+                                </div>
+                              ) : (
+                                <div className="text-center py-3 text-slate-500 text-xs italic">
+                                  No purchase requisitions recorded for {c.name}.
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </TableCell>
                       </TableRow>
                     )}
                     </React.Fragment>
-                  ))}
+                  );
+                })}
                 </TableBody>
               </Table>
             </CardContent>
@@ -2177,24 +2779,45 @@ export function TreasurerFinanceView({
                   />
                 </div>
 
-                <div className="space-y-1.5">
-                  <Label
-                    htmlFor="edit-allocated"
-                    className="text-xs font-medium text-slate-300"
-                  >
-                    Allocated Budget Capital ($) *
-                  </Label>
-                  <Input
-                    id="edit-allocated"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={editAllocated}
-                    onChange={(e) => setEditAllocated(e.target.value)}
-                    placeholder="10000.00"
-                    className="bg-slate-900 border-slate-700 text-slate-100 text-xs font-mono h-9"
-                    required
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <Label
+                      htmlFor="edit-allocated"
+                      className="text-xs font-medium text-slate-300"
+                    >
+                      General Operating Budget ($) *
+                    </Label>
+                    <Input
+                      id="edit-allocated"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={editAllocated}
+                      onChange={(e) => setEditAllocated(e.target.value)}
+                      placeholder="10000.00"
+                      className="bg-slate-900 border-slate-700 text-slate-100 text-xs font-mono h-9"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label
+                      htmlFor="edit-sfab-allocated"
+                      className="text-xs font-medium text-slate-300"
+                    >
+                      SFAB Grant Budget ($)
+                    </Label>
+                    <Input
+                      id="edit-sfab-allocated"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={editSfabAllocated}
+                      onChange={(e) => setEditSfabAllocated(e.target.value)}
+                      placeholder="0.00"
+                      className="bg-slate-900 border-slate-700 text-slate-100 text-xs font-mono h-9"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-1.5">
@@ -2510,24 +3133,45 @@ export function TreasurerFinanceView({
                   />
                 </div>
 
-                <div className="space-y-1.5">
-                  <Label
-                    htmlFor="add-allocated"
-                    className="text-xs font-medium text-slate-300"
-                  >
-                    Initial Allocated Budget ($) *
-                  </Label>
-                  <Input
-                    id="add-allocated"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={addAllocated}
-                    onChange={(e) => setAddAllocated(e.target.value)}
-                    placeholder="3000.00"
-                    className="bg-slate-900 border-slate-700 text-slate-100 text-xs font-mono h-9"
-                    required
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <Label
+                      htmlFor="add-allocated"
+                      className="text-xs font-medium text-slate-300"
+                    >
+                      Initial General Budget ($) *
+                    </Label>
+                    <Input
+                      id="add-allocated"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={addAllocated}
+                      onChange={(e) => setAddAllocated(e.target.value)}
+                      placeholder="1000.00"
+                      className="bg-slate-900 border-slate-700 text-slate-100 text-xs font-mono h-9"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label
+                      htmlFor="add-sfab-allocated"
+                      className="text-xs font-medium text-slate-300"
+                    >
+                      Initial SFAB Budget ($)
+                    </Label>
+                    <Input
+                      id="add-sfab-allocated"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={addSfabAllocated}
+                      onChange={(e) => setAddSfabAllocated(e.target.value)}
+                      placeholder="0.00"
+                      className="bg-slate-900 border-slate-700 text-slate-100 text-xs font-mono h-9"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-1.5">
@@ -3012,6 +3656,441 @@ export function TreasurerFinanceView({
                   >
                     <PlusCircle className="w-3.5 h-3.5" />
                     <span>Credit Funding Inflow</span>
+                  </Button>
+                </div>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Edit Committee Funding Inflow Modal */}
+      {editingInflow && (
+        <Dialog
+          open={!!editingInflow}
+          onOpenChange={(open) => !open && setEditingInflow(null)}
+        >
+          <DialogContent className="max-w-lg bg-[#121214] text-slate-100 border border-slate-700/80 shadow-2xl p-6 overflow-y-auto max-h-[90vh]">
+            <DialogHeader>
+              <DialogTitle className="text-lg font-bold text-white flex items-center gap-2">
+                <Pencil className="w-5 h-5 text-sky-400" />
+                <span>Edit Funding Inflow · {editingInflow.committeeName}</span>
+              </DialogTitle>
+              <DialogDescription className="text-xs text-slate-400">
+                Modify recorded funding inflow details. All changes will be immutably recorded in the financial audit ledger with delta reconciliation.
+              </DialogDescription>
+            </DialogHeader>
+
+            <form onSubmit={handleSaveEditInflow} className="space-y-4 py-2">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-slate-300">
+                  Funding Source Type *
+                </Label>
+                <Select
+                  value={editInflowSourceType}
+                  onValueChange={(val: InflowSourceType) =>
+                    setEditInflowSourceType(val)
+                  }
+                >
+                  <SelectTrigger className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-900 border-slate-700 text-slate-100 text-xs">
+                    <SelectItem value="SFAB Grant">
+                      SFAB Grant (Student Fee Advisory Board)
+                    </SelectItem>
+                    <SelectItem value="Corporate Sponsorship">
+                      Corporate Sponsorship (Lockheed, TI, etc.)
+                    </SelectItem>
+                    <SelectItem value="Department Allocation">
+                      Department Allocation (ECE, ME, AAE)
+                    </SelectItem>
+                    <SelectItem value="Competition Prize">
+                      Competition Prize & Awards
+                    </SelectItem>
+                    <SelectItem value="Donation">
+                      Alumni / Donor Gift
+                    </SelectItem>
+                    <SelectItem value="Other">
+                      Other Miscellaneous Inflow
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label
+                  htmlFor="edit-inflow-title"
+                  className="text-xs font-medium text-slate-300"
+                >
+                  Grant / Sponsorship Title *
+                </Label>
+                <Input
+                  id="edit-inflow-title"
+                  value={editInflowTitle}
+                  onChange={(e) => setEditInflowTitle(e.target.value)}
+                  placeholder="e.g. SFAB Spring 2026 Vehicle Hardware Grant"
+                  className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label
+                    htmlFor="edit-inflow-amount"
+                    className="text-xs font-medium text-slate-300"
+                  >
+                    Amount ($) *
+                  </Label>
+                  <Input
+                    id="edit-inflow-amount"
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    value={editInflowAmount}
+                    onChange={(e) => setEditInflowAmount(e.target.value)}
+                    placeholder="3500.00"
+                    className="bg-slate-900 border-slate-700 text-slate-100 text-xs font-mono h-9"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label
+                    htmlFor="edit-inflow-date"
+                    className="text-xs font-medium text-slate-300"
+                  >
+                    Received Date
+                  </Label>
+                  <Input
+                    id="edit-inflow-date"
+                    type="date"
+                    value={editInflowDate}
+                    onChange={(e) => setEditInflowDate(e.target.value)}
+                    className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label
+                  htmlFor="edit-inflow-ref"
+                  className="text-xs font-medium text-slate-300"
+                >
+                  Grant Reference / PO # / Code (Optional)
+                </Label>
+                <Input
+                  id="edit-inflow-ref"
+                  value={editInflowRefNumber}
+                  onChange={(e) => setEditInflowRefNumber(e.target.value)}
+                  placeholder="e.g. SFAB-2026-ROV-01"
+                  className="bg-slate-900 border-slate-700 text-slate-100 text-xs font-mono h-9"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label
+                  htmlFor="edit-inflow-notes"
+                  className="text-xs font-medium text-slate-300"
+                >
+                  Notes & Earmark Details
+                </Label>
+                <Textarea
+                  id="edit-inflow-notes"
+                  value={editInflowNotes}
+                  onChange={(e) => setEditInflowNotes(e.target.value)}
+                  placeholder="Earmarked equipment specifications, donor conditions..."
+                  className="bg-slate-900 border-slate-700 text-slate-100 text-xs min-h-[70px]"
+                />
+              </div>
+
+              {editInflowError && (
+                <div
+                  role="alert"
+                  className="p-3 bg-red-950/50 border border-red-500/50 rounded-lg text-xs text-red-300"
+                >
+                  {editInflowError}
+                </div>
+              )}
+
+              <DialogFooter className="pt-3 border-t border-slate-800 flex items-center justify-between sm:justify-between">
+                <span className="text-[11px] text-slate-500 font-mono">
+                  ID: {editingInflow.id}
+                </span>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setEditingInflow(null)}
+                    className="bg-slate-900 border-slate-700 text-slate-300"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    size="sm"
+                    disabled={isSubmittingInflowEdit}
+                    className="bg-sky-600 hover:bg-sky-500 text-white font-medium flex items-center gap-1.5"
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                    <span>{isSubmittingInflowEdit ? "Saving..." : "Save Inflow Changes"}</span>
+                  </Button>
+                </div>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Edit Purchase Requisition Modal (Treasurer) */}
+      {editingPurchase && (
+        <Dialog
+          open={!!editingPurchase}
+          onOpenChange={(open) => !open && setEditingPurchase(null)}
+        >
+          <DialogContent className="max-w-2xl bg-[#121214] text-slate-100 border border-slate-700/80 shadow-2xl p-6 overflow-y-auto max-h-[90vh]">
+            <DialogHeader>
+              <DialogTitle className="text-lg font-bold text-white flex items-center gap-2">
+                <Pencil className="w-5 h-5 text-sky-400" />
+                <span>Edit Purchase Requisition · {editingPurchase.id}</span>
+              </DialogTitle>
+              <DialogDescription className="text-xs text-slate-400">
+                Update requisition details, funding source, reimbursement parameters, or review status. Modifications are logged to the audit ledger.
+              </DialogDescription>
+            </DialogHeader>
+
+            <form onSubmit={handleSaveEditPurchase} className="space-y-4 py-2">
+              {/* Requester Identity */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="space-y-1 sm:col-span-1">
+                  <Label htmlFor="tp-req-name" className="text-xs font-medium text-slate-300">
+                    Requester Name *
+                  </Label>
+                  <Input
+                    id="tp-req-name"
+                    value={editPurchaseReqName}
+                    onChange={(e) => setEditPurchaseReqName(e.target.value)}
+                    placeholder="e.g. Alex Rivera"
+                    className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1 sm:col-span-1">
+                  <Label htmlFor="tp-req-user" className="text-xs font-medium text-slate-300">
+                    Purdue Username
+                  </Label>
+                  <Input
+                    id="tp-req-user"
+                    value={editPurchasePurdueUser}
+                    onChange={(e) => setEditPurchasePurdueUser(e.target.value)}
+                    placeholder="e.g. arivera"
+                    className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9 font-mono"
+                  />
+                </div>
+
+                <div className="space-y-1 sm:col-span-1">
+                  <Label htmlFor="tp-req-email" className="text-xs font-medium text-slate-300">
+                    Requester Email *
+                  </Label>
+                  <Input
+                    id="tp-req-email"
+                    type="email"
+                    value={editPurchaseReqEmail}
+                    onChange={(e) => setEditPurchaseReqEmail(e.target.value)}
+                    placeholder="arivera@purdue.edu"
+                    className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Vendor & Amount */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label htmlFor="tp-vendor" className="text-xs font-medium text-slate-300">
+                    Vendor / Merchant *
+                  </Label>
+                  <Input
+                    id="tp-vendor"
+                    value={editPurchaseVendor}
+                    onChange={(e) => setEditPurchaseVendor(e.target.value)}
+                    placeholder="e.g. McMaster-Carr"
+                    className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <Label htmlFor="tp-amount" className="text-xs font-medium text-slate-300">
+                    Total Amount ($) *
+                  </Label>
+                  <Input
+                    id="tp-amount"
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    value={editPurchaseAmount}
+                    onChange={(e) => setEditPurchaseAmount(e.target.value)}
+                    placeholder="0.00"
+                    className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9 font-mono"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Category, Budget Account, Status */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="space-y-1">
+                  <Label htmlFor="tp-category" className="text-xs font-medium text-slate-300">
+                    Category
+                  </Label>
+                  <Input
+                    id="tp-category"
+                    value={editPurchaseCategory}
+                    onChange={(e) => setEditPurchaseCategory(e.target.value)}
+                    placeholder="e.g. Parts & Materials"
+                    className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <Label htmlFor="tp-source" className="text-xs font-medium text-slate-300">
+                    Budget Account
+                  </Label>
+                  <Select
+                    value={editPurchaseFundingSource}
+                    onValueChange={(val: "GENERAL" | "SFAB") => setEditPurchaseFundingSource(val)}
+                  >
+                    <SelectTrigger
+                      id="tp-source"
+                      className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
+                    >
+                      <SelectValue placeholder="Select account" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-900 border-slate-700 text-slate-100 text-xs">
+                      <SelectItem value="GENERAL">General Operating Budget</SelectItem>
+                      <SelectItem value="SFAB">SFAB Grant Budget</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-1">
+                  <Label htmlFor="tp-status" className="text-xs font-medium text-slate-300">
+                    Requisition Status
+                  </Label>
+                  <Select
+                    value={editPurchaseStatus}
+                    onValueChange={(val: PurchaseStatus) => setEditPurchaseStatus(val)}
+                  >
+                    <SelectTrigger
+                      id="tp-status"
+                      className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
+                    >
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-900 border-slate-700 text-slate-100 text-xs">
+                      <SelectItem value="PENDING">PENDING</SelectItem>
+                      <SelectItem value="APPROVED">APPROVED</SelectItem>
+                      <SelectItem value="REJECTED">REJECTED</SelectItem>
+                      <SelectItem value="REIMBURSED">REIMBURSED</SelectItem>
+                      <SelectItem value="PURCHASED">PURCHASED</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* SFAB Line Item if SFAB */}
+              {editPurchaseFundingSource === "SFAB" && (
+                <div className="space-y-1 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                  <Label htmlFor="tp-sfab-line" className="text-xs font-medium text-amber-300">
+                    SFAB Approved Line Item Name / ID
+                  </Label>
+                  <Input
+                    id="tp-sfab-line"
+                    value={editPurchaseSfabLine}
+                    onChange={(e) => setEditPurchaseSfabLine(e.target.value)}
+                    placeholder="e.g. Microcontroller dev boards & sensors"
+                    className="bg-slate-900 border-amber-500/40 text-slate-100 text-xs h-9 font-mono"
+                  />
+                </div>
+              )}
+
+              {/* Description */}
+              <div className="space-y-1">
+                <Label htmlFor="tp-desc" className="text-xs font-medium text-slate-300">
+                  Item Description & Purpose
+                </Label>
+                <Textarea
+                  id="tp-desc"
+                  value={editPurchaseDesc}
+                  onChange={(e) => setEditPurchaseDesc(e.target.value)}
+                  placeholder="Item details and technical purpose..."
+                  rows={2}
+                  className="bg-slate-900 border-slate-700 text-slate-100 text-xs"
+                />
+              </div>
+
+              {/* Accounting & Treasurer Review Fields */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-slate-900/60 border border-slate-800 rounded-lg">
+                <div className="space-y-1">
+                  <Label htmlFor="tp-cool-num" className="text-xs font-medium text-slate-300">
+                    Purdue COOL Account Line Number
+                  </Label>
+                  <Input
+                    id="tp-cool-num"
+                    value={editPurchaseCoolNumber}
+                    onChange={(e) => setEditPurchaseCoolNumber(e.target.value)}
+                    placeholder="e.g. 01-234-56"
+                    className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9 font-mono"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="tp-treasurer-notes" className="text-xs font-medium text-slate-300">
+                    Treasurer Audit Notes
+                  </Label>
+                  <Input
+                    id="tp-treasurer-notes"
+                    value={editPurchaseTreasurerNotes}
+                    onChange={(e) => setEditPurchaseTreasurerNotes(e.target.value)}
+                    placeholder="e.g. Tax-exempt verified, direct deposit pending"
+                    className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
+                  />
+                </div>
+              </div>
+
+              {editPurchaseError && (
+                <div
+                  role="alert"
+                  className="p-3 bg-red-950/50 border border-red-500/50 rounded-lg text-xs text-red-300"
+                >
+                  {editPurchaseError}
+                </div>
+              )}
+
+              <DialogFooter className="pt-3 border-t border-slate-800 flex items-center justify-between sm:justify-between">
+                <span className="text-[11px] text-slate-500 font-mono">
+                  Committee: {editingPurchase.committeeName}
+                </span>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setEditingPurchase(null)}
+                    className="bg-slate-900 border-slate-700 text-slate-300"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    size="sm"
+                    disabled={isSubmittingPurchaseEdit}
+                    className="bg-sky-600 hover:bg-sky-500 text-white font-medium shadow-md disabled:opacity-50"
+                  >
+                    {isSubmittingPurchaseEdit ? "Saving..." : "Save Changes"}
                   </Button>
                 </div>
               </DialogFooter>

@@ -60,7 +60,7 @@ describe('BoilerBooks D1 Schema & Migrations', () => {
       const stmt = db.prepare('SELECT * FROM finance_committees ORDER BY id ASC');
       const rows = stmt.all() as unknown as FinanceCommitteeRow[];
 
-      expect(rows.length).toBe(10);
+      expect(rows.length).toBe(11);
 
       const committeeMap = new Map(rows.map((r) => [r.id, r]));
 
@@ -77,6 +77,7 @@ describe('BoilerBooks D1 Schema & Migrations', () => {
       const expectedIds = [
         'aesc',
         'cs',
+        'eds',
         'embs',
         'learning',
         'mtts',

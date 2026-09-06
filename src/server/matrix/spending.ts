@@ -9,12 +9,26 @@ import { recordAuditEntry } from '../db/audit';
 import type { CommitteeId } from '../db/types';
 import { hashPin } from '../auth/crypto';
 
+export interface AccountSpendingBreakdown {
+  baseAllocated: number;
+  inflows: number;
+  totalBudget: number;
+  spent: number;
+  pending: number;
+  remaining: number;
+  spentPercentage: number;
+}
+
 export interface CommitteeSpendingRow {
   committeeId: CommitteeId;
   committeeName: string;
-  allocatedAmount: number; // total budget (baseAllocated + totalInflows)
-  baseAllocatedAmount?: number;
+  allocatedAmount: number; // total budget (generalTotal + sfabTotal)
+  baseAllocatedAmount?: number; // base general allocation
+  generalAllocatedAmount?: number; // base general allocation
+  sfabAllocatedAmount?: number; // base SFAB allocation
   totalInflows?: number;
+  generalInflows?: number;
+  sfabInflows?: number;
   spentAmount: number; // approved + reimbursed
   approvedAmount: number;
   pendingAmount: number;
@@ -23,6 +37,8 @@ export interface CommitteeSpendingRow {
   remainingAmount: number;
   spentPercentage: number;
   totalRequests: number;
+  general?: AccountSpendingBreakdown;
+  sfab?: AccountSpendingBreakdown;
 }
 
 export interface BranchSpendingSummary {
@@ -36,6 +52,12 @@ export interface BranchSpendingSummary {
   totalRemaining: number;
   spentPercentage: number;
   totalRequests: number;
+  totalGeneralAllocated?: number;
+  totalSfabAllocated?: number;
+  totalGeneralSpent?: number;
+  totalSfabSpent?: number;
+  totalGeneralRemaining?: number;
+  totalSfabRemaining?: number;
   committees: CommitteeSpendingRow[];
 }
 
@@ -73,11 +95,18 @@ interface RawSpendingRow {
   committee_id: string;
   committee_name: string;
   allocated_amount: number | null;
+  sfab_amount: number | null;
   total_inflows: number | null;
+  general_inflows: number | null;
+  sfab_inflows: number | null;
   approved_amount: number | null;
   pending_amount: number | null;
   reimbursed_amount: number | null;
   rejected_amount: number | null;
+  spent_general: number | null;
+  spent_sfab: number | null;
+  pending_general: number | null;
+  pending_sfab: number | null;
   total_requests: number | null;
 }
 
@@ -105,7 +134,7 @@ interface RawFinanceCommittee {
 /**
  * Aggregates total allocated budget, approved spending, pending requests,
  * reimbursed amounts, and remaining balance per committee and branch-wide for a fiscal year.
- * Total budget includes base allocation plus recorded funding inflows (SFAB grants, sponsorships).
+ * Separate General vs SFAB grant budgets are calculated along with aggregate totals.
  */
 export async function calculateCommitteeSpending(
   db: D1DatabaseLike,
@@ -116,24 +145,35 @@ export async function calculateCommitteeSpending(
       fc.id AS committee_id,
       fc.name AS committee_name,
       COALESCE(cb.allocated_amount, 0.0) AS allocated_amount,
+      COALESCE(cb.sfab_amount, 0.0) AS sfab_amount,
       COALESCE(inf.total_inflows, 0.0) AS total_inflows,
+      COALESCE(inf.general_inflows, 0.0) AS general_inflows,
+      COALESCE(inf.sfab_inflows, 0.0) AS sfab_inflows,
       COALESCE(SUM(CASE WHEN pr.status = 'APPROVED' THEN pr.total_amount ELSE 0 END), 0.0) AS approved_amount,
       COALESCE(SUM(CASE WHEN pr.status = 'PENDING' THEN pr.total_amount ELSE 0 END), 0.0) AS pending_amount,
       COALESCE(SUM(CASE WHEN pr.status = 'REIMBURSED' THEN pr.total_amount ELSE 0 END), 0.0) AS reimbursed_amount,
       COALESCE(SUM(CASE WHEN pr.status = 'REJECTED' THEN pr.total_amount ELSE 0 END), 0.0) AS rejected_amount,
+      COALESCE(SUM(CASE WHEN pr.status IN ('APPROVED', 'REIMBURSED') AND (pr.funding_source IS NULL OR pr.funding_source != 'SFAB') THEN pr.total_amount ELSE 0 END), 0.0) AS spent_general,
+      COALESCE(SUM(CASE WHEN pr.status IN ('APPROVED', 'REIMBURSED') AND pr.funding_source = 'SFAB' THEN pr.total_amount ELSE 0 END), 0.0) AS spent_sfab,
+      COALESCE(SUM(CASE WHEN pr.status = 'PENDING' AND (pr.funding_source IS NULL OR pr.funding_source != 'SFAB') THEN pr.total_amount ELSE 0 END), 0.0) AS pending_general,
+      COALESCE(SUM(CASE WHEN pr.status = 'PENDING' AND pr.funding_source = 'SFAB' THEN pr.total_amount ELSE 0 END), 0.0) AS pending_sfab,
       COUNT(pr.id) AS total_requests
     FROM finance_committees fc
     LEFT JOIN committee_budgets cb 
       ON fc.id = cb.committee_id AND cb.fiscal_year_id = ?
     LEFT JOIN (
-      SELECT committee_id, SUM(amount) AS total_inflows 
+      SELECT 
+        committee_id, 
+        SUM(amount) AS total_inflows,
+        SUM(CASE WHEN source_type != 'SFAB Grant' THEN amount ELSE 0 END) AS general_inflows,
+        SUM(CASE WHEN source_type = 'SFAB Grant' THEN amount ELSE 0 END) AS sfab_inflows
       FROM committee_funding_inflows 
       WHERE fiscal_year_id = ? 
       GROUP BY committee_id
     ) inf ON fc.id = inf.committee_id
     LEFT JOIN purchase_requests pr 
       ON fc.id = pr.committee_id AND pr.fiscal_year_id = ?
-    GROUP BY fc.id, fc.name, cb.allocated_amount, inf.total_inflows
+    GROUP BY fc.id, fc.name, cb.allocated_amount, cb.sfab_amount, inf.total_inflows, inf.general_inflows, inf.sfab_inflows
     ORDER BY fc.name ASC;
   `;
 
@@ -146,10 +186,21 @@ export async function calculateCommitteeSpending(
   let totalRejected = 0;
   let totalRequests = 0;
 
+  let totalGeneralAllocated = 0;
+  let totalSfabAllocated = 0;
+  let totalGeneralSpent = 0;
+  let totalSfabSpent = 0;
+
   const committees: CommitteeSpendingRow[] = rows.map((row) => {
     const baseAllocated = roundCurrency(Number(row.allocated_amount) || 0);
-    const inflows = roundCurrency(Number(row.total_inflows) || 0);
-    const totalBudget = roundCurrency(baseAllocated + inflows);
+    const sfabAllocated = roundCurrency(Number(row.sfab_amount) || 0);
+    const generalInflows = roundCurrency(Number(row.general_inflows) || 0);
+    const sfabInflows = roundCurrency(Number(row.sfab_inflows) || 0);
+    const totalInflows = roundCurrency(Number(row.total_inflows) || (generalInflows + sfabInflows));
+
+    const generalBudget = roundCurrency(baseAllocated + generalInflows);
+    const sfabBudget = roundCurrency(sfabAllocated + sfabInflows);
+    const totalBudget = roundCurrency(generalBudget + sfabBudget);
 
     const approved = roundCurrency(Number(row.approved_amount) || 0);
     const pending = roundCurrency(Number(row.pending_amount) || 0);
@@ -159,6 +210,17 @@ export async function calculateCommitteeSpending(
     const remaining = roundCurrency(totalBudget - spent);
     const reqCount = Number(row.total_requests) || 0;
 
+    const spentGeneral = roundCurrency(Number(row.spent_general) || 0);
+    const spentSfab = roundCurrency(Number(row.spent_sfab) || 0);
+    const pendingGeneral = roundCurrency(Number(row.pending_general) || 0);
+    const pendingSfab = roundCurrency(Number(row.pending_sfab) || 0);
+    const remainingGeneral = roundCurrency(generalBudget - spentGeneral);
+    const remainingSfab = roundCurrency(sfabBudget - spentSfab);
+
+    const generalSpentPercentage =
+      generalBudget > 0 ? roundCurrency((spentGeneral / generalBudget) * 100) : 0;
+    const sfabSpentPercentage =
+      sfabBudget > 0 ? roundCurrency((spentSfab / sfabBudget) * 100) : 0;
     const spentPercentage =
       totalBudget > 0 ? roundCurrency((spent / totalBudget) * 100) : 0;
 
@@ -169,12 +231,21 @@ export async function calculateCommitteeSpending(
     totalRejected = roundCurrency(totalRejected + rejected);
     totalRequests += reqCount;
 
+    totalGeneralAllocated = roundCurrency(totalGeneralAllocated + generalBudget);
+    totalSfabAllocated = roundCurrency(totalSfabAllocated + sfabBudget);
+    totalGeneralSpent = roundCurrency(totalGeneralSpent + spentGeneral);
+    totalSfabSpent = roundCurrency(totalSfabSpent + spentSfab);
+
     return {
       committeeId: row.committee_id as CommitteeId,
       committeeName: row.committee_name,
       allocatedAmount: totalBudget,
       baseAllocatedAmount: baseAllocated,
-      totalInflows: inflows,
+      generalAllocatedAmount: baseAllocated,
+      sfabAllocatedAmount: sfabAllocated,
+      totalInflows,
+      generalInflows,
+      sfabInflows,
       spentAmount: spent,
       approvedAmount: approved,
       pendingAmount: pending,
@@ -183,6 +254,24 @@ export async function calculateCommitteeSpending(
       remainingAmount: remaining,
       spentPercentage,
       totalRequests: reqCount,
+      general: {
+        baseAllocated,
+        inflows: generalInflows,
+        totalBudget: generalBudget,
+        spent: spentGeneral,
+        pending: pendingGeneral,
+        remaining: remainingGeneral,
+        spentPercentage: generalSpentPercentage,
+      },
+      sfab: {
+        baseAllocated: sfabAllocated,
+        inflows: sfabInflows,
+        totalBudget: sfabBudget,
+        spent: spentSfab,
+        pending: pendingSfab,
+        remaining: remainingSfab,
+        spentPercentage: sfabSpentPercentage,
+      },
     };
   });
 
@@ -190,6 +279,8 @@ export async function calculateCommitteeSpending(
   const totalRemaining = roundCurrency(totalAllocated - totalSpent);
   const branchSpentPercentage =
     totalAllocated > 0 ? roundCurrency((totalSpent / totalAllocated) * 100) : 0;
+  const totalGeneralRemaining = roundCurrency(totalGeneralAllocated - totalGeneralSpent);
+  const totalSfabRemaining = roundCurrency(totalSfabAllocated - totalSfabSpent);
 
   return {
     fiscalYearId,
@@ -202,6 +293,12 @@ export async function calculateCommitteeSpending(
     totalRemaining,
     spentPercentage: branchSpentPercentage,
     totalRequests,
+    totalGeneralAllocated,
+    totalSfabAllocated,
+    totalGeneralSpent,
+    totalSfabSpent,
+    totalGeneralRemaining,
+    totalSfabRemaining,
     committees,
   };
 }
@@ -375,6 +472,7 @@ export async function calculateCategoryBreakdown(
 export interface UpdateCommitteeParametersPayload {
   name?: string;
   allocatedAmount?: number;
+  sfabAmount?: number;
   notes?: string | null;
   bankStatus?: 'Active' | 'Inactive' | 'Read-Only';
   duesStatus?: 'Active' | 'Inactive';
@@ -394,44 +492,48 @@ export async function updateCommitteeParameters(
 ): Promise<{ success: boolean; message: string }> {
   const d1 = toD1Database(db);
 
-  // 1. Update budget allocation if specified
-  if (payload.allocatedAmount !== undefined) {
-    const existingBudget = await queryFirst<{ id: string; allocated_amount: number }>(
+  // 1. Update budget allocation (General and/or SFAB) if specified
+  if (payload.allocatedAmount !== undefined || payload.sfabAmount !== undefined) {
+    const existingBudget = await queryFirst<{ id: string; allocated_amount: number; sfab_amount: number }>(
       db,
-      'SELECT id, allocated_amount FROM committee_budgets WHERE fiscal_year_id = ? AND committee_id = ?',
+      'SELECT id, allocated_amount, sfab_amount FROM committee_budgets WHERE fiscal_year_id = ? AND committee_id = ?',
       [fiscalYearId, committeeId]
     );
     const prevAllocated = existingBudget?.allocated_amount ?? 0;
-    const delta = payload.allocatedAmount - prevAllocated;
+    const prevSfab = existingBudget?.sfab_amount ?? 0;
+    const newAllocated = payload.allocatedAmount !== undefined ? payload.allocatedAmount : prevAllocated;
+    const newSfab = payload.sfabAmount !== undefined ? payload.sfabAmount : prevSfab;
+    const generalDelta = newAllocated - prevAllocated;
+    const sfabDelta = newSfab - prevSfab;
 
     if (existingBudget) {
       await d1
-        .prepare('UPDATE committee_budgets SET allocated_amount = ?, notes = ? WHERE id = ?')
-        .bind(payload.allocatedAmount, payload.notes || null, existingBudget.id)
+        .prepare('UPDATE committee_budgets SET allocated_amount = ?, sfab_amount = ?, notes = COALESCE(?, notes) WHERE id = ?')
+        .bind(newAllocated, newSfab, payload.notes || null, existingBudget.id)
         .run();
     } else {
       const budgetId = `cb-${committeeId}-${fiscalYearId}`;
       await d1
         .prepare(
-          'INSERT INTO committee_budgets (id, fiscal_year_id, committee_id, allocated_amount, notes) VALUES (?, ?, ?, ?, ?)'
+          'INSERT INTO committee_budgets (id, fiscal_year_id, committee_id, allocated_amount, sfab_amount, notes) VALUES (?, ?, ?, ?, ?, ?)'
         )
-        .bind(budgetId, fiscalYearId, committeeId, payload.allocatedAmount, payload.notes || null)
+        .bind(budgetId, fiscalYearId, committeeId, newAllocated, newSfab, payload.notes || null)
         .run();
     }
 
-    if (delta !== 0) {
+    if (generalDelta !== 0) {
       await recordBudgetAdjustmentAudit(db, {
         committeeId,
         fiscalYearId,
         adjustedBy: 'Executive Treasurer',
         previousAmount: prevAllocated,
-        newAmount: payload.allocatedAmount,
+        newAmount: newAllocated,
         reason: payload.notes || undefined,
       });
 
-      const deltaFormatted = delta >= 0
-        ? `+$${delta.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
-        : `-$${Math.abs(delta).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+      const deltaFormatted = generalDelta >= 0
+        ? `+$${generalDelta.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
+        : `-$${Math.abs(generalDelta).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
 
       await recordAuditEntry(db, {
         fiscalYearId,
@@ -440,10 +542,29 @@ export async function updateCommitteeParameters(
         actorRole: 'TREASURER',
         actorName: 'Executive Treasurer',
         actorEmail: 'treasurer@purdueieee.org',
-        description: `Base allocated budget adjusted from $${prevAllocated.toLocaleString('en-US', { minimumFractionDigits: 2 })} to $${payload.allocatedAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })} (${deltaFormatted})`,
+        description: `Base allocated budget adjusted from $${prevAllocated.toLocaleString('en-US', { minimumFractionDigits: 2 })} to $${newAllocated.toLocaleString('en-US', { minimumFractionDigits: 2 })} (${deltaFormatted})`,
         previousValue: String(prevAllocated),
-        newValue: String(payload.allocatedAmount),
-        amountDelta: delta,
+        newValue: String(newAllocated),
+        amountDelta: generalDelta,
+      });
+    }
+
+    if (sfabDelta !== 0) {
+      const deltaFormatted = sfabDelta >= 0
+        ? `+$${sfabDelta.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
+        : `-$${Math.abs(sfabDelta).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+
+      await recordAuditEntry(db, {
+        fiscalYearId,
+        committeeId,
+        actionType: 'BUDGET_ALLOCATION',
+        actorRole: 'TREASURER',
+        actorName: 'Executive Treasurer',
+        actorEmail: 'treasurer@purdueieee.org',
+        description: `SFAB allocated budget adjusted from $${prevSfab.toLocaleString('en-US', { minimumFractionDigits: 2 })} to $${newSfab.toLocaleString('en-US', { minimumFractionDigits: 2 })} (${deltaFormatted})`,
+        previousValue: String(prevSfab),
+        newValue: String(newSfab),
+        amountDelta: sfabDelta,
       });
     }
   }
@@ -547,6 +668,7 @@ export interface CreateCommitteePayload {
   id?: string;
   name: string;
   allocatedAmount?: number;
+  sfabAmount?: number;
   notes?: string | null;
   bankStatus?: 'Active' | 'Inactive' | 'Read-Only';
   duesStatus?: 'Active' | 'Inactive';
@@ -603,6 +725,7 @@ export async function createCommittee(
     id: string;
     name: string;
     allocated: number;
+    sfabAllocated: number;
     bankStatus: 'Active' | 'Inactive' | 'Read-Only';
     duesStatus: 'Active' | 'Inactive';
     contactEmail: string;
@@ -621,6 +744,7 @@ export async function createCommittee(
   const committeeId = rawId || `comm-${Date.now()}`;
   const fiscalYearId = payload.fiscalYearId || 'fy25-26';
   const allocatedAmount = roundCurrency(Number(payload.allocatedAmount) || 0);
+  const sfabAmount = roundCurrency(Number(payload.sfabAmount) || 0);
   const bankStatus = payload.bankStatus || 'Active';
   const duesStatus = payload.duesStatus || 'Active';
   const contactEmail = payload.contactEmail?.trim() || `${committeeId}@purdueieee.org`;
@@ -650,10 +774,10 @@ export async function createCommittee(
   const budgetId = `cb-${committeeId}-${fiscalYearId}`;
   await d1
     .prepare(
-      `INSERT INTO committee_budgets (id, fiscal_year_id, committee_id, allocated_amount, notes)
-       VALUES (?, ?, ?, ?, ?)`
+      `INSERT INTO committee_budgets (id, fiscal_year_id, committee_id, allocated_amount, sfab_amount, notes)
+       VALUES (?, ?, ?, ?, ?, ?)`
     )
-    .bind(budgetId, fiscalYearId, committeeId, allocatedAmount, notes || null)
+    .bind(budgetId, fiscalYearId, committeeId, allocatedAmount, sfabAmount, notes || null)
     .run();
 
   // 3. Insert categories
@@ -680,18 +804,35 @@ export async function createCommittee(
   }
 
   // 4. Audit Log
-  await recordAuditEntry(db, {
-    fiscalYearId,
-    committeeId,
-    actionType: 'BUDGET_ALLOCATION',
-    actorRole: 'TREASURER',
-    actorName: 'Executive Treasurer',
-    actorEmail: 'treasurer@purdueieee.org',
-    description: `Created new technical committee "${name}" (${committeeId}) with initial budget of $${allocatedAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
-    previousValue: null,
-    newValue: String(allocatedAmount),
-    amountDelta: allocatedAmount,
-  });
+  if (allocatedAmount > 0) {
+    await recordAuditEntry(db, {
+      fiscalYearId,
+      committeeId,
+      actionType: 'BUDGET_ALLOCATION',
+      actorRole: 'TREASURER',
+      actorName: 'Executive Treasurer',
+      actorEmail: 'treasurer@purdueieee.org',
+      description: `Created new technical committee "${name}" (${committeeId}) with initial general budget of $${allocatedAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
+      previousValue: null,
+      newValue: String(allocatedAmount),
+      amountDelta: allocatedAmount,
+    });
+  }
+
+  if (sfabAmount > 0) {
+    await recordAuditEntry(db, {
+      fiscalYearId,
+      committeeId,
+      actionType: 'BUDGET_ALLOCATION',
+      actorRole: 'TREASURER',
+      actorName: 'Executive Treasurer',
+      actorEmail: 'treasurer@purdueieee.org',
+      description: `Allocated initial SFAB grant budget of $${sfabAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })} to "${name}" (${committeeId})`,
+      previousValue: null,
+      newValue: String(sfabAmount),
+      amountDelta: sfabAmount,
+    });
+  }
 
   return {
     success: true,
@@ -700,6 +841,7 @@ export async function createCommittee(
       id: committeeId,
       name,
       allocated: allocatedAmount,
+      sfabAllocated: sfabAmount,
       bankStatus,
       duesStatus,
       contactEmail,
@@ -845,6 +987,98 @@ export async function recordCommitteeFundingInflow(
     amount: roundCurrency(payload.amount),
     referenceNumber,
     message: `Successfully recorded $${payload.amount.toFixed(2)} funding for ${payload.committeeId}.`,
+  };
+}
+
+export interface UpdateFundingInflowPayload {
+  id: string;
+  sourceType?: string;
+  title?: string;
+  amount?: number;
+  referenceNumber?: string | null;
+  receivedDate?: string;
+  notes?: string | null;
+}
+
+/**
+ * Updates an existing committee funding inflow/grant and records an audit trail in the banking ledger.
+ */
+export async function updateCommitteeFundingInflow(
+  db: D1DatabaseLike,
+  payload: UpdateFundingInflowPayload,
+  actorSession?: { role?: string; name?: string; committeeId?: string } | null
+): Promise<{ success: boolean; inflow: any; message: string }> {
+  const d1 = toD1Database(db);
+  const existing = await queryFirst<any>(
+    db,
+    'SELECT * FROM committee_funding_inflows WHERE id = ?',
+    [payload.id]
+  );
+  if (!existing) {
+    throw new Error(`Funding inflow "${payload.id}" not found.`);
+  }
+
+  const prevAmount = roundCurrency(Number(existing.amount) || 0);
+  const newAmount = payload.amount !== undefined ? roundCurrency(payload.amount) : prevAmount;
+  if (newAmount <= 0) {
+    throw new Error('Funding inflow amount must be greater than $0.00.');
+  }
+
+  const newSourceType = payload.sourceType?.trim() || existing.source_type;
+  const newTitle = payload.title !== undefined ? payload.title.trim() : existing.title;
+  const newReference =
+    payload.referenceNumber !== undefined ? payload.referenceNumber?.trim() || null : existing.reference_number;
+  const newDate = payload.receivedDate || existing.received_date;
+  const newNotes = payload.notes !== undefined ? payload.notes?.trim() || null : existing.notes;
+  const amountDelta = roundCurrency(newAmount - prevAmount);
+
+  await d1
+    .prepare(
+      `UPDATE committee_funding_inflows
+       SET source_type = ?, title = ?, amount = ?, reference_number = ?, received_date = ?, notes = ?
+       WHERE id = ?`
+    )
+    .bind(newSourceType, newTitle, newAmount, newReference, newDate, newNotes, payload.id)
+    .run();
+
+  const changeDetails: string[] = [];
+  if (newAmount !== prevAmount) {
+    changeDetails.push(`amount: $${prevAmount.toFixed(2)} -> $${newAmount.toFixed(2)}`);
+  }
+  if (newSourceType !== existing.source_type) {
+    changeDetails.push(`source: ${existing.source_type} -> ${newSourceType}`);
+  }
+  if (newTitle !== existing.title) {
+    changeDetails.push(`title: "${existing.title}" -> "${newTitle}"`);
+  }
+
+  await recordAuditEntry(db, {
+    fiscalYearId: existing.fiscal_year_id || 'fy25-26',
+    committeeId: existing.committee_id,
+    actionType: 'FUNDING_INFLOW_EDITED',
+    actorRole: actorSession?.role || 'TREASURER',
+    actorName: actorSession?.name || 'Executive Treasurer',
+    actorEmail: actorSession?.committeeId === 'treasurer' ? 'treasurer@purdueieee.org' : undefined,
+    description: `Edited funding inflow ${payload.id} ("${newTitle}"): ${changeDetails.join(', ') || 'parameters updated'}`,
+    previousValue: String(prevAmount),
+    newValue: String(newAmount),
+    amountDelta,
+  });
+
+  return {
+    success: true,
+    inflow: {
+      id: payload.id,
+      committeeId: existing.committee_id,
+      fiscalYearId: existing.fiscal_year_id,
+      sourceType: newSourceType,
+      title: newTitle,
+      amount: newAmount,
+      referenceNumber: newReference,
+      receivedDate: newDate,
+      notes: newNotes,
+    },
+    message: `Successfully updated funding inflow ${payload.id}.`,
   };
 }
 

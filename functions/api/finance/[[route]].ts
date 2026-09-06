@@ -13,6 +13,7 @@ import {
   getPurchaseRequest,
   listPurchaseRequests,
   updatePurchaseStatus,
+  updatePurchaseRequest,
 } from '../../../src/server/purchase/service';
 import {
   calculateCommitteeSpending,
@@ -21,6 +22,7 @@ import {
   createCommittee,
   deleteCommittee,
   recordCommitteeFundingInflow,
+  updateCommitteeFundingInflow,
 } from '../../../src/server/matrix/spending';
 import { importMemberDues, searchMemberDues, getMemberDuesSummary, recordCashPayment } from '../../../src/server/dues/service';
 import { generateCOOLBatch } from '../../../src/server/cool/exporter';
@@ -315,6 +317,18 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
       return jsonResponse(result, 200, request);
     }
 
+    // Edit Full Purchase Request: PATCH /api/finance/purchases/:id or PUT /api/finance/purchases/:id
+    if (pathParts[0] === 'purchases' && pathParts.length === 2 && (request.method === 'PATCH' || request.method === 'PUT')) {
+      const authResult = await requireAuth(request, env);
+      if (isResponse(authResult)) return authResult;
+      const session = authResult;
+
+      const purchaseId = pathParts[1];
+      const body = (await request.json()) as Record<string, any>;
+      const result = await updatePurchaseRequest(db, { id: purchaseId, ...body }, session);
+      return jsonResponse({ success: true, request: result }, 200, request);
+    }
+
     // -------------------------------------------------------------
     // 4. Funding Inflows: /api/finance/inflows
     // -------------------------------------------------------------
@@ -344,6 +358,18 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
         const result = await recordCommitteeFundingInflow(db, payload as any);
         return jsonResponse(result, 201, request);
       }
+    }
+
+    // Edit Inflow: PATCH /api/finance/inflows/:id or PUT /api/finance/inflows/:id (TREASURER only)
+    if (pathParts[0] === 'inflows' && pathParts.length === 2 && (request.method === 'PATCH' || request.method === 'PUT')) {
+      const authResult = await requireAuth(request, env, ['TREASURER']);
+      if (isResponse(authResult)) return authResult;
+      const session = authResult;
+
+      const inflowId = pathParts[1];
+      const body = (await request.json()) as Record<string, any>;
+      const result = await updateCommitteeFundingInflow(db, { id: inflowId, ...body }, session);
+      return jsonResponse(result, 200, request);
     }
 
     // Delete Inflow: DELETE /api/finance/inflows/:id (TREASURER only)
@@ -399,6 +425,7 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
             fc.dues_status,
             fc.contact_email,
             COALESCE(cb.allocated_amount, 0.0) AS allocated,
+            COALESCE(cb.sfab_amount, 0.0) AS sfab_allocated,
             cb.notes
           FROM finance_committees fc
           LEFT JOIN committee_budgets cb ON fc.id = cb.committee_id AND cb.fiscal_year_id = ?
@@ -423,6 +450,7 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
           name: r.name,
           shortName: r.name,
           allocated: Number(r.allocated) || 0,
+          sfabAllocated: Number(r.sfab_allocated) || 0,
           bankStatus: r.bank_status || 'Active',
           duesStatus: r.dues_status || 'Active',
           contactEmail: r.contact_email || `${r.id}@purdueieee.org`,
@@ -437,8 +465,12 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
         const authResult = await requireAuth(request, env, ['TREASURER']);
         if (isResponse(authResult)) return authResult;
 
-        const body = await request.json();
-        const result = await createCommittee(db, body as any);
+        const body = (await request.json()) as any;
+        const result = await createCommittee(db, {
+          ...body,
+          allocatedAmount: body.allocatedAmount ?? body.allocated,
+          sfabAmount: body.sfabAmount ?? body.sfabAllocated,
+        });
         return jsonResponse(result, 201, request);
       }
     }
@@ -452,9 +484,13 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
       if (isResponse(authResult)) return authResult;
 
       const committeeId = pathParts[1];
-      const body = await request.json();
+      const body = (await request.json()) as any;
       const fiscalYearId = url.searchParams.get('fiscalYearId') || 'fy25-26';
-      const result = await updateCommitteeParameters(db, fiscalYearId, committeeId, body as any);
+      const result = await updateCommitteeParameters(db, fiscalYearId, committeeId, {
+        ...body,
+        allocatedAmount: body.allocatedAmount ?? body.allocated,
+        sfabAmount: body.sfabAmount ?? body.sfabAllocated,
+      });
       return jsonResponse(result, 200, request);
     }
 

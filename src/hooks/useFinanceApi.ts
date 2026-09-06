@@ -193,6 +193,7 @@ export function useFinanceApi() {
                   ...existing,
                   ...comm,
                   allocated: comm.allocatedAmount ?? comm.allocated ?? existing?.allocated ?? 0,
+                  sfabAllocated: comm.sfabAmount ?? comm.sfabAllocated ?? comm.sfab_allocated ?? existing?.sfabAllocated ?? 0,
                 });
               }
               return Array.from(prevMap.values());
@@ -216,14 +217,16 @@ export function useFinanceApi() {
               if (existing) {
                 prevMap.set(r.committeeId, {
                   ...existing,
-                  allocated: r.baseAllocatedAmount ?? r.allocatedAmount ?? existing.allocated,
+                  allocated: r.generalAllocatedAmount ?? r.baseAllocatedAmount ?? r.allocatedAmount ?? existing.allocated,
+                  sfabAllocated: r.sfabAllocatedAmount ?? r.sfabAllocated ?? existing.sfabAllocated ?? 0,
                 });
               } else {
                 prevMap.set(r.committeeId, {
                   id: r.committeeId,
                   name: r.committeeName || r.committeeId,
                   shortName: r.committeeName || r.committeeId,
-                  allocated: r.baseAllocatedAmount ?? r.allocatedAmount ?? 0,
+                  allocated: r.generalAllocatedAmount ?? r.baseAllocatedAmount ?? r.allocatedAmount ?? 0,
+                  sfabAllocated: r.sfabAllocatedAmount ?? r.sfabAllocated ?? 0,
                   bankStatus: "Active",
                   duesStatus: "Active",
                   contactEmail: `${r.committeeId}@purdueieee.org`,
@@ -569,6 +572,102 @@ export function useFinanceApi() {
     }
   };
 
+  // Update Purchase Requisition (all fields) with optimistic update and audit ledger entry
+  const updatePurchase = async (
+    id: string,
+    updated: Partial<PurchaseItem>,
+  ): Promise<{ success: boolean; error?: string }> => {
+    const prevPurchases = purchases;
+    const targetItem = purchases.find((p) => p.id === id);
+    if (!targetItem) {
+      return { success: false, error: `Purchase ${id} not found` };
+    }
+
+    const mergedItem: PurchaseItem = {
+      ...targetItem,
+      ...updated,
+    };
+
+    setPurchases((prev) =>
+      prev.map((item) => (item.id === id ? mergedItem : item)),
+    );
+
+    const amountDelta =
+      updated.totalAmount !== undefined
+        ? updated.totalAmount - targetItem.totalAmount
+        : 0;
+
+    const changes: string[] = [];
+    if (updated.totalAmount !== undefined && updated.totalAmount !== targetItem.totalAmount) {
+      changes.push(`amount $${targetItem.totalAmount.toFixed(2)} -> $${mergedItem.totalAmount.toFixed(2)}`);
+    }
+    if (updated.vendorName !== undefined && updated.vendorName !== targetItem.vendorName) {
+      changes.push(`vendor "${targetItem.vendorName}" -> "${mergedItem.vendorName}"`);
+    }
+    if (updated.fundingSource !== undefined && updated.fundingSource !== targetItem.fundingSource) {
+      changes.push(`account ${targetItem.fundingSource || "GENERAL"} -> ${mergedItem.fundingSource}`);
+    }
+    if (updated.status !== undefined && updated.status !== targetItem.status) {
+      changes.push(`status ${targetItem.status} -> ${mergedItem.status}`);
+    }
+
+    const optimisticAuditEntry: FinancialAuditLedgerEntry = {
+      id: `audit-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      fiscalYearId: "fy25-26",
+      committeeId: targetItem.committeeId,
+      committeeName: targetItem.committeeName,
+      actionType: "PURCHASE_EDITED",
+      actorRole: session?.role || "TREASURER",
+      actorName: session?.name || "Authorized User",
+      actorEmail: session?.email,
+      description: `Edited purchase requisition ${id} (${mergedItem.vendorName}): ${changes.join(", ") || "details updated"}`,
+      previousValue: `$${targetItem.totalAmount.toFixed(2)} [${targetItem.fundingSource || "GENERAL"}] (${targetItem.status})`,
+      newValue: `$${mergedItem.totalAmount.toFixed(2)} [${mergedItem.fundingSource || "GENERAL"}] (${mergedItem.status})`,
+      amountDelta:
+        mergedItem.status === "APPROVED" || mergedItem.status === "REIMBURSED"
+          ? -amountDelta
+          : 0,
+      createdAt: new Date().toISOString(),
+    };
+    setAuditLogs((prev) => [optimisticAuditEntry, ...prev]);
+
+    try {
+      const res = await fetch(`${API_BASE}/purchases/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+        body: JSON.stringify({
+          vendorName: mergedItem.vendorName,
+          totalAmount: mergedItem.totalAmount,
+          description: mergedItem.description,
+          category: mergedItem.category,
+          fundingSource: mergedItem.fundingSource,
+          sfabLineItem: mergedItem.sfabLineItem,
+          disbursementMethod: mergedItem.disbursementMethod,
+          streetAddress: mergedItem.streetAddress,
+          phoneNumber: mergedItem.phoneNumber,
+          purdueUsername: mergedItem.purdueUsername,
+          requesterName: mergedItem.requesterName,
+          requesterEmail: mergedItem.requesterEmail,
+          coolAccountNumber: mergedItem.coolAccountNumber,
+          status: mergedItem.status,
+          treasurerNotes: mergedItem.treasurerNotes,
+        }),
+      });
+
+      if (!res.ok && res.status >= 400 && res.status !== 404) {
+        setPurchases(prevPurchases);
+        syncAuditLogs();
+        const err = `Failed to update purchase requisition (HTTP ${res.status})`;
+        setError(err);
+        return { success: false, error: err };
+      }
+      syncAuditLogs();
+      return { success: true };
+    } catch {
+      return { success: true };
+    }
+  };
+
   // Record In-Person Cash Member Dues
   const recordCashDues = async (record: {
     studentName: string;
@@ -665,6 +764,8 @@ export function useFinanceApi() {
     const targetComm = committees.find((c) => c.id === committeeId);
     const prevAllocated = targetComm?.allocated ?? 0;
     const newAllocated = updated.allocated;
+    const prevSfab = targetComm?.sfabAllocated ?? 0;
+    const newSfab = updated.sfabAllocated;
 
     setCommittees((prev) =>
       prev.map((c) => (c.id === committeeId ? { ...c, ...updated } : c)),
@@ -685,10 +786,34 @@ export function useFinanceApi() {
         actorRole: session?.role || "TREASURER",
         actorName: session?.name || "Executive Treasurer",
         actorEmail: session?.email || "treasurer@purdueieee.org",
-        description: `Base allocated budget adjusted from $${prevAllocated.toLocaleString("en-US", { minimumFractionDigits: 2 })} to $${newAllocated.toLocaleString("en-US", { minimumFractionDigits: 2 })} (${deltaStr})`,
+        description: `General allocated budget adjusted from $${prevAllocated.toLocaleString("en-US", { minimumFractionDigits: 2 })} to $${newAllocated.toLocaleString("en-US", { minimumFractionDigits: 2 })} (${deltaStr})`,
         previousValue: String(prevAllocated),
         newValue: String(newAllocated),
         amountDelta: delta,
+        createdAt: new Date().toISOString(),
+      };
+      setAuditLogs((prev) => [optimisticLog, ...prev]);
+    }
+
+    if (newSfab !== undefined && newSfab !== prevSfab) {
+      const sfabDelta = newSfab - prevSfab;
+      const sfabDeltaStr =
+        sfabDelta >= 0
+          ? `+$${sfabDelta.toLocaleString("en-US", { minimumFractionDigits: 2 })}`
+          : `-$${Math.abs(sfabDelta).toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
+      const optimisticLog: FinancialAuditLedgerEntry = {
+        id: `audit-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+        fiscalYearId: "fy25-26",
+        committeeId,
+        committeeName: updated.name || targetComm?.name || committeeId,
+        actionType: "BUDGET_ALLOCATION",
+        actorRole: session?.role || "TREASURER",
+        actorName: session?.name || "Executive Treasurer",
+        actorEmail: session?.email || "treasurer@purdueieee.org",
+        description: `SFAB allocated budget adjusted from $${prevSfab.toLocaleString("en-US", { minimumFractionDigits: 2 })} to $${newSfab.toLocaleString("en-US", { minimumFractionDigits: 2 })} (${sfabDeltaStr})`,
+        previousValue: String(prevSfab),
+        newValue: String(newSfab),
+        amountDelta: sfabDelta,
         createdAt: new Date().toISOString(),
       };
       setAuditLogs((prev) => [optimisticLog, ...prev]);
@@ -703,6 +828,7 @@ export function useFinanceApi() {
           body: JSON.stringify({
             name: updated.name,
             allocatedAmount: updated.allocated,
+            sfabAmount: updated.sfabAllocated,
             bankStatus: updated.bankStatus,
             duesStatus: updated.duesStatus,
             contactEmail: updated.contactEmail,
@@ -732,6 +858,7 @@ export function useFinanceApi() {
     name: string;
     shortName?: string;
     allocated?: number;
+    sfabAllocated?: number;
     bankStatus?: "Active" | "Inactive" | "Read-Only";
     duesStatus?: "Active" | "Inactive";
     contactEmail?: string;
@@ -757,6 +884,7 @@ export function useFinanceApi() {
       name: newCommittee.name.trim(),
       shortName: newCommittee.shortName?.trim() || newCommittee.name.trim(),
       allocated: newCommittee.allocated ?? 0,
+      sfabAllocated: newCommittee.sfabAllocated ?? 0,
       bankStatus: newCommittee.bankStatus ?? "Active",
       duesStatus: newCommittee.duesStatus ?? "Active",
       contactEmail:
@@ -781,10 +909,29 @@ export function useFinanceApi() {
         actorRole: session?.role || "TREASURER",
         actorName: session?.name || "Executive Treasurer",
         actorEmail: session?.email || "treasurer@purdueieee.org",
-        description: `Created new technical committee "${committeeObj.name}" (${committeeObj.id}) with initial budget of $${committeeObj.allocated.toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
+        description: `Created new technical committee "${committeeObj.name}" (${committeeObj.id}) with initial general budget of $${committeeObj.allocated.toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
         previousValue: null,
         newValue: String(committeeObj.allocated),
         amountDelta: committeeObj.allocated,
+        createdAt: new Date().toISOString(),
+      };
+      setAuditLogs((prev) => [optimisticLog, ...prev]);
+    }
+
+    if ((committeeObj.sfabAllocated ?? 0) > 0) {
+      const optimisticLog: FinancialAuditLedgerEntry = {
+        id: `audit-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+        fiscalYearId: "fy25-26",
+        committeeId: committeeObj.id,
+        committeeName: committeeObj.name,
+        actionType: "BUDGET_ALLOCATION",
+        actorRole: session?.role || "TREASURER",
+        actorName: session?.name || "Executive Treasurer",
+        actorEmail: session?.email || "treasurer@purdueieee.org",
+        description: `Allocated initial SFAB grant budget of $${(committeeObj.sfabAllocated ?? 0).toLocaleString("en-US", { minimumFractionDigits: 2 })} to "${committeeObj.name}" (${committeeObj.id})`,
+        previousValue: null,
+        newValue: String(committeeObj.sfabAllocated),
+        amountDelta: committeeObj.sfabAllocated ?? 0,
         createdAt: new Date().toISOString(),
       };
       setAuditLogs((prev) => [optimisticLog, ...prev]);
@@ -798,6 +945,7 @@ export function useFinanceApi() {
           id: committeeObj.id,
           name: committeeObj.name,
           allocatedAmount: committeeObj.allocated,
+          sfabAmount: committeeObj.sfabAllocated,
           bankStatus: committeeObj.bankStatus,
           duesStatus: committeeObj.duesStatus,
           contactEmail: committeeObj.contactEmail,
@@ -982,6 +1130,86 @@ export function useFinanceApi() {
     }
   };
 
+  // Update Funding Inflow with rollback and audit logging
+  const updateFundingInflow = async (
+    inflowId: string,
+    updated: Partial<CommitteeFundingInflow>,
+  ): Promise<{ success: boolean; error?: string }> => {
+    const prevInflows = fundingInflows;
+    const targetInflow = fundingInflows.find((item) => item.id === inflowId);
+    if (!targetInflow) {
+      return { success: false, error: `Inflow ${inflowId} not found` };
+    }
+
+    const mergedInflow: CommitteeFundingInflow = {
+      ...targetInflow,
+      ...updated,
+    };
+
+    setFundingInflows((prev) =>
+      prev.map((item) => (item.id === inflowId ? mergedInflow : item)),
+    );
+
+    const prevAmount = targetInflow.amount;
+    const newAmount = updated.amount !== undefined ? updated.amount : prevAmount;
+    const amountDelta = newAmount - prevAmount;
+
+    const changes: string[] = [];
+    if (updated.amount !== undefined && updated.amount !== prevAmount) {
+      changes.push(`amount $${prevAmount.toFixed(2)} -> $${newAmount.toFixed(2)}`);
+    }
+    if (updated.sourceType !== undefined && updated.sourceType !== targetInflow.sourceType) {
+      changes.push(`source ${targetInflow.sourceType} -> ${updated.sourceType}`);
+    }
+    if (updated.title !== undefined && updated.title !== targetInflow.title) {
+      changes.push(`title "${targetInflow.title}" -> "${updated.title}"`);
+    }
+
+    const optimisticAuditEntry: FinancialAuditLedgerEntry = {
+      id: `audit-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      fiscalYearId: "fy25-26",
+      committeeId: targetInflow.committeeId,
+      committeeName: targetInflow.committeeName,
+      actionType: "FUNDING_INFLOW_EDITED",
+      actorRole: session?.role || "TREASURER",
+      actorName: session?.name || "Executive Treasurer",
+      actorEmail: session?.email || "treasurer@purdueieee.org",
+      description: `Modified funding inflow of $${newAmount.toLocaleString("en-US", { minimumFractionDigits: 2 })} (${mergedInflow.sourceType}): "${mergedInflow.title}" - ${changes.join(", ") || "details modified"}`,
+      previousValue: `$${prevAmount.toFixed(2)} [${targetInflow.sourceType}]`,
+      newValue: `$${newAmount.toFixed(2)} [${mergedInflow.sourceType}]`,
+      amountDelta,
+      createdAt: new Date().toISOString(),
+    };
+    setAuditLogs((prev) => [optimisticAuditEntry, ...prev]);
+
+    try {
+      const res = await fetch(`${API_BASE}/inflows/${inflowId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", ...getAuthHeaders(session?.token) },
+        body: JSON.stringify({
+          sourceType: mergedInflow.sourceType,
+          title: mergedInflow.title,
+          amount: mergedInflow.amount,
+          referenceNumber: mergedInflow.referenceNumber,
+          receivedDate: mergedInflow.receivedDate,
+          notes: mergedInflow.notes,
+        }),
+      });
+
+      if (!res.ok && res.status >= 400 && res.status !== 404) {
+        setFundingInflows(prevInflows);
+        syncAuditLogs();
+        const err = `Failed to update funding inflow (HTTP ${res.status})`;
+        setError(err);
+        return { success: false, error: err };
+      }
+      syncAuditLogs();
+      return { success: true };
+    } catch {
+      return { success: true };
+    }
+  };
+
   // Upload Receipt File
   const uploadReceipt = async (
     file: File,
@@ -1099,6 +1327,7 @@ export function useFinanceApi() {
     loginWithPin,
     logout,
     addPurchase,
+    updatePurchase,
     updatePurchaseStatus,
     recordCashDues,
     importMemberDues,
@@ -1106,6 +1335,7 @@ export function useFinanceApi() {
     createCommittee,
     deleteCommittee,
     addFundingInflow,
+    updateFundingInflow,
     deleteFundingInflow,
     uploadReceipt,
     exportCoolTsv,

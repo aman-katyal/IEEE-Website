@@ -38,7 +38,6 @@ import {
 import {
   DollarSign,
   PlusCircle,
-  Clock,
   CheckCircle2,
   TrendingUp,
   Search,
@@ -50,6 +49,7 @@ import {
   FileSpreadsheet,
   Building,
   Coins,
+  Pencil,
 } from "lucide-react";
 import {
   type PurchaseItem,
@@ -75,6 +75,10 @@ export interface CommitteeFinanceViewProps {
   onAddPurchase: (
     newPurchase: PurchaseItem,
   ) => Promise<{ success: boolean; error?: string }> | void;
+  onUpdatePurchase?: (
+    id: string,
+    updated: Partial<PurchaseItem>,
+  ) => Promise<{ success: boolean; error?: string }> | void;
   onRecordCashDues?: (record: {
     studentName: string;
     purdueEmail: string;
@@ -94,6 +98,7 @@ export function CommitteeFinanceView({
   fundingInflows = INITIAL_FUNDING_INFLOWS,
   auditLogs = [],
   onAddPurchase,
+  onUpdatePurchase,
   onRecordCashDues,
   onLogout,
 }: CommitteeFinanceViewProps) {
@@ -119,34 +124,73 @@ export function CommitteeFinanceView({
     );
   }, [fundingInflows, committee.id]);
 
-  const totalInflows = useMemo(() => {
-    return committeeInflows.reduce((sum, inf) => sum + inf.amount, 0);
+  const inflowBreakdown = useMemo(() => {
+    let generalInflows = 0;
+    let sfabInflows = 0;
+    for (const inf of committeeInflows) {
+      if (inf.sourceType === "SFAB Grant") {
+        sfabInflows += inf.amount;
+      } else {
+        generalInflows += inf.amount;
+      }
+    }
+    return {
+      generalInflows,
+      sfabInflows,
+      totalInflows: generalInflows + sfabInflows,
+    };
   }, [committeeInflows]);
+
+  const totalInflows = inflowBreakdown.totalInflows;
 
   // Financial Aggregates
   const stats = useMemo(() => {
-    const baseAllocated = committee.allocated;
-    const totalEffectiveBudget = baseAllocated + totalInflows;
-    // ⚡ Bolt: Replace 3 passes with a single pass for O(N) instead of O(3N)
+    const baseAllocated = committee.allocated || 0;
+    const sfabAllocated = committee.sfabAllocated || 0;
+    const generalTotalBudget = baseAllocated + inflowBreakdown.generalInflows;
+    const sfabTotalBudget = sfabAllocated + inflowBreakdown.sfabInflows;
+    const totalEffectiveBudget = generalTotalBudget + sfabTotalBudget;
+
     let approved = 0;
     let pending = 0;
     let reimbursed = 0;
+    let generalApproved = 0;
+    let generalPending = 0;
+    let sfabApproved = 0;
+    let sfabPending = 0;
+
     for (const p of committeePurchases) {
-      if (
+      const isSfab = p.fundingSource === "SFAB";
+      const isApprovedOrReimbursed =
         p.status === "APPROVED" ||
         p.status === "PURCHASED" ||
-        p.status === "REIMBURSED"
-      ) {
+        p.status === "REIMBURSED";
+
+      if (isApprovedOrReimbursed) {
         approved += p.totalAmount;
+        if (isSfab) {
+          sfabApproved += p.totalAmount;
+        } else {
+          generalApproved += p.totalAmount;
+        }
       }
       if (p.status === "PENDING") {
         pending += p.totalAmount;
+        if (isSfab) {
+          sfabPending += p.totalAmount;
+        } else {
+          generalPending += p.totalAmount;
+        }
       }
       if (p.status === "REIMBURSED") {
         reimbursed += p.totalAmount;
       }
     }
+
     const remaining = Math.max(totalEffectiveBudget - approved, 0);
+    const generalRemaining = Math.max(generalTotalBudget - generalApproved, 0);
+    const sfabRemaining = Math.max(sfabTotalBudget - sfabApproved, 0);
+
     const percentSpent =
       totalEffectiveBudget > 0
         ? Math.min(Math.round((approved / totalEffectiveBudget) * 100), 100)
@@ -167,6 +211,7 @@ export function CommitteeFinanceView({
     return {
       velocity,
       baseAllocated,
+      sfabAllocated,
       totalInflows,
       totalEffectiveBudget,
       approved,
@@ -174,8 +219,38 @@ export function CommitteeFinanceView({
       reimbursed,
       remaining,
       percentSpent,
+      general: {
+        base: baseAllocated,
+        inflows: inflowBreakdown.generalInflows,
+        totalBudget: generalTotalBudget,
+        spent: generalApproved,
+        pending: generalPending,
+        remaining: generalRemaining,
+        percentSpent:
+          generalTotalBudget > 0
+            ? Math.min(
+                Math.round((generalApproved / generalTotalBudget) * 100),
+                100,
+              )
+            : 0,
+      },
+      sfab: {
+        base: sfabAllocated,
+        inflows: inflowBreakdown.sfabInflows,
+        totalBudget: sfabTotalBudget,
+        spent: sfabApproved,
+        pending: sfabPending,
+        remaining: sfabRemaining,
+        percentSpent:
+          sfabTotalBudget > 0
+            ? Math.min(
+                Math.round((sfabApproved / sfabTotalBudget) * 100),
+                100,
+              )
+            : 0,
+      },
     };
-  }, [committee, committeePurchases, totalInflows]);
+  }, [committee, committeePurchases, inflowBreakdown, totalInflows]);
 
   // Modals & State
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState<boolean>(false);
@@ -259,6 +334,81 @@ export function CommitteeFinanceView({
       return matchesSearch && matchesStatus;
     });
   }, [committeePurchases, tableSearch, statusFilter]);
+
+  // Edit Purchase Requisition State
+  const [editingPurchase, setEditingPurchase] = useState<PurchaseItem | null>(null);
+  const [editVendor, setEditVendor] = useState("");
+  const [editAmount, setEditAmount] = useState("");
+  const [editDesc, setEditDesc] = useState("");
+  const [editCategory, setEditCategory] = useState("");
+  const [editFundingSource, setEditFundingSource] = useState<"GENERAL" | "SFAB">("GENERAL");
+  const [editSfabLine, setEditSfabLine] = useState("");
+  const [editDisbursement, setEditDisbursement] = useState<string>("BOSO_PICKUP");
+  const [editReqName, setEditReqName] = useState("");
+  const [editReqEmail, setEditReqEmail] = useState("");
+  const [editPurdueUser, setEditPurdueUser] = useState("");
+  const [editPhone, setEditPhone] = useState("");
+  const [editStreet, setEditStreet] = useState("");
+  const [isSubmittingEdit, setIsSubmittingEdit] = useState(false);
+  const [editError, setEditError] = useState("");
+
+  const handleOpenEditPurchase = (item: PurchaseItem) => {
+    setEditingPurchase(item);
+    setEditVendor(item.vendorName || "");
+    setEditAmount(String(item.totalAmount));
+    setEditDesc(item.description || "");
+    setEditCategory(item.category || (committee.categories[0] || "General"));
+    setEditFundingSource(item.fundingSource === "SFAB" ? "SFAB" : "GENERAL");
+    setEditSfabLine(item.sfabLineItem || "");
+    setEditDisbursement(item.disbursementMethod || "BOSO_PICKUP");
+    setEditReqName(item.requesterName || "");
+    setEditReqEmail(item.requesterEmail || "");
+    setEditPurdueUser(item.purdueUsername || "");
+    setEditPhone(item.phoneNumber || "");
+    setEditStreet(item.streetAddress || "");
+    setEditError("");
+  };
+
+  const handleSaveEditPurchase = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingPurchase || !onUpdatePurchase) return;
+    const parsedAmount = parseFloat(editAmount);
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      setEditError("Please enter a valid dollar amount greater than $0.00");
+      return;
+    }
+    if (!editVendor.trim()) {
+      setEditError("Vendor / Merchant name is required");
+      return;
+    }
+    setIsSubmittingEdit(true);
+    try {
+      const res = await onUpdatePurchase(editingPurchase.id, {
+        vendorName: editVendor.trim(),
+        totalAmount: Math.round(parsedAmount * 100) / 100,
+        description: editDesc.trim(),
+        category: editCategory,
+        fundingSource: editFundingSource,
+        sfabLineItem: editFundingSource === "SFAB" ? editSfabLine.trim() : undefined,
+        disbursementMethod: editDisbursement as any,
+        requesterName: editReqName.trim(),
+        requesterEmail: editReqEmail.trim(),
+        purdueUsername: editPurdueUser.trim(),
+        phoneNumber: editPhone.trim(),
+        streetAddress: editStreet.trim(),
+      });
+      if (res && !res.success) {
+        setEditError(res.error || "Failed to update purchase requisition");
+        setIsSubmittingEdit(false);
+        return;
+      }
+      setEditingPurchase(null);
+    } catch (err: any) {
+      setEditError(err.message || "Failed to update purchase requisition");
+    } finally {
+      setIsSubmittingEdit(false);
+    }
+  };
 
   // File Upload Handlers
   const handleFileDrop = (e: React.DragEvent) => {
@@ -479,7 +629,7 @@ export function CommitteeFinanceView({
       </div>
 
       {/* Spending Gauge & Budget Metric Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Runway */}
         <Card className="bg-[#121214] border-slate-800 p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
@@ -510,7 +660,7 @@ export function CommitteeFinanceView({
         <Card className="bg-[#121214] border-slate-800 p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
             <span className="text-xs font-mono uppercase tracking-wider text-slate-400">
-              Total Committee Budget
+              Total Combined Budget
             </span>
             <DollarSign className="w-4 h-4 text-[#EBD3A9]" />
           </div>
@@ -521,15 +671,11 @@ export function CommitteeFinanceView({
             })}
           </div>
           <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
-            <span>${stats.baseAllocated.toLocaleString("en-US")} base</span>
-            {stats.totalInflows > 0 && (
-              <>
-                <span className="text-slate-600">+</span>
-                <span className="text-emerald-400 font-medium">
-                  +${stats.totalInflows.toLocaleString("en-US")} grants
-                </span>
-              </>
-            )}
+            <span>${stats.general.totalBudget.toLocaleString("en-US")} gen</span>
+            <span className="text-slate-600">+</span>
+            <span className="text-amber-400 font-medium">
+              ${stats.sfab.totalBudget.toLocaleString("en-US")} sfab
+            </span>
           </p>
         </Card>
 
@@ -537,7 +683,7 @@ export function CommitteeFinanceView({
         <Card className="bg-[#121214] border-slate-800 p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
             <span className="text-xs font-mono uppercase tracking-wider text-slate-400">
-              Total Spent
+              Total Disbursed / Spent
             </span>
             <TrendingUp className="w-4 h-4 text-sky-400" />
           </div>
@@ -558,30 +704,11 @@ export function CommitteeFinanceView({
           </div>
         </Card>
 
-        {/* Pending Approvals */}
+        {/* Remaining Combined Funds */}
         <Card className="bg-[#121214] border-slate-800 p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
             <span className="text-xs font-mono uppercase tracking-wider text-slate-400">
-              Pending Queue
-            </span>
-            <Clock className="w-4 h-4 text-amber-400" />
-          </div>
-          <div className="text-2xl font-bold text-amber-400 mt-2 font-mono">
-            $
-            {stats.pending.toLocaleString("en-US", {
-              minimumFractionDigits: 2,
-            })}
-          </div>
-          <p className="text-[11px] text-slate-500 mt-1">
-            Awaiting Treasurer Review
-          </p>
-        </Card>
-
-        {/* Remaining Funds */}
-        <Card className="bg-[#121214] border-slate-800 p-5 relative overflow-hidden">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-mono uppercase tracking-wider text-slate-400">
-              Remaining Balance
+              Combined Remaining
             </span>
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
           </div>
@@ -592,8 +719,121 @@ export function CommitteeFinanceView({
             })}
           </div>
           <p className="text-[11px] text-slate-500 mt-1">
-            Available for new purchases
+            Total across General and SFAB
           </p>
+        </Card>
+      </div>
+
+      {/* Dual Funding Accounts: General Operating Account vs. SFAB Grant Account */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* General Operating Account */}
+        <Card className="bg-[#121214] border-slate-800 p-5 rounded-xl shadow-lg relative overflow-hidden">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 bg-sky-500/10 border border-sky-500/20 rounded-lg text-sky-400">
+                <Building className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-white">General Operating Budget</h3>
+                <p className="text-[11px] text-slate-400">Branch base allocation, member dues, and non-SFAB revenues</p>
+              </div>
+            </div>
+            <Badge className="bg-sky-500/15 text-sky-300 border-sky-500/30 text-xs font-mono">
+              GENERAL ACCOUNT
+            </Badge>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3 py-3 border-b border-slate-800/80">
+            <div>
+              <span className="text-[10px] font-mono uppercase text-slate-400 block">Total Budget</span>
+              <span className="text-base font-bold text-white font-mono">
+                ${stats.general.totalBudget.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+              </span>
+              <span className="text-[10px] text-slate-500 block mt-0.5">
+                ${stats.general.base.toLocaleString("en-US")} base {stats.general.inflows > 0 ? `+ $${stats.general.inflows.toLocaleString("en-US")} rev` : ""}
+              </span>
+            </div>
+            <div>
+              <span className="text-[10px] font-mono uppercase text-slate-400 block">Disbursed / Spent</span>
+              <span className="text-base font-bold text-sky-400 font-mono">
+                ${stats.general.spent.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+              </span>
+              {stats.general.pending > 0 && (
+                <span className="text-[10px] text-amber-400 block mt-0.5 font-mono">
+                  +${stats.general.pending.toLocaleString("en-US", { minimumFractionDigits: 2 })} pending
+                </span>
+              )}
+            </div>
+            <div>
+              <span className="text-[10px] font-mono uppercase text-slate-400 block">Remaining Balance</span>
+              <span className="text-base font-bold text-emerald-400 font-mono">
+                ${stats.general.remaining.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+              </span>
+              <span className="text-[10px] text-slate-500 block mt-0.5">Available</span>
+            </div>
+          </div>
+
+          <div className="mt-3 flex items-center justify-between gap-3 text-xs">
+            <div className="flex-1">
+              <Progress value={stats.general.percentSpent} className="h-1.5 bg-slate-800" />
+            </div>
+            <span className="font-mono text-[11px] text-slate-400">{stats.general.percentSpent}% utilized</span>
+          </div>
+        </Card>
+
+        {/* SFAB Grant Account */}
+        <Card className="bg-[#121214] border-slate-800 p-5 rounded-xl shadow-lg relative overflow-hidden">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 bg-amber-500/10 border border-amber-500/20 rounded-lg text-amber-400">
+                <Coins className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-white">SFAB Grant Budget</h3>
+                <p className="text-[11px] text-slate-400">Student Fee Advisory Board university grant funds</p>
+              </div>
+            </div>
+            <Badge className="bg-amber-500/15 text-amber-300 border-amber-500/30 text-xs font-mono">
+              SFAB GRANT ACCOUNT
+            </Badge>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3 py-3 border-b border-slate-800/80">
+            <div>
+              <span className="text-[10px] font-mono uppercase text-slate-400 block">Total Budget</span>
+              <span className="text-base font-bold text-white font-mono">
+                ${stats.sfab.totalBudget.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+              </span>
+              <span className="text-[10px] text-slate-500 block mt-0.5">
+                ${stats.sfab.base.toLocaleString("en-US")} base {stats.sfab.inflows > 0 ? `+ $${stats.sfab.inflows.toLocaleString("en-US")} grant` : ""}
+              </span>
+            </div>
+            <div>
+              <span className="text-[10px] font-mono uppercase text-slate-400 block">Disbursed / Spent</span>
+              <span className="text-base font-bold text-amber-400 font-mono">
+                ${stats.sfab.spent.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+              </span>
+              {stats.sfab.pending > 0 && (
+                <span className="text-[10px] text-amber-400 block mt-0.5 font-mono">
+                  +${stats.sfab.pending.toLocaleString("en-US", { minimumFractionDigits: 2 })} pending
+                </span>
+              )}
+            </div>
+            <div>
+              <span className="text-[10px] font-mono uppercase text-slate-400 block">Remaining Balance</span>
+              <span className="text-base font-bold text-emerald-400 font-mono">
+                ${stats.sfab.remaining.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+              </span>
+              <span className="text-[10px] text-slate-500 block mt-0.5">Available</span>
+            </div>
+          </div>
+
+          <div className="mt-3 flex items-center justify-between gap-3 text-xs">
+            <div className="flex-1">
+              <Progress value={stats.sfab.percentSpent} className="h-1.5 bg-slate-800" />
+            </div>
+            <span className="font-mono text-[11px] text-slate-400">{stats.sfab.percentSpent}% utilized</span>
+          </div>
         </Card>
       </div>
 
@@ -1006,6 +1246,9 @@ export function CommitteeFinanceView({
                 <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-center">
                   Receipt
                 </TableHead>
+                <TableHead className="text-xs font-mono uppercase text-slate-400 py-3 text-right pr-6">
+                  Actions
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -1035,9 +1278,20 @@ export function CommitteeFinanceView({
                       </div>
                     </TableCell>
                     <TableCell className="py-3.5">
-                      <span className="text-[11px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">
-                        {item.category}
-                      </span>
+                      <div className="flex flex-col gap-1 items-start">
+                        <span className="text-[11px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">
+                          {item.category}
+                        </span>
+                        {item.fundingSource === "SFAB" ? (
+                          <span className="text-[10px] font-mono text-amber-300 bg-amber-500/10 border border-amber-500/30 px-1.5 py-0.5 rounded">
+                            SFAB {item.sfabLineItem ? `· ${item.sfabLineItem}` : ""}
+                          </span>
+                        ) : (
+                          <span className="text-[10px] font-mono text-sky-300 bg-sky-500/10 border border-sky-500/30 px-1.5 py-0.5 rounded">
+                            General
+                          </span>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell className="text-right py-3.5 font-mono text-xs font-bold text-white">
                       ${item.totalAmount.toFixed(2)}
@@ -1059,12 +1313,27 @@ export function CommitteeFinanceView({
                         <span className="text-[11px] text-slate-600">None</span>
                       )}
                     </TableCell>
+                    <TableCell className="text-right py-3.5 pr-6">
+                      {onUpdatePurchase && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleOpenEditPurchase(item)}
+                          className="h-7 px-2 text-xs bg-slate-900 border-slate-700 text-sky-400 hover:text-white hover:bg-slate-800 inline-flex items-center gap-1"
+                          title={`Edit Requisition ${item.id}`}
+                        >
+                          <Pencil className="w-3 h-3" />
+                          <span>Edit</span>
+                        </Button>
+                      )}
+                    </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
                   <TableCell
-                    colSpan={7}
+                    colSpan={8}
                     className="text-center py-12 text-slate-500"
                   >
                     <p className="text-sm font-medium">
@@ -1323,9 +1592,12 @@ export function CommitteeFinanceView({
                     <div className="text-[10px] text-slate-400">
                       Branch & Committee Budget
                     </div>
+                    <div className="text-[10px] font-mono text-emerald-400 font-semibold mt-1">
+                      Available: ${stats.general.remaining.toFixed(2)}
+                    </div>
                   </div>
                   {fundingSource === "GENERAL" && (
-                    <CheckCircle2 className="w-4 h-4 text-sky-400" />
+                    <CheckCircle2 className="w-4 h-4 text-sky-400 shrink-0" />
                   )}
                 </button>
 
@@ -1343,12 +1615,36 @@ export function CommitteeFinanceView({
                     <div className="text-[10px] text-slate-400">
                       Student Fee Advisory Board
                     </div>
+                    <div className="text-[10px] font-mono text-amber-300 font-semibold mt-1">
+                      Available: ${stats.sfab.remaining.toFixed(2)}
+                    </div>
                   </div>
                   {fundingSource === "SFAB" && (
-                    <CheckCircle2 className="w-4 h-4 text-amber-400" />
+                    <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0" />
                   )}
                 </button>
               </div>
+
+              {parseFloat(totalAmount) > 0 &&
+                parseFloat(totalAmount) >
+                  (fundingSource === "SFAB"
+                    ? stats.sfab.remaining
+                    : stats.general.remaining) && (
+                  <div className="p-2.5 bg-amber-500/10 border border-amber-500/30 rounded text-[11px] text-amber-300 flex items-center gap-2">
+                    <AlertTriangle className="w-3.5 h-3.5 shrink-0 text-amber-400" />
+                    <span>
+                      Requested amount (${parseFloat(totalAmount).toFixed(2)})
+                      exceeds current available{" "}
+                      {fundingSource === "SFAB" ? "SFAB Grant" : "General"}{" "}
+                      balance ($
+                      {(fundingSource === "SFAB"
+                        ? stats.sfab.remaining
+                        : stats.general.remaining
+                      ).toFixed(2)}
+                      ).
+                    </span>
+                  </div>
+                )}
 
               {fundingSource === "SFAB" ? (
                 <div className="space-y-1 animate-in fade-in-50 duration-200">
@@ -1616,6 +1912,269 @@ export function CommitteeFinanceView({
                   className="bg-sky-600 hover:bg-sky-500 text-white font-medium shadow-md disabled:opacity-50"
                 >
                   {isSubmitting ? "Submitting..." : "Submit Request"}
+                </Button>
+              </div>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Purchase Request Modal */}
+      <Dialog
+        open={!!editingPurchase}
+        onOpenChange={(open) => !open && setEditingPurchase(null)}
+      >
+        <DialogContent className="max-w-2xl bg-[#121214] text-slate-100 border border-slate-700/80 shadow-2xl p-6 overflow-y-auto max-h-[90vh]">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold text-white flex items-center gap-2">
+              <Pencil className="w-5 h-5 text-sky-400" />
+              <span>Edit Purchase Request · {editingPurchase?.id}</span>
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-400">
+              Update purchase details. Modifications will be immutably recorded in the financial audit ledger.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleSaveEditPurchase} className="space-y-4 py-2">
+            {/* Requester Identity */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="space-y-1 sm:col-span-1">
+                <Label htmlFor="edit-req-name" className="text-xs font-medium text-slate-300">
+                  Name *
+                </Label>
+                <Input
+                  id="edit-req-name"
+                  value={editReqName}
+                  onChange={(e) => setEditReqName(e.target.value)}
+                  placeholder="e.g. Alex Rivera"
+                  className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1 sm:col-span-1">
+                <Label htmlFor="edit-req-username" className="text-xs font-medium text-slate-300">
+                  Purdue Username *
+                </Label>
+                <Input
+                  id="edit-req-username"
+                  value={editPurdueUser}
+                  onChange={(e) => setEditPurdueUser(e.target.value)}
+                  placeholder="e.g. arivera"
+                  className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9 font-mono"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1 sm:col-span-1">
+                <Label htmlFor="edit-req-email" className="text-xs font-medium text-slate-300">
+                  Purdue Email *
+                </Label>
+                <Input
+                  id="edit-req-email"
+                  type="email"
+                  value={editReqEmail}
+                  onChange={(e) => setEditReqEmail(e.target.value)}
+                  placeholder="e.g. arivera@purdue.edu"
+                  className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Phone & Address */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="space-y-1 sm:col-span-1">
+                <Label htmlFor="edit-phone" className="text-xs font-medium text-slate-300">
+                  Phone Number
+                </Label>
+                <Input
+                  id="edit-phone"
+                  value={editPhone}
+                  onChange={(e) => setEditPhone(e.target.value)}
+                  placeholder="e.g. 765-555-0199"
+                  className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
+                />
+              </div>
+              <div className="space-y-1 sm:col-span-2">
+                <Label htmlFor="edit-street" className="text-xs font-medium text-slate-300">
+                  Mailing Address
+                </Label>
+                <Input
+                  id="edit-street"
+                  value={editStreet}
+                  onChange={(e) => setEditStreet(e.target.value)}
+                  placeholder="Street, City, State, ZIP"
+                  className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
+                />
+              </div>
+            </div>
+
+            {/* Vendor & Amount */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label htmlFor="edit-vendor" className="text-xs font-medium text-slate-300">
+                  Vendor / Merchant *
+                </Label>
+                <Input
+                  id="edit-vendor"
+                  value={editVendor}
+                  onChange={(e) => setEditVendor(e.target.value)}
+                  placeholder="e.g. McMaster-Carr, DigiKey"
+                  className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="edit-amount" className="text-xs font-medium text-slate-300">
+                  Total Requisition Amount ($) *
+                </Label>
+                <Input
+                  id="edit-amount"
+                  type="number"
+                  step="0.01"
+                  min="0.01"
+                  value={editAmount}
+                  onChange={(e) => setEditAmount(e.target.value)}
+                  placeholder="0.00"
+                  className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9 font-mono"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Category, Budget Account, Disbursement */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="space-y-1">
+                <Label htmlFor="edit-category" className="text-xs font-medium text-slate-300">
+                  Expense Category
+                </Label>
+                <Select value={editCategory} onValueChange={setEditCategory}>
+                  <SelectTrigger
+                    id="edit-category"
+                    className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
+                  >
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-900 border-slate-700 text-slate-100 text-xs">
+                    {(committee.categories && committee.categories.length > 0
+                      ? committee.categories
+                      : ["Parts & Materials", "Tools & Hardware", "Competition Registration", "Logistics & Travel", "Office & Admin", "Food & Events", "Other"]
+                    ).map((cat) => (
+                      <SelectItem key={cat} value={cat}>
+                        {cat}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="edit-source" className="text-xs font-medium text-slate-300">
+                  Budget Account
+                </Label>
+                <Select
+                  value={editFundingSource}
+                  onValueChange={(val: "GENERAL" | "SFAB") => setEditFundingSource(val)}
+                >
+                  <SelectTrigger
+                    id="edit-source"
+                    className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
+                  >
+                    <SelectValue placeholder="Select account" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-900 border-slate-700 text-slate-100 text-xs">
+                    <SelectItem value="GENERAL">General Operating Budget</SelectItem>
+                    <SelectItem value="SFAB">SFAB Grant Budget</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="edit-disburse" className="text-xs font-medium text-slate-300">
+                  Disbursement Method
+                </Label>
+                <Select
+                  value={editDisbursement}
+                  onValueChange={setEditDisbursement}
+                >
+                  <SelectTrigger
+                    id="edit-disburse"
+                    className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
+                  >
+                    <SelectValue placeholder="Select method" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-900 border-slate-700 text-slate-100 text-xs">
+                    <SelectItem value="BOSO_PICKUP">BOSO Check Pickup</SelectItem>
+                    <SelectItem value="MAIL_ADDRESS">USPS Direct Mail Check</SelectItem>
+                    <SelectItem value="EPAYMENT">Electronic Direct Deposit / Zelle</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* SFAB Line Item if SFAB */}
+            {editFundingSource === "SFAB" && (
+              <div className="space-y-1 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                <Label htmlFor="edit-sfab-line" className="text-xs font-medium text-amber-300">
+                  SFAB Approved Line Item Name / ID
+                </Label>
+                <Input
+                  id="edit-sfab-line"
+                  value={editSfabLine}
+                  onChange={(e) => setEditSfabLine(e.target.value)}
+                  placeholder="e.g. Microcontroller dev boards & sensors"
+                  className="bg-slate-900 border-amber-500/40 text-slate-100 text-xs h-9 font-mono"
+                />
+              </div>
+            )}
+
+            {/* Description */}
+            <div className="space-y-1">
+              <Label htmlFor="edit-desc" className="text-xs font-medium text-slate-300">
+                Item Description & Project Purpose
+              </Label>
+              <Textarea
+                id="edit-desc"
+                value={editDesc}
+                onChange={(e) => setEditDesc(e.target.value)}
+                placeholder="Explain the technical purpose and justification for this expense..."
+                rows={3}
+                className="bg-slate-900 border-slate-700 text-slate-100 text-xs"
+              />
+            </div>
+
+            {editError && (
+              <div
+                role="alert"
+                className="p-3 bg-red-950/50 border border-red-500/50 rounded-lg text-xs text-red-300"
+              >
+                {editError}
+              </div>
+            )}
+
+            <DialogFooter className="pt-3 border-t border-slate-800 flex items-center justify-between sm:justify-between">
+              <span className="text-[11px] text-slate-500 font-mono">
+                Status: {editingPurchase?.status}
+              </span>
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setEditingPurchase(null)}
+                  className="bg-slate-900 border-slate-700 text-slate-300"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  size="sm"
+                  disabled={isSubmittingEdit}
+                  className="bg-sky-600 hover:bg-sky-500 text-white font-medium shadow-md disabled:opacity-50"
+                >
+                  {isSubmittingEdit ? "Saving..." : "Save Changes"}
                 </Button>
               </div>
             </DialogFooter>
