@@ -63,11 +63,38 @@ export function useFinanceApi() {
   const [auditLogs, setAuditLogs] = useState<FinancialAuditLedgerEntry[]>([]);
   const [purchases, setPurchases] = useState<PurchaseItem[]>([]);
   const [memberDues, setMemberDues] = useState<MemberDuesRecord[]>([]);
-  const [committees, setCommittees] =
-    useState<CommitteeInfo[]>(REAL_COMMITTEES);
+  const [committees, setCommittees] = useState<CommitteeInfo[]>(() => {
+    try {
+      const stored = localStorage.getItem("boilerbooks_committees");
+      if (stored) {
+        const parsed: CommitteeInfo[] = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // Ensure any default committee from REAL_COMMITTEES (e.g. EDS) missing in storage is merged in
+          const existingIds = new Set(parsed.map((c) => c.id));
+          const missingDefaults = REAL_COMMITTEES.filter(
+            (c) => !existingIds.has(c.id),
+          );
+          return [...parsed, ...missingDefaults];
+        }
+      }
+    } catch {}
+    return REAL_COMMITTEES;
+  });
+
   const [fundingInflows, setFundingInflows] = useState<
     CommitteeFundingInflow[]
-  >([]);
+  >(() => {
+    try {
+      const stored =
+        localStorage.getItem("boilerbooks_funding_inflows") ||
+        localStorage.getItem("boilerbooks_inflows");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch {}
+    return [];
+  });
   const [bosoStatement, setBosoStatement] = useState<BosoAccountStatement>(
     OFFICIAL_BOSO_STATEMENT_SFAB_2026,
   );
@@ -119,12 +146,62 @@ export function useFinanceApi() {
     } catch {}
   }, [session]);
 
+  // Sync committees to local storage
+  useEffect(() => {
+    try {
+      if (committees && committees.length > 0) {
+        localStorage.setItem(
+          "boilerbooks_committees",
+          JSON.stringify(committees),
+        );
+      }
+    } catch {}
+  }, [committees]);
+
+  // Sync funding inflows to local storage
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        "boilerbooks_funding_inflows",
+        JSON.stringify(fundingInflows),
+      );
+      localStorage.setItem(
+        "boilerbooks_inflows",
+        JSON.stringify(fundingInflows),
+      );
+    } catch {}
+  }, [fundingInflows]);
+
   // Fetch initial data from Cloudflare API if available
   const refreshData = useCallback(async (fiscalYearId = "fy25-26") => {
     setIsSyncing(true);
     const authH = getAuthHeaders();
     try {
-      // 1. Fetch Spending Matrix
+      // 1. Fetch Committees if available
+      try {
+        const commRes = await fetch(`${API_BASE}/committees`, {
+          headers: authH,
+        });
+        if (commRes.ok) {
+          const commData = await commRes.json();
+          if (commData.committees && Array.isArray(commData.committees)) {
+            setCommittees((prev) => {
+              const prevMap = new Map(prev.map((c) => [c.id, c]));
+              for (const comm of commData.committees) {
+                const existing = prevMap.get(comm.id);
+                prevMap.set(comm.id, {
+                  ...existing,
+                  ...comm,
+                  allocated: comm.allocatedAmount ?? comm.allocated ?? existing?.allocated ?? 0,
+                });
+              }
+              return Array.from(prevMap.values());
+            });
+          }
+        }
+      } catch {}
+
+      // 1b. Fetch Spending Matrix
       const matrixRes = await fetch(
         `${API_BASE}/matrix?fiscalYearId=${fiscalYearId}`,
         { headers: authH },
@@ -132,20 +209,30 @@ export function useFinanceApi() {
       if (matrixRes.ok) {
         const matrixData = await matrixRes.json();
         if (matrixData.matrix && Array.isArray(matrixData.matrix)) {
-          setCommittees((prev) =>
-            prev.map((c) => {
-              const remoteRow = matrixData.matrix.find(
-                (r: any) => r.committeeId === c.id,
-              );
-              if (remoteRow) {
-                return {
-                  ...c,
-                  allocated: remoteRow.allocatedAmount,
-                };
+          setCommittees((prev) => {
+            const prevMap = new Map(prev.map((c) => [c.id, c]));
+            matrixData.matrix.forEach((r: any) => {
+              const existing = prevMap.get(r.committeeId);
+              if (existing) {
+                prevMap.set(r.committeeId, {
+                  ...existing,
+                  allocated: r.allocatedAmount ?? existing.allocated,
+                });
+              } else {
+                prevMap.set(r.committeeId, {
+                  id: r.committeeId,
+                  name: r.committeeName || r.committeeId,
+                  shortName: r.committeeName || r.committeeId,
+                  allocated: r.allocatedAmount ?? 0,
+                  bankStatus: "Active",
+                  duesStatus: "Active",
+                  contactEmail: `${r.committeeId}@purdueieee.org`,
+                  categories: ["General", "Hardware"],
+                });
               }
-              return c;
-            }),
-          );
+            });
+            return Array.from(prevMap.values());
+          });
         }
       }
 
@@ -846,6 +933,7 @@ export function useFinanceApi() {
     try {
       localStorage.removeItem("boilerbooks_purchases");
       localStorage.removeItem("boilerbooks_dues");
+      localStorage.removeItem("boilerbooks_funding_inflows");
       localStorage.removeItem("boilerbooks_inflows");
       localStorage.removeItem("boilerbooks_audit_logs");
       localStorage.removeItem("boilerbooks_committees");

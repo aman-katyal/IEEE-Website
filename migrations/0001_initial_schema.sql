@@ -185,6 +185,7 @@ INSERT OR IGNORE INTO finance_committees (id, name, passcode_hash, is_admin, ban
     ('embs', 'Engineering in Medicine and Biology', '', 0, 'Active', 'Active', 'embs@purdueieee.org'),
     ('mtts', 'Microwave Theory and Techniques', '', 0, 'Active', 'Active', 'mtts@purdueieee.org'),
     ('cs', 'Computer Society', '', 0, 'Active', 'Active', 'cs@purdueieee.org'),
+    ('eds', 'Electron Devices Society (EDS)', '', 0, 'Active', 'Active', 'eds@purdueieee.org'),
     ('learning', 'Learning & Code Cafe', '', 0, 'Active', 'Active', 'learning@purdueieee.org'),
     ('social', 'Social & Growth', '', 0, 'Active', 'Active', 'social@purdueieee.org');
 

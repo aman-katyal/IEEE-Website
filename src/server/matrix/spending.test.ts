@@ -79,7 +79,7 @@ describe('BoilerBooks Treasurer Master Spending Matrix', () => {
 
       expect(summary.fiscalYearId).toBe('fy25-26');
       expect(summary.committees).toBeDefined();
-      expect(summary.committees.length).toBe(10); // 10 seed committees
+      expect(summary.committees.length).toBe(11); // 11 seed committees (including EDS)
 
       const rov = summary.committees.find((c) => c.committeeId === 'rov');
       expect(rov).toBeDefined();

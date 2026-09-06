@@ -140,7 +140,7 @@ export function FinancePortalPage() {
         {/* Main Portal View Routing */}
         {!session ? (
           <div className="py-12 flex flex-col items-center justify-center">
-            <FinanceAuthModal onLogin={handleLogin} />
+            <FinanceAuthModal onLogin={handleLogin} committees={committees} />
           </div>
         ) : session.role === 'COMMITTEE_LEAD' ? (
           <CommitteeFinanceView

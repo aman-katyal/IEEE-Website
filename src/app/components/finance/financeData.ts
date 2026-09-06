@@ -161,6 +161,14 @@ export const REAL_COMMITTEES: CommitteeInfo[] = [
     categories: ['RF Components & Antennas', 'PCB Fabrication', 'Test & Measurement', 'General'],
   },
   {
+    id: 'eds',
+    name: 'Electron Devices Society (EDS)',
+    shortName: 'EDS',
+    allocated: 0,
+    contactEmail: 'eds@purdueieee.org',
+    categories: ['Semiconductors & Wafers', 'Cleanroom & Fabrication', 'Test & Characterization', 'Workshops', 'General'],
+  },
+  {
     id: 'cs',
     name: 'Computer Society',
     shortName: 'Computer Society',

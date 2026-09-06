@@ -302,4 +302,43 @@ describe("useFinanceApi Hook Suite", () => {
     });
     expect(result.current.memberDues.length).toBe(1);
   });
+
+  it("persists and restores funding inflows and committees from localStorage across reloads", async () => {
+    const storedInflow = {
+      id: "inflow-parking-persisted",
+      committeeId: "treasurer",
+      sourceType: "Other" as const,
+      title: "Parking Revenue",
+      amount: 1500.0,
+      receivedDate: "2026-03-01",
+    };
+    const storedCommittee = {
+      id: "eds",
+      name: "Electron Devices Society (EDS)",
+      shortName: "EDS",
+      allocated: 500,
+      contactEmail: "eds@purdueieee.org",
+      categories: ["Semiconductors", "General"],
+    };
+
+    localStorage.setItem(
+      "boilerbooks_funding_inflows",
+      JSON.stringify([storedInflow]),
+    );
+    localStorage.setItem(
+      "boilerbooks_committees",
+      JSON.stringify([storedCommittee]),
+    );
+
+    const { result } = renderHook(() => useFinanceApi());
+
+    expect(result.current.fundingInflows).toHaveLength(1);
+    expect(result.current.fundingInflows[0].title).toBe("Parking Revenue");
+    expect(result.current.fundingInflows[0].amount).toBe(1500.0);
+
+    const edsFound = result.current.committees.find((c) => c.id === "eds");
+    expect(edsFound).toBeDefined();
+    expect(edsFound?.name).toBe("Electron Devices Society (EDS)");
+  });
 });
+

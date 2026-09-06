@@ -358,9 +358,57 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
     }
 
     // -------------------------------------------------------------
-    // 5. Committees: /api/finance/committees (TREASURER only for mutations)
+    // 5. Committees: /api/finance/committees (TREASURER only for mutations, authenticated for list)
     // -------------------------------------------------------------
     if (route === 'committees') {
+      if (request.method === 'GET') {
+        const authResult = await requireAuth(request, env);
+        if (isResponse(authResult)) return authResult;
+
+        const fiscalYearId = url.searchParams.get('fiscalYearId') || 'fy25-26';
+        const rows = await queryAll<any>(
+          db,
+          `SELECT 
+            fc.id,
+            fc.name,
+            fc.bank_status,
+            fc.dues_status,
+            fc.contact_email,
+            COALESCE(cb.allocated_amount, 0.0) AS allocated,
+            cb.notes
+          FROM finance_committees fc
+          LEFT JOIN committee_budgets cb ON fc.id = cb.committee_id AND cb.fiscal_year_id = ?
+          ORDER BY fc.name ASC`,
+          [fiscalYearId]
+        );
+
+        // Fetch categories for all committees
+        const categoriesRows = await queryAll<any>(
+          db,
+          `SELECT committee_id, name FROM budget_categories ORDER BY name ASC`
+        );
+        const categoriesByCommittee = new Map<string, string[]>();
+        for (const cat of categoriesRows) {
+          const list = categoriesByCommittee.get(cat.committee_id) || [];
+          list.push(cat.name);
+          categoriesByCommittee.set(cat.committee_id, list);
+        }
+
+        const committees = rows.map((r) => ({
+          id: r.id,
+          name: r.name,
+          shortName: r.name,
+          allocated: Number(r.allocated) || 0,
+          bankStatus: r.bank_status || 'Active',
+          duesStatus: r.dues_status || 'Active',
+          contactEmail: r.contact_email || `${r.id}@purdueieee.org`,
+          notes: r.notes || '',
+          categories: categoriesByCommittee.get(r.id) || ['General', 'Hardware'],
+        }));
+
+        return jsonResponse({ success: true, committees }, 200, request);
+      }
+
       if (request.method === 'POST') {
         const authResult = await requireAuth(request, env, ['TREASURER']);
         if (isResponse(authResult)) return authResult;

@@ -21,12 +21,14 @@ export interface FinanceAuthModalProps {
   onLogin: (session: AuthSessionData) => void;
   defaultRole?: 'COMMITTEE_LEAD' | 'TREASURER';
   defaultCommitteeId?: string;
+  committees?: { id: string; name: string }[];
 }
 
 export function FinanceAuthModal({
   onLogin,
   defaultRole = 'COMMITTEE_LEAD',
   defaultCommitteeId = 'rov',
+  committees = REAL_COMMITTEES,
 }: FinanceAuthModalProps) {
   const [role, setRole] = useState<'COMMITTEE_LEAD' | 'TREASURER'>(defaultRole);
   const [selectedCommitteeId, setSelectedCommitteeId] = useState<string>(defaultCommitteeId);
@@ -176,7 +178,7 @@ export function FinanceAuthModal({
                     <SelectValue placeholder="Choose committee..." />
                   </SelectTrigger>
                   <SelectContent className="bg-slate-900 border-slate-700 text-slate-100">
-                    {REAL_COMMITTEES.map((c) => (
+                    {(committees && committees.length > 0 ? committees : REAL_COMMITTEES).map((c) => (
                       <SelectItem key={c.id} value={c.id} className="text-slate-200 focus:bg-sky-600 focus:text-white">
                         {c.name}
                       </SelectItem>
