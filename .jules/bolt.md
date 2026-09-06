@@ -49,3 +49,6 @@
 ## 2026-09-04 - Optimize Array Searches Inside Map/JSX Renders
 **Learning:** Filtering arrays inside an array `.map()` block or inside a React JSX render loop causes O(N*M) time complexity, leading to severe performance bottlenecks.
 **Action:** Use a pre-computed map of arrays so you can lookup the array block you need in O(1) time, thereby reducing iteration complexity from O(N * M) to O(N + M).
+## 2026-10-27 - Pre-compute Derived Data to Avoid Render Loops
+**Learning:** Performing array `.filter()` and `.map()` inside a component's JSX render block or CSV generation loop leads to redundant memory allocations and causes O(N*M) performance drops when rendering tables or lists.
+**Action:** When aggregating or deriving data needed for multiple components (like table rows and CSV exports), compute it once in a single O(N) pass inside an outer `useMemo` block, and attach the pre-computed value to the data objects.

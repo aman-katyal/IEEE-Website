@@ -191,10 +191,11 @@ export function TreasurerFinanceView({
       const baseAllocated = comm.allocated;
       const totalBudget = baseAllocated + totalInflows;
 
-      // ⚡ Bolt: Replace 3 passes with a single pass for O(N) instead of O(3N)
+      // ⚡ Bolt: Replace 3 passes with a single pass for O(N) instead of O(3N), and collect spending points
       let approved = 0;
       let pending = 0;
       let reimbursed = 0;
+      const spendingPoints = [];
       for (const p of commPurchases) {
         if (
           p.status === "APPROVED" ||
@@ -202,6 +203,7 @@ export function TreasurerFinanceView({
           p.status === "REIMBURSED"
         ) {
           approved += p.totalAmount;
+          spendingPoints.push({ date: p.submittedAt, amount: p.totalAmount });
         }
         if (p.status === "PENDING") {
           pending += p.totalAmount;
@@ -216,6 +218,8 @@ export function TreasurerFinanceView({
           ? Math.min(Math.round((approved / totalBudget) * 100), 100)
           : 0;
 
+      const velocity = calculateSpendingVelocity(spendingPoints, totalBudget);
+
       return {
         ...comm,
         baseAllocated,
@@ -228,6 +232,7 @@ export function TreasurerFinanceView({
         remaining,
         percentSpent,
         totalRequests: commPurchases.length,
+        velocity,
       };
     });
   }, [activeCommittees, purchasesByCommittee, inflowsByCommittee]);
@@ -706,18 +711,7 @@ export function TreasurerFinanceView({
     ];
 
     const rows = matrixData.map((c) => {
-      // ⚡ Bolt: Use pre-computed Map for O(1) committee purchases lookup instead of O(N) full array filter
-      const velocity = calculateSpendingVelocity(
-        (purchasesByCommittee.get(c.id) || [])
-          .filter(
-            (p) =>
-              p.status === "APPROVED" ||
-              p.status === "PURCHASED" ||
-              p.status === "REIMBURSED",
-          )
-          .map((p) => ({ date: p.submittedAt, amount: p.totalAmount })),
-        c.totalBudget,
-      );
+      // ⚡ Bolt: Use pre-computed velocity to avoid O(N) array operations during CSV generation
       return [
         c.id,
         c.name,
@@ -729,8 +723,8 @@ export function TreasurerFinanceView({
         c.remaining,
         c.percentSpent,
         c.totalRequests,
-        velocity.runwayWeeks,
-        velocity.status,
+        c.velocity.runwayWeeks,
+        c.velocity.status,
       ];
     });
 
@@ -1456,37 +1450,17 @@ export function TreasurerFinanceView({
                         {c.totalRequests}
                       </TableCell>
                       <TableCell className="text-right py-3.5 font-mono text-xs">
-                        {(() => {
-                          // ⚡ Bolt: Use pre-computed Map for O(1) committee purchases lookup instead of O(N) full array filter
-                          const velocity = calculateSpendingVelocity(
-                            (purchasesByCommittee.get(c.id) || [])
-                              .filter(
-                                (p) =>
-                                  p.status === "APPROVED" ||
-                                  p.status === "PURCHASED" ||
-                                  p.status === "REIMBURSED",
-                              )
-                              .map((p) => ({
-                                date: p.submittedAt,
-                                amount: p.totalAmount,
-                              })),
-                            c.totalBudget,
-                          );
-                          return (
-                            <>
-                              {velocity.runwayWeeks}w ·{" "}
-                              <span
-                                className={
-                                  velocity.status === "On Track"
-                                    ? "text-emerald-400"
-                                    : "text-red-400"
-                                }
-                              >
-                                {velocity.status}
-                              </span>
-                            </>
-                          );
-                        })()}
+                        {/* ⚡ Bolt: Use pre-computed velocity to prevent O(N) array operations during render */}
+                        {c.velocity.runwayWeeks}w ·{" "}
+                        <span
+                          className={
+                            c.velocity.status === "On Track"
+                              ? "text-emerald-400"
+                              : "text-red-400"
+                          }
+                        >
+                          {c.velocity.status}
+                        </span>
                       </TableCell>
                       <TableCell className="text-right py-3.5 pr-6">
                         <div className="flex items-center justify-end gap-1.5">

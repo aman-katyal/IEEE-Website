@@ -127,10 +127,11 @@ export function CommitteeFinanceView({
   const stats = useMemo(() => {
     const baseAllocated = committee.allocated;
     const totalEffectiveBudget = baseAllocated + totalInflows;
-    // ⚡ Bolt: Replace 3 passes with a single pass for O(N) instead of O(3N)
+    // ⚡ Bolt: Replace 3 passes with a single pass for O(N) instead of O(3N), and collect spending points
     let approved = 0;
     let pending = 0;
     let reimbursed = 0;
+    const spendingPoints = [];
     for (const p of committeePurchases) {
       if (
         p.status === "APPROVED" ||
@@ -138,6 +139,7 @@ export function CommitteeFinanceView({
         p.status === "REIMBURSED"
       ) {
         approved += p.totalAmount;
+        spendingPoints.push({ date: p.submittedAt, amount: p.totalAmount });
       }
       if (p.status === "PENDING") {
         pending += p.totalAmount;
@@ -153,14 +155,7 @@ export function CommitteeFinanceView({
         : 0;
 
     const velocity = calculateSpendingVelocity(
-      committeePurchases
-        .filter(
-          (p) =>
-            p.status === "APPROVED" ||
-            p.status === "PURCHASED" ||
-            p.status === "REIMBURSED",
-        )
-        .map((p) => ({ date: p.submittedAt, amount: p.totalAmount })),
+      spendingPoints,
       totalEffectiveBudget,
     );
 
