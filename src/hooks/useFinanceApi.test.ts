@@ -345,5 +345,56 @@ describe("useFinanceApi Hook Suite", () => {
     expect(edsFound).toBeDefined();
     expect(edsFound?.name).toBe("Electron Devices Society (EDS)");
   });
+
+  it("immediately updates audit ledger on committee base budget adjustment", async () => {
+    const { result } = renderHook(() => useFinanceApi());
+    const initialAuditCount = result.current.auditLogs.length;
+
+    await act(async () => {
+      await result.current.updateCommittee("rov", { allocated: 6500 });
+    });
+
+    expect(result.current.auditLogs.length).toBe(initialAuditCount + 1);
+    expect(result.current.auditLogs[0].actionType).toBe("BUDGET_ALLOCATION");
+    expect(result.current.auditLogs[0].committeeId).toBe("rov");
+    expect(result.current.auditLogs[0].description).toContain("Base allocated budget adjusted");
+  });
+
+  it("handles createCommittee returning generated passcode and logging budget allocation", async () => {
+    mockFetch.mockImplementation(async (url: string) => {
+      if (typeof url === "string" && url.includes("/committees")) {
+        return {
+          ok: true,
+          json: async () => ({
+            success: true,
+            passcode: "ROBO-8H7YTR#240-X49",
+            committee: {
+              id: "robotics-club",
+              name: "Robotics Club",
+              allocated: 1200,
+            },
+          }),
+        };
+      }
+      return { ok: true, json: async () => ({ success: true }) };
+    });
+
+    const { result } = renderHook(() => useFinanceApi());
+    const initialAuditCount = result.current.auditLogs.length;
+
+    let createRes: any = null;
+    await act(async () => {
+      createRes = await result.current.createCommittee({
+        name: "Robotics Club",
+        allocated: 1200,
+      });
+    });
+
+    expect(createRes.success).toBe(true);
+    expect(createRes.passcode).toBe("ROBO-8H7YTR#240-X49");
+    expect(result.current.auditLogs.length).toBe(initialAuditCount + 1);
+    expect(result.current.auditLogs[0].actionType).toBe("BUDGET_ALLOCATION");
+    expect(result.current.auditLogs[0].amountDelta).toBe(1200);
+  });
 });
 

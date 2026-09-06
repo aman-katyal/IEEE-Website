@@ -380,6 +380,23 @@ export function useFinanceApi() {
     refreshData();
   }, [refreshData]);
 
+  const syncAuditLogs = useCallback(async (fiscalYearId = "fy25-26") => {
+    try {
+      const logsRes = await fetch(
+        `${API_BASE}/audit-logs?fiscalYearId=${fiscalYearId}`,
+        { headers: getAuthHeaders(session?.token) },
+      );
+      if (logsRes.ok) {
+        const logsData = await logsRes.json();
+        if (logsData.entries && Array.isArray(logsData.entries)) {
+          setAuditLogs(logsData.entries);
+        }
+      }
+    } catch {
+      // Background sync, silently handle network interruptions
+    }
+  }, [session?.token]);
+
   const loginWithPin = async (
     pin: string,
     role: "COMMITTEE_LEAD" | "TREASURER",
@@ -491,6 +508,7 @@ export function useFinanceApi() {
         setError(err);
         return { success: false, error: err };
       }
+      syncAuditLogs();
       return { success: true };
     } catch {
       // Offline fallback: keep optimistic local state
@@ -544,6 +562,7 @@ export function useFinanceApi() {
         setError(err);
         return { success: false, error: err };
       }
+      syncAuditLogs();
       return { success: true };
     } catch {
       return { success: true };
@@ -596,6 +615,7 @@ export function useFinanceApi() {
         };
       }
       const data = await res.json();
+      syncAuditLogs();
       return { success: true, dues: data.dues || newRecord };
     } catch {
       return { success: true, dues: newRecord };
@@ -642,9 +662,37 @@ export function useFinanceApi() {
     updated: Partial<CommitteeInfo>,
   ): Promise<{ success: boolean; error?: string }> => {
     const prevCommittees = committees;
+    const targetComm = committees.find((c) => c.id === committeeId);
+    const prevAllocated = targetComm?.allocated ?? 0;
+    const newAllocated = updated.allocated;
+
     setCommittees((prev) =>
       prev.map((c) => (c.id === committeeId ? { ...c, ...updated } : c)),
     );
+
+    if (newAllocated !== undefined && newAllocated !== prevAllocated) {
+      const delta = newAllocated - prevAllocated;
+      const deltaStr =
+        delta >= 0
+          ? `+$${delta.toLocaleString("en-US", { minimumFractionDigits: 2 })}`
+          : `-$${Math.abs(delta).toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
+      const optimisticLog: FinancialAuditLedgerEntry = {
+        id: `audit-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+        fiscalYearId: "fy25-26",
+        committeeId,
+        committeeName: updated.name || targetComm?.name || committeeId,
+        actionType: "BUDGET_ALLOCATION",
+        actorRole: session?.role || "TREASURER",
+        actorName: session?.name || "Executive Treasurer",
+        actorEmail: session?.email || "treasurer@purdueieee.org",
+        description: `Base allocated budget adjusted from $${prevAllocated.toLocaleString("en-US", { minimumFractionDigits: 2 })} to $${newAllocated.toLocaleString("en-US", { minimumFractionDigits: 2 })} (${deltaStr})`,
+        previousValue: String(prevAllocated),
+        newValue: String(newAllocated),
+        amountDelta: delta,
+        createdAt: new Date().toISOString(),
+      };
+      setAuditLogs((prev) => [optimisticLog, ...prev]);
+    }
 
     try {
       const res = await fetch(
@@ -666,10 +714,12 @@ export function useFinanceApi() {
 
       if (!res.ok && res.status >= 400 && res.status !== 404) {
         setCommittees(prevCommittees);
+        syncAuditLogs();
         const err = `Failed to update committee parameters (HTTP ${res.status})`;
         setError(err);
         return { success: false, error: err };
       }
+      syncAuditLogs();
       return { success: true };
     } catch {
       return { success: true };
@@ -691,6 +741,7 @@ export function useFinanceApi() {
   }): Promise<{
     success: boolean;
     committee?: CommitteeInfo;
+    passcode?: string;
     error?: string;
   }> => {
     const slug =
@@ -720,6 +771,25 @@ export function useFinanceApi() {
     const prevCommittees = committees;
     setCommittees((prev) => [...prev, committeeObj]);
 
+    if (committeeObj.allocated > 0) {
+      const optimisticLog: FinancialAuditLedgerEntry = {
+        id: `audit-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+        fiscalYearId: "fy25-26",
+        committeeId: committeeObj.id,
+        committeeName: committeeObj.name,
+        actionType: "BUDGET_ALLOCATION",
+        actorRole: session?.role || "TREASURER",
+        actorName: session?.name || "Executive Treasurer",
+        actorEmail: session?.email || "treasurer@purdueieee.org",
+        description: `Created new technical committee "${committeeObj.name}" (${committeeObj.id}) with initial budget of $${committeeObj.allocated.toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
+        previousValue: null,
+        newValue: String(committeeObj.allocated),
+        amountDelta: committeeObj.allocated,
+        createdAt: new Date().toISOString(),
+      };
+      setAuditLogs((prev) => [optimisticLog, ...prev]);
+    }
+
     try {
       const res = await fetch(`${API_BASE}/committees`, {
         method: "POST",
@@ -733,19 +803,21 @@ export function useFinanceApi() {
           contactEmail: committeeObj.contactEmail,
           categories: committeeObj.categories,
           notes: committeeObj.notes,
-          passcode: newCommittee.passcode,
         }),
       });
 
       if (!res.ok && res.status >= 400 && res.status !== 404) {
         setCommittees(prevCommittees);
+        syncAuditLogs();
         const errorData = await res.json().catch(() => ({}));
         const err =
           errorData.error || `Failed to create committee (HTTP ${res.status})`;
         setError(err);
         return { success: false, error: err };
       }
-      return { success: true, committee: committeeObj };
+      const data = await res.json().catch(() => ({}));
+      syncAuditLogs();
+      return { success: true, committee: committeeObj, passcode: data.passcode };
     } catch {
       return { success: true, committee: committeeObj };
     }
@@ -756,7 +828,29 @@ export function useFinanceApi() {
     committeeId: string,
   ): Promise<{ success: boolean; error?: string }> => {
     const prevCommittees = committees;
+    const targetComm = committees.find((c) => c.id === committeeId);
+    const released = targetComm?.allocated ?? 0;
     setCommittees((prev) => prev.filter((c) => c.id !== committeeId));
+
+    const optimisticLog: FinancialAuditLedgerEntry = {
+      id: `audit-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      fiscalYearId: "fy25-26",
+      committeeId,
+      committeeName: targetComm?.name || committeeId,
+      actionType: "BUDGET_ALLOCATION",
+      actorRole: session?.role || "TREASURER",
+      actorName: session?.name || "Executive Treasurer",
+      actorEmail: session?.email || "treasurer@purdueieee.org",
+      description:
+        released > 0
+          ? `Deleted committee "${targetComm?.name || committeeId}" (${committeeId}) and released base budget allocation (-$${released.toLocaleString("en-US", { minimumFractionDigits: 2 })})`
+          : `Deleted committee "${targetComm?.name || committeeId}" (${committeeId})`,
+      previousValue: targetComm?.name || committeeId,
+      newValue: null,
+      amountDelta: released > 0 ? -released : 0,
+      createdAt: new Date().toISOString(),
+    };
+    setAuditLogs((prev) => [optimisticLog, ...prev]);
 
     try {
       const res = await fetch(`${API_BASE}/committees/${committeeId}`, {
@@ -766,12 +860,14 @@ export function useFinanceApi() {
 
       if (!res.ok && res.status >= 400 && res.status !== 404) {
         setCommittees(prevCommittees);
+        syncAuditLogs();
         const errorData = await res.json().catch(() => ({}));
         const err =
           errorData.error || `Failed to delete committee (HTTP ${res.status})`;
         setError(err);
         return { success: false, error: err };
       }
+      syncAuditLogs();
       return { success: true };
     } catch {
       return { success: true };
@@ -784,6 +880,23 @@ export function useFinanceApi() {
   ): Promise<{ success: boolean; error?: string }> => {
     const prevInflows = fundingInflows;
     setFundingInflows((prev) => [newInflow, ...prev]);
+
+    const optimisticLog: FinancialAuditLedgerEntry = {
+      id: `audit-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      fiscalYearId: "fy25-26",
+      committeeId: newInflow.committeeId,
+      committeeName: newInflow.committeeName,
+      actionType: "FUNDING_INFLOW",
+      actorRole: session?.role || "TREASURER",
+      actorName: session?.name || "Executive Treasurer",
+      actorEmail: session?.email || "treasurer@purdueieee.org",
+      description: `Recorded funding inflow of $${newInflow.amount.toLocaleString("en-US", { minimumFractionDigits: 2 })} from ${newInflow.sourceType || "Other"}: "${newInflow.title}"`,
+      previousValue: null,
+      newValue: String(newInflow.amount),
+      amountDelta: newInflow.amount,
+      createdAt: new Date().toISOString(),
+    };
+    setAuditLogs((prev) => [optimisticLog, ...prev]);
 
     try {
       const res = await fetch(`${API_BASE}/inflows`, {
@@ -807,6 +920,7 @@ export function useFinanceApi() {
 
       if (!res.ok && res.status >= 400 && res.status !== 404) {
         setFundingInflows(prevInflows);
+        syncAuditLogs();
         const err =
           res.status === 401
             ? 'Authentication session expired or missing token (HTTP 401). Please click "Switch" to sign in with your PIN.'
@@ -814,6 +928,7 @@ export function useFinanceApi() {
         setError(err);
         return { success: false, error: err };
       }
+      syncAuditLogs();
       return { success: true };
     } catch {
       return { success: true };
@@ -855,10 +970,12 @@ export function useFinanceApi() {
 
       if (!res.ok && res.status >= 400 && res.status !== 404) {
         setFundingInflows(prevInflows);
+        syncAuditLogs();
         const err = `Failed to delete funding inflow (HTTP ${res.status})`;
         setError(err);
         return { success: false, error: err };
       }
+      syncAuditLogs();
       return { success: true };
     } catch {
       return { success: true };

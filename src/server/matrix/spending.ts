@@ -429,6 +429,10 @@ export async function updateCommitteeParameters(
         reason: payload.notes || undefined,
       });
 
+      const deltaFormatted = delta >= 0
+        ? `+$${delta.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
+        : `-$${Math.abs(delta).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+
       await recordAuditEntry(db, {
         fiscalYearId,
         committeeId,
@@ -436,7 +440,7 @@ export async function updateCommitteeParameters(
         actorRole: 'TREASURER',
         actorName: 'Executive Treasurer',
         actorEmail: 'treasurer@purdueieee.org',
-        description: `Base allocated budget adjusted from $${prevAllocated.toLocaleString('en-US', { minimumFractionDigits: 2 })} to $${payload.allocatedAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })} (${delta > 0 ? '+' : ''}$${delta.toLocaleString('en-US', { minimumFractionDigits: 2 })})`,
+        description: `Base allocated budget adjusted from $${prevAllocated.toLocaleString('en-US', { minimumFractionDigits: 2 })} to $${payload.allocatedAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })} (${deltaFormatted})`,
         previousValue: String(prevAllocated),
         newValue: String(payload.allocatedAmount),
         amountDelta: delta,
@@ -553,7 +557,40 @@ export interface CreateCommitteePayload {
 }
 
 /**
+ * Generates a standardized, secure committee access PIN passcode.
+ * Follows the BoilerBooks format: <PREFIX>-<6 uppercase alphanumerics><1 special char><3 digits>-<3 uppercase alphanumerics>
+ * e.g., EDS-CPDFFC#160-MSX or ROV-6T5DB6&835-HNT.
+ */
+export function generateCommitteePasscode(committeeIdOrName: string): string {
+  const prefix = (committeeIdOrName || 'COMM')
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '')
+    .padEnd(4, 'X')
+    .substring(0, 4);
+
+  const specialChars = ['!', '@', '#', '%', '&', '*'];
+  const special = specialChars[Math.floor(Math.random() * specialChars.length)];
+
+  // Character set excluding easily confused characters (O, 0, I, 1)
+  const charset = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let part1 = '';
+  for (let i = 0; i < 6; i++) {
+    part1 += charset[Math.floor(Math.random() * charset.length)];
+  }
+
+  const numPart = Math.floor(100 + Math.random() * 900); // 3 digits
+
+  let part2 = '';
+  for (let i = 0; i < 3; i++) {
+    part2 += charset[Math.floor(Math.random() * charset.length)];
+  }
+
+  return `${prefix}-${part1}${special}${numPart}-${part2}`;
+}
+
+/**
  * Creates a new committee with initial budget allocation, categories, and credentials.
+ * Automatically generates a standardized BoilerBooks secure passcode.
  * Restricted to Branch Treasurer role.
  */
 export async function createCommittee(
@@ -561,6 +598,7 @@ export async function createCommittee(
   payload: CreateCommitteePayload
 ): Promise<{
   success: boolean;
+  passcode: string;
   committee: {
     id: string;
     name: string;
@@ -586,7 +624,9 @@ export async function createCommittee(
   const bankStatus = payload.bankStatus || 'Active';
   const duesStatus = payload.duesStatus || 'Active';
   const contactEmail = payload.contactEmail?.trim() || `${committeeId}@purdueieee.org`;
-  const passcode = payload.passcode?.trim() || Math.random().toString(36).substring(2, 8).toUpperCase();
+
+  // Always auto-generate standard BoilerBooks passcode for committee lead
+  const passcode = generateCommitteePasscode(committeeId);
   const passcodeHash = await hashPin(passcode);
   const categories = payload.categories && payload.categories.length > 0 ? payload.categories : ['General', 'Hardware'];
   const notes = payload.notes?.trim() || '';
@@ -655,6 +695,7 @@ export async function createCommittee(
 
   return {
     success: true,
+    passcode,
     committee: {
       id: committeeId,
       name,
@@ -665,7 +706,7 @@ export async function createCommittee(
       categories,
       notes,
     },
-    message: `Created committee "${name}" successfully.`,
+    message: `Created committee "${name}" successfully. Generated lead passcode: ${passcode}`,
   };
 }
 
@@ -689,6 +730,14 @@ export async function deleteCommittee(
 
   const d1 = toD1Database(db);
 
+  // Retrieve existing budget before deleting child tables to log released allocation accurately
+  const existingBudget = await queryFirst<{ allocated_amount: number }>(
+    db,
+    'SELECT allocated_amount FROM committee_budgets WHERE fiscal_year_id = ? AND committee_id = ?',
+    [fiscalYearId, committeeId]
+  );
+  const releasedBudget = Number(existingBudget?.allocated_amount || 0);
+
   // Clean up child tables
   await d1.prepare('DELETE FROM purchase_requests WHERE committee_id = ?').bind(committeeId).run();
   await d1.prepare('DELETE FROM committee_funding_inflows WHERE committee_id = ?').bind(committeeId).run();
@@ -704,9 +753,12 @@ export async function deleteCommittee(
     actorRole: 'TREASURER',
     actorName: 'Executive Treasurer',
     actorEmail: 'treasurer@purdueieee.org',
-    description: `Deleted committee "${existing.name}" (${committeeId}) and all associated budgets`,
+    description: releasedBudget > 0
+      ? `Deleted committee "${existing.name}" (${committeeId}) and released base budget allocation (-$${releasedBudget.toLocaleString('en-US', { minimumFractionDigits: 2 })})`
+      : `Deleted committee "${existing.name}" (${committeeId})`,
     previousValue: existing.name,
     newValue: null,
+    amountDelta: releasedBudget > 0 ? -releasedBudget : 0,
   });
 
   return {

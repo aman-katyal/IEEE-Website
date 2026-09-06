@@ -336,6 +336,8 @@ describe('BoilerBooks Treasurer Master Spending Matrix', () => {
       });
 
       expect(result.success).toBe(true);
+      expect(result.passcode).toBeDefined();
+      expect(result.passcode).toMatch(/^[A-Z0-9]{4}-[A-Z0-9]{6}[!@#%&*]\d{3}-[A-Z0-9]{3}$/);
       expect(result.committee.id).toBe('assistive-tech');
       expect(result.committee.name).toBe('Assistive Tech & Bionics');
       expect(result.committee.allocated).toBe(3500.0);
@@ -428,6 +430,14 @@ describe('BoilerBooks Treasurer Master Spending Matrix', () => {
         .prepare('SELECT id FROM budget_categories WHERE committee_id = ?')
         .all('cs');
       expect(afterCats.length).toBe(0);
+
+      // Verify audit log captured released allocation
+      const auditLog = db
+        .prepare("SELECT * FROM financial_audit_ledger WHERE committee_id = 'cs' AND action_type = 'BUDGET_ALLOCATION' ORDER BY rowid DESC")
+        .get() as any;
+      expect(auditLog).toBeDefined();
+      expect(auditLog.amount_delta).toBe(-2000);
+      expect(auditLog.description).toContain('released base budget allocation');
     });
   });
 });

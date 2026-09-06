@@ -646,10 +646,12 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
 
       const fiscalYearId = url.searchParams.get('fiscalYearId') || 'fy25-26';
       const committeeId = url.searchParams.get('committeeId') || undefined;
+      const limitParam = url.searchParams.get('limit');
+      const limit = limitParam ? parseInt(limitParam, 10) : undefined;
 
       const entries = await listAuditEntries(
         db,
-        { fiscalYearId, committeeId },
+        { fiscalYearId, committeeId, limit },
         session
       );
       return jsonResponse({ success: true, entries }, 200, request);

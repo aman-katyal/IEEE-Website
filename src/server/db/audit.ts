@@ -102,7 +102,7 @@ export async function listAuditEntries(
     params.push(targetCommitteeId);
   }
 
-  const limit = filter.limit && filter.limit > 0 ? Math.min(filter.limit, 200) : 100;
+  const limit = filter.limit && filter.limit > 0 ? Math.min(filter.limit, 1000) : 500;
   params.push(limit);
 
   const sql = `
@@ -126,7 +126,7 @@ export async function listAuditEntries(
     id: r.id,
     fiscalYearId: r.fiscal_year_id,
     committeeId: r.committee_id,
-    committeeName: r.committee_name,
+    committeeName: r.committee_name || r.committee_id,
     actionType: r.action_type as AuditActionType,
     actorRole: r.actor_role,
     actorName: r.actor_name,

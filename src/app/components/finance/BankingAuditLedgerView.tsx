@@ -256,8 +256,11 @@ export function BankingAuditLedgerView({
               <SelectItem value="ALL">All Event Types</SelectItem>
               <SelectItem value="BUDGET_ALLOCATION">Budget Allocation</SelectItem>
               <SelectItem value="FUNDING_INFLOW">Funding Inflows</SelectItem>
-              <SelectItem value="PURCHASE_APPROVED">Approved Purchases</SelectItem>
+              <SelectItem value="FUNDING_INFLOW_DELETED">Inflows Removed</SelectItem>
               <SelectItem value="PURCHASE_SUBMITTED">Requisitions Submitted</SelectItem>
+              <SelectItem value="PURCHASE_APPROVED">Approved Purchases</SelectItem>
+              <SelectItem value="PURCHASE_REIMBURSED">Reimbursed / Paid</SelectItem>
+              <SelectItem value="PURCHASE_REJECTED">Requisitions Denied</SelectItem>
               <SelectItem value="CASH_DUES">Cash Dues</SelectItem>
             </SelectContent>
           </Select>
