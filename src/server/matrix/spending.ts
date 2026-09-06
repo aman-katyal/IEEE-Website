@@ -12,7 +12,9 @@ import { hashPin } from '../auth/crypto';
 export interface CommitteeSpendingRow {
   committeeId: CommitteeId;
   committeeName: string;
-  allocatedAmount: number;
+  allocatedAmount: number; // total budget (baseAllocated + totalInflows)
+  baseAllocatedAmount?: number;
+  totalInflows?: number;
   spentAmount: number; // approved + reimbursed
   approvedAmount: number;
   pendingAmount: number;
@@ -71,6 +73,7 @@ interface RawSpendingRow {
   committee_id: string;
   committee_name: string;
   allocated_amount: number | null;
+  total_inflows: number | null;
   approved_amount: number | null;
   pending_amount: number | null;
   reimbursed_amount: number | null;
@@ -102,6 +105,7 @@ interface RawFinanceCommittee {
 /**
  * Aggregates total allocated budget, approved spending, pending requests,
  * reimbursed amounts, and remaining balance per committee and branch-wide for a fiscal year.
+ * Total budget includes base allocation plus recorded funding inflows (SFAB grants, sponsorships).
  */
 export async function calculateCommitteeSpending(
   db: D1DatabaseLike,
@@ -112,6 +116,7 @@ export async function calculateCommitteeSpending(
       fc.id AS committee_id,
       fc.name AS committee_name,
       COALESCE(cb.allocated_amount, 0.0) AS allocated_amount,
+      COALESCE(inf.total_inflows, 0.0) AS total_inflows,
       COALESCE(SUM(CASE WHEN pr.status = 'APPROVED' THEN pr.total_amount ELSE 0 END), 0.0) AS approved_amount,
       COALESCE(SUM(CASE WHEN pr.status = 'PENDING' THEN pr.total_amount ELSE 0 END), 0.0) AS pending_amount,
       COALESCE(SUM(CASE WHEN pr.status = 'REIMBURSED' THEN pr.total_amount ELSE 0 END), 0.0) AS reimbursed_amount,
@@ -120,13 +125,19 @@ export async function calculateCommitteeSpending(
     FROM finance_committees fc
     LEFT JOIN committee_budgets cb 
       ON fc.id = cb.committee_id AND cb.fiscal_year_id = ?
+    LEFT JOIN (
+      SELECT committee_id, SUM(amount) AS total_inflows 
+      FROM committee_funding_inflows 
+      WHERE fiscal_year_id = ? 
+      GROUP BY committee_id
+    ) inf ON fc.id = inf.committee_id
     LEFT JOIN purchase_requests pr 
       ON fc.id = pr.committee_id AND pr.fiscal_year_id = ?
-    GROUP BY fc.id, fc.name, cb.allocated_amount
+    GROUP BY fc.id, fc.name, cb.allocated_amount, inf.total_inflows
     ORDER BY fc.name ASC;
   `;
 
-  const rows = await queryAll<RawSpendingRow>(db, sql, [fiscalYearId, fiscalYearId]);
+  const rows = await queryAll<RawSpendingRow>(db, sql, [fiscalYearId, fiscalYearId, fiscalYearId]);
 
   let totalAllocated = 0;
   let totalApproved = 0;
@@ -136,19 +147,22 @@ export async function calculateCommitteeSpending(
   let totalRequests = 0;
 
   const committees: CommitteeSpendingRow[] = rows.map((row) => {
-    const allocated = roundCurrency(Number(row.allocated_amount) || 0);
+    const baseAllocated = roundCurrency(Number(row.allocated_amount) || 0);
+    const inflows = roundCurrency(Number(row.total_inflows) || 0);
+    const totalBudget = roundCurrency(baseAllocated + inflows);
+
     const approved = roundCurrency(Number(row.approved_amount) || 0);
     const pending = roundCurrency(Number(row.pending_amount) || 0);
     const reimbursed = roundCurrency(Number(row.reimbursed_amount) || 0);
     const rejected = roundCurrency(Number(row.rejected_amount) || 0);
     const spent = roundCurrency(approved + reimbursed);
-    const remaining = roundCurrency(allocated - spent);
+    const remaining = roundCurrency(totalBudget - spent);
     const reqCount = Number(row.total_requests) || 0;
 
     const spentPercentage =
-      allocated > 0 ? roundCurrency((spent / allocated) * 100) : 0;
+      totalBudget > 0 ? roundCurrency((spent / totalBudget) * 100) : 0;
 
-    totalAllocated = roundCurrency(totalAllocated + allocated);
+    totalAllocated = roundCurrency(totalAllocated + totalBudget);
     totalApproved = roundCurrency(totalApproved + approved);
     totalPending = roundCurrency(totalPending + pending);
     totalReimbursed = roundCurrency(totalReimbursed + reimbursed);
@@ -158,7 +172,9 @@ export async function calculateCommitteeSpending(
     return {
       committeeId: row.committee_id as CommitteeId,
       committeeName: row.committee_name,
-      allocatedAmount: allocated,
+      allocatedAmount: totalBudget,
+      baseAllocatedAmount: baseAllocated,
+      totalInflows: inflows,
       spentAmount: spent,
       approvedAmount: approved,
       pendingAmount: pending,

@@ -233,6 +233,15 @@ describe('BoilerBooks Treasurer Master Spending Matrix', () => {
       expect(row.title).toBe('SFAB Spring 2026 Vehicle Hardware Grant');
       expect(row.amount).toBe(3500.0);
       expect(row.received_date).toBe('2026-02-15');
+
+      // Verify that calculateCommitteeSpending reflects this inflow in ROV budget
+      const spending = await calculateCommitteeSpending(db, 'fy25-26');
+      const rovSpending = spending.committees.find((c) => c.committeeId === 'rov');
+      expect(rovSpending).toBeDefined();
+      expect(rovSpending?.baseAllocatedAmount).toBe(5000.0);
+      expect(rovSpending?.totalInflows).toBe(3500.0);
+      expect(rovSpending?.allocatedAmount).toBe(8500.0); // 5000 base + 3500 inflow
+      expect(rovSpending?.remainingAmount).toBe(7350.0); // 8500 - 1150 spent
     });
   });
 

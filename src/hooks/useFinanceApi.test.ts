@@ -215,11 +215,16 @@ describe("useFinanceApi Hook Suite", () => {
 
     expect(result.current.fundingInflows.length).toBe(initialCount + 1);
 
+    const initialAuditCount = result.current.auditLogs.length;
+
     await act(async () => {
       await result.current.deleteFundingInflow("inflow-test-123");
     });
 
     expect(result.current.fundingInflows.length).toBe(initialCount);
+    expect(result.current.auditLogs.length).toBe(initialAuditCount + 1);
+    expect(result.current.auditLogs[0].actionType).toBe("FUNDING_INFLOW_DELETED");
+    expect(result.current.auditLogs[0].amountDelta).toBe(-4000.0);
   });
 
   it("rolls back purchases state when server returns error response", async () => {

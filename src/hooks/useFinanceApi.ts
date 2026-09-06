@@ -825,7 +825,27 @@ export function useFinanceApi() {
     inflowId: string,
   ): Promise<{ success: boolean; error?: string }> => {
     const prevInflows = fundingInflows;
+    const targetInflow = fundingInflows.find((item) => item.id === inflowId);
     setFundingInflows((prev) => prev.filter((item) => item.id !== inflowId));
+
+    if (targetInflow) {
+      const auditEntry: FinancialAuditLedgerEntry = {
+        id: `audit-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+        fiscalYearId: "fy25-26",
+        committeeId: targetInflow.committeeId,
+        committeeName: targetInflow.committeeName,
+        actionType: "FUNDING_INFLOW_DELETED",
+        actorRole: session?.role || "TREASURER",
+        actorName: session?.name || "Executive Treasurer",
+        actorEmail: session?.email || "treasurer@purdueieee.org",
+        description: `Deleted funding inflow of $${targetInflow.amount.toLocaleString("en-US", { minimumFractionDigits: 2 })} from ${targetInflow.sourceType || "Other"}: "${targetInflow.title}"`,
+        previousValue: String(targetInflow.amount),
+        newValue: "0",
+        amountDelta: -targetInflow.amount,
+        createdAt: new Date().toISOString(),
+      };
+      setAuditLogs((prev) => [auditEntry, ...prev]);
+    }
 
     try {
       const res = await fetch(`${API_BASE}/inflows/${inflowId}`, {

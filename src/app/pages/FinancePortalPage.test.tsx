@@ -280,7 +280,7 @@ describe('FinancePortalPage Integration Suite', () => {
       // Check Tabs
       expect(screen.getByRole('tab', { name: /Pending Approvals/i })).toBeInTheDocument();
       expect(screen.getByRole('tab', { name: /Master Spending Matrix/i })).toBeInTheDocument();
-      expect(screen.getByRole('tab', { name: /Grants & Inflows/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /Audit Ledger & BOSO/i })).toBeInTheDocument();
       expect(screen.getByRole('tab', { name: /Dues Directory/i })).toBeInTheDocument();
     }, 15000);
 
@@ -432,12 +432,14 @@ describe('FinancePortalPage Integration Suite', () => {
       const submitInflowBtn = screen.getByRole('button', { name: /Credit Funding Inflow/i });
       await user.click(submitInflowBtn);
 
-      // Switch to Grants & Inflows tab and verify
-      const inflowsTab = screen.getByRole('tab', { name: /Grants & Inflows/i });
-      await user.click(inflowsTab);
-
-      expect(screen.getByText('Texas Instruments Autonomous Grant')).toBeInTheDocument();
+      // Switch to Master Spending Matrix tab and verify inflow is reflected in the matrix
+      await user.click(screen.getByRole('tab', { name: /Master Spending Matrix/i }));
       expect(screen.getAllByText('+$4,500.00').length).toBeGreaterThanOrEqual(1);
+
+      // Expand inflows drawer to verify title
+      const rovInflowToggle = screen.getByTitle(/Toggle Inflows for ROV/i);
+      await user.click(rovInflowToggle);
+      expect(screen.getByText('Texas Instruments Autonomous Grant')).toBeInTheDocument();
     }, 15000);
 
     it('allows signing out and returning to the login modal', async () => {
@@ -469,9 +471,13 @@ describe('FinancePortalPage Integration Suite', () => {
       await user.type(pinInput, '1903');
       await user.click(screen.getByRole('button', { name: /Enter Treasurer Portal/i }));
 
-      // Switch to BOSO Statement tab
-      const statementTab = screen.getByRole('tab', { name: /BOSO Statement/i });
-      await user.click(statementTab);
+      // Switch to Audit Ledger & BOSO tab
+      const complianceTab = screen.getByRole('tab', { name: /Audit Ledger & BOSO/i });
+      await user.click(complianceTab);
+
+      // Switch sub-tab to BOSO Statement
+      const bosoSubTab = screen.getByRole('button', { name: /BOSO Statement \(SOA #04612\)/i });
+      await user.click(bosoSubTab);
 
       expect(screen.getByText('INST ELECTR ELECTN ENGR SFAB')).toBeInTheDocument();
       expect(screen.getByText('SOA #04612')).toBeInTheDocument();

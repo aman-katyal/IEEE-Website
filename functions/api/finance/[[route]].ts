@@ -24,8 +24,8 @@ import {
 } from '../../../src/server/matrix/spending';
 import { importMemberDues, searchMemberDues, getMemberDuesSummary, recordCashPayment } from '../../../src/server/dues/service';
 import { generateCOOLBatch } from '../../../src/server/cool/exporter';
-import { listAuditEntries } from '../../../src/server/db/audit';
-import { queryAll } from '../../../src/server/db/query';
+import { listAuditEntries, recordAuditEntry } from '../../../src/server/db/audit';
+import { queryAll, queryFirst } from '../../../src/server/db/query';
 import { toD1Database } from '../../../src/server/db/adapter';
 import {
   validateReceiptFile,
@@ -350,9 +350,33 @@ export const onRequest: PagesFunctionHandler<Env> = async (context) => {
     if (pathParts[0] === 'inflows' && pathParts.length === 2 && request.method === 'DELETE') {
       const authResult = await requireAuth(request, env, ['TREASURER']);
       if (isResponse(authResult)) return authResult;
+      const session = authResult;
 
       const inflowId = pathParts[1];
       const d1 = toD1Database(db);
+
+      // Look up the inflow before deleting to record in audit ledger
+      const existingInflow = await queryFirst<any>(
+        db,
+        'SELECT * FROM committee_funding_inflows WHERE id = ?',
+        [inflowId]
+      );
+
+      if (existingInflow) {
+        await recordAuditEntry(db, {
+          fiscalYearId: existingInflow.fiscal_year_id || 'fy25-26',
+          committeeId: existingInflow.committee_id,
+          actionType: 'FUNDING_INFLOW_DELETED',
+          actorRole: session.role,
+          actorName: session.name || 'Executive Treasurer',
+          actorEmail: 'treasurer@purdueieee.org',
+          description: `Deleted funding inflow of $${Number(existingInflow.amount).toLocaleString('en-US', { minimumFractionDigits: 2 })} from ${existingInflow.source_type || 'Other'}: "${existingInflow.title}"`,
+          previousValue: String(existingInflow.amount),
+          newValue: '0',
+          amountDelta: -Number(existingInflow.amount),
+        });
+      }
+
       await d1.prepare('DELETE FROM committee_funding_inflows WHERE id = ?').bind(inflowId).run();
       return jsonResponse({ success: true, message: `Inflow ${inflowId} deleted successfully.` }, 200, request);
     }
